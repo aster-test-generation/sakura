@@ -1,0 +1,35 @@
+from typing import List
+
+from cldk.analysis.java import JavaAnalysis
+
+from .base_indexer import BaseIndexer
+
+from nltest.nl2test.model.models import ClassSnippet
+from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor
+from nltest.nl2test.preprocessing.searchers import ClassSearcher
+from nltest.nl2test.preprocessing.vector_stores import ClassVectorStore
+from nltest.utils.analysis import CommonAnalysis, Reachability
+
+
+class ClassIndexer(BaseIndexer):
+    def __init__(self, analysis: JavaAnalysis):
+        super().__init__(analysis)
+        self.extractor = ClassSnippetExtractor(analysis)
+
+    def _get_classes_with_visible_methods(self):
+        classes = []
+        for qualified_class_name in self.analysis.get_classes():
+            testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
+            if CommonAnalysis(self.analysis).is_test_class(qualified_class_name, testing_frameworks):
+                continue
+            if not Reachability(self.analysis).get_reachable_class_methods(qualified_class_name):
+                continue
+            classes.append(qualified_class_name)
+        return classes
+
+    def build_index(self) -> ClassSearcher:
+        """Extract snippets, embed them, add to vector store, and return searchers."""
+        snippets: List[ClassSnippet] = self.extractor.get_project_snippets()
+        vector_store = ClassVectorStore(self.embedder)
+        vector_store.add_snippets(snippets)
+        return ClassSearcher(vector_store)

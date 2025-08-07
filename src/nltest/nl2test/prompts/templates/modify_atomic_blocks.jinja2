@@ -1,0 +1,41 @@
+You are a meticulous assistant responsible for updating structured data.
+
+# Goal
+Apply the **Modification Instructions** to the **Existing Atomic Blocks** and output the revised list.
+Ensure that the atomic blocks
+
+# Guidelines
+- When the instructions call for merging or splitting atomic blocks **and** specify candidate methods, copy those methods into the resulting block(s) as given, using the format `(qualified_class_name, method_signature)`. Include no more than three per block.
+- If no candidate methods are mentioned, leave `candidate_methods` as an empty list.
+
+# Atomic Block Format
+The final answer must be a list of atomic blocks. Each block must exactly match this schema:
+{
+    "order": int,
+    "subjects": [str],
+    "verbs": [str],
+    "past_participles": [str],
+    "direct_objs": [str],
+    "indirect_objs": [str],
+    "prep_phrases": [{"preposition": str, "object": str}],
+    "polarity": "positive" | "negative",
+    "conditions": [str],
+    "simplified": str,
+    "candidate_methods": [
+        {"qualified_class_name": str, "method_signature": str}
+    ],
+    "notes": str
+}
+
+# Existing Atomic Blocks
+{{ atomic_blocks }}
+
+# Modification Instructions
+{{ instructions }}
+
+# Output
+Return **only** the final list of atomic blocks enclosed in:
+```json
+[
+    ...
+]```

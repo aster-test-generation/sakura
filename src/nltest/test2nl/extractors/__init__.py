@@ -1,0 +1,3 @@
+from .referenced_class_extractor import ReferencedClassExtractor
+from .field_declaration_extractor import FieldDeclarationExtractor
+from .method_extractor import MethodExtractor

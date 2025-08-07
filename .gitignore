@@ -1,0 +1,100 @@
+# Extraneous
+src/nltest/utils/llm_configs.py
+
+# Compiled class file
+*.class
+
+# Lock file
+*.lock
+
+# Output file
+*/output
+
+# Toml file
+scripts/*.toml
+
+# Mac file
+.DS_Store
+
+# Log file
+*.log
+
+# Gradle files
+.gradle
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+scratch*
+*.flake8
+.vscode
+.idea/
+*.iml
+
+# environment file
+.env
+
+# log file
+aster/*.json
+
+# Lock file
+.aster.lock
+
+# nl2test metadata
+nl2test_log/*
+nl2test_log*
+nl2test*
+log*
+
+# resource applications
+resources/*
+
+# Scratchpad
+tests/scratchpad
+
+# Python compiled files and env
+__pycache__/
+*.py[cod]
+.python-version
+.venv/
+
+temp.java
+codeqlcli.ql
+dist/
+build/
+
+tests/coverage
+.coverage
+
+tests/*.toml
+tests/work_dir/
+tests/nl2test_log/
+configs/run_by_file.sh
+
+# Ignore all analysis.json files
+output/*
+
+# temp files
+temp
+
+# Test files
+**/test.py
+**/poc.py
+**/test_prompts.py
+
+vscode_plugin/

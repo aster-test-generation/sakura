@@ -1,0 +1,217 @@
+You are generating a complete and compilable Java test class based on the following natural language test case description and its associated code context.
+
+[Natural Language Test Case Description]
+Ensure that the system correctly inserts a new pet into the database and generates an identifier for it. The test should validate that when a pet is added to an owner's collection, the database reflects this addition with an incremented count of pets for that owner. Additionally, it should confirm that the newly created pet is assigned a non-null ID after being persisted to the database. This test employs JUnit 5 for test structure and AssertJ for making assertions, ensuring that the database operations and entity state transitions behave as expected.
+
+[Referenced Application Classes]
+referenced_classes:
+-   simple_class_name: Pet
+    qualified_class_name: org.springframework.samples.petclinic.owner.Pet
+    annotations:
+    - '@Entity'
+    - '@Table(name = "pets")'
+    extends:
+    - org.springframework.samples.petclinic.model.NamedEntity
+    modifiers:
+    - public
+    field_declarations: null
+    class_methods:
+    -   method_signature: getType()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getVisits()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getBirthDate()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: addVisit(Visit)
+        is_getter_or_setter: false
+        code: "```java\npublic void addVisit(Visit visit)  {\n    getVisits().add(visit);\n\
+            }\n```"
+    -   method_signature: setType(PetType)
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: setBirthDate(LocalDate)
+        is_getter_or_setter: true
+        code: null
+    comments_in_class:
+    - "\n * Simple business object representing a pet.\n *\n * @author Ken Krebs\n\
+        \ * @author Juergen Hoeller\n * @author Sam Brannen\n * @author Wick Dynex\n\
+        \ "
+-   simple_class_name: Owner
+    qualified_class_name: org.springframework.samples.petclinic.owner.Owner
+    annotations:
+    - '@Entity'
+    - '@Table(name = "owners")'
+    extends:
+    - org.springframework.samples.petclinic.model.Person
+    modifiers:
+    - public
+    field_declarations: null
+    class_methods:
+    -   method_signature: getCity()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getPets()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: toString()
+        is_getter_or_setter: false
+        code: "```java\npublic String toString()  {\n    return new ToStringCreator(this).append(\"\
+            id\", this.getId()) .append(\"new\", this.isNew()) .append(\"lastName\"\
+            , this.getLastName()) .append(\"firstName\", this.getFirstName()) .append(\"\
+            address\", this.address) .append(\"city\", this.city) .append(\"telephone\"\
+            , this.telephone) .toString();\n}\n```"
+    -   method_signature: addPet(Pet)
+        is_getter_or_setter: false
+        code: "```java\npublic void addPet(Pet pet)  {\n    if (pet.isNew())\n   \
+            \ {\n        getPets().add(pet);\n    }\n}\n```"
+    -   method_signature: getAddress()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getTelephone()
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getPet(String)
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: setCity(String)
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getPet(Integer)
+        is_getter_or_setter: false
+        code: "```java\npublic Pet getPet(Integer id)  {\n    for (Pet pet : getPets())\n\
+            \    {\n        if (!pet.isNew())\n        {\n            Integer compId\
+            \ = pet.getId();\n            if (compId.equals(id))\n            {\n\
+            \                return pet;\n            }\n        }\n    }\n    return\
+            \ null;\n}\n```"
+    -   method_signature: setAddress(String)
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: setTelephone(String)
+        is_getter_or_setter: true
+        code: null
+    -   method_signature: getPet(String, boolean)
+        is_getter_or_setter: false
+        code: "```java\npublic Pet getPet(String name, boolean ignoreNew)  {\n   \
+            \ for (Pet pet : getPets())\n    {\n        String compName = pet.getName();\n\
+            \        if (compName != null && compName.equalsIgnoreCase(name))\n  \
+            \      {\n            if (!ignoreNew || !pet.isNew())\n            {\n\
+            \                return pet;\n            }\n        }\n    }\n    return\
+            \ null;\n}\n```"
+    -   method_signature: addVisit(Integer, Visit)
+        is_getter_or_setter: false
+        code: "```java\npublic void addVisit(Integer petId, Visit visit)  {\n    Assert.notNull(petId,\
+            \ \"Pet identifier must not be null!\");\n    Assert.notNull(visit, \"\
+            Visit must not be null!\");\n    Pet pet = getPet(petId);\n    Assert.notNull(pet,\
+            \ \"Invalid Pet identifier!\");\n    pet.addVisit(visit);\n}\n```"
+    comments_in_class:
+    - "\n * Simple JavaBean domain object representing an owner.\n *\n * @author Ken\
+        \ Krebs\n * @author Juergen Hoeller\n * @author Sam Brannen\n * @author Michael\
+        \ Isvy\n * @author Oliver Drotbohm\n * @author Wick Dynex\n "
+    - "\n\t * Return the Pet with the given name, or null if none found for this Owner.\n\
+        \t * @param name to test\n\t * @return the Pet with the given name, or null\
+        \ if no such Pet exists for this Owner\n\t "
+    - "\n\t * Return the Pet with the given id, or null if none found for this Owner.\n\
+        \t * @param id to test\n\t * @return the Pet with the given id, or null if\
+        \ no such Pet exists for this Owner\n\t "
+    - "\n\t * Return the Pet with the given name, or null if none found for this Owner.\n\
+        \t * @param name to test\n\t * @param ignoreNew whether to ignore new pets\
+        \ (pets that are not saved yet)\n\t * @return the Pet with the given name,\
+        \ or null if no such Pet exists for this Owner\n\t "
+    - "\n\t * Adds the given {@link Visit} to the {@link Pet} with the given identifier.\n\
+        \t * @param petId the identifier of the {@link Pet}, must not be {@literal\
+        \ null}.\n\t * @param visit the visit to add, must not be {@literal null}.\n\
+        \t "
+-   simple_class_name: PetType
+    qualified_class_name: org.springframework.samples.petclinic.owner.PetType
+    annotations:
+    - '@Entity'
+    - '@Table(name = "types")'
+    extends:
+    - org.springframework.samples.petclinic.model.NamedEntity
+    modifiers:
+    - public
+    field_declarations: null
+    class_methods: null
+    comments_in_class:
+    - "\n * @author Juergen Hoeller Can be Cat, Dog, Hamster...\n "
+-   simple_class_name: OwnerRepository
+    qualified_class_name: org.springframework.samples.petclinic.owner.OwnerRepository
+    annotations: null
+    extends:
+    - org.springframework.data.jpa.repository.JpaRepository<org.springframework.samples.petclinic.owner.Owner,
+        java.lang.Integer>
+    modifiers:
+    - public
+    field_declarations: null
+    class_methods:
+    -   method_signature: findPetTypes()
+        is_getter_or_setter: false
+        code: '```java
+
+            abstract List<PetType> findPetTypes()
+
+            ```'
+    -   method_signature: findById(Integer)
+        is_getter_or_setter: false
+        code: '```java
+
+            abstract Optional<Owner> findById(@Nonnull Integer id)
+
+            ```'
+    -   method_signature: findByLastNameStartingWith(String, Pageable)
+        is_getter_or_setter: false
+        code: '```java
+
+            abstract Page<Owner> findByLastNameStartingWith(String lastName, Pageable
+            pageable)
+
+            ```'
+    comments_in_class:
+    - "\n * Repository class for <code>Owner</code> domain objects All method names\
+        \ are compliant\n * with Spring Data naming conventions so this interface\
+        \ can easily be extended for Spring\n * Data. See:\n * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods.query-creation\n\
+        \ *\n * @author Ken Krebs\n * @author Juergen Hoeller\n * @author Sam Brannen\n\
+        \ * @author Michael Isvy\n * @author Wick Dynex\n "
+    - "\n\t * Retrieve all {@link PetType}s from the data store.\n\t * @return a Collection\
+        \ of {@link PetType}s.\n\t "
+    - "\n\t * Retrieve {@link Owner}s from the data store by last name, returning\
+        \ all owners\n\t * whose last name <i>starts</i> with the given name.\n\t\
+        \ * @param lastName Value to search for\n\t * @return a Collection of matching\
+        \ {@link Owner}s (or an empty Collection if none\n\t * found)\n\t "
+    - "\n\t * Retrieve an {@link Owner} from the data store by id.\n\t * <p>\n\t *\
+        \ This method returns an {@link Optional} containing the {@link Owner} if\
+        \ found. If\n\t * no {@link Owner} is found with the provided id, it will\
+        \ return an empty\n\t * {@link Optional}.\n\t * </p>\n\t * @param id the id\
+        \ to search for\n\t * @return an {@link Optional} containing the {@link Owner}\
+        \ if found, or an empty\n\t * {@link Optional} if not found.\n\t * @throws\
+        \ IllegalArgumentException if the id is null (assuming null is not a valid\n\
+        \t * input for id)\n\t "
+
+
+[Instructions]
+- Your output must be a single complete Java compilation unit, without a package declaration, enclosed within a Markdown code block using the Java language identifier.
+- The class must be named TestClass.
+- Include all necessary imports, especially for JUnit, mocking libraries (like Mockito), and any other utilities implied by the code context.
+- Your output must include the test method inside the TestClass with:
+    - A valid JUnit test annotation (e.g., @Test).
+    - Descriptive method name based on the test case.
+    - Setup logic (e.g., mock initialization, @BeforeEach methods) as needed.
+    - Valid instantiations or mocking behavior as required from the code context.
+    - Use appropriate assertions to validate expectations.
+- All behaviors described in the natural language description must be tested explicitly using logic derived from the code context.
+- Use mocking (e.g., with Mockito) for any abstract, external, or dependency-based behavior that cannot be executed directly, or unless otherwise directed.
+
+[Constraints]
+- Do not include any extra natural language. Output only the complete Java code block.
+- All logic, including setup and assertions, should be derived from the code context and natural language description. Do not invent behavior unless implied clearly.
+- Do not assume the existence of any application methods or helpers not listed in the code context.
+- Use the code context maximally and faithfully to generate realistic, compilable test code.
+
+[Output]
+Once the output is provided, generate:
+```java
+{test code here}
+```

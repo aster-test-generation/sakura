@@ -1,0 +1,289 @@
+import re
+from collections import deque
+from typing import List, Set, Tuple, Dict
+
+from cldk.analysis.java import JavaAnalysis
+from cldk.models.java import JCallable
+from hamster.code_analysis.model.models import TestingFramework
+from hamster.code_analysis.utils.constants import TEST_ANNOTATIONS, SORTED_FRAMEWORK_PREFIXES
+
+from nltest.utils.constants import SETUP_ANNOTATIONS
+from nltest.utils.exceptions import ClassFileNotFound, CompilationUnitNotFound
+from nltest.utils.pretty.prompt_formatting import pretty_indent
+
+
+class CommonAnalysis:
+    def __init__(self, analysis: JavaAnalysis):
+        self.analysis = analysis
+
+    def __get_project_root(self) -> str:
+        classes = list(self.analysis.get_classes().keys())
+        split_class_names = [s.split('.') for s in classes]
+
+        if not split_class_names:
+            return ""
+
+        # Find the shortest length of the split strings
+        min_length = min(len(s) for s in split_class_names)
+
+        project_root = []
+
+        # Iterate through the indices up to min_length
+        for i in range(min_length):
+            # Get the set of elements at index i
+            elements = set(s[i] for s in split_class_names)
+
+            # If all elements are the same at this position, add to common_parts
+            if len(elements) == 1:
+                project_root.append(elements.pop())
+            else:
+                break
+
+        # Join back with '.' to return the common prefix
+        return '.'.join(project_root)
+
+    def is_test_class(self, qualified_class_name: str, testing_frameworks: List[TestingFramework]):
+        """
+        Determines whether a class is a test class, meaning it contains at least one test method alongside testing
+        frameworks.
+        Args:
+            qualified_class_name: The qualified class name of the class being analyzed.
+            testing_frameworks: The testing frameworks imported in the compilation unit containing the class.
+
+        Returns:
+            bool: True if the class is a test class, containing a test method, or False otherwise.
+
+        """
+        for method_signature in self.analysis.get_methods_in_class(qualified_class_name=qualified_class_name):
+            if self.is_test_method(method_signature, qualified_class_name, testing_frameworks):
+                return True
+        return False
+
+    def is_test_method(self, method_signature: str, qualified_class_name: str,
+                       testing_frameworks: List[TestingFramework]) -> bool:
+        """
+        Determines whether a method, uniquely determined by its signature and qualified class name, is a test method.
+        Args:
+            method_signature: The signature of the method analyzed.
+            qualified_class_name: The qualified class name containing the method.
+            testing_frameworks: The testing frameworks imported in the compilation unit containing the class.
+
+        Returns:
+            bool: True if the method is a test method, False otherwise.
+
+        """
+
+        method_details = self.analysis.get_method(
+            qualified_class_name=qualified_class_name,
+            qualified_method_name=method_signature
+        )
+
+        if not method_details.code.isascii():  # NOTE: Do not consider non-ASCII methods (methods containing non-English characters)
+            return False
+
+        class_details = self.analysis.get_class(qualified_class_name=qualified_class_name)
+
+        is_public = ("public" in method_details.modifiers)
+
+        # JUnits 4 and 5 and some TestNG methods use method annotations
+        has_test_annot = any(annot.split("(")[0] in TEST_ANNOTATIONS for annot in method_details.annotations)
+
+        # JUnit 3 uses naming conventions (i.e., method must begin with "test") for testing
+        is_junit3_test = (
+                TestingFramework.JUNIT3 in testing_frameworks
+                and any(ext.endswith("TestCase") for ext in class_details.extends_list)
+                and method_signature.startswith("test")
+                and is_public
+                and method_details.return_type == "void"
+                and len(method_details.parameters) == 0
+        )
+
+        # TestNG has class-level @Test annotations where every public method is a test case
+        is_testng_test = (
+                TestingFramework.TESTNG in testing_frameworks
+                and any(annot.split("(")[0] == "@Test" for annot in class_details.annotations)
+                and is_public
+        )
+
+        return has_test_annot or is_junit3_test or is_testng_test
+
+    def is_setup_method(self, method_signature, qualified_class_name: str,
+                        testing_frameworks: List[TestingFramework]) -> bool:
+        method_details = self.analysis.get_method(qualified_class_name, method_signature)
+
+        if not method_details.code.isascii():
+            return False
+
+        if TestingFramework.JUNIT3 in testing_frameworks and method_details.signature == "setUp()":
+            return True
+
+        for annotation in method_details.annotations:
+            if annotation in SETUP_ANNOTATIONS:
+                return True
+
+        return False
+
+    def get_testing_frameworks_for_class(self, qualified_class_name: str) -> List[TestingFramework]:
+        """
+        Gets a list of the testing frameworks available for a class by looking at its
+        associated compilation unit and its imports.
+        Args:
+            qualified_class_name: The qualified class name of the class being analyzed.
+
+        Returns:
+            List: A list of TestingFramework objects for the class's compilation unit.
+
+        """
+        testing_frameworks = set()
+        imports = self.get_imports_for_class(qualified_class_name)
+
+        for imp in imports:
+            for prefix, name in SORTED_FRAMEWORK_PREFIXES:
+                if imp.startswith(prefix):
+                    testing_frameworks.add(name)
+                    break
+
+        return sorted(testing_frameworks, key=lambda x: len(x.value), reverse=True)
+
+    def get_imports_for_class(self, qualified_class_name: str) -> List[str]:
+        imports: Set[str] = set()
+        java_file = self.analysis.get_java_file(qualified_class_name=qualified_class_name)
+
+        if not java_file:
+            raise ClassFileNotFound(f"Java file for {qualified_class_name} not found",
+                                    extra_info={"qualified_class_name": qualified_class_name})
+
+        compilation_unit = self.analysis.get_java_compilation_unit(file_path=java_file)
+        if not compilation_unit:
+            raise CompilationUnitNotFound(f"Compilation unit for {qualified_class_name} not found",
+                                          extra_info={"qualified_class_name": qualified_class_name})
+
+        for imp in compilation_unit.imports:
+            imports.add(imp)
+
+        return sorted(imports, key=len, reverse=True)
+
+    def get_referenced_app_classes(self, method_details: JCallable):
+        referenced_classes = set()
+        for referenced_type in method_details.referenced_types:
+            referenced_classes.update(self.extract_non_parameterized_types(referenced_type))
+
+        verified_classes = []
+        for referenced_class in referenced_classes:
+            if self.analysis.get_class(referenced_class) is not None:
+                verified_classes.append(referenced_class)
+
+        return sorted(verified_classes, key=len)
+
+    def get_setup_methods(self, qualified_class_name: str) -> List[JCallable]:
+        potential_methods = self.get_ascii_methods(qualified_class_name)
+        testing_frameworks = self.get_testing_frameworks_for_class(qualified_class_name)
+        setup_methods = []
+
+        for method in potential_methods:
+            if self.is_setup_method(method.signature, qualified_class_name, testing_frameworks):
+                setup_methods.append(method)
+
+        return setup_methods
+
+    def get_ascii_methods(self, qualified_class_name: str) -> List[JCallable]:
+        """Returns all methods in class that is ASCII"""
+        valid_methods: List[JCallable] = []
+        for method_signature in self.analysis.get_methods_in_class(qualified_class_name):
+            method_details = self.analysis.get_method(qualified_class_name, method_signature)
+            if method_details.code.isascii():
+                valid_methods.append(method_details)
+        return sorted(valid_methods, key=lambda x: len(x.signature))
+
+    def get_test_methods_classes_and_application_classes(self) -> Tuple[Dict[str, List[str]], List[str]]:
+        """
+        Get test methods, classes, and application classes.
+        Returns:
+            Tuple[Dict[str, List[str]], List[str]]: Dictionary of test classes and test methods, and list of application classes.
+        """
+        test_classes_methods = {}
+        application_classes = []
+        common_analysis = CommonAnalysis(self.analysis)
+
+        for q_class in self.analysis.get_classes():
+            testing_frameworks = self.get_testing_frameworks_for_class(q_class)
+            if not testing_frameworks:
+                application_classes.append(q_class)
+                continue
+
+            test_methods = []
+            for method_sig in self.analysis.get_methods_in_class(q_class):
+                if common_analysis.is_test_method(method_sig, q_class, testing_frameworks):
+                    test_methods.append(method_sig)
+
+            if test_methods:
+                test_classes_methods[q_class] = test_methods
+            else:
+                application_classes.append(q_class)
+
+        return test_classes_methods, application_classes
+
+    def method_is_visible(self, qualified_class_name: str, method_signature: str) -> bool:
+        """Check if method is visible outside package or module"""
+        method_details = self.analysis.get_method(qualified_class_name, method_signature)
+        class_details = self.analysis.get_class(qualified_class_name)
+        if not method_details:
+            return False
+
+        if "public" in method_details.modifiers:
+            return True
+
+        if class_details.is_interface or class_details.is_annotation_declaration:
+            if "private" not in method_details.modifiers:
+                return True
+
+        if method_details.is_constructor and method_details.is_implicit:
+            if "public" in class_details.modifiers:
+                return True
+
+        return False
+
+    @staticmethod
+    def is_getter_or_setter(method_details: JCallable) -> bool:
+        if (
+                (method_details.signature.startswith("get") or method_details.signature.startswith("set"))
+                and len(method_details.code.split("\n")) <= 3
+        ):
+            return True
+        return False
+
+    @staticmethod
+    def get_complete_method_code(method_declaration: str, method_code: str) -> str:
+        code = method_declaration + " " + method_code
+        return pretty_indent(code)
+
+    @staticmethod
+    def extract_non_parameterized_types(parameterized_type: str) -> List[str]:
+        pattern = re.compile(r"[\w\.]+\.[A-Z]\w*")  # Extracts all types ending with a capital
+        non_parameterized_types = pattern.findall(parameterized_type)
+        return non_parameterized_types
+
+    @staticmethod
+    def process_callee_signature(callee_signature: str) -> str:
+        """
+        Processes callee signature
+        Args:
+            callee_signature:
+
+        Returns:
+
+        """
+        pattern = r"\b(?:[a-zA-Z_][\w\.]*\.)+([a-zA-Z_][\w]*)\b|<[^>]*>"
+
+        # Find the part within the parentheses
+        start = callee_signature.find("(") + 1
+        end = callee_signature.rfind(")")
+
+        # Extract the elements inside the parentheses
+        elements = callee_signature[start:end].split(",")
+
+        # Apply the regex to each element
+        simplified_elements = [re.sub(pattern, r"\1", element.strip()) for element in elements]
+
+        # Reconstruct the string with simplified elements
+        return f"{callee_signature[:start]}{', '.join(simplified_elements)}{callee_signature[end:]}"

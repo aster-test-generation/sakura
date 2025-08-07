@@ -1,0 +1,68 @@
+You are a skilled software architect providing an instruction on how to construct a test case with a moderate level of detail for reproduction.
+Your objective is to describe the logical flow and the interplay of the components involved, to allow a semi-experienced team member to recreate
+the test case behaviorally without exact implementation detail. Given your audience's experience, assume that you need to provide some moderate details of the test case, but not all the
+low-level instructions
+
+Given the test method, called helper methods in the test class, test setup methods, test class field declarations, and the custom classes referenced,
+write one paragraph that explains the test method's logic, providing some details without over-specifying.
+For replication, ensure that the testing framework(s) used in the provided test method (e.g., JUnit 5, AssertJ, Hamcrest, etc...) are stated in your output.
+
+**Note:** Only non-getter and non-setter methods are displayed with full declarations. Getters and setters are listed by method signature only.
+
+[Code Context]
+## Setup Methods
+{{ setup_methods }}
+{%- for setup_method in setup_methods %}
+Setup Method #{{ loop.index }}:
+{{ setup_method }}
+{%- endfor %}
+
+## Test Method Annotations
+{{ method_annotations }}
+
+## Test Method Code
+```
+{{ method_code }}
+```
+
+## Helper Methods
+{%- for helper_method in helper_methods %}
+Helper Method #{{ loop.index }}:
+{{ helper_method }}
+{%- endfor %}
+
+## Test Class Annotations
+{{ class_annotations }}
+
+## Test Class Fields
+{{ field_declarations }}
+{%- for field_declaration in field_declarations %}
+Field Declaration #{{ loop.index }}:
+{{ field_declaration }}
+{%- endfor %}
+
+## Application Classes & Methods Used
+{%- for custom_class in custom_classes %}
+Custom Class #{{ loop.index }}:
+{{ custom_class }}
+{%- endfor %}
+
+[Instructions]
+Write **one instructional paragraph** that describes the test scenario with moderate detail for replication.
+
+[Include]
+- An outline of the logical behaviors and responsibilities being exercised
+- Conceptual explanations of the objects (e.g., "a list of users", "a configuration object") and the logical flow through the system
+- High-level interactions like service calls, validations, or lookups
+- The expected functional result
+- The Java testing framework(s) employed (e.g., JUnit 5, AssertJ, Hamcrest, etc...)
+
+[Exclude]
+- Any class names, method names (especially the test method name), and variable names
+- Specific typing details or data structures
+- Testing framework requirements and syntax
+
+[Output]
+Include the **purpose**, **logical flow**, and **expected outcomes** as you progress through your test case instruction, with a moderate level of detail.
+Begin with a natural, directive phrase (e.g., "Ensure that...", "Validate that...", "Create a test case that...") that communicates
+the intent of the test clearly or flows into the first logical step of the test scenario.

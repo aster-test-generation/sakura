@@ -1,0 +1,35 @@
+You are generating a complete and compilable Java test class based on the following natural language test case description and its associated code context.
+
+[Natural Language Test Case Description]
+{{ test_case_description }}
+
+[Referenced Application Classes]
+{% for custom_class in custom_classes %}
+Custom Class #{{ loop.index }}:
+{{ custom_class }}
+{% endfor %}
+
+[Instructions]
+- Your output must be a single complete Java compilation unit, without a package declaration, enclosed within a Markdown code block using the Java language identifier.
+- The class must be named TestClass.
+- Include all necessary imports, especially for JUnit, mocking libraries (like Mockito), and any other utilities implied by the code context.
+- Your output must include the test method inside the TestClass with:
+    - A valid JUnit test annotation (e.g., @Test).
+    - Descriptive method name based on the test case.
+    - Setup logic (e.g., mock initialization, @BeforeEach methods) as needed.
+    - Valid instantiations or mocking behavior as required from the code context.
+    - Use appropriate assertions to validate expectations.
+- All behaviors described in the natural language description must be tested explicitly using logic derived from the code context.
+- Use mocking (e.g., with Mockito) for any abstract, external, or dependency-based behavior that cannot be executed directly, or unless otherwise directed.
+
+[Constraints]
+- Output only the complete Java code block, with no extra natural language.
+- All logic, including setup and assertions, should be derived from the code context and natural language description. Do not invent behavior unless implied clearly.
+- Do not assume the existence of any application methods or helpers not listed in the code context. Do not create repositories or services not shown.
+- Use the code context maximally and faithfully to generate realistic, compilable test code.
+
+[Output]
+Once the output is provided, generate:
+```java
+{test code here}
+```

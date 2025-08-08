@@ -1,9 +1,8 @@
 import re
 from collections import deque
 from dataclasses import dataclass
-from typing import List, Set, Tuple, Dict, Counter
+from typing import List, Set, Tuple, Dict, Counter, Literal, Any, Optional, Union
 from cldk.analysis.java import JavaAnalysis
-from cldk.models.java import JCallable, JType
 from hamster.code_analysis.utils import constants
 
 from nltest.utils.analysis.common_analysis import CommonAnalysis
@@ -15,6 +14,7 @@ class ReachabilityConfig:
     allow_repetition: bool = False  # On same level
     only_helpers: bool = False
     add_extended_class: bool = False
+
 
 
 class Reachability:
@@ -240,48 +240,31 @@ class Reachability:
         )
         return reachability_key
 
-    def get_reachable_class_methods(self, qualified_class_name: str, *, only_visible=True) -> Dict[str, List[str]]:
+    def get_visible_class_methods(
+            self,
+            qualified_class_name: str,
+            *,
+            visibility_mode: Literal["public", "same_package", "same_package_or_subclass"] = "public",
+            test_package: Optional[str] = None,
+            include_metadata: bool = False,
+    ) -> Dict[str, List[Union[str, Dict[str, Any]]]]:
         """
-        Retrieves methods within the inheritance chain for a given qualified class.
-        Prioritizes class, then abstract class, then interface (in level-order).
+        Retrieves methods reachable from qualified class along its inheritance graph. Precedence looks at the class itself,
+        then superclasses, then interfaces (level-order).
 
         Args:
             qualified_class_name: The qualified name of the class.
-            only_visible: If true, only the visible (public, protected) methods are returned.
+            visibility_mode: The visibility mode. Either "public", "same_package", or "same_package_or_subclass".
+            test_package: The package of the test class (for deciding whether a subclass is required).
+            include_metadata: Include metadata in the output.
 
         Returns:
-            Dict[str, List[str]]: The qualified class name of the current or inherited class and a list of method signatures.
+            Dict[str, List[str]] mapping owner (class or interface) -> list of method signatures
 
         Raises:
-            ClassNotFoundError: If the qualified_class_name is not found.
+            ClassNotFoundError: If the qualified_class_name cannot be found.
         """
-
-        def _accept(class_name: str, method_sig: str) -> bool:
-            method_details = self.analysis.get_method(class_name, method_sig)
-            accept = bool(
-                method_details
-                and method_details.code.isascii()
-                and (not only_visible or CommonAnalysis(self.analysis).method_is_visible(class_name, method_sig))
-            )
-            return accept
-
-        def _add_methods(owner: str) -> None:
-            for sig in self.analysis.get_methods_in_class(owner):
-                if sig in seen_sigs:
-                    continue
-
-                if _accept(owner, sig):
-                    result.setdefault(owner, []).append(sig)
-                    seen_sigs.add(sig)
-
-        result: Dict[str, List[str]] = {}
-        seen_sigs: set[str] = set()
-
-        _add_methods(qualified_class_name)
-
-        # Visit abstract classes
-        superclass_queue: deque[str] = deque()
-        visited_supers: set[str] = set()
+        common = CommonAnalysis(self.analysis)
 
         root_details = self.analysis.get_class(qualified_class_name)
         if not root_details:
@@ -290,23 +273,73 @@ class Reachability:
                 extra_info={"qualified_class_name": qualified_class_name},
             )
 
-        if root_details and root_details.extends_list:
-            superclass_queue.extend(root_details.extends_list)
-            visited_supers.update(root_details.extends_list)
+        def _accept(owner: str, method_sig: str) -> bool:
+            return common.is_accessible_from(
+                owner,
+                method_sig,
+                accessor_class=qualified_class_name,
+                mode=visibility_mode,
+            )
 
-        while superclass_queue:
-            cls = superclass_queue.popleft()
-            _add_methods(cls)
+        def _meta(owner: str, method_sig: str) -> Dict[str, Any]:
+            method_details = self.analysis.get_method(owner, method_sig)
+            owner_pkg = common.package_of(owner)
+            mods = list(method_details.modifiers) if method_details else []
+            visibility = (
+                "private" if "private" in mods else
+                "public" if "public" in mods else
+                "protected" if "protected" in mods else
+                "package-private"
+            )
+            # To call the method, a small subclass must be created that calls the method using the subclass type (this)
+            requires_subclass = (
+                    visibility == "protected"
+                    and owner_pkg != test_package
+            )
+            return {
+                "method_signature": method_sig,
+                "declaring_qualified_class_name": owner,
+                "modifiers": mods,
+                "visibility": visibility,
+                "requires_subclass": requires_subclass,
+            }
 
-            cls_details = self.analysis.get_class(cls)
-            if cls_details and cls_details.extends_list:
-                for sup in cls_details.extends_list:
-                    if sup not in visited_supers:
-                        superclass_queue.append(sup)
-                        visited_supers.add(sup)
+        result: Dict[str, List[Union[str, Dict[str, Any]]]] = {}
+        seen_sigs: set[str] = set()
 
-        # Visit interfaces
-        interface_queue: deque[str] = deque()
+        def _add_methods(owner: str) -> None:
+            for method_sig in self.analysis.get_methods_in_class(owner):
+                if method_sig in seen_sigs:
+                    continue
+                if _accept(owner, method_sig):
+                    seen_sigs.add(method_sig)
+                    if include_metadata:
+                        result.setdefault(owner, []).append(_meta(owner, method_sig))
+                    else:
+                        result.setdefault(owner, []).append(method_sig)
+
+        # Methods on the class itself
+        _add_methods(qualified_class_name)
+
+        # Superclasses in BFS order
+        super_queue: deque[str] = deque(root_details.extends_list or [])
+        visited_supers: set[str] = set(root_details.extends_list or [])
+        super_bfs_order: List[str] = []
+
+        while super_queue:
+            sup_cls = super_queue.popleft()
+            super_bfs_order.append(sup_cls)
+            _add_methods(sup_cls)
+
+            sup_details = self.analysis.get_class(sup_cls)
+            if sup_details and sup_details.extends_list:
+                for next_sup in sup_details.extends_list:
+                    if next_sup not in visited_supers:
+                        visited_supers.add(next_sup)
+                        super_queue.append(next_sup)
+
+        # Interfaces in BFS order
+        iface_queue: deque[str] = deque()
         visited_ifaces: set[str] = set()
 
         def _enqueue_interfaces(owner: str) -> None:
@@ -314,24 +347,79 @@ class Reachability:
             if owner_details and owner_details.implements_list:
                 for iface in owner_details.implements_list:
                     if iface not in visited_ifaces:
-                        interface_queue.append(iface)
                         visited_ifaces.add(iface)
+                        iface_queue.append(iface)
 
-        # First load interfaces on class and then abstract classes
         _enqueue_interfaces(qualified_class_name)
-        for sup in visited_supers:
+        for sup in super_bfs_order:
             _enqueue_interfaces(sup)
 
-        while interface_queue:
-            iface = interface_queue.popleft()
+        while iface_queue:
+            iface = iface_queue.popleft()
             _add_methods(iface)
 
-            # Interfaces may extend other interfaces
             iface_details = self.analysis.get_class(iface)
             if iface_details and iface_details.extends_list:
                 for parent_iface in iface_details.extends_list:
                     if parent_iface not in visited_ifaces:
-                        interface_queue.append(parent_iface)
                         visited_ifaces.add(parent_iface)
+                        iface_queue.append(parent_iface)
 
         return result
+
+    def get_inherited_classes_and_interfaces(self, qualified_class_name: str) -> List[str]:
+        """
+        Returns all inherited types for the given class, first looking at superclasses then interfaces.
+        """
+        root_details = self.analysis.get_class(qualified_class_name)
+        if not root_details:
+            raise ClassNotFoundError(
+                f"Class {qualified_class_name} not found.",
+                extra_info={"qualified_class_name": qualified_class_name},
+            )
+
+        # Superclasses in level order
+        super_queue: deque[str] = deque(root_details.extends_list or [])
+        visited_supers: set[str] = set(root_details.extends_list or [])
+        super_bfs_order: List[str] = []
+
+        while super_queue:
+            sup_cls = super_queue.popleft()
+            super_bfs_order.append(sup_cls)
+
+            sup_details = self.analysis.get_class(sup_cls)
+            if sup_details and sup_details.extends_list:
+                for next_sup in sup_details.extends_list:
+                    if next_sup not in visited_supers:
+                        visited_supers.add(next_sup)
+                        super_queue.append(next_sup)
+
+        # Interfaces in level order (from class and all discovered supers)
+        iface_queue: deque[str] = deque()
+        visited_ifaces: set[str] = set()
+        iface_bfs_order: List[str] = []
+
+        def _enqueue_interfaces(owner: str) -> None:
+            owner_details = self.analysis.get_class(owner)
+            if owner_details and owner_details.implements_list:
+                for iface in owner_details.implements_list:
+                    if iface not in visited_ifaces:
+                        visited_ifaces.add(iface)
+                        iface_queue.append(iface)
+
+        _enqueue_interfaces(qualified_class_name)
+        for sup in super_bfs_order:
+            _enqueue_interfaces(sup)
+
+        while iface_queue:
+            iface = iface_queue.popleft()
+            iface_bfs_order.append(iface)
+
+            iface_details = self.analysis.get_class(iface)
+            if iface_details and iface_details.extends_list:
+                for parent_iface in iface_details.extends_list:
+                    if parent_iface not in visited_ifaces:
+                        visited_ifaces.add(parent_iface)
+                        iface_queue.append(parent_iface)
+
+        return super_bfs_order + iface_bfs_order

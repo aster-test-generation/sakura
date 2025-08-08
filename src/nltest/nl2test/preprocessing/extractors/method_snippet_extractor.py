@@ -86,8 +86,8 @@ class MethodSnippetExtractor:
             return []
 
         # Get all reachable methods from the class
-        reachable_methods: Dict[str, List[str]] = Reachability(self.analysis).get_reachable_class_methods(
-            qualified_class_name, only_visible=True)
+        reachable_methods: Dict[str, List[str]] = Reachability(self.analysis).get_visible_class_methods(
+            qualified_class_name, only_public=True)
 
         for cls, method_sigs in reachable_methods.items():
             for method_sig in method_sigs:

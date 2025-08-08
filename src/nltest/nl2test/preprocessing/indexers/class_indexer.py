@@ -22,7 +22,7 @@ class ClassIndexer(BaseIndexer):
             testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
             if CommonAnalysis(self.analysis).is_test_class(qualified_class_name, testing_frameworks):
                 continue
-            if not Reachability(self.analysis).get_reachable_class_methods(qualified_class_name):
+            if not Reachability(self.analysis).get_visible_class_methods(qualified_class_name):
                 continue
             classes.append(qualified_class_name)
         return classes

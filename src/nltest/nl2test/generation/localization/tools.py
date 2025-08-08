@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Literal
 
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java.models import JMethodDetail, JCallable
@@ -81,15 +81,25 @@ class LocalizationTools:
         )
 
     def _make_reachable_methods_tool(self) -> StructuredTool:
-        def _get_reachable_methods_in_class(qualified_class_name: str) -> Dict[str, List[str]]:
-            return Reachability(self.analysis).get_reachable_class_methods(
-                qualified_class_name, only_visible=True
+        def _get_reachable_methods_in_class(
+                qualified_class_name: str,
+                visibility_mode: str
+        ) -> Dict[str, List[Dict[str, Any]]]:
+            if visibility_mode not in ("public", "same_package", "same_package_or_subclass"):
+                raise InvalidArgumentError(
+                    "Invalid visibility mode", extra_info={"visibility_mode": visibility_mode}
+                )
+
+            return Reachability(self.analysis).get_visible_class_methods(
+                qualified_class_name,
+                visibility_mode=visibility_mode,
+                include_metadata=True
             )
 
         return StructuredTool.from_function(
             func=_get_reachable_methods_in_class,
             name="get_reachable_methods_in_class",
-            description=REACHABLE_DESC,
+            description="",  # TODO: Update description
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
@@ -161,8 +171,30 @@ class LocalizationTools:
         )
 
     def _get_inherited_library_classes_tool(self) -> StructuredTool:
+        reachability = Reachability(self.analysis)
+
         def _get_inherited_library_classes(qualified_class_name: str) -> List[str]:
-            pass
+            inherited = reachability.get_inherited_classes_and_interfaces(qualified_class_name)
+
+            seen: set[str] = set()
+            out: List[str] = []
+            for cls in inherited:
+                if cls in seen:
+                    continue
+                seen.add(cls)
+
+                # "Library" classes considered as those not in application
+                if not self.analysis.get_class(cls):
+                    out.append(cls)
+
+            return out
+
+        return StructuredTool.from_function(
+            func=_get_inherited_library_classes,
+            name="get_inherited_library_classes",
+            description="",
+            handle_tool_error=ToolExceptionHandler.handle_error
+        )
 
     def _make_call_site_details_tool(self) -> StructuredTool:
         def _get_call_site_details(qualified_class_name: str, method_signature: str) -> List[Dict[str, Any]] | str:

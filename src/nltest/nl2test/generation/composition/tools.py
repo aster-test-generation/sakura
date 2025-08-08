@@ -104,7 +104,7 @@ class CompositionTools:
             handle_tool_error=ToolExceptionHandler.handle_error
         )
 
-    # FOr instantiating class properties that might be used
+    # For instantiating class properties that might be used
     def _make_get_class_fields_tool(self) -> StructuredTool:
         def _get_class_fields(qualified_class_name: str) -> List[Dict[str, Union[str, List[str]]]]:
             class_details = self.analysis.get_class(qualified_class_name)
@@ -210,9 +210,6 @@ class CompositionTools:
             description="",
             handle_tool_error=ToolExceptionHandler.handle_error
         )
-
-    # TODO: Callees, imports, class fields, class constructors and factories (instances), enums (see test for enum), "auxilaries" (getters, setters, non-getter/setter - auxiliary public methods)
-    # TODO: Add simple class name to list of qualified class name
 
     def _make_view_test_code_tool(self) -> StructuredTool:
         def _view_test_code() -> str:

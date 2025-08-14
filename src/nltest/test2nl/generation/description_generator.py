@@ -3,7 +3,7 @@ from typing import List
 from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.model.models import TestingFramework
 
-from nltest.test2nl.model.models import AbstractionLevel, GeneratedDescription
+from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo
 from nltest.test2nl.prompt import Test2NLPrompt
 from nltest.utils import Config
 from nltest.utils.analysis import CommonAnalysis
@@ -21,14 +21,14 @@ class DescriptionGenerator:
         self.test2nl_prompt = Test2NLPrompt(self.analysis)
 
     def generate_for_method(self, method_signature: str, qualified_class_name: str,
-                            abstraction: AbstractionLevel = AbstractionLevel.HIGH) -> GeneratedDescription | None:
+                            abstraction: AbstractionLevel = AbstractionLevel.HIGH) -> TestDescriptionInfo | None:
         test_desc, prompt, is_successful = self.test2nl_prompt.generate(method_signature, qualified_class_name,
                                                                         abstraction)
 
         if not is_successful:
             return None
 
-        generated_description = GeneratedDescription(
+        generated_description = TestDescriptionInfo(
             description=test_desc,
             prompt=prompt,
             abstraction_level=abstraction,
@@ -40,8 +40,8 @@ class DescriptionGenerator:
         return generated_description
 
     def generate_for_class(self, qualified_class_name: str, testing_frameworks: List[TestingFramework],
-                           abstraction: AbstractionLevel = AbstractionLevel.HIGH) -> List[GeneratedDescription]:
-        generated_descriptions: List[GeneratedDescription] = []
+                           abstraction: AbstractionLevel = AbstractionLevel.HIGH) -> List[TestDescriptionInfo]:
+        generated_descriptions: List[TestDescriptionInfo] = []
 
         for method_signature in self.analysis.get_methods_in_class(qualified_class_name):
             if CommonAnalysis(self.analysis).is_test_method(method_signature, qualified_class_name, testing_frameworks):
@@ -52,8 +52,8 @@ class DescriptionGenerator:
 
         return generated_descriptions
 
-    def generate_for_project(self, abstraction: AbstractionLevel = AbstractionLevel.HIGH) -> List[GeneratedDescription]:
-        generated_descriptions: List[GeneratedDescription] = []
+    def generate_for_project(self, abstraction: AbstractionLevel = AbstractionLevel.HIGH) -> List[TestDescriptionInfo]:
+        generated_descriptions: List[TestDescriptionInfo] = []
 
         for qualified_class_name in self.analysis.get_classes():
             testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
@@ -64,5 +64,5 @@ class DescriptionGenerator:
 
         return generated_descriptions
 
-    def generate(self, abstraction_level: AbstractionLevel = AbstractionLevel.HIGH) -> List[GeneratedDescription]:
+    def generate(self, abstraction_level: AbstractionLevel = AbstractionLevel.HIGH) -> List[TestDescriptionInfo]:
         return self.generate_for_project(abstraction_level)

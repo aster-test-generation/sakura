@@ -7,6 +7,7 @@ from cldk.models.java.models import JMethodDetail, JCallable
 from langchain_core.tools import StructuredTool, BaseTool
 from requests import HTTPError, JSONDecodeError
 
+from nltest.nl2test.model.models import NL2TestInput
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
 from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher
@@ -26,14 +27,17 @@ class CompositionTools:
             analysis: JavaAnalysis,
             method_searcher: MethodSearcher,
             class_searcher: ClassSearcher,
-            llm: LLMClient
+            llm: LLMClient,
+            base_project_dir: Union[str, Path],
+            nl2_input: NL2TestInput,
     ):
         self.analysis = analysis
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
         self.llm = llm
 
-        self.project_root: Path = Path()  # TODO: Populate this with an actual project root... Use project dir + project_name from Test2NL
+        self.project_root: Path = Path(base_project_dir) / nl2_input.project_name
+        self.nl2_input: NL2TestInput = nl2_input
 
         self.tools = [
             self._make_extract_code_tool(),
@@ -164,8 +168,7 @@ class CompositionTools:
                 if method_details.is_constructor:
                     class_constructors.append(method_sig)
                 elif (
-                        not method_details.is_constructor
-                        and "static" in method_details.modifiers
+                        "static" in method_details.modifiers
                         and qualified_class_name == method_details.return_type
                 ):
                     class_factories.append(method_sig)
@@ -213,7 +216,8 @@ class CompositionTools:
 
     def _make_view_test_code_tool(self) -> StructuredTool:
         def _view_test_code() -> str:
-            raw_code = TestFileManager(self.project_root).load()  # TODO: Adjust TestFileManager based on Test2NL format
+            info = TestFileInfo.from_nl2test_input(self.nl2_input)
+            raw_code = TestFileManager(self.project_root).load(info)
             return raw_code
 
         return StructuredTool.from_function(
@@ -231,8 +235,13 @@ class CompositionTools:
             try:
                 java_raw = self.llm.generate(generation_prompt, sanitize=True)
                 java_code = FormatValidator.strip_java_block(java_raw)
-                test_file_info = TestFileInfo()  # Todo: Adjust TestFileSchema for saving based on Test2NL
-                TestFileManager(self.project_root).save_single(test_file_info)
+
+                test_file_info = TestFileInfo.from_nl2test_input(
+                    self.nl2_input,
+                    test_code=java_code,
+                )
+
+                saved_path = TestFileManager(self.project_root).save_single(test_file_info)
                 return "Successfully generated test code."
             except HTTPError as e:
                 return "Failed to generation test code due to HTTP error."
@@ -246,9 +255,18 @@ class CompositionTools:
         )
 
     def _make_compile_test_tool(self) -> StructuredTool:
-        def _compile_test_code() -> None:
+        def _compile_test_code() -> Dict[str, Any]:
             erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
-            # TODO: Use class key encoding from TestFileManager once Test2NL format is decided to get feedback
+
+            class_key = TestFileManager(self.project_root).encode_class_name(self.nl2_input.id)
+            file_key = f"{class_key}.java"
+            has_error = any(ec.endswith(file_key) or ec == file_key for ec in erroneous_classes)
+
+            return {
+                "erroneous_classes": erroneous_classes,
+                "target_class_file": file_key,
+                "has_errors_for_target": has_error,
+            }
 
         return StructuredTool.from_function(
             func=_compile_test_code,
@@ -257,8 +275,10 @@ class CompositionTools:
         )
 
     def _make_execution_test_tool(self) -> StructuredTool:
-        def _execute_test() -> None:
-            execution_feedback = JavaExecution.execute()
+        def _execute_test() -> Dict[str, Any]:
+            info = TestFileInfo.from_nl2test_input(self.nl2_input)
+            test_fqn = TestFileManager(self.project_root).make_test_fqn(info)
+            execution_feedback = JavaExecution.execute(str(self.project_root), test_fqn)
             return execution_feedback
 
         return StructuredTool.from_function(

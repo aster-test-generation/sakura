@@ -2,7 +2,7 @@ from typing import List
 
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.test2nl.model.models import GeneratedDescription, RoundTripTest
+from nltest.test2nl.model.models import TestDescriptionInfo, RoundTripTest
 from nltest.test2nl.prompt import RoundTripPrompt
 from nltest.utils import Config
 
@@ -17,13 +17,13 @@ class RoundTripGenerator:
 
         self.roundtrip_prompt = RoundTripPrompt(analysis)
 
-    def generate(self, gen_descriptions: List[GeneratedDescription]) -> List[RoundTripTest]:
+    def generate(self, test_descriptions: List[TestDescriptionInfo]) -> List[RoundTripTest]:
         roundtrip_tests: List[RoundTripTest] = []
-        for gen_desc in gen_descriptions:
+        for test_description_info in test_descriptions:
             gen_test, prompt, is_successful = self.roundtrip_prompt.generate(
-                gen_desc.method_signature,
-                gen_desc.qualified_class_name,
-                gen_desc.description
+                test_description_info.method_signature,
+                test_description_info.qualified_class_name,
+                test_description_info.description
             )
 
             if is_successful:
@@ -32,9 +32,9 @@ class RoundTripGenerator:
                         prompt=prompt,
                         temperature=self.temp,
                         generated_test=gen_test,
-                        method_signature=gen_desc.method_signature,
-                        qualified_class_name=gen_desc.qualified_class_name,
-                        generated_description=gen_desc,
+                        method_signature=test_description_info.method_signature,
+                        qualified_class_name=test_description_info.qualified_class_name,
+                        generated_description=test_description_info,
                     )
                 )
 

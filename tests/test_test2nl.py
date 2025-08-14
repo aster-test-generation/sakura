@@ -5,7 +5,7 @@ from pathlib import Path
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-from nltest.test2nl.model.models import AbstractionLevel, GeneratedDescription, Test2NLEntry
+from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo, Test2NLEntry
 from nltest.test2nl import Pipeline
 from nltest.test2nl.prompt import RoundTripPrompt, Test2NLPrompt
 from nltest.test2nl.generation import DescriptionGenerator
@@ -87,49 +87,41 @@ class TestTest2NL(TestCase):
         method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
         abstraction_level = AbstractionLevel.HIGH
-        generated_desc: GeneratedDescription = self.desc_generator.generate_for_method(
+        test_description_info: TestDescriptionInfo = self.desc_generator.generate_for_method(
             method_signature,
             qualified_class_name,
             abstraction_level
         )
-        self.assertIsNotNone(generated_desc, "LLM generation failed...")
+        self.assertIsNotNone(test_description_info, "LLM generation failed...")
 
-        generated_descriptions = [generated_desc]
-        save_success = self.data_manager.save("descriptions.json", generated_descriptions)
+        test_descriptions = [test_description_info]
+        save_success = self.data_manager.save("descriptions.json", test_descriptions)
         self.assertTrue(save_success, "Description could not be saved...")
 
     def test_desc_all_abs_one_method(self):
         qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
         method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
-        generated_descriptions = []
+        test_descriptions = []
         for abs_level in AbstractionLevel:
-            generated_description = self.desc_generator.generate_for_method(
+            test_description_info = self.desc_generator.generate_for_method(
                 method_signature,
                 qualified_class_name,
                 abs_level
             )
-            if generated_description:
-                generated_descriptions.append(generated_description)
-        self.assertTrue(generated_descriptions, "Descriptions could not be generated...")
+            if test_description_info:
+                test_descriptions.append(test_description_info)
+        self.assertTrue(test_descriptions, "Descriptions could not be generated...")
 
         test2nl_entries: List[Test2NLEntry] = []
         entry_id = 1
-        for gen_desc in generated_descriptions:
-            gen_desc.entry_id = entry_id
-            entry = Test2NLEntry(
-                id=entry_id,
-                description=gen_desc.description,
-                project_name=self.project_name,
-                qualified_class_name=gen_desc.qualified_class_name,
-                method_signature=gen_desc.method_signature,
-                abstraction_level=gen_desc.abstraction_level,
-                is_bdd=False
-            )
+        for test_description_info in test_descriptions:
+            test_description_info.entry_id = entry_id
+            entry = Test2NLEntry.from_test_description_info(test_description_info, self.project_name)
             test2nl_entries.append(entry)
             entry_id += 1
 
-        save_success = self.data_manager.save("descriptions_trials.json", generated_descriptions, format="json")
+        save_success = self.data_manager.save("descriptions_trials.json", test_descriptions, format="json")
         self.assertTrue(save_success, "Descriptions could not be saved...")
         save_success = self.data_manager.save("test2nl.csv", test2nl_entries, format="csv")
         self.assertTrue(save_success, "Test2NL could not be saved...")
@@ -162,11 +154,11 @@ class TestTest2NL(TestCase):
         qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
         method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
-        gen_descriptions = self.data_manager.load("descriptions.json", GeneratedDescription)
-        select_desc = gen_descriptions[0]
+        test_descriptions = self.data_manager.load("descriptions.json", TestDescriptionInfo)
+        selected_description = test_descriptions[0]
 
         test_case, prompt, is_successful = self.roundtrip_prompt.generate(method_signature, qualified_class_name,
-                                                                          select_desc.description)
+                                                                          selected_description.description)
         self.assertTrue(prompt, "Prompt was unsuccessfully rendered...")
 
         pretty_print("prompts", prompt)

@@ -5,7 +5,7 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.test2nl.model.models import AbstractionLevel, MethodContext, ReferencedClass, FieldDeclaration
 from nltest.test2nl.extractors import FieldDeclarationExtractor, MethodExtractor, ReferencedClassExtractor
-from nltest.test2nl.prompt.load_prompt import LoadPrompt, PromptFormat
+from nltest.test2nl.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis, Reachability
 from nltest.utils.llm import LLMClient, ClientType
 
@@ -34,7 +34,7 @@ class Test2NLPrompt:
         helper_methods: List[MethodContext] = []
         for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
                                                                                                   method_signature,
-                                                                                                  depth=1):
+                                                                                                  depth=1).items():
             for helper_sig in helper_method_sigs:
                 helper_details = self.analysis.get_method(qualified_class, helper_sig)
                 if not helper_details:
@@ -68,15 +68,15 @@ class Test2NLPrompt:
         class_annotation_str: str = ", ".join(class_details.annotations) if class_details.annotations else "None"
         method_annotation_str: str = ", ".join(method_details.annotations) if method_details.annotations else "None"
 
-        prompt_template = LoadPrompt.load_prompt(f"{abs_level}_abs_prompt.jinja2", PromptFormat.JINJA2)
-        rendered_prompt = prompt_template.format(
-            method_code = method_code_str,
-            setup_methods = setup_methods_str,
-            method_annotations = method_annotation_str,
-            class_annotations = class_annotation_str,
-            field_declarations = field_declarations_str,
-            helper_methods = helper_methods_str,
-            custom_classes = referenced_classes_str,
+        chat_template = LoadPrompt.load_prompt(f"{abs_level}_abs.jinja2", PromptFormat.JINJA2, "chat")
+        rendered_prompt = chat_template.format(
+            method_code=method_code_str,
+            setup_methods=setup_methods_str,
+            method_annotations=method_annotation_str,
+            class_annotations=class_annotation_str,
+            field_declarations=field_declarations_str,
+            helper_methods=helper_methods_str,
+            custom_classes=referenced_classes_str,
         )
         return rendered_prompt
 
@@ -95,10 +95,14 @@ class Test2NLPrompt:
 
         """
 
-        rendered_prompt = self.format(method_signature, qualified_class_name, abstraction_level)
+        system_prompt = LoadPrompt.load_prompt(f"{abstraction_level.value}_abs.jinja2",
+                                               PromptFormat.JINJA2, "system").format()
+        chat_prompt = self.format(method_signature, qualified_class_name, abstraction_level)
 
         # Call the LLM
-        test_desc = self.llm.generate(rendered_prompt, sanitize=True)
+        ai_msg = self.llm.invoke_prompts(system_prompt, chat_prompt)
+        test_desc = ai_msg.content.strip() if ai_msg and ai_msg.content else None
+
         if test_desc:
-            return test_desc, rendered_prompt, True
-        return None, rendered_prompt, False
+            return test_desc, chat_prompt, True
+        return None, chat_prompt, False

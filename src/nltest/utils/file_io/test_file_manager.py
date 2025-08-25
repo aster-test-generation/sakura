@@ -5,9 +5,12 @@ from pathlib import Path
 from typing import List, Tuple, Annotated, Optional, Union
 
 from pydantic import BaseModel
+from typing import TYPE_CHECKING
 
-from nltest.nl2test.model.models import NL2TestInput
-from nltest.test2nl.model.models import RoundTripTest, AbstractionLevel
+if TYPE_CHECKING:
+    from nltest.nl2test.model.models import NL2TestInput
+    from nltest.test2nl.model.models import RoundTripTest, AbstractionLevel
+
 
 
 class TestFileInfo(BaseModel):

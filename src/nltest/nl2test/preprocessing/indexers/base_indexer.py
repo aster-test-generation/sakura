@@ -3,7 +3,8 @@ from abc import ABC, abstractmethod
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
-from nltest.utils import Config
+from nltest.utils.config import Config
+from nltest.utils.llm.model import Provider
 
 
 class BaseIndexer(ABC):
@@ -13,16 +14,21 @@ class BaseIndexer(ABC):
         self.embedder = self._initialize_embedder()
 
     def _initialize_embedder(self):
-        provider = self.config.get("emb_provider", "name")
-        emb_model = self.config.get(provider, "emb_model")
+        raw_provider = self.config.get("emb", "provider")
+        emb_model = self.config.get("emb", "model")
 
-        if provider == "VELA":
+        try:
+            provider = Provider(raw_provider)
+        except ValueError:
+            raise ValueError(f"Invalid embedding provider: {raw_provider}")
+
+        if provider == Provider.VLLM:
             api_url = self.config.get(provider, "emb_api_url")
             if not api_url:
                 raise ValueError("api_url missing in config for Vela provider")
             return HttpEmbedder(model_id=emb_model, api_url=api_url)
 
-        elif provider == "OLLAMA":
+        elif provider == Provider.OLLAMA:
             return OllamaEmbedder(model_id=emb_model)
 
         else:

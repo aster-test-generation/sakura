@@ -6,6 +6,7 @@ from cldk.analysis.java import JavaAnalysis
 from cldk.models.java import JCallable
 from hamster.code_analysis.model.models import TestingFramework
 from hamster.code_analysis.utils.constants import TEST_ANNOTATIONS, SORTED_FRAMEWORK_PREFIXES
+from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
 
 from nltest.utils.constants import SETUP_ANNOTATIONS
 from nltest.utils.exceptions import ClassFileNotFound, CompilationUnitNotFound, MethodNotFoundError, ClassNotFoundError
@@ -347,6 +348,60 @@ class CommonAnalysis:
 
     def is_public(self, qualified_class_name: str, method_signature: str) -> bool:
         return self.is_accessible_from(qualified_class_name, method_signature, mode="public")
+
+    def get_method_visibility(self, qualified_class_name: str, method_signature: str) -> Literal["public", "same_package", "same_package_or_subclass"]:
+        """
+        Determines the visibility level of a method.
+        
+        Returns:
+            "public" if the method is accessible from anywhere
+            "same_package_or_subclass" if the method is accessible from same package or subclasses
+            "same_package" if the method is only accessible from the same package
+        """
+        if self.is_accessible_from(qualified_class_name, method_signature, mode="public"):
+            return "public"
+        elif self.is_accessible_from(qualified_class_name, method_signature, mode="same_package_or_subclass"):
+            return "same_package_or_subclass"
+        else:
+            return "same_package"
+
+    def get_complicated_focal_tests(self) -> Dict[str, List[str]]:
+        test_class_map, application_classes = self.get_test_methods_classes_and_application_classes()
+        complicated_tests = {}
+        
+        for test_class in test_class_map:
+            testing_frameworks = self.get_testing_frameworks_for_class(test_class)
+            setup_methods = self.get_setup_methods(test_class)
+            setup_method_signatures = [method.signature for method in setup_methods]
+            
+            complicated_methods = []
+            
+            for method_signature in test_class_map[test_class]:
+                try:
+                    focal_class_method = FocalClassMethod(self.analysis, testing_frameworks, application_classes)
+                    focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
+                        test_class, method_signature, setup_method_signatures
+                    )
+                    
+                    is_complicated = (
+                        len(focal_classes) > 1 or 
+                        (len(focal_classes) == 1 and len(focal_classes[0].focal_method_names) > 1)
+                    )
+                    
+                    if is_complicated:
+                        complicated_methods.append(method_signature)
+                        
+                except Exception as e:
+                    continue
+            
+            if complicated_methods:
+                complicated_tests[test_class] = complicated_methods
+        
+        return complicated_tests
+
+    def get_complicated_focal_tests_count(self) -> int:
+        complicated_tests = self.get_complicated_focal_tests()
+        return sum(len(methods) for methods in complicated_tests.values())
 
     @staticmethod
     def is_getter_or_setter(method_details: JCallable) -> bool:

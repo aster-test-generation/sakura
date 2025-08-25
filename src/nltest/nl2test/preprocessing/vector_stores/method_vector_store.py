@@ -10,7 +10,8 @@ def _method_to_doc(snippet: MethodSnippet) -> Document:
     return Document(
         page_content=snippet.code,
         metadata={
-            "qualified_class_name": snippet.qualified_class_name,
+            "implementing_class_name": snippet.implementing_class_name,
+            "containing_class_name": snippet.containing_class_name,
             "method_signature": snippet.method_signature,
         },
     )

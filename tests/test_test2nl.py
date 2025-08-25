@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 from typing import List
 from unittest import TestCase
 from pathlib import Path
@@ -7,60 +10,44 @@ from cldk.analysis import AnalysisLevel
 
 from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo, Test2NLEntry
 from nltest.test2nl import Pipeline
-from nltest.test2nl.prompt import RoundTripPrompt, Test2NLPrompt
+from nltest.test2nl.prompts import RoundTripPrompt, Test2NLPrompt
 from nltest.test2nl.generation import DescriptionGenerator
-from nltest.utils import Config
-from nltest.utils.llm_configs import LLM_CONFIG, EMB_CONFIG
+from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.config import init_config, Config
+from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 
 
 class TestTest2NL(TestCase):
     def setUp(self) -> None:
+        load_dotenv()
 
         # === User-Defined ===
         self.project_name = "spring-petclinic"
 
-        # llm_model = "LLAMA-3.1-8B"
-        # llm_model = "DEVSTRAL-24B"
-        llm_model = "DEEPSEEK-R1"
+        llm_model = "qwen/qwen3-235b-a22b-thinking-2507"
 
-        # emb_model = "NOMIC-AI-EMB-7B"
-        emb_model = "QWEN-3-EMB-8B"  # Embedding model
-
-        self.emb_model = "dengcao/Qwen3-Embedding-4B:Q5_K_M"
-
-        summarization_temp = 0.4
-        code_gen_temp = 0.5
-        decision_temp = 0.3
-        structured_temp = 0.3
+        emb_model = "NOMIC-AI-EMB-7B"
 
         project_root = Path(f"./resources/{self.project_name}")
         if not (project_root.exists() and project_root.is_dir()):
             raise Exception(f"Project root directory {project_root} does not exist.")
-
-        # Config default assignments - TODO: Regularize this
-        config = Config(None, reuse=False)
-        config.set("llm_provider", "name", "VELA")
-        config.set("emb_provider", "name", "VELA")
-
         output_dir = Path(f"./output/{self.project_name}")
 
-        # Assign VELA LLM model configs
-        llm_provider = config.get("llm_provider", "name")
-        config.set(llm_provider, "llm_model", val=LLM_CONFIG[llm_model]["identifier"])
-        config.set(llm_provider, "llm_api_url", val=LLM_CONFIG[llm_model]["api_url"])
-        config.set(llm_provider, "summarization_temp", summarization_temp)
-        config.set(llm_provider, "code_gen_temp", code_gen_temp)
-        config.set(llm_provider, "decision_temp", decision_temp)
-        config.set(llm_provider, "structured_temp", structured_temp)
-        config.set(llm_provider, "output_tokens",
-                   val=LLM_CONFIG[llm_model]["output_tokens"] if "output_tokens" in LLM_CONFIG[llm_model] else 2048)
+        self.assertTrue(os.getenv("OPENROUTER_API_KEY"), "OPENROUTER_API_KEY environment variable is not set.")
 
-        # Assign VELA VectorStore model configs
-        emb_provider = config.get("emb_provider", "name")
-        config.set(emb_provider, "emb_model", val=EMB_CONFIG[emb_model]["identifier"])
-        config.set(emb_provider, "emb_api_url", val=EMB_CONFIG[emb_model]["api_url"])
+        self.config = init_config(
+            project_name=self.project_name,
+            base_project_dir=str(project_root),
+            output_dir=str(output_dir),
+            llm_provider=Provider.OPENROUTER,
+            llm_model=llm_model,
+            emb_provider=Provider.VLLM,
+            emb_model=emb_model,
+            llm_api_key=os.getenv("OPENROUTER_API_KEY"),  # Assign from env
+            emb_api_key=None,
+        )
 
         # Generate analysis of the current project
         self.analysis = CLDK(language="java").analysis(
@@ -68,7 +55,7 @@ class TestTest2NL(TestCase):
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
             analysis_json_path=output_dir,
-            eager=False,
+            eager=True,
         )
 
         # Create orchestration
@@ -96,7 +83,6 @@ class TestTest2NL(TestCase):
 
         test_descriptions = [test_description_info]
         save_success = self.data_manager.save("descriptions.json", test_descriptions)
-        self.assertTrue(save_success, "Description could not be saved...")
 
     def test_desc_all_abs_one_method(self):
         qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
@@ -116,12 +102,12 @@ class TestTest2NL(TestCase):
         test2nl_entries: List[Test2NLEntry] = []
         entry_id = 1
         for test_description_info in test_descriptions:
-            test_description_info.entry_id = entry_id
+            test_description_info.id = entry_id
             entry = Test2NLEntry.from_test_description_info(test_description_info, self.project_name)
             test2nl_entries.append(entry)
             entry_id += 1
 
-        save_success = self.data_manager.save("descriptions_trials.json", test_descriptions, format="json")
+        save_success = self.data_manager.save("descriptions.json", test_descriptions, format="json")
         self.assertTrue(save_success, "Descriptions could not be saved...")
         save_success = self.data_manager.save("test2nl.csv", test2nl_entries, format="csv")
         self.assertTrue(save_success, "Test2NL could not be saved...")
@@ -150,6 +136,10 @@ class TestTest2NL(TestCase):
 
         self.assertTrue(is_successful, "LLM generated was unsuccessful with prompts...")
 
+    def test_all_low_abs(self):
+        self.pipeline.reset_dataset()
+        self.pipeline.run_descriptions(AbstractionLevel.LOW)
+
     def test_roundtrip_prompt(self):
         qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
         method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
@@ -164,4 +154,64 @@ class TestTest2NL(TestCase):
         pretty_print("prompts", prompt)
 
         self.assertTrue(is_successful, "LLM generated was unsuccessful with prompts...")
+
+    def test_multiple_focal(self):
+        complicated_tests = CommonAnalysis(self.analysis).get_complicated_focal_tests()
+        total_count = CommonAnalysis(self.analysis).get_complicated_focal_tests_count()
+        
+        pretty_print("Complicated focal tests by class", complicated_tests)
+        pretty_print("Total number of complicated focal test methods", total_count)
+        
+        self.assertIsInstance(complicated_tests, dict, "Should return a dictionary")
+        self.assertGreaterEqual(total_count, 0, "Count should be non-negative")
+        
+        for test_class, methods in complicated_tests.items():
+            pretty_print(f"Class {test_class} has {len(methods)} complicated tests", methods)
+
+    def test_description_multiple_focal(self):
+        complicated_tests = CommonAnalysis(self.analysis).get_complicated_focal_tests()
+        total_count = CommonAnalysis(self.analysis).get_complicated_focal_tests_count()
+        
+        pretty_print("Complicated focal tests by class", complicated_tests)
+        pretty_print("Total number of complicated focal test methods", total_count)
+        
+        self.assertIsInstance(complicated_tests, dict, "Should return a dictionary")
+        self.assertGreaterEqual(total_count, 0, "Count should be non-negative")
+        
+        test_descriptions = []
+        entry_id = 1
+        
+        for test_class, methods in complicated_tests.items():
+            pretty_print(f"Processing class {test_class} with {len(methods)} methods", methods)
+            
+            for method_signature in methods:
+                for abs_level in AbstractionLevel:
+                    test_description_info = self.desc_generator.generate_for_method(
+                        method_signature,
+                        test_class,
+                        abs_level
+                    )
+                    if test_description_info:
+                        test_description_info.id = entry_id
+                        test_descriptions.append(test_description_info)
+                        entry_id += 1
+
+            if entry_id > 15:
+                break
+        
+        self.assertTrue(test_descriptions, "No descriptions could be generated...")
+        pretty_print(f"Generated {len(test_descriptions)} test descriptions", len(test_descriptions))
+        
+        test2nl_entries: List[Test2NLEntry] = []
+        for test_description_info in test_descriptions:
+            entry = Test2NLEntry.from_test_description_info(test_description_info, self.project_name)
+            test2nl_entries.append(entry)
+        
+        self.data_manager.save("descriptions.json", test_descriptions, format="json", mode="append")
+
+        self.data_manager.save("test2nl.csv", test2nl_entries, format="csv", mode="append")
+
+        pretty_print(f"Successfully saved {len(test_descriptions)} descriptions and {len(test2nl_entries)} Test2NL entries")
+        
+
 

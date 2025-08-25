@@ -3,8 +3,8 @@ from typing import List
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.test2nl.model.models import TestDescriptionInfo, RoundTripTest
-from nltest.test2nl.prompt import RoundTripPrompt
-from nltest.utils import Config
+from nltest.test2nl.prompts import RoundTripPrompt
+from nltest.utils.config import Config
 
 
 class RoundTripGenerator:
@@ -12,8 +12,7 @@ class RoundTripGenerator:
 
         # Get temperature from config
         config = Config()
-        llm_provider = config.get("llm_provider", "name")
-        self.temp = config.get(llm_provider, "code_gen_temp")
+        self.temp = config.get("llm", "code_gen_temp")
 
         self.roundtrip_prompt = RoundTripPrompt(analysis)
 

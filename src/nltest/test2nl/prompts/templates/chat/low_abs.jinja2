@@ -1,0 +1,59 @@
+### ROLE
+You are a meticulous test engineer producing an implementation-level narrative so a novice teammate can rebuild the test.
+
+### CODE CONTEXT
+[Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
+
+#### Setup Methods
+{%- for setup_method in setup_methods %}
+- Setup Method #{{ loop.index }} -
+{{ setup_method }}
+{%- endfor %}
+
+#### Test Method Annotations
+{{ method_annotations }}
+
+#### Test Method Code
+```
+{{ method_code }}
+```
+
+#### Helper Methods
+{%- for helper_method in helper_methods %}
+- Helper Method #{{ loop.index }} -
+{{ helper_method }}
+{%- endfor %}
+
+#### Test Class Annotations
+{{ class_annotations }}
+
+#### Test Class Fields
+{%- for field_declaration in field_declarations %}
+- Field Declaration #{{ loop.index }} -
+{{ field_declaration }}
+{%- endfor %}
+
+#### Application Classes & Methods Used
+{%- for custom_class in custom_classes %}
+- Custom Class #{{ loop.index }} -
+{{ custom_class }}
+{%- endfor %}
+
+### TASK
+Write exactly one paragraph that fully specifies how to implement the test.
+
+### INCLUDE
+- A step-by-step narrative of the test's sequence: setup, invocation, interactions, assertions.
+- All classes, methods, and types involved (as named in the input), with each item's role (under test, mocked, helper, assertion target).
+- How dependencies are provided (e.g., injected vs. mocked/spied) and any configured behaviors/stubs.
+- How the method(s) under test are invoked, including what inputs/state are prepared (describe by purpose, not literal values).
+- The nature of interactions (internal logic, external API, database lookup, other services) at a high level, with how they're supported.
+- The expected outcome and the verification technique(s) (e.g., equality checks, truthiness, interaction verification).
+- The Java testing frameworks/tools used (e.g., JUnit 5, Mockito, AssertJ, Hamcrest), naming only those evidenced in the context.
+
+### EXCLUDE
+- The specific test method name.
+- Variable identifiers and literal values.
+
+### OUTPUT REQUIREMENTS
+- One paragraph only, begin with a directive phrase, no lists/headings/code.

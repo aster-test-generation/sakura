@@ -1,11 +1,13 @@
-from typing import List, Any, Dict, Tuple
+from __future__ import annotations
+
+from typing import Any, Dict, List, Tuple
 
 from langchain_core.messages import ToolMessage, ToolCall
-from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.model.models import AgentState
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm.llm_client import LLMClient
 
 
@@ -15,27 +17,13 @@ class CompositionReActAgent(ReActAgent):
             *,
             llm: LLMClient,
             tools: List[BaseTool],
-            prompt_template: PromptTemplate,
-            nl_description: str,
-            **kwargs,
+            max_iters: int = 8,
     ):
-        super().__init__(
-            llm=llm,
-            tools=tools,
-            prompt_template=prompt_template,
-            nl_description=nl_description,
-            kwargs=kwargs
-        )
+        system_message = self._build_system_message()
+        super().__init__(llm=llm, tools=tools, system_message=system_message, max_iters=max_iters)
 
-    def _format_prompt(self, state: AgentState, instructions: str, history: str) -> str:
-        prompt = self.prompt_template.format(
-            instructions=instructions,
-            nl_description=self.nl_description,
-            atomic_blocks=state.atomic_blocks,
-            tool_descriptions=self.tool_descriptions,
-            history=history,
-        )
-        return prompt
+    def _build_system_message(self) -> str:
+        return LoadPrompt.load_prompt("composition_agent.jinja2", PromptFormat.JINJA2, prompt_type="system").format()
 
     def _prepare_tool_args(self, tool_name: str, raw_args: Dict, state: AgentState) -> Tuple[str, Dict]:
         """Implementation for preparing tool call arguments."""

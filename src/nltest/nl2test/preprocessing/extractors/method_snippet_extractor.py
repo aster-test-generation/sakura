@@ -69,9 +69,10 @@ class MethodSnippetExtractor:
             containing_class = qualified_class_name
         code = self._format_code(qualified_class_name, method_signature, containing_class)
         return MethodSnippet(
-            qualified_class_name=containing_class,
+            implementing_class_name=qualified_class_name, # NOTE: This is the class that contains the method, not the class that the method is in
             method_signature=method_signature,
-            code=code,
+            code=code, # NOTE: This contains the class of the containing class for retrieval
+            containing_class_name=containing_class,
         )
 
     def get_class_snippets(self, qualified_class_name: str) -> List[MethodSnippet]:
@@ -87,7 +88,7 @@ class MethodSnippetExtractor:
 
         # Get all reachable methods from the class
         reachable_methods: Dict[str, List[str]] = Reachability(self.analysis).get_visible_class_methods(
-            qualified_class_name, only_public=True)
+            qualified_class_name, visibility_mode="same_package_or_subclass")
 
         for cls, method_sigs in reachable_methods.items():
             for method_sig in method_sigs:

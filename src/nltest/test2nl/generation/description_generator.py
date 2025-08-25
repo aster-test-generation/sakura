@@ -4,8 +4,8 @@ from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.model.models import TestingFramework
 
 from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo
-from nltest.test2nl.prompt import Test2NLPrompt
-from nltest.utils import Config
+from nltest.test2nl.prompts import Test2NLPrompt
+from nltest.utils.config import Config
 from nltest.utils.analysis import CommonAnalysis
 
 
@@ -13,8 +13,7 @@ class DescriptionGenerator:
     def __init__(self, analysis: JavaAnalysis) -> None:
         # Get model temperature from config
         config = Config()
-        llm_provider = config.get("llm_provider", "name")
-        self.temp = config.get(llm_provider, "code_gen_temp")
+        self.temp = config.get("llm", "code_gen_temp")
 
         self.analysis = analysis
 

@@ -17,24 +17,42 @@ class Pipeline:
         self.rt_generator = RoundTripGenerator(analysis)
         self.rt_evaluator = RoundTripEvaluator(project_root, output_dir)
 
+    def _next_description_id(self) -> int:
+        """Ensure unique IDs across abstraction runs."""
+        try:
+            existing = self.data_manager.load("descriptions.json", TestDescriptionInfo)
+        except FileNotFoundError:
+            return 1
+
+        max_id = 0
+        for item in existing:
+            try:
+                val = int(getattr(item, "id", 0) or 0)
+                if val > max_id:
+                    max_id = val
+            except (TypeError, ValueError):
+                continue
+        return max_id + 1
+
     def run_descriptions(self, abs_level: AbstractionLevel, num_trials: int = 1) -> List[TestDescriptionInfo]:
-        test_descriptions = []
-        for trial_num in range(1, num_trials + 1, 1):
-            temp_test_descriptions = self.desc_generator.generate(abs_level)
-            for test_description_info in temp_test_descriptions:
-                test_description_info.trial_number = trial_num
-            test_descriptions.extend(temp_test_descriptions)
+        test_descriptions: List[TestDescriptionInfo] = []
+        for trial_num in range(1, num_trials + 1):
+            temp = self.desc_generator.generate(abs_level)
+            for td in temp:
+                td.trial_number = trial_num
+            test_descriptions.extend(temp)
+
+        next_id = self._next_description_id()
 
         test2nl_entries: List[Test2NLEntry] = []
-        entry_id = 1
-        for test_description_info in test_descriptions:
-            test_description_info.entry_id = entry_id
-            entry = Test2NLEntry.from_test_description_info(test_description_info, self.project_name)
+        for td in test_descriptions:
+            td.id = next_id
+            entry = Test2NLEntry.from_test_description_info(td, self.project_name)
             test2nl_entries.append(entry)
-            entry_id += 1
+            next_id += 1
 
-        self.data_manager.save("description_trials.json", test_descriptions, format="json")
-        self.data_manager.save("test2nl.csv", test2nl_entries, format="csv")
+        self.data_manager.save("descriptions.json", test_descriptions, format="json", mode="append")
+        self.data_manager.save("test2nl.csv", test2nl_entries, format="csv", mode="append")
 
         return test_descriptions
 
@@ -60,3 +78,8 @@ class Pipeline:
         self.run_descriptions(abstraction_level)
         self.run_roundtrip()
         self.run_rt_evaluation(gen_classes=regen_classes)
+
+    def reset_dataset(self) -> None:
+        targets = ["descriptions.json", "test2nl.csv"]
+        self.data_manager.delete_many(targets)
+

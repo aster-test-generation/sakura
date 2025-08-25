@@ -1,74 +1,139 @@
 QUERY_METHOD_DESC = """
-Semantic search in the method index. Does not contain inherited library methods.
+Semantic search over application methods (vector index).
 Args:
-    query: Query string.
-    i: 1-based start rank, must be > 0.
-    j: 1-based end rank (inclusive), must be >= i.
+  query: Natural language or code-like phrase describing the desired behavior or the likely method name.
+  i, j: 1-based inclusive window into the ranked results (i > 0, j >= i).
+Use when:
+  You need candidate methods for a sentence or intent; first-pass recall before filtering.
+Limitations:
+  Application code only; excludes inherited methods from external libraries.
 Returns:
-    List of {'method_signature', 'qualified_class_name'} dicts, or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  List of dicts with method_signature, implementing_class_name (class that directly implements the method), and containing_class_name (class that inherits/contains the method).
+  On failure, a structured error dict is returned.
 """
 
 QUERY_CLASS_DESC = """
-Semantic search in the class index.
+Semantic search over application classes (vector index).
 Args:
-    query: Query string.
-    i: 1-based start rank, must be > 0.
-    j: 1-based end rank (inclusive), must be >= i.
+  query: Natural language or code-like phrase describing the class you want or the likely class name.
+  i, j: 1-based inclusive window into the ranked results (i > 0, j >= i).
+Use when:
+  You want classes likely to contain or relate to target methods.
+Limitations:
+  Application classes only; library classes are not indexed.
 Returns:
-    List of {'qualified_class_name'} dicts, or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  List of dicts with implementing_class_name.
+  On failure, a structured error dict is returned.
 """
 
-REACHABLE_DESC = """
-List all visible methods reachable from a class, including inherited ones from other application classes. 
-Does not include inherited library methods from library classes, which must be discovered from analyzing class details.
+REACHABLE_METHODS_DESC = """
+List methods visible from a class with metadata, honoring Java access rules and going through the inheritance chain.
 Args:
-    qualified_class_name: Fully qualified class name.
+  qualified_class_name: Fully qualified class to inspect.
+  visibility_mode: One of public, same_package, same_package_or_subclass. It must be one of these three string values.
+Use when:
+  Filtering candidate methods to what the class under test can actually call; understanding inheritance and visibility.
+Limitations:
+  Includes inherited methods from application classes only; external library parents are excluded.
 Returns:
-    Mapping {qualified_class_name: [method_signature]}, or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  Dict mapping implementing_class_name (class that directly implements the method) -> list of method metadata dicts (e.g., signature, modifiers, and other details) that are reachable from the qualified_class_name used in the query.
+  On failure, a structured error dict is returned.
 """
 
 EXTRACT_CODE_DESC = """
-Extract a method's full source code.
+Get a method's complete source (declaration + body) from the analyzed codebase.
 Args:
-    qualified_class_name: Class that contains the method.
-    method_signature: Signature of the method.
+  qualified_class_name: Class that declares the method.
+  method_signature: Exact signature to extract.
+Use when:
+  Verifying behavior, generating tests, or creating examples for an identified method.
+Limitations:
+  Fails if the method is not found; returns source as-is (no formatting changes).
 Returns:
-    Method code, or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  String containing the full method code.
+  On failure, a structured error dict is returned.
 """
 
 METHOD_DETAILS_DESC = """
-Return metadata for a method.
+Fetch fast metadata for a method.
 Args:
-    qualified_class_name: Class that contains the method.
-    method_signature: Signature of the method.
+  qualified_class_name: Declaring class.
+  method_signature: Exact signature.
+Use when:
+  You need signature, parameter types, return type, modifiers, or visibility to filter/rank candidates, or to form test scaffolds.
+Limitations:
+  Only the declaration site; does not include inherited versions or overrides from other classes.
 Returns:
-    Dict with the method_signature, modifiers, return_type, parameter_types, comments,
-    or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  Dict with method_signature, modifiers, return_type, parameter_types, comments, visibility.
+  Visibility options: "public" (accessible from anywhere), "same_package_or_subclass" (accessible from same package or subclasses), "same_package" (accessible only from same package).
+  On failure, a structured error dict is returned.
 """
 
 CLASS_DETAILS_DESC = """
-Return structural data for a class.
+Fetch structural info for a class (no inheritance traversal).
 Args:
-    qualified_class_name: Fully qualified class name.
+  qualified_class_name: Fully qualified class.
+Use when:
+  You need direct extends/implements, modifiers, or annotations to understand context or testability.
+Limitations:
+  Does not walk the inheritance graph and does not include fields by default.
 Returns:
-    Dict with the class_name, modifiers, extends_list, implements_list,
-    annotations, or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  Dict with class_name, modifiers, extends_list, implements_list, annotations.
+  On failure, a structured error dict is returned.
 """
 
 CALL_SITE_DETAILS_DESC = """
-List call sites invoked inside a method.
+List callees invoked inside a specific method (static analysis).
 Args:
-    qualified_class_name: Class that contains the method.
-    method_signature: Signature of the method.
+  qualified_class_name: Declaring class of the caller.
+  method_signature: Signature of the caller method.
+Use when:
+  Expanding candidates by usage, understanding side effects, or mapping sentences to downstream calls.
+Limitations:
+  Static only; may miss reflection/dynamic dispatch. Quality depends on the symbol table and parsed code.
 Returns:
-    List of call site dicts or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  List of dicts with callee qualified_class_name, method_signature, return_type, parameter_types, modifiers, num_times_called.
+  On failure, a structured error dict is returned.
 """
 
 MODIFY_BLOCKS_DESC = """
-Transform AtomicBlocks by merging, splitting, reordering, removing, or adding blocks, or assigning relevant methods to a block.
-Identify blocks for change by their order ID.
+Edit the current AtomicBlocks to better reflect the intended test steps or method assignments.
+The current state of the blocks is provided automatically. Do not call this tool in parallel.
 Args:
-    instructions: High level text describing the desired modifications. Include relevant methods for the changed atomic block(s) if available.
+  instructions: Detailed, clear edits (merge/split/reorder/add/remove) and any method assignments; reference blocks by order_id. Indicate if certain blocks are just descriptive, and not relevant for method mapping.
+Use when:
+  You want to align block structure to the discovered methods and narrative from the sentence(s).
+Limitations:
+  LLM-driven; results may be non-deterministic. Be explicit about which blocks change and why. Use structured language like {"implementing_class_name": "...", "containing_class_name": "...", "method_signature": "..."} to reference methods.
 Returns:
-    A success message, or {'status': 'error', 'error_type': str, 'message': str, 'details': dict} on error.
+  Updated list of AtomicBlock objects.
+  On failure, a structured error dict is returned.
+"""
+
+FINALIZE_BLOCKS_DESC = """
+Finish and return the final AtomicBlocks for downstream execution after all modifications.
+The current state of the blocks is provided automatically. Focus on clear comments for describing any challenges or rationale for the final plan.
+Args:
+  comments: Short rationale or execution notes for the finalized plan.
+Use when:
+  You are done editing and ready to hand off to the next stage (e.g., test generation/execution).
+  Only call this once you are satisfied with the blocks and have called modify_atomic_blocks at least once.
+Limitations:
+  Does not modify content; simply packages the final state and comments.
+Returns:
+  Tuple of (final AtomicBlock list, comments string).
+  On failure, a structured error dict is returned.
+"""
+
+INHERITED_LIBRARY_CLASSES_DESC = """
+Identify external superclasses/interfaces inherited by a class that are not part of the application codebase.
+Args:
+  qualified_class_name: Fully qualified class to inspect.
+Use when:
+  You suspect reachable behavior comes from libraries (methods not found in the application index).
+Limitations:
+  Returns names only; no method listing. Use docs or other tools to inspect those libraries.
+Returns:
+  List of fully qualified class/interface names for inherited library types.
+  On failure, a structured error dict is returned.
 """

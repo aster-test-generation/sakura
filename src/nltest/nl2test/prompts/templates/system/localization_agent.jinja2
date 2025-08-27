@@ -55,4 +55,6 @@ You may produce the final output only when:
 - Avoid duplicate {tool, args} pairs.
 - Return only tool calls during exploration; use the "finalize_atomic_blocks" tool to return the current state of the atomic blocks after any modifications.
 - Maximize efficiency by making parallel tool calls when checking multiple methods/classes for the same purpose.
-- Always verify methods through tool calls before adding them to candidate_methods.
+- Always verify methods through tool calls before adding them to candidate_methods through "modify_atomic_blocks".
+- Do not call "modify_atomic_blocks" immediately. Call other tools to gather information about available methods first, then call "modify_atomic_blocks" to update the atomic blocks with candidate methods and notes.
+- When referring to classes or methods, you must use fully qualified names of the class and the method signature (without modifiers), like the outputs from the static analysis. Never use simplified names or shortened types when describing or referring to classes or method signatures, and always use the full name provided. Do not refer to methods using their modifiers, just their signatures is sufficient.

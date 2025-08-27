@@ -62,9 +62,9 @@ class ReActAgent:
 
             # Check if we're approaching the iteration limit and add a warning
             remaining_iterations = self.max_iters - state.iterations
-            if remaining_iterations <= 3 and remaining_iterations > 0:
-                warning_message = f"WARNING: You have only {remaining_iterations} more iteration(s) allowed in this sequence. Use all the information you have gathered so far to generate and complete your final result immediately. Do not make any more tool calls unless absolutely necessary - focus on providing a comprehensive final answer."
-                messages.append(HumanMessage(content=warning_message))
+            if remaining_iterations <= 4 and remaining_iterations > 0:
+                warning_message = f"WARNING: You have only {remaining_iterations} more iteration(s) allowed in this sequence. Use all the information you have gathered so far to generate and complete your final result immediately. Call the necessary tools to update your state if needed, and then provide your final answer."
+                messages.append(SystemMessage(content=warning_message))
 
             out: AIMessage = self.llm.invoke_messages(
                 messages,

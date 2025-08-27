@@ -97,12 +97,13 @@ Returns:
 """
 
 MODIFY_BLOCKS_DESC = """
-Edit the current AtomicBlocks to better reflect the intended test steps or method assignments.
-The current state of the blocks is provided automatically. Do not call this tool in parallel.
+Edit the current AtomicBlocks to better reflect the intended test steps or method assignments. Do thorough static analysis to inform edits.
+Do not call this tool in parallel.
 Args:
-  instructions: Detailed, clear edits (merge/split/reorder/add/remove) and any method assignments; reference blocks by order_id. Indicate if certain blocks are just descriptive, and not relevant for method mapping.
+  instructions: Detailed, clear edits (merge/split/reorder/add/remove) and any method assignments; reference blocks by order_id. Indicate if certain blocks are just descriptive, and not relevant for method mapping. Indicate modifications in a number list if there are multiple. Refer to `notes` for adding any comments for a specific block, and `candidate_methods` for suggesting methods to assign to blocks. Use fully qualified class and method signature (without modifiers) names, like the outputs from the static analysis.
+  current_blocks: Current list of AtomicBlock objects. Take this from the output of the last `modify_atomic_blocks` call, or the initial state from the first chat prompt if this is the first call.
 Use when:
-  You want to align block structure to the discovered methods and narrative from the sentence(s).
+  You want to align block structure to the discovered methods and narrative from the sentence(s). Use static analysis results to inform edits.
 Limitations:
   LLM-driven; results may be non-deterministic. Be explicit about which blocks change and why. Use structured language like {"implementing_class_name": "...", "containing_class_name": "...", "method_signature": "..."} to reference methods.
 Returns:
@@ -112,9 +113,10 @@ Returns:
 
 FINALIZE_BLOCKS_DESC = """
 Finish and return the final AtomicBlocks for downstream execution after all modifications.
-The current state of the blocks is provided automatically. Focus on clear comments for describing any challenges or rationale for the final plan.
+Focus on clear comments for describing any challenges or rationale for the final plan.
 Args:
   comments: Short rationale or execution notes for the finalized plan.
+  current_blocks: Current list of AtomicBlock objects. Take this from the output of the last `modify_atomic_blocks` call.
 Use when:
   You are done editing and ready to hand off to the next stage (e.g., test generation/execution).
   Only call this once you are satisfied with the blocks and have called modify_atomic_blocks at least once.

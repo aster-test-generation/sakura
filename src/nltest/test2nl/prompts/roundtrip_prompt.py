@@ -11,6 +11,11 @@ from nltest.utils.llm import LLMClient, ClientType, FormatValidator
 
 
 class RoundTripPrompt:
+    """
+    This class is used to generate the roundtrip prompt for the test case.
+
+    TODO: Update prompt.
+    """
     def __init__(self, analysis: JavaAnalysis):
         super().__init__()
         self.analysis = analysis

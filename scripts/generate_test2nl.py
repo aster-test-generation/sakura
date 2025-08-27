@@ -1,30 +1,31 @@
-import os
 import sys
 import subprocess
 from pathlib import Path
-from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Optional
 
-# Get directories relative to this script
-PROJECTS_ROOT: Path = Path("../tests/resources")
-OUTPUT_BASE: Path = Path("../tests/output")
-# Other script configuration options
-EVALUATE: bool = False
-CLEAR_DATASET: bool = True
-MAX_WORKERS: Optional[int] = 1
+# === CONFIGURATION CONSTANTS ===
+# Directory paths relative to this script
+SRC_DIR = "../src"
+BASE_PROJECT_DIR = "../tests/resources"
+OUTPUT_DIR = "../tests/output"
 
-def process_project(project_dir: Path, src_dir: Path, output_base: Path, evaluate: bool, clear_dataset: bool) -> None:
-    project_name = project_dir.name
-    output_dir = (output_base / project_name).resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
+# CLI arguments
+EVALUATE = False
+CLEAR_DATASET = True
+MAX_ENTRIES = 0  # Note: 0 = unlimited
+LLM_MODEL = "google/gemini-2.0-flash-001"
+ONLY_INTERESTING_TESTS = True
 
+def run_generate_descriptions(base_project_dir: Path, src_dir: Path, output_dir: Path, evaluate: bool, clear_dataset: bool, max_entries: int, llm_model: str = None, only_interesting_tests: bool = False) -> None:
     cmd = [
-        sys.executable,
+        "poetry",
+        "run",
+        "python",
+        "-u",
         "-m",
         "nltest.cli",
         "generate-descriptions",
-        "--project-root",
-        str(project_dir.resolve()),
+        "--base-project-dir",
+        str(base_project_dir),
         "--output-dir",
         str(output_dir),
     ]
@@ -32,64 +33,54 @@ def process_project(project_dir: Path, src_dir: Path, output_base: Path, evaluat
         cmd.append("--evaluate")
     if clear_dataset:
         cmd.append("--clear-dataset")
+    if max_entries > 0:
+        cmd.extend(["--max-entries", str(max_entries)])
+    if llm_model:
+        cmd.extend(["--llm-model", llm_model])
+    if only_interesting_tests:
+        cmd.append("--only-interesting-tests")
 
-    print(f"Processing '{project_name}'...", flush=True)
+    print(f"Running description generation for all projects in {base_project_dir}...", flush=True)
+    print(f"Command: {' '.join(cmd)}", flush=True)
+    
     try:
         result = subprocess.run(
             cmd,
             check=True,
             cwd=src_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
         )
+        print("Description generation completed successfully!", flush=True)
     except subprocess.CalledProcessError as e:
-        print(f"Failed on {project_name}", flush=True)
+        print(f"Description generation failed!", flush=True)
         print(f"Return code: {e.returncode}")
-        print(f"STDOUT:\n{e.stdout}")
-        print(f"STDERR:\n{e.stderr}")
-    else:
-        print(f"Done with {project_name}", flush=True)
-        if result.stdout:
-            print(result.stdout)
+        sys.exit(1)
 
 
 def main() -> None:
     script_dir = Path(__file__).resolve().parent
-
-    src_dir = (script_dir / ".." / "src").resolve()
-    projects_root = (script_dir / PROJECTS_ROOT).resolve()
-    output_base = (script_dir / OUTPUT_BASE).resolve()
-
+    
+    # Set up paths using configuration constants
+    src_dir = (script_dir / SRC_DIR).resolve()
+    base_project_dir = (script_dir / BASE_PROJECT_DIR).resolve()
+    output_dir = (script_dir / OUTPUT_DIR).resolve()
+    
+    # Verify paths exist
     if not src_dir.is_dir():
-        raise FileNotFoundError(f"Source directory not found: {src_dir} (expected ../src)")
-
+        raise FileNotFoundError(f"Source directory not found: {src_dir}")
+    
     cli_file = src_dir / "nltest" / "cli.py"
     if not cli_file.is_file():
         raise FileNotFoundError(f"CLI not found at expected path: {cli_file}")
+    
+    if not base_project_dir.is_dir():
+        raise FileNotFoundError(f"Base project directory not found: {base_project_dir}")
 
-    if not projects_root.is_dir():
-        raise FileNotFoundError(f"Projects root not found: {projects_root}")
-
-    all_projects = sorted([p for p in projects_root.iterdir() if p.is_dir()])
-    print(f"Creating Test2NL for {len(all_projects)} total project(s)...", flush=True)
-
-    default_workers = min(len(all_projects), os.cpu_count() or 1) or 1
-    max_workers = MAX_WORKERS if (MAX_WORKERS and MAX_WORKERS > 0) else default_workers
-
-    with ProcessPoolExecutor(max_workers=max_workers) as executor:
-        futures = [
-            executor.submit(process_project, proj_dir, src_dir, output_base, EVALUATE, CLEAR_DATASET)
-            for proj_dir in all_projects
-        ]
-
-        for future in as_completed(futures):
-            try:
-                future.result()
-            except Exception as e:
-                print(f"Error during parallel execution: {e}", flush=True)
-
-    print("Completed description generation...", flush=True)
+    # Run the generate-descriptions command which now handles all projects
+    try:
+        run_generate_descriptions(base_project_dir, src_dir, output_dir, EVALUATE, CLEAR_DATASET, MAX_ENTRIES, LLM_MODEL, ONLY_INTERESTING_TESTS)
+        print("Completed description generation...", flush=True)
+    except subprocess.CalledProcessError:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

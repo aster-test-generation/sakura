@@ -5,13 +5,31 @@ You are a skilled software architect outlining a Java test with moderate detail 
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
 
 #### Setup Methods
+{%- if setup_methods %}
 {%- for setup_method in setup_methods %}
 - Setup Method #{{ loop.index }} -
 {{ setup_method }}
 {%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Teardown Methods
+{%- if teardown_methods %}
+{%- for teardown_method in teardown_methods %}
+- Teardown Method #{{ loop.index }} -
+{{ teardown_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
 
 #### Test Method Annotations
+{%- if method_annotations %}
 {{ method_annotations }}
+{%- else %}
+None
+{%- endif %}
 
 #### Test Method Code
 ```
@@ -19,39 +37,55 @@ You are a skilled software architect outlining a Java test with moderate detail 
 ```
 
 #### Helper Methods
+{%- if helper_methods %}
 {%- for helper_method in helper_methods %}
 - Helper Method #{{ loop.index }} -
 {{ helper_method }}
 {%- endfor %}
+{%- else %}
+None
+{%- endif %}
 
 #### Test Class Annotations
+{%- if class_annotations %}
 {{ class_annotations }}
+{%- else %}
+None
+{%- endif %}
 
 #### Test Class Fields
+{%- if field_declarations %}
 {%- for field_declaration in field_declarations %}
 - Field Declaration #{{ loop.index }} -
 {{ field_declaration }}
 {%- endfor %}
+{%- else %}
+None
+{%- endif %}
 
 #### Application Classes & Methods Used
+{%- if custom_classes %}
 {%- for custom_class in custom_classes %}
-- Custom Class #{{ loop.index }} -
+- Class #{{ loop.index }} -
 {{ custom_class }}
 {%- endfor %}
+{%- else %}
+None
+{%- endif %}
 
 ### TASK
-Write exactly one paragraph with moderate detail describing the scenario, logical flow, and expected results, plus the frameworks used.
+Write exactly one paragraph with moderate detail describing the scenario, logical flow, and expected results, and name the frameworks used.
 
 ### INCLUDE
 - Purpose and responsibilities being exercised.
 - Conceptual objects (e.g., "a list of users", "a configuration object") and the flow among components.
 - High-level interactions (service calls, validations, lookups).
 - Expected functional outcome(s).
-- The Java testing framework(s) employed.
+- The Java testing frameworks used.
 
 ### EXCLUDE
 - Any class/method/variable names.
-- Specific types/data structures, framework syntax, or literal values.
+- Specific types or data structures; testing framework syntax; or literal values.
 
 ### OUTPUT REQUIREMENTS
-- One paragraph only, begin with a directive phrase, no lists/headings/code.
+- One paragraph only. Begin with a directive phrase. No lists, headings, or code.

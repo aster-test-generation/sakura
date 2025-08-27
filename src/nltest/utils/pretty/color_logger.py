@@ -11,6 +11,14 @@ logging.basicConfig(
     level="INFO", format=FORMAT, datefmt="[%X]", handlers=[RichHandler(show_path=False)]
 )
 
+# Disable HTTP request logging from underlying libraries
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("openai").setLevel(logging.WARNING)
+logging.getLogger("langchain").setLevel(logging.WARNING)
+logging.getLogger("langchain_openai").setLevel(logging.WARNING)
+
 
 class RichLog:
     """Common Logger that uses Rich"""

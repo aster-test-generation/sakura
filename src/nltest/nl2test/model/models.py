@@ -117,14 +117,39 @@ class ReachableMethodsArgs(BaseModel):
 
 class InstructionArgs(BaseModel):
     instructions: str = Field(..., description="The instructions for the modification.")
+    current_blocks: List[AtomicBlock] = Field(..., description="The current state of the AtomicBlocks.")
     # NOTE: We don't need to pass in the atomic blocks here for modify_atomic_blocks because we're using the state.atomic_blocks
 
 
 class FinalizeBlocksArgs(BaseModel):
     comments: str = Field(..., description="Comments about any problems with the procedure or concerns.")
+    current_blocks: List[AtomicBlock] = Field(..., description="The current state of the AtomicBlocks.")
     # NOTE: We don't need to pass in the atomic blocks here because we're using the state.atomic_blocks
 
 
 class ModifyAtomicBlockNotesArgs(BaseModel):
     order: int = Field(..., description="The order of the atomic block to modify.")
     new_notes: str = Field(..., description="The new notes for the atomic block.")
+
+
+class LocalizationEvaluationResults(BaseModel):
+    """Detailed results from the localization grader."""
+    test_class: str
+    test_method: str
+    total_focal_methods: int
+    covered_focal_methods: int
+    uncovered_focal_methods: int
+    coverage_score: float
+    focal_methods: List[str]
+    covered_methods: List[str]
+    uncovered_methods: List[str]
+    atomic_blocks_analysis: List[Dict[str, Any]]
+    evaluation_algorithm: str
+
+
+class NL2LocalizationOutput(BaseModel):
+    """Combined output from NL2Test localization evaluation."""
+    nl2_input: NL2TestInput
+    localized_blocks: List[AtomicBlock]
+    evaluation_results: Optional[LocalizationEvaluationResults] = None
+    coverage_score: float

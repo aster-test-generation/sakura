@@ -16,8 +16,8 @@ from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
 from nltest.nl2test import Pipeline as NL2TestPipeline
-from nltest.nl2test.model.models import NL2TestInput
-from nltest.test2nl.model.models import Test2NLEntry
+from nltest.nl2test.model.models import NL2TestInput, NL2LocalizationOutput
+from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 
 app = typer.Typer(
@@ -37,13 +37,13 @@ def main() -> None:
 
 @app.command()
 def generate_descriptions(
-        project_root: Annotated[
+        base_project_dir: Annotated[
             str,
             typer.Option(
-                help="Path to the root directory of the application under test.",
+                help="Path to the base directory containing the projects.",
                 show_default=False,
             ),
-        ] = "./resources/spring-petclinic",
+        ] = "./resources",
         output_dir: Annotated[
             str,
             typer.Option(
@@ -51,6 +51,13 @@ def generate_descriptions(
                 show_default=False,
             ),
         ] = None,
+        llm_model: Annotated[
+            str,
+            typer.Option(
+                help="LLM model to use for description generation.",
+                show_default=False,
+            ),
+        ] = "mistralai/devstral-small",
         evaluate: Annotated[
             bool,
             typer.Option(
@@ -65,52 +72,128 @@ def generate_descriptions(
                 show_default=False,
             )
         ] = True,
+        max_entries: Annotated[
+            int,
+            typer.Option(
+                help="Maximum number of Test2NL entries to generate per project (0 for unlimited).",
+                show_default=False,
+            )
+        ] = 0,
+        only_interesting_tests: Annotated[
+            bool,
+            typer.Option(
+                help="Whether to only generate descriptions for interesting/complicated tests (those with complex focal class/method relationships).",
+                show_default=False,
+            )
+        ] = False,
 ):
-    # Select LLM
-    # TODO: Change later
-    llm_model = "DEEPSEEK-R1"
-
-    project_root = Path(project_root)
-    if not (project_root.exists() and project_root.is_dir()):
-        raise Exception(f"Project root directory {project_root} does not exist.")
-    project_name = project_root.name
+    base_project_dir = Path(base_project_dir)
+    if not (base_project_dir.exists() and base_project_dir.is_dir()):
+        raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
     if not output_dir:
-        output_dir = f"./output/{project_name}"
+        output_dir = f"./output"
     output_dir = Path(output_dir)
 
-    config = init_config(
-        project_name=project_name,
-        base_project_dir=str(project_root),
-        output_dir=str(output_dir),
-        llm_provider=Provider.OPENROUTER,
-        llm_model=llm_model,
-        llm_api_key=os.getenv("OPENROUTER_API_KEY"),  # Assign from env
-    )
+    # Get all project directories in base_project_dir
+    all_projects = sorted([p for p in base_project_dir.iterdir() if p.is_dir()])
+    
+    if not all_projects:
+        RichLog.error(f"No project directories found in {base_project_dir}")
+        return
 
-    # Generate analysis of the current project
-    RichLog.info(f"Gathering static analysis results")
-    analysis = CLDK(language="java").analysis(
-        project_path=project_root,
-        analysis_backend_path=None,
-        analysis_level=AnalysisLevel.symbol_table,
-        analysis_json_path=output_dir,
-        eager=True,
-    )
-    RichLog.info(f"Successfully finished gathering static analysis results")
+    RichLog.info(f"Found {len(all_projects)} project(s) to process: {[p.name for p in all_projects]}")
 
-    # Create orchestration to handle workflow
-    pipeline = Pipeline(analysis, project_root, output_dir)
+    # Process each project separately
+    for project_root in all_projects:
+        project_name = project_root.name
+        RichLog.info(f"\n{'='*60}")
+        RichLog.info(f"Processing project: {project_name}")
+        RichLog.info(f"{'='*60}")
 
-    if clear_dataset:
-        RichLog.info("Clearing the existing dataset at the output directory.")
-        pipeline.reset_dataset()
+        # Create project-specific output directory
+        project_output_dir = output_dir / project_name
+        project_output_dir.mkdir(parents=True, exist_ok=True)
 
-    for abs_level in AbstractionLevel:
-        if evaluate:
-            pipeline.run_all(abs_level, regen_classes=True)
-        else:
-            pipeline.run_descriptions(abs_level)
+        config = init_config(
+            project_name=project_name,
+            base_project_dir=str(project_root),
+            output_dir=str(project_output_dir),
+            llm_provider=Provider.OPENROUTER,
+            llm_model=llm_model,
+            llm_api_key=os.getenv("OPENROUTER_API_KEY"),  # Assign from env
+        )
+
+        # Generate analysis of the current project
+        RichLog.info(f"Gathering static analysis results for {project_name}")
+        analysis = CLDK(language="java").analysis(
+            project_path=project_root,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=project_output_dir,
+            eager=True,
+        )
+        RichLog.info(f"Successfully finished gathering static analysis results for {project_name}")
+
+        # Create orchestration to handle workflow
+        pipeline = Pipeline(analysis, project_root, project_output_dir)
+
+        if clear_dataset:
+            RichLog.info(f"Clearing the existing dataset for {project_name} at the output directory.")
+            pipeline.reset_dataset()
+
+        # Track total entries generated for this project
+        total_entries_generated = 0
+        
+        for abs_level in AbstractionLevel:
+            # Calculate remaining entries for this abstraction level
+            remaining_entries = max_entries - total_entries_generated if max_entries > 0 else 0
+            
+            # Break early if we've reached the limit
+            if max_entries > 0 and total_entries_generated >= max_entries:
+                RichLog.info(f"Reached maximum entries limit ({max_entries}) for {project_name}. Stopping early.")
+                break
+                
+            if evaluate:
+                pipeline.run_all(abs_level, regen_classes=True, max_entries=remaining_entries, only_interesting_tests=only_interesting_tests)
+                # Get the number of descriptions generated (we need to load them to count)
+                try:
+                    descriptions = pipeline.data_manager.load("descriptions.json", TestDescriptionInfo)
+                    # Count descriptions for this abstraction level and project
+                    entries_generated = len([d for d in descriptions if d.abstraction_level == abs_level])
+                    total_entries_generated += entries_generated
+                    
+                    RichLog.info(f"Generated {entries_generated} entries for {abs_level.value} abstraction level")
+                    RichLog.info(f"Total entries generated for {project_name}: {total_entries_generated}")
+                    
+                    # Break early if we've reached the limit
+                    if max_entries > 0 and total_entries_generated >= max_entries:
+                        RichLog.info(f"Reached maximum entries limit ({max_entries}) for {project_name}.")
+                        break
+                except FileNotFoundError:
+                    pass
+            else:
+                # Pass the remaining entries limit to run_descriptions
+                descriptions = pipeline.run_descriptions(abs_level, max_entries=remaining_entries, only_interesting_tests=only_interesting_tests)
+                entries_generated = len(descriptions)
+                total_entries_generated += entries_generated
+                
+                RichLog.info(f"Generated {entries_generated} entries for {abs_level.value} abstraction level")
+                RichLog.info(f"Total entries generated for {project_name}: {total_entries_generated}")
+                
+                # Break early if we've reached the limit
+                if max_entries > 0 and total_entries_generated >= max_entries:
+                    RichLog.info(f"Reached maximum entries limit ({max_entries}) for {project_name}.")
+                    break
+
+        final_message = f"Completed processing project: {project_name}"
+        if max_entries > 0:
+            final_message += f" (Generated {total_entries_generated}/{max_entries} entries)"
+        RichLog.info(final_message)
+
+    RichLog.info(f"\n{'='*60}")
+    RichLog.info(f"Completed description generation for all {len(all_projects)} projects")
+    RichLog.info(f"{'='*60}")
 
 
 @app.command()
@@ -142,7 +225,7 @@ def evaluate_localization(
                 help="LLM model to use for localization evaluation.",
                 show_default=False,
             ),
-        ] = "moonshotai/kimi-k2",
+        ] = "mistralai/devstral-small",
         emb_model: Annotated[
             str,
             typer.Option(
@@ -160,7 +243,7 @@ def evaluate_localization(
         max_entries: Annotated[
             int,
             typer.Option(
-                help="Maximum number of entries to process (0 for all).",
+                help="Maximum number of entries to process (0 for all). Entries are sorted by class-method pairs.",
                 show_default=False,
             )
         ] = 0,
@@ -185,12 +268,15 @@ def evaluate_localization(
     
     RichLog.info(f"Loading Test2NL entries from {csv_path}")
     test2nl_entries = data_manager.load(csv_file, Test2NLEntry, format="csv")
-    RichLog.info(f"Loaded {len(test2nl_entries)} Test2NL entries")
+    
+    # Sort entries by qualified_class_name and method_signature to group related entries together
+    test2nl_entries.sort(key=lambda entry: (entry.qualified_class_name, entry.method_signature))
+    RichLog.info(f"Loaded and sorted {len(test2nl_entries)} Test2NL entries by class-method pairs")
 
-    # Limit entries if specified
+    # Limit entries if specified (applied to individual entries, not class-method pairs)
     if max_entries > 0:
         test2nl_entries = test2nl_entries[:max_entries]
-        RichLog.info(f"Processing first {len(test2nl_entries)} entries")
+        RichLog.info(f"Processing first {len(test2nl_entries)} entries (max_entries={max_entries})")
 
     # Convert Test2NL entries to NL2TestInput objects and organize by project
     nl2test_inputs_by_project = {}
@@ -214,6 +300,7 @@ def evaluate_localization(
     # Process each project separately
     total_successful_evaluations = 0
     total_failed_evaluations = 0
+    all_localization_outputs = []
     
     for project_name, nl2test_inputs in nl2test_inputs_by_project.items():
         RichLog.info(f"\n{'='*60}")
@@ -265,14 +352,16 @@ def evaluate_localization(
         
         for i, nl2test_input in enumerate(nl2test_inputs, 1):
             try:
-                RichLog.info(f"Processing input {i}/{total_inputs}: {nl2test_input.qualified_class_name}.{nl2test_input.method_signature}")
+                RichLog.info(f"Processing input {i}/{total_inputs}: {nl2test_input.qualified_class_name}.{nl2test_input.method_signature} ({nl2test_input.abstraction_level})")
                 
                 # Run localization evaluation pipeline
-                localized_blocks, coverage_score = pipeline.run_localization_evaluation_pipeline(nl2test_input)
+                localization_output = pipeline.run_localization_evaluation_pipeline(nl2test_input)
+                all_localization_outputs.append(localization_output)
                 
-                RichLog.info(f"Coverage score: {coverage_score:.3f}")
+                pretty_print("Localized Blocks:", localization_output.localized_blocks)
+                RichLog.info(f"Coverage score: {localization_output.coverage_score:.3f}")
                 successful_evaluations += 1
-                
+
             except Exception as e:
                 RichLog.error(f"Failed to process input {i}: {str(e)}")
                 failed_evaluations += 1
@@ -293,8 +382,14 @@ def evaluate_localization(
     RichLog.info(f"  - Total failed evaluations: {total_failed_evaluations}")
     RichLog.info(f"{'='*60}")
     
-    if save_results:
-        RichLog.info(f"Detailed results saved to {output_dir}")
+    if save_results and all_localization_outputs:
+        # Save all localization outputs to a single file
+        global_data_manager = StructuredDataManager(output_dir)
+        filename = "nl2_localization_outputs.json"
+        global_data_manager.save(filename, all_localization_outputs, format="json")
+        RichLog.info(f"Saved {len(all_localization_outputs)} localization outputs to {output_dir / filename}")
+    elif save_results:
+        RichLog.info(f"No successful evaluations to save")
 
 
 if __name__ == "__main__":

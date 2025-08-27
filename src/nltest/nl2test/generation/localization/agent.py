@@ -26,6 +26,7 @@ class LocalizationReActAgent(ReActAgent):
         return LoadPrompt.load_prompt("localization_agent.jinja2", PromptFormat.JINJA2, prompt_type="system").format()
 
     def _prepare_tool_args(self, tool_name: str, raw_args: Dict, state: AgentState) -> Tuple[str, Dict]:
+        # Take from state just to be safe
         if tool_name == "modify_atomic_blocks":
             raw_args = dict(raw_args)
             raw_args.setdefault("current_blocks", getattr(state, "atomic_blocks", []))

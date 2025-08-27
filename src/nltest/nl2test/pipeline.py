@@ -7,7 +7,7 @@ from nltest.nl2test.generation.localization.orchestrator import LocalizationOrch
 from nltest.nl2test.generation.composition.orchestrator import CompositionOrchestrator
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.tools import SupervisorTools
-from nltest.nl2test.model.models import AgentState, NL2TestInput, AtomicBlock, GrammaticalBlock
+from nltest.nl2test.model.models import AgentState, NL2TestInput, AtomicBlock, GrammaticalBlock, NL2LocalizationOutput, LocalizationEvaluationResults
 from nltest.nl2test.preprocessing.indexers.class_indexer import ClassIndexer
 from nltest.nl2test.preprocessing.indexers.method_indexer import MethodIndexer
 from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
@@ -18,6 +18,7 @@ from nltest.utils.llm.llm_client import LLMClient, ClientType
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.utils.config.config import Config
+from nltest.utils.pretty.prints import pretty_print
 
 
 class Pipeline:
@@ -70,7 +71,7 @@ class Pipeline:
         instructions = "Localize each atomic block to relevant methods in the code base, looking for both application and inherited library methods."
         return self.localization_orchestrator.assign_task(instructions, atomic_blocks)
 
-    def run_localization_evaluation_pipeline(self, nl2_input: NL2TestInput) -> Tuple[List[AtomicBlock], float]:
+    def run_localization_evaluation_pipeline(self, nl2_input: NL2TestInput) -> NL2LocalizationOutput:
         # Run preprocessing
         self.run_preprocessing()
         
@@ -83,19 +84,21 @@ class Pipeline:
         ]
         
         # Run localization agent
-        localized_blocks, _ = self.run_localization_agent(nl2_input, atomic_blocks)
-        
+        localized_blocks, comments = self.run_localization_agent(nl2_input, atomic_blocks)
+
         # Run evaluation using LocalizationGrader with detailed output
         grader = LocalizationGrader(nl2_input, self.analysis, self.project_root)
         coverage_score, detailed_results = grader.grade(localized_blocks, detailed_output=True)
         
-        # Save detailed results to output directory
+        # Convert detailed_results dict to LocalizationEvaluationResults model
+        evaluation_results = None
         if detailed_results:
-            # Create a filename based on test class and method
-            safe_class_name = nl2_input.qualified_class_name.replace(".", "_")
-            safe_method_name = nl2_input.method_signature.replace("(", "_").replace(")", "_").replace(" ", "_")
-            filename = f"localization_evaluation_{safe_class_name}_{safe_method_name}.json"
-            
-            self.data_manager.save(filename, detailed_results, format="json")
+            evaluation_results = LocalizationEvaluationResults(**detailed_results)
         
-        return localized_blocks, coverage_score
+        # Create and return NL2LocalizationOutput
+        return NL2LocalizationOutput(
+            nl2_input=nl2_input,
+            localized_blocks=localized_blocks,
+            evaluation_results=evaluation_results,
+            coverage_score=coverage_score
+        )

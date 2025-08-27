@@ -55,7 +55,7 @@ class TestTest2NL(TestCase):
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
             analysis_json_path=output_dir,
-            eager=True,
+            eager=False,
         )
 
         # Create orchestration
@@ -212,6 +212,72 @@ class TestTest2NL(TestCase):
         self.data_manager.save("test2nl.csv", test2nl_entries, format="csv", mode="append")
 
         pretty_print(f"Successfully saved {len(test_descriptions)} descriptions and {len(test2nl_entries)} Test2NL entries")
+        
+    def test_focal_classes_and_methods_for_specific_test(self):
+        """Test that pretty prints focal classes and methods for a specific test method."""
+        qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        # method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+        method_signature = "shouldFindVets()"
+        method_signature = "shouldInsertOwner()"
+
+        qualified_class_name = "org.springframework.samples.petclinic.vet.VetControllerTests"
+        method_signature = "testShowResourcesVetList()"
+
+        # Get testing frameworks and setup methods
+        testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
+        setup_methods = CommonAnalysis(self.analysis).get_setup_methods(qualified_class_name)
+        setup_method_signatures = [method.signature for method in setup_methods]
+        
+        # Get application classes
+        _, application_classes = CommonAnalysis(self.analysis).get_test_methods_classes_and_application_classes()
+        
+        # Create focal class method analyzer
+        from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
+        focal_class_method = FocalClassMethod(self.analysis, testing_frameworks, application_classes)
+        
+        # Get focal classes and methods
+        focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
+            qualified_class_name, 
+            method_signature, 
+            setup_method_signatures
+        )
+        
+        # Extract focal methods
+        focal_methods = set()
+        for focal_class in focal_classes:
+            for method_name in focal_class.focal_method_names:
+                focal_methods.add((focal_class.focal_class, method_name))
+        
+        # Pretty print results
+        pretty_print(f"Focal Analysis for {qualified_class_name}.{method_signature}", {
+            "test_class": qualified_class_name,
+            "test_method": method_signature,
+            "total_focal_classes": len(focal_classes),
+            "total_focal_methods": len(focal_methods),
+            "focal_classes": [
+                {
+                    "focal_class": focal_class.focal_class,
+                    "focal_method_names": focal_class.focal_method_names,
+                    "num_focal_methods": len(focal_class.focal_method_names)
+                }
+                for focal_class in focal_classes
+            ],
+            "focal_methods": [f"{class_name}.{method_sig}" for class_name, method_sig in focal_methods]
+        })
+        
+        # Assertions
+        self.assertIsInstance(focal_classes, list, "Focal classes should be a list")
+        self.assertIsInstance(focal_methods, set, "Focal methods should be a set")
+        self.assertGreaterEqual(len(focal_classes), 0, "Should have at least 0 focal classes")
+        self.assertGreaterEqual(len(focal_methods), 0, "Should have at least 0 focal methods")
+        
+        # Print detailed breakdown
+        for i, focal_class in enumerate(focal_classes):
+            pretty_print(f"Focal Class {i+1}: {focal_class.focal_class}", {
+                "focal_class": focal_class.focal_class,
+                "focal_method_names": focal_class.focal_method_names,
+                "num_methods": len(focal_class.focal_method_names)
+            })
         
 
 

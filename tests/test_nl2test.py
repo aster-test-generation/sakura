@@ -11,7 +11,7 @@ from cldk.analysis import AnalysisLevel
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from nltest.nl2test.generation.localization import LocalizationOrchestrator, LocalizationTools
-from nltest.nl2test.model.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod
+from nltest.nl2test.model.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod, AbstractionLevel
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer, ProjectIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher, ProjectSearcher
@@ -23,6 +23,7 @@ from nltest.utils.llm import LLMClient, usage_tracker
 from nltest.utils.llm.model import Provider, ClientType
 from nltest.utils.pretty.prints import pretty_print
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
+from nltest.nl2test.pipeline import Pipeline
 
 
 class TestNL2Test(TestCase):
@@ -36,6 +37,8 @@ class TestNL2Test(TestCase):
         llm_model = "openai/gpt-5-mini"
         # llm_model = "qwen/qwen3-coder"
         # llm_model = "moonshotai/kimi-k2"
+        # llm_model = "mistralai/devstral-small"
+        llm_model = "mistralai/devstral-medium"
         emb_model = "nomic-embed-text:v1.5"
 
         project_root = Path(f"./resources/{project_name}")
@@ -412,3 +415,95 @@ class TestNL2Test(TestCase):
             self.assertIn("simplified", block_analysis)
             self.assertIn("candidate_methods", block_analysis)
             self.assertIn("notes", block_analysis)
+
+    def test_pipeline_run_localization_agent(self):
+        """Test the pipeline's run_localization_agent method with a petclinic-based test case."""
+        
+        # Create NL2TestInput using data from test2nl.csv (row 3 - low abstraction pet creation test)
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.service.ClinicServiceTests",
+            method_signature="shouldInsertPetIntoDatabaseAndGenerateId()",
+            description="Ensure that the test validates the persistence and ID generation of a new pet associated with an existing owner by first retrieving an owner entity from the database using the OwnerRepository's findById method, confirming the owner exists, and capturing the initial count of pets. Next, instantiate a new Pet, configure its properties including name, birth date, and type (retrieved via the OwnerRepository's findPetTypes method and selected using EntityUtils), and associate it with the retrieved owner via the owner's addPet method, which only adds the pet if it is new. Verify the pet count increases by one on the owner instance, then persist the updated owner using the OwnerRepository's save method. Re-fetch the same owner from the database to confirm the pet count remains incremented, and finally assert that the newly added pet now has a non-null ID, confirming successful persistence and ID generation. The test uses JUnit 5 for execution and AssertJ for fluent assertions, interacting directly with the real OwnerRepository and Pet-related entities without mocking.",
+            project_name="spring-petclinic",
+            abstraction_level="low",
+        )
+        
+        # Initialize pipeline
+        project_root = Path("./resources/spring-petclinic")
+        pipeline = Pipeline(self.analysis, project_root)
+        
+        # Run preprocessing
+        method_searcher, class_searcher = pipeline.run_preprocessing()
+        self.assertIsNotNone(method_searcher)
+        self.assertIsNotNone(class_searcher)
+        
+        # Decompose natural language
+        grammatical_blocks = pipeline.decompose_natural_language(nl2_input.description)
+        self.assertIsInstance(grammatical_blocks, list)
+        self.assertGreater(len(grammatical_blocks), 0)
+        
+        # Convert to atomic blocks
+        atomic_blocks = [
+            AtomicBlock.from_grammatical_block(block) for block in grammatical_blocks
+        ]
+        self.assertIsInstance(atomic_blocks, list)
+        self.assertEqual(len(atomic_blocks), len(grammatical_blocks))
+        
+        # Run localization agent
+        usage_tracker.start()
+        localized_blocks, comments = pipeline.run_localization_agent(nl2_input, atomic_blocks)
+        prices = usage_tracker.stop()
+        
+        # Verify outputs
+        self.assertIsInstance(localized_blocks, list)
+        self.assertIsInstance(comments, str)
+        self.assertEqual(len(localized_blocks), len(atomic_blocks))
+        
+        # Verify that atomic blocks have been enhanced with candidate methods
+        for i, block in enumerate(localized_blocks):
+            self.assertIsInstance(block, AtomicBlock)
+            self.assertEqual(block.order, i)
+            # Check that candidate methods have been added (localization should enhance the blocks)
+            self.assertIsInstance(block.candidate_methods, list)
+        
+        pretty_print("Localized blocks", localized_blocks)
+        pretty_print("Comments", comments)
+        pretty_print("Token usage", prices)
+
+    def test_pipeline_run_localization_evaluation_pipeline(self):
+        """Test the complete run_localization_evaluation_pipeline method with a petclinic-based test case."""
+        
+        # Create NL2TestInput using data from test2nl.csv (row 6 - low abstraction vet list test)
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.vet.VetControllerTests",
+            method_signature="testShowResourcesVetList()",
+            description="Ensure that the veterinarian controller correctly renders a JSON list of veterinarians by first configuring the VetRepository dependency as a Mockito mock during test setup to return two predefined veterinarian objects for both its unpaginated findAll method and its paginated findAll method (when invoked with any Pageable argument), then using the auto-wired MockMvc instance to perform an HTTP GET request to the /vets endpoint with an Accept header specifying JSON media type, and verifying that the response returns a 200 OK status, confirms the content type as JSON, and validates through JsonPath assertions that the first element in the vetList array of the response body contains an identifier matching the expected value for the initial veterinarian instance, all implemented using JUnit 5 for test lifecycle management, Spring Boot Test's @WebMvcTest for web layer testing configuration, Mockito for repository behavior stubbing via @MockitoBean, and Spring MVC Test's MockMvc framework for request execution and response validation with its built-in status, content, and jsonPath matchers.",
+            project_name="spring-petclinic",
+            abstraction_level=AbstractionLevel("low"),
+        )
+        
+        # Initialize pipeline
+        project_root = Path("./resources/spring-petclinic")
+        pipeline = Pipeline(self.analysis, project_root)
+        
+        # Run the complete evaluation pipeline
+        usage_tracker.start()
+        localized_blocks, coverage_score = pipeline.run_localization_evaluation_pipeline(nl2_input)
+        prices = usage_tracker.stop()
+        
+        # Verify outputs
+        self.assertIsInstance(localized_blocks, list)
+        self.assertIsInstance(coverage_score, float)
+        self.assertGreaterEqual(coverage_score, 0.0)
+        self.assertLessEqual(coverage_score, 1.0)
+        self.assertGreater(len(localized_blocks), 0)
+        
+        # Verify that atomic blocks have been enhanced
+        for i, block in enumerate(localized_blocks):
+            self.assertIsInstance(block, AtomicBlock)
+            self.assertEqual(block.order, i)
+            self.assertIsInstance(block.candidate_methods, list)
+        
+        pretty_print("Localized blocks from evaluation pipeline", localized_blocks)
+        pretty_print("Coverage score", coverage_score)
+        pretty_print("Token usage", prices)

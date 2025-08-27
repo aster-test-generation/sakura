@@ -8,7 +8,7 @@ from hamster.code_analysis.model.models import TestingFramework
 from hamster.code_analysis.utils.constants import TEST_ANNOTATIONS, SORTED_FRAMEWORK_PREFIXES
 from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
 
-from nltest.utils.constants import SETUP_ANNOTATIONS
+from nltest.utils.constants import SETUP_ANNOTATIONS, TEARDOWN_ANNOTATIONS
 from nltest.utils.exceptions import ClassFileNotFound, CompilationUnitNotFound, MethodNotFoundError, ClassNotFoundError
 from nltest.utils.pretty.prompt_formatting import pretty_indent
 
@@ -124,6 +124,32 @@ class CommonAnalysis:
 
         return False
 
+    def is_teardown_method(self, method_signature, qualified_class_name: str,
+                          testing_frameworks: List[TestingFramework]) -> bool:
+        """
+        Determines whether a method is a teardown method.
+        Args:
+            method_signature: The signature of the method analyzed.
+            qualified_class_name: The qualified class name containing the method.
+            testing_frameworks: The testing frameworks imported in the compilation unit containing the class.
+
+        Returns:
+            bool: True if the method is a teardown method, False otherwise.
+        """
+        method_details = self.analysis.get_method(qualified_class_name, method_signature)
+
+        if not method_details.code.isascii():
+            return False
+
+        if TestingFramework.JUNIT3 in testing_frameworks and method_details.signature == "tearDown()":
+            return True
+
+        for annotation in method_details.annotations:
+            if annotation in TEARDOWN_ANNOTATIONS:
+                return True
+
+        return False
+
     def get_testing_frameworks_for_class(self, qualified_class_name: str) -> List[TestingFramework]:
         """
         Gets a list of the testing frameworks available for a class by looking at its
@@ -186,6 +212,25 @@ class CommonAnalysis:
                 setup_methods.append(method)
 
         return setup_methods
+
+    def get_teardown_methods(self, qualified_class_name: str) -> List[JCallable]:
+        """
+        Gets a list of teardown methods for a given class.
+        Args:
+            qualified_class_name: The qualified class name of the class being analyzed.
+
+        Returns:
+            List[JCallable]: A list of teardown methods for the class.
+        """
+        potential_methods = self.get_ascii_methods(qualified_class_name)
+        testing_frameworks = self.get_testing_frameworks_for_class(qualified_class_name)
+        teardown_methods = []
+
+        for method in potential_methods:
+            if self.is_teardown_method(method.signature, qualified_class_name, testing_frameworks):
+                teardown_methods.append(method)
+
+        return teardown_methods
 
     def get_ascii_methods(self, qualified_class_name: str) -> List[JCallable]:
         """Returns all methods in class that is ASCII"""

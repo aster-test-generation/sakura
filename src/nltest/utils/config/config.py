@@ -39,7 +39,10 @@ def init_config(
     structured_temp = 0.3
 
     config.set("llm", "provider", llm_provider.value)
-    config.set("emb", "provider", emb_provider.value)
+    if emb_provider is not None:
+        config.set("emb", "provider", emb_provider.value)
+    else:
+        config.set("emb", "provider", None)
 
     config.set("llm", "model", llm_model)
     config.set("llm", "summarization_temp", summarization_temp)

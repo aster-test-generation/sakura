@@ -1,6 +1,7 @@
 from typing import Tuple, List
 
 import yaml
+import json
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.test2nl.model.models import AbstractionLevel, MethodContext, ReferencedClass, FieldDeclaration
@@ -31,7 +32,14 @@ class Test2NLPrompt:
                 continue
             setup_methods.append(MethodExtractor.extract(setup_method, complete_methods=True))
 
+        teardown_methods: List[MethodContext] = []
+        for teardown_method in CommonAnalysis(self.analysis).get_teardown_methods(qualified_class_name):
+            if not teardown_method:
+                continue
+            teardown_methods.append(MethodExtractor.extract(teardown_method, complete_methods=True))
+
         helper_methods: List[MethodContext] = []
+        # Add helper methods from the main test method
         for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
                                                                                                   method_signature,
                                                                                                   depth=1).items():
@@ -39,7 +47,37 @@ class Test2NLPrompt:
                 helper_details = self.analysis.get_method(qualified_class, helper_sig)
                 if not helper_details:
                     continue
-                helper_methods.append(MethodExtractor.extract(helper_details, complete_methods=True))
+                helper_context = MethodExtractor.extract(helper_details, complete_methods=True)
+                if helper_context not in helper_methods:
+                    helper_methods.append(helper_context)
+        
+        # Add helper methods from setup methods
+        for setup_method in setup_methods:
+            for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
+                                                                                                      setup_method.method_signature,
+                                                                                                      depth=1).items():
+                for helper_sig in helper_method_sigs:
+                    helper_details = self.analysis.get_method(qualified_class, helper_sig)
+                    if not helper_details:
+                        continue
+                    helper_context = MethodExtractor.extract(helper_details, complete_methods=True)
+                    # Avoid duplicates
+                    if helper_context not in helper_methods:
+                        helper_methods.append(helper_context)
+        
+        # Add helper methods from teardown methods
+        for teardown_method in teardown_methods:
+            for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
+                                                                                                        teardown_method.method_signature,
+                                                                                                        depth=1).items():
+                for helper_sig in helper_method_sigs:
+                    helper_details = self.analysis.get_method(qualified_class, helper_sig)
+                    if not helper_details:
+                        continue
+                    helper_context = MethodExtractor.extract(helper_details, complete_methods=True)
+                    # Avoid duplicates
+                    if helper_context not in helper_methods:
+                        helper_methods.append(helper_context)
 
         referenced_classes: List[ReferencedClass] = []
         ref_class_names: List[str] = CommonAnalysis(self.analysis).get_referenced_app_classes(method_details)
@@ -56,14 +94,27 @@ class Test2NLPrompt:
         for field_declaration in class_details.field_declarations:
             field_declarations.append(FieldDeclarationExtractor.extract(field_declaration))
 
-        method_code_str: str = yaml.dump(method.model_dump(), sort_keys=False, indent=4)
-        setup_methods_str: List[str] = [yaml.dump(setup_context.model_dump(), sort_keys=False, indent=4) for
+        # method_code_str: str = yaml.dump(method.model_dump(), sort_keys=False, indent=4)
+        method_code_str: str = json.dumps(method.model_dump(), indent=4)
+        # setup_methods_str: List[str] = [yaml.dump(setup_context.model_dump(), sort_keys=False, indent=4) for
+        #                                 setup_context in setup_methods]
+        setup_methods_str: List[str] = [json.dumps(setup_context.model_dump(), indent=4) for
                                         setup_context in setup_methods]
-        field_declarations_str: List[str] = [yaml.dump(field_context.model_dump(), sort_keys=False, indent=4) for
+        # teardown_methods_str: List[str] = [yaml.dump(teardown_context.model_dump(), sort_keys=False, indent=4) for
+        #                                    teardown_context in teardown_methods]
+        teardown_methods_str: List[str] = [json.dumps(teardown_context.model_dump(), indent=4) for
+                                           teardown_context in teardown_methods]
+        # field_declarations_str: List[str] = [yaml.dump(field_context.model_dump(), sort_keys=False, indent=4) for
+        #                                      field_context in field_declarations]
+        field_declarations_str: List[str] = [json.dumps(field_context.model_dump(), indent=4) for
                                              field_context in field_declarations]
-        helper_methods_str: List[str] = [yaml.dump(helper_context.model_dump(), sort_keys=False, indent=4) for
+        # helper_methods_str: List[str] = [yaml.dump(helper_context.model_dump(), sort_keys=False, indent=4) for
+        #                                  helper_context in helper_methods]
+        helper_methods_str: List[str] = [json.dumps(helper_context.model_dump(), indent=4) for
                                          helper_context in helper_methods]
-        referenced_classes_str: List[str] = [yaml.dump(referenced_context.model_dump(), sort_keys=False, indent=4) for
+        # referenced_classes_str: List[str] = [yaml.dump(referenced_context.model_dump(), sort_keys=False, indent=4) for
+        #                                      referenced_context in referenced_classes]
+        referenced_classes_str: List[str] = [json.dumps(referenced_context.model_dump(), indent=4) for
                                              referenced_context in referenced_classes]
         class_annotation_str: str = ", ".join(class_details.annotations) if class_details.annotations else "None"
         method_annotation_str: str = ", ".join(method_details.annotations) if method_details.annotations else "None"
@@ -72,6 +123,7 @@ class Test2NLPrompt:
         rendered_prompt = chat_template.format(
             method_code=method_code_str,
             setup_methods=setup_methods_str,
+            teardown_methods=teardown_methods_str,
             method_annotations=method_annotation_str,
             class_annotations=class_annotation_str,
             field_declarations=field_declarations_str,

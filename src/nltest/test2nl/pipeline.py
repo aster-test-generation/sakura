@@ -34,10 +34,18 @@ class Pipeline:
                 continue
         return max_id + 1
 
-    def run_descriptions(self, abs_level: AbstractionLevel, num_trials: int = 1) -> List[TestDescriptionInfo]:
+    def run_descriptions(self, abs_level: AbstractionLevel, num_trials: int = 1, max_entries: int = 0, only_interesting_tests: bool = False) -> List[TestDescriptionInfo]:
         test_descriptions: List[TestDescriptionInfo] = []
+        
         for trial_num in range(1, num_trials + 1):
-            temp = self.desc_generator.generate(abs_level)
+            # Calculate remaining entries we can generate
+            remaining_entries = max_entries - len(test_descriptions) if max_entries > 0 else 0
+            
+            if max_entries > 0 and len(test_descriptions) >= max_entries:
+                break
+            
+            # Generate descriptions for this trial with the remaining limit
+            temp = self.desc_generator.generate(abs_level, remaining_entries, only_interesting_tests)
             for td in temp:
                 td.trial_number = trial_num
             test_descriptions.extend(temp)
@@ -74,8 +82,8 @@ class Pipeline:
 
         self.data_manager.save("roundtrip_tests.json", graded_rt_tests)
 
-    def run_all(self, abstraction_level: AbstractionLevel, regen_classes: bool = True):
-        self.run_descriptions(abstraction_level)
+    def run_all(self, abstraction_level: AbstractionLevel, regen_classes: bool = True, max_entries: int = 0, only_interesting_tests: bool = False):
+        self.run_descriptions(abstraction_level, max_entries=max_entries, only_interesting_tests=only_interesting_tests)
         self.run_roundtrip()
         self.run_rt_evaluation(gen_classes=regen_classes)
 

@@ -3,14 +3,25 @@ import sys
 import subprocess
 from pathlib import Path
 
+# === CONFIGURATION CONSTANTS ===
+# Directory paths relative to this script
+SRC_DIR = "../src"
+BASE_PROJECT_DIR = "../tests/resources"
+OUTPUT_DIR = "../tests/output"
+
+# CLI arguments
+CSV_FILE = "spring-petclinic/test2nl.csv"
+MAX_ENTRIES = 6  # Note: 0 = unlimited
+LLM_MODEL = "mistralai/devstral-small"
+
 def main() -> None:
     script_dir = Path(__file__).resolve().parent
     
-    # Set up paths relative to the script
-    src_dir = (script_dir / ".." / "src").resolve()
-    base_project_dir = (script_dir / ".." / "tests" / "resources").resolve()
-    output_dir = (script_dir / ".." / "tests"/ "output").resolve()
-    csv_file = "spring-petclinic/test2nl.csv"
+    # Set up paths using configuration constants
+    src_dir = (script_dir / SRC_DIR).resolve()
+    base_project_dir = (script_dir / BASE_PROJECT_DIR).resolve()
+    output_dir = (script_dir / OUTPUT_DIR).resolve()
+    csv_file = CSV_FILE
     
     # Verify paths exist
     if not src_dir.is_dir():
@@ -31,6 +42,7 @@ def main() -> None:
         "poetry",
         "run",
         "python",
+        "-u",
         "-m",
         "nltest.cli",
         "evaluate-localization",
@@ -40,7 +52,12 @@ def main() -> None:
         str(output_dir),
         "--csv-file",
         csv_file,
+        "--llm-model",
+        LLM_MODEL,
     ]
+    
+    if MAX_ENTRIES > 0:
+        cmd.extend(["--max-entries", str(MAX_ENTRIES)])
     
     print(f"Running RQ4 localization evaluation...", flush=True)
     print(f"Command: {' '.join(cmd)}", flush=True)
@@ -50,18 +67,11 @@ def main() -> None:
             cmd,
             check=True,
             cwd=src_dir,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
         )
         print("RQ4 localization evaluation completed successfully!", flush=True)
-        if result.stdout:
-            print(result.stdout)
     except subprocess.CalledProcessError as e:
         print(f"RQ4 localization evaluation failed!", flush=True)
         print(f"Return code: {e.returncode}")
-        print(f"STDOUT:\n{e.stdout}")
-        print(f"STDERR:\n{e.stderr}")
         sys.exit(1)
 
 if __name__ == "__main__":

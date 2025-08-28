@@ -7,7 +7,7 @@ from nltest.nl2test.generation.localization.orchestrator import LocalizationOrch
 from nltest.nl2test.generation.composition.orchestrator import CompositionOrchestrator
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.tools import SupervisorTools
-from nltest.nl2test.model.models import AgentState, NL2TestInput, AtomicBlock, GrammaticalBlock, NL2LocalizationOutput, LocalizationEvaluationResults
+from nltest.nl2test.models import AgentState, NL2TestInput, AtomicBlock, GrammaticalBlock, NL2LocalizationOutput, LocalizationEvaluationResults
 from nltest.nl2test.preprocessing.indexers.class_indexer import ClassIndexer
 from nltest.nl2test.preprocessing.indexers.method_indexer import MethodIndexer
 from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher

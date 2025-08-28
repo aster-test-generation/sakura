@@ -6,7 +6,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from nltest.nl2test.generation.localization.agent import LocalizationReActAgent
 from nltest.nl2test.generation.localization.tools import LocalizationTools
-from nltest.nl2test.model.models import AgentState, AtomicBlock, NL2TestInput
+from nltest.nl2test.models import AgentState, AtomicBlock, NL2TestInput
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.searchers import MethodSearcher

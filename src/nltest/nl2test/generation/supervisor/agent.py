@@ -6,7 +6,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
-from nltest.nl2test.model.models import AgentState
+from nltest.nl2test.models import AgentState
 from nltest.utils.llm.llm_client import LLMClient
 
 

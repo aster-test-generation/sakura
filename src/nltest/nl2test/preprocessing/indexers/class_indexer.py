@@ -4,7 +4,7 @@ from cldk.analysis.java import JavaAnalysis
 
 from .base_indexer import BaseIndexer
 
-from nltest.nl2test.model.models import ClassSnippet
+from nltest.nl2test.models import ClassSnippet
 from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.vector_stores import ClassVectorStore

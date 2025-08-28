@@ -6,7 +6,7 @@ from langchain_core.messages import ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent  # base in this repo
-from nltest.nl2test.model.models import AgentState, AtomicBlock
+from nltest.nl2test.models import AgentState, AtomicBlock
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm.llm_client import LLMClient
 

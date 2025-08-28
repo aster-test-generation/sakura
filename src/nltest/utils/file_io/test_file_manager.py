@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from nltest.nl2test.model.models import NL2TestInput
+    from nltest.nl2test.models import NL2TestInput
     from nltest.test2nl.model.models import RoundTripTest, AbstractionLevel
 
 

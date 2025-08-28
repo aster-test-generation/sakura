@@ -2,7 +2,7 @@ from typing import List, Tuple, Optional, Dict
 
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.nl2test.model.models import MethodSnippet
+from nltest.nl2test.models import MethodSnippet
 from nltest.utils.analysis import CommonAnalysis, Reachability
 
 

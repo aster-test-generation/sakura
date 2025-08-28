@@ -3,7 +3,7 @@ from langchain.schema import Document
 from .base_faiss_vector_store import BaseFAISSVectorStore
 
 from nltest.nl2test.preprocessing.embedders import BaseEmbedder
-from nltest.nl2test.model.models import MethodSnippet
+from nltest.nl2test.models import MethodSnippet
 
 
 def _method_to_doc(snippet: MethodSnippet) -> Document:

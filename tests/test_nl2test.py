@@ -11,7 +11,7 @@ from cldk.analysis import AnalysisLevel
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from nltest.nl2test.generation.localization import LocalizationOrchestrator, LocalizationTools
-from nltest.nl2test.model.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod, AbstractionLevel
+from nltest.nl2test.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod, AbstractionLevel
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer, ProjectIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher, ProjectSearcher

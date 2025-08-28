@@ -4,7 +4,7 @@ from typing import List
 
 from pydantic import RootModel, BaseModel, Field
 
-from nltest.nl2test.model.models import GrammaticalBlock
+from nltest.nl2test.models import GrammaticalBlock
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm.llm_client import LLMClient, ClientType
 from nltest.utils.pretty.prints import pretty_print

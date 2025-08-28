@@ -9,7 +9,7 @@ from langchain_core.tools import BaseTool, StructuredTool
 from pydantic import BaseModel, Field
 
 from nltest.nl2test.core.react_agent import ReActAgent
-from nltest.nl2test.model.models import AgentState, NL2TestInput
+from nltest.nl2test.models import AgentState, NL2TestInput
 from nltest.utils.execution import JavaCompilation
 from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.file_io import TestFileManager, TestFileInfo

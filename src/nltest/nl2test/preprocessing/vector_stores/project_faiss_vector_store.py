@@ -9,7 +9,7 @@ from langchain_community.docstore import InMemoryDocstore
 from .base_vector_store import BaseVectorStore
 
 from nltest.nl2test.preprocessing.embedders import BaseEmbedder
-from nltest.nl2test.model.models import SnippetType, Snippet, MethodSnippet, ClassSnippet
+from nltest.nl2test.models import SnippetType, Snippet, MethodSnippet, ClassSnippet
 
 """DEPRECATED: Filter applies post search so often under-retrieves classes."""
 

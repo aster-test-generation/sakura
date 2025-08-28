@@ -5,7 +5,7 @@ from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
 from hamster.code_analysis.model.models import TestingFramework
 
-from nltest.nl2test.model.models import NL2TestInput, AtomicBlock, CandidateMethod
+from nltest.nl2test.models import NL2TestInput, AtomicBlock, CandidateMethod
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.pretty.prints import pretty_print
 
@@ -173,4 +173,3 @@ class LocalizationGrader:
         }
         
         pretty_print("Localization Evaluation Results", results)
-

@@ -9,7 +9,7 @@ from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, Human
 from langchain_core.tools import BaseTool
 
 # These imports exist in your repo; we keep them to avoid breaking callers.
-from nltest.nl2test.model.models import AgentState
+from nltest.nl2test.models import AgentState
 from nltest.utils.llm import LLMClient
 
 

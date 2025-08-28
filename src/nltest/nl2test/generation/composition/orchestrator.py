@@ -6,7 +6,7 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from nltest.nl2test.generation.composition.agent import CompositionReActAgent
 from nltest.nl2test.generation.composition.tools import CompositionTools
-from nltest.nl2test.model.models import AgentState, AtomicBlock, NL2TestInput
+from nltest.nl2test.models import AgentState, AtomicBlock, NL2TestInput
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
 from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher

@@ -7,7 +7,14 @@ from cldk.models.java.models import JMethodDetail, JCallable
 from langchain_core.tools import StructuredTool, BaseTool
 from requests import HTTPError, JSONDecodeError
 
-from nltest.nl2test.model.models import NL2TestInput, QueryClassArgs, QueryMethodArgs, InstructionArgs, AtomicBlock, ModifyAtomicBlockNotesArgs
+from nltest.nl2test.models import (
+    NL2TestInput,
+    QueryClassArgs,
+    QueryMethodArgs,
+    InstructionArgs,
+    AtomicBlock,
+    ModifyAtomicBlockNotesArgs,
+)
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
 from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher

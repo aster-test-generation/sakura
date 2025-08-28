@@ -16,7 +16,7 @@ from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
 from nltest.nl2test import Pipeline as NL2TestPipeline
-from nltest.nl2test.model.models import NL2TestInput, NL2LocalizationOutput
+from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput
 from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 

@@ -1,0 +1,89 @@
+### ROLE
+You are an expert writer distilling the essence of a Java test into a high-level, conceptual description for a senior developer.
+
+### CODE CONTEXT
+[Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
+
+#### Setup Methods
+{%- if setup_methods %}
+{%- for setup_method in setup_methods %}
+- Setup Method #{{ loop.index }} -
+{{ setup_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Teardown Methods
+{%- if teardown_methods %}
+{%- for teardown_method in teardown_methods %}
+- Teardown Method #{{ loop.index }} -
+{{ teardown_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Method Annotations
+{%- if method_annotations %}
+{{ method_annotations }}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Method Code
+```
+{{ method_code }}
+```
+
+#### Helper Methods
+{%- if helper_methods %}
+{%- for helper_method in helper_methods %}
+- Helper Method #{{ loop.index }} -
+{{ helper_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Class Annotations
+{%- if class_annotations %}
+{{ class_annotations }}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Class Fields
+{%- if field_declarations %}
+{%- for field_declaration in field_declarations %}
+- Field Declaration #{{ loop.index }} -
+{{ field_declaration }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Application Classes & Methods Used
+{%- if custom_classes %}
+{%- for custom_class in custom_classes %}
+- Class #{{ loop.index }} -
+{{ custom_class }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+### TASK
+Write exactly one instructional paragraph that abstracts what the test validates and why it matters, and name the frameworks used.
+
+### INCLUDE
+- General behaviors under test and their intent.
+- Conceptual expected outcomes.
+- The Java testing frameworks actually used.
+
+### EXCLUDE
+- Any class names, method names, or variable names.
+- Specific types or data structures; control flow; interaction mechanics; testing framework syntax; literal values.
+
+### OUTPUT REQUIREMENTS
+- One paragraph only. Begin with a directive phrase. No lists, headings, or code.

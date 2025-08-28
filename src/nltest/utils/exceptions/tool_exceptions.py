@@ -47,3 +47,7 @@ class ClassFileNotFound(BaseToolException):
 class CompilationUnitNotFound(BaseToolException):
     """Raised when a compilation unit cannot be found."""
     pass
+
+class AtomicBlockNotFoundError(BaseToolException):
+    """Raised when an atomic block cannot be found."""
+    pass

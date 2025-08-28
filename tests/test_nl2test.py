@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 from typing import List
 from unittest import TestCase
 from pathlib import Path
@@ -5,66 +8,56 @@ from unittest.mock import MagicMock
 
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from nltest.nl2test.generation.localization import LocalizationOrchestrator, LocalizationTools
-from nltest.nl2test.model.models import GrammaticalBlock, AtomicBlock
+from nltest.nl2test.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod, AbstractionLevel
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer, ProjectIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher, ProjectSearcher
 from nltest.nl2test.preprocessing.vector_stores import MethodVectorStore
 from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
 from nltest.nl2test.preprocessing.extractors import MethodSnippetExtractor
-from nltest.utils import Config
-from nltest.utils.llm_configs import LLM_CONFIG, EMB_CONFIG
+from nltest.utils.config import Config, init_config
+from nltest.utils.llm import LLMClient, usage_tracker
+from nltest.utils.llm.model import Provider, ClientType
 from nltest.utils.pretty.prints import pretty_print
+from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
+from nltest.nl2test.pipeline import Pipeline
 
 
 class TestNL2Test(TestCase):
     def setUp(self) -> None:
+        load_dotenv()
 
         # === User-Defined ===
         project_name = "spring-petclinic"
 
-        # llm_model = "LLAMA-3.1-8B"
-        # llm_model = "DEVSTRAL-24B"
-        llm_model = "DEEPSEEK-R1"
-
-        emb_model = "NOMIC-AI-EMB-7B"
-        # emb_model = "QWEN-3-EMB-8B" # Embedding model
-
-        summarization_temp = 0.4
-        code_gen_temp = 0.5
-        decision_temp = 0.3
-        structured_temp = 0.3
+        llm_model = "deepseek/deepseek-chat-v3-0324"
+        llm_model = "openai/gpt-5-mini"
+        # llm_model = "qwen/qwen3-coder"
+        # llm_model = "moonshotai/kimi-k2"
+        # llm_model = "mistralai/devstral-small"
+        llm_model = "mistralai/devstral-medium"
+        emb_model = "nomic-embed-text:v1.5"
 
         project_root = Path(f"./resources/{project_name}")
         if not (project_root.exists() and project_root.is_dir()):
             raise Exception(f"Project root directory {project_root} does not exist.")
-
-        # Config default assignments - TODO: Regularize this
-        config = Config(None, reuse=False)
-        config.set("llm_provider", "name", "VELA")
-        config.set("emb_provider", "name", "VELA")
-
         output_dir = Path(f"./output/{project_name}")
+        print(output_dir.resolve())
 
-        # Assign VELA LLM model configs
-        llm_provider = config.get("llm_provider", "name")
-        config.set(llm_provider, "llm_model", val=LLM_CONFIG[llm_model]["identifier"])
-        config.set(llm_provider, "llm_api_url", val=LLM_CONFIG[llm_model]["api_url"])
-        config.set(llm_provider, "summarization_temp", summarization_temp)
-        config.set(llm_provider, "code_gen_temp", code_gen_temp)
-        config.set(llm_provider, "decision_temp", decision_temp)
-        config.set(llm_provider, "structured_temp", structured_temp)
-        config.set(llm_provider, "output_tokens",
-                   val=LLM_CONFIG[llm_model]["output_tokens"] if "output_tokens" in LLM_CONFIG[llm_model] else 10000)
-
-        # Assign VELA VectorStore model configs
-        emb_provider = config.get("emb_provider", "name")
-        config.set(emb_provider, "emb_model", val=EMB_CONFIG[emb_model]["identifier"])
-        config.set(emb_provider, "emb_api_url", val=EMB_CONFIG[emb_model]["api_url"])
-
-        self.config = Config()
+        self.config = init_config(
+            project_name=project_name,
+            base_project_dir="./resources",
+            output_dir=str(output_dir),
+            llm_provider=Provider.OPENROUTER,
+            llm_model=llm_model,
+            emb_provider=Provider.OLLAMA,
+            emb_model=emb_model,
+            llm_api_key=os.getenv("OPENROUTER_API_KEY"), # Assign from env
+            emb_api_key=None,
+        )
 
         # Generate analysis of the current project
         self.analysis = CLDK(language="java").analysis(
@@ -75,15 +68,32 @@ class TestNL2Test(TestCase):
             eager=False,
         )
 
+        usage_tracker.reset()
+
+    def test_llm_client(self):
+        llm = LLMClient(ClientType.SUMMARIZATION)
+
+        system = "You are a helpful assistant that provides eloquent summaries with a British accent."
+        query = "Why do people attend concerts? What is the purpose if they can just listen to the music at home?"
+
+        messages = [
+            SystemMessage(content=system),
+            HumanMessage(content=query)
+        ]
+
+        result = llm.invoke_messages(messages)
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, AIMessage)
+        pretty_print("LLM Output", result)
+
     def test_method_vector_store_single_method_ollama(self):
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
-        method_signature = "getPet(Integer)"
+        method_signature = "getPet(java.lang.Integer)"
 
         method_details = self.analysis.get_method(qualified_class_name, method_signature)
         self.assertIsNotNone(method_details)
 
-        provider = self.config.get("emb_provider", "name").lower()
-        emb_model = self.config.get(provider, "emb_model")
+        emb_model = self.config.get("emb", "model")
 
         embedder = OllamaEmbedder(
             model_id=emb_model,
@@ -269,14 +279,14 @@ class TestNL2Test(TestCase):
         pretty_print("Grammatical blocks", grammatical_blocks)
         self.assertEqual(len(grammatical_blocks), 2)
 
-        self.assertEqual(len(grammatical_blocks[0].direct_objs), 1)
-        self.assertEqual(grammatical_blocks[0].direct_objs[0].lower(), "pet")
+        self.assertEqual(len(grammatical_blocks[0].subjects), 1)
+        self.assertEqual(grammatical_blocks[0].subjects[0].lower(), "pet")
         self.assertEqual(len(grammatical_blocks[0].prep_phrases), 1)
-        self.assertEqual(len(grammatical_blocks[0].prep_phrases[0]), 2)
-        self.assertEqual(grammatical_blocks[0].prep_phrases[0][1].lower(), "owner")
+        self.assertEqual(grammatical_blocks[0].prep_phrases[0].object.lower(), "owner")
 
-        self.assertEqual(len(grammatical_blocks[1].direct_objs), 1)
-        self.assertEqual(grammatical_blocks[1].direct_objs[0].lower(), "id")
+        self.assertEqual(len(grammatical_blocks[1].direct_objs), 0)
+        self.assertEqual(len(grammatical_blocks[1].subjects), 1)
+        self.assertEqual(grammatical_blocks[1].subjects[0].lower(), "id")
 
     def test_nl_decomposition_high_abs(self):
         nl_description = """
@@ -317,13 +327,183 @@ class TestNL2Test(TestCase):
         class_searcher = ClassIndexer(self.analysis).build_index()
 
         atomic_blocks: List[AtomicBlock] = [
-            AtomicBlock(**gb.model_dump())
-            for gb in grammatical_blocks
+            AtomicBlock.from_grammatical_block(gb) for gb in grammatical_blocks
         ]
         pretty_print("Initial atomic blocks", atomic_blocks)
 
         supervisor_instructions = "Find the relevant methods and refine the atomic blocks."
 
-        localization_agent = LocalizationOrchestrator(self.analysis, method_searcher, class_searcher, nl_description)
-        refined_blocks = localization_agent.assign_task(supervisor_instructions, atomic_blocks)
+        nl2_input = NL2TestInput(
+            description=nl_description,
+            project_name="spring-petclinic",
+            qualified_class_name="",
+            method_signature="",
+        )
+
+        localization_agent = LocalizationOrchestrator(self.analysis, method_searcher, class_searcher, nl2_input)
+
+        usage_tracker.start()
+        refined_blocks, comments = localization_agent.assign_task(supervisor_instructions, atomic_blocks)
+        prices = usage_tracker.stop()
+
         pretty_print("Refined atomic blocks", refined_blocks)
+        pretty_print("Comments", comments)
+        pretty_print("Token usage", prices)
+
+    def test_localization_grader(self):
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.owner.OwnerControllerTests",
+            method_signature="testProcessCreationFormSuccess()",
+            description="Test that the owner creation form processes successfully when valid data is submitted.",
+            project_name="spring-petclinic",
+        )
+        
+        atomic_blocks = [
+            AtomicBlock(
+                order=0,
+                subjects=["form"],
+                verbs=["process"],
+                past_participles=[],
+                direct_objs=["creation"],
+                indirect_objs=[],
+                prep_phrases=[],
+                polarity="positive",
+                conditions=[],
+                simplified="form processes creation",
+                candidate_methods=[
+                    CandidateMethod(
+                        implementing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
+                        containing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
+                        method_signature="processCreationForm(Owner, BindingResult, ModelMap)"
+                    )
+                ],
+                notes=""
+            )
+        ]
+        
+        grader = LocalizationGrader(nl2_input, self.analysis, self.config.get("project", "base_project_dir"))
+        
+        # Test basic grading
+        coverage_score, detailed_results = grader.grade(atomic_blocks, detailed_output=False)
+        self.assertIsInstance(coverage_score, float)
+        self.assertGreaterEqual(coverage_score, 0.0)
+        self.assertLessEqual(coverage_score, 1.0)
+        self.assertIsNone(detailed_results)
+        
+        # Test detailed grading
+        coverage_score, detailed_results = grader.grade(atomic_blocks, detailed_output=True)
+        self.assertIsInstance(coverage_score, float)
+        self.assertGreaterEqual(coverage_score, 0.0)
+        self.assertLessEqual(coverage_score, 1.0)
+        self.assertIsNotNone(detailed_results)
+        self.assertIsInstance(detailed_results, dict)
+        
+        expected_keys = [
+            "test_class", "test_method", "total_focal_methods", "covered_focal_methods",
+            "uncovered_focal_methods", "coverage_score", "focal_methods", "covered_methods",
+            "uncovered_methods", "atomic_blocks_analysis", "evaluation_algorithm"
+        ]
+        for key in expected_keys:
+            self.assertIn(key, detailed_results)
+        
+        self.assertEqual(detailed_results["evaluation_algorithm"], "optimal_coverage_one_to_one")
+        
+        self.assertIsInstance(detailed_results["atomic_blocks_analysis"], list)
+        if detailed_results["atomic_blocks_analysis"]:
+            block_analysis = detailed_results["atomic_blocks_analysis"][0]
+            self.assertIn("block_index", block_analysis)
+            self.assertIn("simplified", block_analysis)
+            self.assertIn("candidate_methods", block_analysis)
+            self.assertIn("notes", block_analysis)
+
+    def test_pipeline_run_localization_agent(self):
+        """Test the pipeline's run_localization_agent method with a petclinic-based test case."""
+        
+        # Create NL2TestInput using data from test2nl.csv (row 3 - low abstraction pet creation test)
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.service.ClinicServiceTests",
+            method_signature="shouldInsertPetIntoDatabaseAndGenerateId()",
+            description="Ensure that the test validates the persistence and ID generation of a new pet associated with an existing owner by first retrieving an owner entity from the database using the OwnerRepository's findById method, confirming the owner exists, and capturing the initial count of pets. Next, instantiate a new Pet, configure its properties including name, birth date, and type (retrieved via the OwnerRepository's findPetTypes method and selected using EntityUtils), and associate it with the retrieved owner via the owner's addPet method, which only adds the pet if it is new. Verify the pet count increases by one on the owner instance, then persist the updated owner using the OwnerRepository's save method. Re-fetch the same owner from the database to confirm the pet count remains incremented, and finally assert that the newly added pet now has a non-null ID, confirming successful persistence and ID generation. The test uses JUnit 5 for execution and AssertJ for fluent assertions, interacting directly with the real OwnerRepository and Pet-related entities without mocking.",
+            project_name="spring-petclinic",
+            abstraction_level="low",
+        )
+        
+        # Initialize pipeline
+        project_root = Path("./resources/spring-petclinic")
+        pipeline = Pipeline(self.analysis, project_root)
+        
+        # Run preprocessing
+        method_searcher, class_searcher = pipeline.run_preprocessing()
+        self.assertIsNotNone(method_searcher)
+        self.assertIsNotNone(class_searcher)
+        
+        # Decompose natural language
+        grammatical_blocks = pipeline.decompose_natural_language(nl2_input.description)
+        self.assertIsInstance(grammatical_blocks, list)
+        self.assertGreater(len(grammatical_blocks), 0)
+        
+        # Convert to atomic blocks
+        atomic_blocks = [
+            AtomicBlock.from_grammatical_block(block) for block in grammatical_blocks
+        ]
+        self.assertIsInstance(atomic_blocks, list)
+        self.assertEqual(len(atomic_blocks), len(grammatical_blocks))
+        
+        # Run localization agent
+        usage_tracker.start()
+        localized_blocks, comments = pipeline.run_localization_agent(nl2_input, atomic_blocks)
+        prices = usage_tracker.stop()
+        
+        # Verify outputs
+        self.assertIsInstance(localized_blocks, list)
+        self.assertIsInstance(comments, str)
+        self.assertEqual(len(localized_blocks), len(atomic_blocks))
+        
+        # Verify that atomic blocks have been enhanced with candidate methods
+        for i, block in enumerate(localized_blocks):
+            self.assertIsInstance(block, AtomicBlock)
+            self.assertEqual(block.order, i)
+            # Check that candidate methods have been added (localization should enhance the blocks)
+            self.assertIsInstance(block.candidate_methods, list)
+        
+        pretty_print("Localized blocks", localized_blocks)
+        pretty_print("Comments", comments)
+        pretty_print("Token usage", prices)
+
+    def test_pipeline_run_localization_evaluation_pipeline(self):
+        """Test the complete run_localization_evaluation_pipeline method with a petclinic-based test case."""
+        
+        # Create NL2TestInput using data from test2nl.csv (row 6 - low abstraction vet list test)
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.vet.VetControllerTests",
+            method_signature="testShowResourcesVetList()",
+            description="Ensure that the veterinarian controller correctly renders a JSON list of veterinarians by first configuring the VetRepository dependency as a Mockito mock during test setup to return two predefined veterinarian objects for both its unpaginated findAll method and its paginated findAll method (when invoked with any Pageable argument), then using the auto-wired MockMvc instance to perform an HTTP GET request to the /vets endpoint with an Accept header specifying JSON media type, and verifying that the response returns a 200 OK status, confirms the content type as JSON, and validates through JsonPath assertions that the first element in the vetList array of the response body contains an identifier matching the expected value for the initial veterinarian instance, all implemented using JUnit 5 for test lifecycle management, Spring Boot Test's @WebMvcTest for web layer testing configuration, Mockito for repository behavior stubbing via @MockitoBean, and Spring MVC Test's MockMvc framework for request execution and response validation with its built-in status, content, and jsonPath matchers.",
+            project_name="spring-petclinic",
+            abstraction_level=AbstractionLevel("low"),
+        )
+        
+        # Initialize pipeline
+        project_root = Path("./resources/spring-petclinic")
+        pipeline = Pipeline(self.analysis, project_root)
+        
+        # Run the complete evaluation pipeline
+        usage_tracker.start()
+        localized_blocks, coverage_score = pipeline.run_localization_evaluation_pipeline(nl2_input)
+        prices = usage_tracker.stop()
+        
+        # Verify outputs
+        self.assertIsInstance(localized_blocks, list)
+        self.assertIsInstance(coverage_score, float)
+        self.assertGreaterEqual(coverage_score, 0.0)
+        self.assertLessEqual(coverage_score, 1.0)
+        self.assertGreater(len(localized_blocks), 0)
+        
+        # Verify that atomic blocks have been enhanced
+        for i, block in enumerate(localized_blocks):
+            self.assertIsInstance(block, AtomicBlock)
+            self.assertEqual(block.order, i)
+            self.assertIsInstance(block.candidate_methods, list)
+        
+        pretty_print("Localized blocks from evaluation pipeline", localized_blocks)
+        pretty_print("Coverage score", coverage_score)
+        pretty_print("Token usage", prices)

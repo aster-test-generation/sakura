@@ -48,7 +48,7 @@ No actions executed yet.
     "polarity": Literal["positive", "negative"] // considers negation words, default to "positive"
     "conditions": List[str] // conditional statements; text associated with if/when/unless, may be empty
     "simplified": str // a concise stand-alone clause
-    "candidate_methods": List[{"qualified_class_name": str, "method_signature": str}] // a list of the candidate methods, formatted in a dictionary; only include at most the top three
+    "candidate_methods": List[{"implementing_class_name": str, "containing_class_name": str, "method_signature": str}] // a list of the candidate methods, formatted in a dictionary; only include at most the top three
     "notes": str // extraneous details; e.g., if an AtomicBlock is likely a library call
 }
 

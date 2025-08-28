@@ -40,9 +40,7 @@ class RoundTripEvaluator:
         grader = TestGrader(analysis, self.project_root, erroneous_classes)
 
         for rt_test in roundtrip_tests:
-            encoded_class = TestFileManager.encode_class_name(rt_test.method_signature,
-                                                              rt_test.generated_description.abstraction_level,
-                                                              rt_test.generated_description.trial_number)
+            encoded_class = TestFileManager.encode_class_name(rt_test.generated_description.id)
             pkg = rt_test.generated_description.qualified_class_name.rsplit(".", 1)[0]
             qualified_name = f"{pkg}.{encoded_class}"
 

@@ -1,6 +1,6 @@
 from enum import Enum
 from pathlib import Path
-from typing import List
+from typing import List, Literal
 
 from langchain_core.prompts import PromptTemplate
 
@@ -11,8 +11,8 @@ class PromptFormat(Enum):
 
 class LoadPrompt:
     @staticmethod
-    def load_prompt(file_name: str, prompt_format: PromptFormat) -> PromptTemplate:
-        prompt_file = Path(__file__).parent / "templates" / file_name
+    def load_prompt(file_name: str, prompt_format: PromptFormat, prompt_type: Literal["chat", "system"]) -> PromptTemplate:
+        prompt_file = Path(__file__).parent / "templates" / prompt_type / file_name
 
         try:
             template_str = prompt_file.read_text()

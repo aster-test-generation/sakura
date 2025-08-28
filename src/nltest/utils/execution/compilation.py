@@ -5,6 +5,9 @@ from typing import List
 from nltest.utils.constants import MAVEN_CMD
 
 class JavaCompilation:
+    """
+    Compile and prepare Maven-based Java project for testing.
+    """
     @staticmethod
     def get_erroneous_classes(project_root) -> List[str]:
         error_classes = set()

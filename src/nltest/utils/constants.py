@@ -21,3 +21,8 @@ SETUP_ANNOTATIONS = {  # Also check `setUp()` method for JUnit 3
     "@Before", "@BeforeClass", "@BeforeEach", "@BeforeAll", "@BeforeMethod", "@BeforeTest", "@BeforeSuite",
     "@BeforeGroups"
 }
+
+TEARDOWN_ANNOTATIONS = {  # Also check `tearDown()` method for JUnit 3
+    "@After", "@AfterClass", "@AfterEach", "@AfterAll", "@AfterMethod", "@AfterTest", "@AfterSuite",
+    "@AfterGroups"
+}

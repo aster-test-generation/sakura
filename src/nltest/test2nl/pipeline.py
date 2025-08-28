@@ -3,10 +3,10 @@ from typing import List
 
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.utils.file_io import StructuredDataManager, TestFileManager
+from nltest.utils.file_io import StructuredDataManager, TestFileManager, TestFileInfo
 from nltest.test2nl.evaluation import RoundTripEvaluator
 from nltest.test2nl.generation import DescriptionGenerator, RoundTripGenerator
-from nltest.test2nl.model.models import AbstractionLevel, GeneratedDescription, RoundTripTest, Test2NLEntry
+from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo, RoundTripTest, Test2NLEntry
 
 
 class Pipeline:
@@ -17,46 +17,64 @@ class Pipeline:
         self.rt_generator = RoundTripGenerator(analysis)
         self.rt_evaluator = RoundTripEvaluator(project_root, output_dir)
 
-    def run_descriptions(self, abs_level: AbstractionLevel, num_trials: int = 1) -> List[GeneratedDescription]:
-        gen_descriptions = []
-        for trial_num in range(1, num_trials + 1, 1):
-            temp_gen_descriptions = self.desc_generator.generate(abs_level)
-            for gen_desc in temp_gen_descriptions:
-                gen_desc.trial_number = trial_num
-            gen_descriptions.extend(temp_gen_descriptions)
+    def _next_description_id(self) -> int:
+        """Ensure unique IDs across abstraction runs."""
+        try:
+            existing = self.data_manager.load("descriptions.json", TestDescriptionInfo)
+        except FileNotFoundError:
+            return 1
+
+        max_id = 0
+        for item in existing:
+            try:
+                val = int(getattr(item, "id", 0) or 0)
+                if val > max_id:
+                    max_id = val
+            except (TypeError, ValueError):
+                continue
+        return max_id + 1
+
+    def run_descriptions(self, abs_level: AbstractionLevel, num_trials: int = 1, max_entries: int = 0, only_interesting_tests: bool = False) -> List[TestDescriptionInfo]:
+        test_descriptions: List[TestDescriptionInfo] = []
+        
+        for trial_num in range(1, num_trials + 1):
+            # Calculate remaining entries we can generate
+            remaining_entries = max_entries - len(test_descriptions) if max_entries > 0 else 0
+            
+            if max_entries > 0 and len(test_descriptions) >= max_entries:
+                break
+            
+            # Generate descriptions for this trial with the remaining limit
+            temp = self.desc_generator.generate(abs_level, remaining_entries, only_interesting_tests)
+            for td in temp:
+                td.trial_number = trial_num
+            test_descriptions.extend(temp)
+
+        next_id = self._next_description_id()
 
         test2nl_entries: List[Test2NLEntry] = []
-        entry_id = 1
-        for gen_desc in gen_descriptions:
-            gen_desc.entry_id = entry_id
-            entry = Test2NLEntry(
-                id=entry_id,
-                description=gen_desc.description,
-                project_name=self.project_name,
-                qualified_class_name=gen_desc.qualified_class_name,
-                method_signature=gen_desc.method_signature,
-                abstraction_level=gen_desc.abstraction_level,
-                is_bdd=False
-            )
+        for td in test_descriptions:
+            td.id = next_id
+            entry = Test2NLEntry.from_test_description_info(td, self.project_name)
             test2nl_entries.append(entry)
-            entry_id += 1
+            next_id += 1
 
-        self.data_manager.save("description_trials.json", gen_descriptions, format="json")
-        self.data_manager.save("test2nl.csv", test2nl_entries, format="csv")
+        self.data_manager.save("descriptions.json", test_descriptions, format="json", mode="append")
+        self.data_manager.save("test2nl.csv", test2nl_entries, format="csv", mode="append")
 
-        return gen_descriptions
+        return test_descriptions
 
     def run_roundtrip(self) -> List[RoundTripTest]:
-        gen_descriptions = self.data_manager.load("descriptions.json", GeneratedDescription)
-        roundtrip_trials = self.rt_generator.generate(gen_descriptions)
+        test_descriptions = self.data_manager.load("descriptions.json", TestDescriptionInfo)
+        roundtrip_trials = self.rt_generator.generate(test_descriptions)
         self.data_manager.save("roundtrip_tests.json", roundtrip_trials)
         return roundtrip_trials
 
     def run_rt_evaluation(self, gen_classes: bool = True):
         roundtrip_tests = self.data_manager.load("roundtrip_tests.json", RoundTripTest)
         if gen_classes:
-            test_file_infos = TestFileManager.convert_roundtrip_to_file_info(roundtrip_tests)
-            TestFileManager(self.rt_evaluator.project_root).save(test_file_infos)
+            test_file_infos = [TestFileInfo.from_roundtrip_test(rt_test) for rt_test in roundtrip_tests]
+            TestFileManager(self.rt_evaluator.project_root).save_batch(test_file_infos)
 
         # Compile and regenerate analysis, then grade
         self.rt_evaluator.reanalyze()
@@ -64,7 +82,12 @@ class Pipeline:
 
         self.data_manager.save("roundtrip_tests.json", graded_rt_tests)
 
-    def run_all(self, abstraction_level: AbstractionLevel, regen_classes: bool = True):
-        self.run_descriptions(abstraction_level)
+    def run_all(self, abstraction_level: AbstractionLevel, regen_classes: bool = True, max_entries: int = 0, only_interesting_tests: bool = False):
+        self.run_descriptions(abstraction_level, max_entries=max_entries, only_interesting_tests=only_interesting_tests)
         self.run_roundtrip()
         self.run_rt_evaluation(gen_classes=regen_classes)
+
+    def reset_dataset(self) -> None:
+        targets = ["descriptions.json", "test2nl.csv"]
+        self.data_manager.delete_many(targets)
+

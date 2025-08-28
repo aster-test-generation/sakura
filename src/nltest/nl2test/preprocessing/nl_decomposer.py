@@ -2,30 +2,36 @@ import json
 import re
 from typing import List
 
-from nltest.nl2test.model.models import GrammaticalBlock
+from pydantic import RootModel, BaseModel, Field
+
+from nltest.nl2test.models import GrammaticalBlock
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.exceptions import FormatError
-from nltest.utils.llm.format_validator import FormatValidator
 from nltest.utils.llm.llm_client import LLMClient, ClientType
 from nltest.utils.pretty.prints import pretty_print
+from langchain_core.messages import SystemMessage, HumanMessage
+
+
+class GrammaticalBlockList(BaseModel):
+    blocks: List[GrammaticalBlock] = Field(..., description="Ordered list of grammatical blocks.")
 
 
 class NLDecomposer:
     def __init__(self):
-        self.llm = LLMClient(ClientType.STRUCTURED)
+        self.structured = LLMClient(ClientType.STRUCTURED)
 
     def decompose(self, nl_description: str) -> List[GrammaticalBlock]:
-        prompt = LoadPrompt().load_prompt("nl_decomposition.jinja2", prompt_format=PromptFormat.JINJA2)
-        prompt = prompt.format(input=nl_description)
-        output = self.llm.generate(prompt, sanitize=True)
+        system_prompt = LoadPrompt.load_prompt(
+            "nl_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="system"
+        ).format()
+        chat_prompt = LoadPrompt.load_prompt(
+            "nl_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="chat"
+        ).format(input=nl_description)
 
-        try:
-            blocks: List[GrammaticalBlock] = FormatValidator.validate(output, List[GrammaticalBlock])
-        except ValueError as e:
-            raise FormatError("Formatting failed", extra_info={"raw_output": output, "error": str(e)})
-        # TODO: Decide if we want to use LLM for reparsing
+        result: GrammaticalBlockList = self.structured.invoke_prompts(
+            system=system_prompt,
+            chat=chat_prompt,
+            schema=GrammaticalBlockList,
+            strict=True,
+        )
 
-        return blocks
-
-
-
+        return result.blocks

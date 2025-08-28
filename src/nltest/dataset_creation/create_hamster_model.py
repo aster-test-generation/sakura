@@ -11,6 +11,8 @@ from tqdm import tqdm
 from nltest.utils import constants
 
 BASE_PATH = Path(__file__).resolve().parent.parent.parent.parent
+
+
 class CreateHamsterModel:
     def __init__(self):
         pass
@@ -43,6 +45,7 @@ class CreateHamsterModel:
         """Get all immediate subfolders in the base folder."""
         return [os.path.join(base_folder, f) for f in os.listdir(base_folder)
                 if os.path.isdir(os.path.join(base_folder, f))]
+
 
 if __name__ == "__main__":
     # Change this to your specific folder path

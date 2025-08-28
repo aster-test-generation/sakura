@@ -17,7 +17,7 @@ class TrialType(Enum):
     TEST_CASE = "test_case"
 
 
-class GeneratedDescription(BaseModel):
+class TestDescriptionInfo(BaseModel):
     description: str
     prompt: str
     abstraction_level: AbstractionLevel
@@ -25,7 +25,7 @@ class GeneratedDescription(BaseModel):
     method_signature: str
     qualified_class_name: str
     trial_number: int = 1
-    entry_id: int = -1 # For matching Test2NL dataset with generated description
+    id: int = -1 # For matching Test2NL dataset with generated description
 
 
 class RoundTripTest(BaseModel):
@@ -34,7 +34,7 @@ class RoundTripTest(BaseModel):
     generated_test: str
     method_signature: str
     qualified_class_name: str
-    generated_description: GeneratedDescription
+    generated_description: TestDescriptionInfo
     score: float | None = None
 
 
@@ -75,3 +75,15 @@ class Test2NLEntry(BaseModel):
     method_signature: str
     abstraction_level: AbstractionLevel | None = None
     is_bdd: bool = False
+
+    @classmethod
+    def from_test_description_info(cls, test_description_info: TestDescriptionInfo, project_name: str) -> Test2NLEntry:
+        return cls(
+            id=test_description_info.id,
+            description=test_description_info.description,
+            project_name=project_name,
+            qualified_class_name=test_description_info.qualified_class_name,
+            method_signature=test_description_info.method_signature,
+            abstraction_level=test_description_info.abstraction_level,
+            is_bdd=False
+        )

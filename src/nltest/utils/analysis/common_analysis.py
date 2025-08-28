@@ -1,14 +1,15 @@
 import re
 from collections import deque
-from typing import List, Set, Tuple, Dict
+from typing import List, Set, Tuple, Dict, Literal, Optional
 
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java import JCallable
 from hamster.code_analysis.model.models import TestingFramework
 from hamster.code_analysis.utils.constants import TEST_ANNOTATIONS, SORTED_FRAMEWORK_PREFIXES
+from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
 
-from nltest.utils.constants import SETUP_ANNOTATIONS
-from nltest.utils.exceptions import ClassFileNotFound, CompilationUnitNotFound
+from nltest.utils.constants import SETUP_ANNOTATIONS, TEARDOWN_ANNOTATIONS
+from nltest.utils.exceptions import ClassFileNotFound, CompilationUnitNotFound, MethodNotFoundError, ClassNotFoundError
 from nltest.utils.pretty.prompt_formatting import pretty_indent
 
 
@@ -123,6 +124,32 @@ class CommonAnalysis:
 
         return False
 
+    def is_teardown_method(self, method_signature, qualified_class_name: str,
+                          testing_frameworks: List[TestingFramework]) -> bool:
+        """
+        Determines whether a method is a teardown method.
+        Args:
+            method_signature: The signature of the method analyzed.
+            qualified_class_name: The qualified class name containing the method.
+            testing_frameworks: The testing frameworks imported in the compilation unit containing the class.
+
+        Returns:
+            bool: True if the method is a teardown method, False otherwise.
+        """
+        method_details = self.analysis.get_method(qualified_class_name, method_signature)
+
+        if not method_details.code.isascii():
+            return False
+
+        if TestingFramework.JUNIT3 in testing_frameworks and method_details.signature == "tearDown()":
+            return True
+
+        for annotation in method_details.annotations:
+            if annotation in TEARDOWN_ANNOTATIONS:
+                return True
+
+        return False
+
     def get_testing_frameworks_for_class(self, qualified_class_name: str) -> List[TestingFramework]:
         """
         Gets a list of the testing frameworks available for a class by looking at its
@@ -186,6 +213,25 @@ class CommonAnalysis:
 
         return setup_methods
 
+    def get_teardown_methods(self, qualified_class_name: str) -> List[JCallable]:
+        """
+        Gets a list of teardown methods for a given class.
+        Args:
+            qualified_class_name: The qualified class name of the class being analyzed.
+
+        Returns:
+            List[JCallable]: A list of teardown methods for the class.
+        """
+        potential_methods = self.get_ascii_methods(qualified_class_name)
+        testing_frameworks = self.get_testing_frameworks_for_class(qualified_class_name)
+        teardown_methods = []
+
+        for method in potential_methods:
+            if self.is_teardown_method(method.signature, qualified_class_name, testing_frameworks):
+                teardown_methods.append(method)
+
+        return teardown_methods
+
     def get_ascii_methods(self, qualified_class_name: str) -> List[JCallable]:
         """Returns all methods in class that is ASCII"""
         valid_methods: List[JCallable] = []
@@ -223,25 +269,184 @@ class CommonAnalysis:
 
         return test_classes_methods, application_classes
 
-    def method_is_visible(self, qualified_class_name: str, method_signature: str) -> bool:
-        """Check if method is visible outside package or module"""
-        method_details = self.analysis.get_method(qualified_class_name, method_signature)
-        class_details = self.analysis.get_class(qualified_class_name)
-        if not method_details:
+    def is_subclass_of(self, sub_class: str, super_class: str) -> bool:
+        if not sub_class or not super_class or sub_class == super_class:
             return False
 
-        if "public" in method_details.modifiers:
-            return True
+        sub_info = self.analysis.get_class(sub_class)
+        if not sub_info:
+            return False
 
-        if class_details.is_interface or class_details.is_annotation_declaration:
-            if "private" not in method_details.modifiers:
-                return True
+        stack = sub_info.extends_list
+        seen = set()
 
-        if method_details.is_constructor and method_details.is_implicit:
-            if "public" in class_details.modifiers:
+        while stack:
+            curr = stack.pop()
+            if curr in seen:
+                continue
+            if curr == super_class:
                 return True
+            seen.add(curr)
+
+            curr_info = self.analysis.get_class(curr)
+            if curr_info:
+                parents = curr_info.extends_list
+                stack.extend(parents)
 
         return False
+
+    def implements_interface(self, class_name: str, interface_name: str) -> bool:
+        if not class_name or not interface_name:
+            return False
+
+        cls_info = self.analysis.get_class(class_name)
+        if not cls_info or not cls_info.is_interface:
+            return False
+
+        stack = []
+        seen = set()
+
+        # Consider both implemented interfaces and superclass chain
+        stack.extend(cls_info.extends_list)
+        stack.extend(cls_info.implements_list)
+
+        while stack:
+            curr = stack.pop()
+            if curr in seen:
+                continue
+            if curr == interface_name:
+                return True
+            seen.add(curr)
+
+            curr_info = self.analysis.get_class(curr)
+            if not curr_info:
+                continue
+
+            if curr_info.is_interface:
+                # Interfaces can't extend class or abstract class
+                stack.extend(curr.implements_list)
+            else:
+                stack.extend(curr.extends_list)
+                stack.extend(curr.implements_list)
+
+        return False
+
+    def is_accessible_from(
+            self,
+            owner_class: str,
+            method_signature: str,
+            *,
+            accessor_class: Optional[str] = None,
+            mode: Literal["public", "same_package", "same_package_or_subclass"] = "public",
+    ) -> bool:
+        class_details = self.analysis.get_class(owner_class)
+        if not class_details:
+            raise ClassNotFoundError(
+                f"Class {owner_class} not found.",
+                extra_info={"qualified_class_name": owner_class},
+            )
+
+        method_details = self.analysis.get_method(owner_class, method_signature)
+        if not method_details:
+            raise MethodNotFoundError(
+                f"Method {method_signature} not found in class {owner_class}.",
+                extra_info={"qualified_class_name": owner_class, "method_signature": method_signature},
+            )
+
+        mods = set(method_details.modifiers)
+        owner_pkg = self.package_of(owner_class)
+
+        # Public methods and interface/annotation non-private methods are always visible
+        if "public" in mods:
+            return True
+        if class_details.is_interface or class_details.is_annotation_declaration:
+            if "private" not in mods:
+                return True
+
+        # Implicit public constructor for public class
+        if method_details.is_constructor and method_details.is_implicit and "public" in class_details.modifiers:
+            return True
+
+        # Determined all public accessibility options
+        if mode == "public":
+            return False
+
+        # Determine accessor package
+        acc_pkg = self.package_of(accessor_class) if accessor_class else ""
+
+        # Same package rules
+        if owner_pkg == acc_pkg:
+            if "private" in mods:
+                return False
+            return True
+        # Protected and package-private allowed in same package
+
+        # If different package and not public, it is not accessible
+        if mode == "same_package":
+            return False
+
+        # Check for subclass inheritance of protected method
+        if "protected" in mods and accessor_class and self.is_subclass_of(accessor_class, owner_class):
+            return True
+
+        return False
+
+    def is_public(self, qualified_class_name: str, method_signature: str) -> bool:
+        return self.is_accessible_from(qualified_class_name, method_signature, mode="public")
+
+    def get_method_visibility(self, qualified_class_name: str, method_signature: str) -> Literal["public", "same_package", "same_package_or_subclass"]:
+        """
+        Determines the visibility level of a method.
+        
+        Returns:
+            "public" if the method is accessible from anywhere
+            "same_package_or_subclass" if the method is accessible from same package or subclasses
+            "same_package" if the method is only accessible from the same package
+        """
+        if self.is_accessible_from(qualified_class_name, method_signature, mode="public"):
+            return "public"
+        elif self.is_accessible_from(qualified_class_name, method_signature, mode="same_package_or_subclass"):
+            return "same_package_or_subclass"
+        else:
+            return "same_package"
+
+    def get_complicated_focal_tests(self) -> Dict[str, List[str]]:
+        test_class_map, application_classes = self.get_test_methods_classes_and_application_classes()
+        complicated_tests = {}
+        
+        for test_class in test_class_map:
+            testing_frameworks = self.get_testing_frameworks_for_class(test_class)
+            setup_methods = self.get_setup_methods(test_class)
+            setup_method_signatures = [method.signature for method in setup_methods]
+            
+            complicated_methods = []
+            
+            for method_signature in test_class_map[test_class]:
+                try:
+                    focal_class_method = FocalClassMethod(self.analysis, testing_frameworks, application_classes)
+                    focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
+                        test_class, method_signature, setup_method_signatures
+                    )
+                    
+                    is_complicated = (
+                        len(focal_classes) > 1 or 
+                        (len(focal_classes) == 1 and len(focal_classes[0].focal_method_names) > 1)
+                    )
+                    
+                    if is_complicated:
+                        complicated_methods.append(method_signature)
+                        
+                except Exception as e:
+                    continue
+            
+            if complicated_methods:
+                complicated_tests[test_class] = complicated_methods
+        
+        return complicated_tests
+
+    def get_complicated_focal_tests_count(self) -> int:
+        complicated_tests = self.get_complicated_focal_tests()
+        return sum(len(methods) for methods in complicated_tests.values())
 
     @staticmethod
     def is_getter_or_setter(method_details: JCallable) -> bool:
@@ -262,6 +467,11 @@ class CommonAnalysis:
         pattern = re.compile(r"[\w\.]+\.[A-Z]\w*")  # Extracts all types ending with a capital
         non_parameterized_types = pattern.findall(parameterized_type)
         return non_parameterized_types
+
+    @staticmethod
+    def package_of(qualified_class_name: str) -> str:
+        i = qualified_class_name.rfind(".")
+        return qualified_class_name[:i] if i != -1 else ""
 
     @staticmethod
     def process_callee_signature(callee_signature: str) -> str:

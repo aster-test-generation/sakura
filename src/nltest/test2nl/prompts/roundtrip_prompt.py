@@ -5,13 +5,17 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.test2nl.model.models import ReferencedClass
 from nltest.test2nl.extractors import ReferencedClassExtractor
-from nltest.test2nl.prompt.load_prompt import LoadPrompt, PromptFormat
+from nltest.test2nl.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.llm import LLMClient, ClientType
-from nltest.utils.llm.format_validator import FormatValidator
+from nltest.utils.llm import LLMClient, ClientType, FormatValidator
 
 
 class RoundTripPrompt:
+    """
+    This class is used to generate the roundtrip prompt for the test case.
+
+    TODO: Update prompt.
+    """
     def __init__(self, analysis: JavaAnalysis):
         super().__init__()
         self.analysis = analysis

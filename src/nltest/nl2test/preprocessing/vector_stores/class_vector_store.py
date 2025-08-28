@@ -3,14 +3,14 @@ from langchain.schema import Document
 from .base_faiss_vector_store import BaseFAISSVectorStore
 
 from nltest.nl2test.preprocessing.embedders import BaseEmbedder
-from nltest.nl2test.model.models import ClassSnippet
+from nltest.nl2test.models import ClassSnippet
 
 
 def _class_to_doc(snippet: ClassSnippet) -> Document:
     return Document(
         page_content=snippet.simple_class_name,
         metadata={
-            "qualified_class_name": snippet.qualified_class_name
+            "implementing_class_name": snippet.implementing_class_name
         },
     )
 

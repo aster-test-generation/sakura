@@ -2,6 +2,4 @@
 Configuration package
 """
 
-from .config import Config
-
-__all__ = ["Config"]
+from .config import Config, init_config

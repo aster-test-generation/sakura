@@ -17,6 +17,7 @@ from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
 from nltest.nl2test import Pipeline as NL2TestPipeline
 from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput
+from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 
@@ -233,6 +234,13 @@ def evaluate_localization(
                 show_default=False,
             ),
         ] = "nomic-embed-text:v1.5",
+        decomposition_mode: Annotated[
+            str,
+            typer.Option(
+                help="Decomposition mode: grammatical or gherkin",
+                show_default=True,
+            ),
+        ] = "grammatical",
         save_results: Annotated[
             bool,
             typer.Option(
@@ -297,6 +305,12 @@ def evaluate_localization(
 
     RichLog.info(f"Organized inputs by {len(nl2test_inputs_by_project)} projects: {list(nl2test_inputs_by_project.keys())}")
 
+    # Normalize decomposition mode
+    try:
+        mode_enum = DecompositionMode(decomposition_mode)
+    except ValueError:
+        raise typer.BadParameter("decomposition_mode must be 'grammatical' or 'gherkin'")
+
     # Process each project separately
     total_successful_evaluations = 0
     total_failed_evaluations = 0
@@ -341,7 +355,7 @@ def evaluate_localization(
 
         # Create NL2Test pipeline for this project
         RichLog.info(f"Initializing NL2Test pipeline for {project_name}")
-        pipeline = NL2TestPipeline(analysis, project_root)
+        pipeline = NL2TestPipeline(analysis, project_root, decomposition_mode=mode_enum)
 
         # Process inputs for this project
         total_inputs = len(nl2test_inputs)

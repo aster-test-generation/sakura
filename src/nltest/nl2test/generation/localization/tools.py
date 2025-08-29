@@ -8,12 +8,17 @@ from pydantic import RootModel, BaseModel, Field
 
 from nltest.nl2test.models import (
     AtomicBlock,
+    AtomicBlockList,
     QueryMethodArgs,
     QueryClassArgs,
     QueryVectorDataArgs,
     ReachableMethodsArgs,
     InstructionArgs,
-    FinalizeBlocksArgs,
+    FinalizeScenarioArgs,
+    FinalizeAtomicBlockArgs,
+    DecompositionMode,
+    Scenario,
+    LocalizedScenario,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
@@ -27,7 +32,7 @@ from nltest.utils.exceptions import (
     CallSiteNotFoundError,
     FormatError,
 )
-from nltest.utils.exceptions.tool_exceptions import AtomicBlockNotFoundError
+from nltest.utils.exceptions.tool_exceptions import BlockNotFoundError
 from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.localization.tool_descriptions import (
     QUERY_METHOD_DESC,
@@ -39,12 +44,12 @@ from nltest.nl2test.generation.localization.tool_descriptions import (
     INHERITED_LIBRARY_CLASSES_DESC,
     CALL_SITE_DETAILS_DESC,
     MODIFY_BLOCKS_DESC,
-    FINALIZE_BLOCKS_DESC,
+    FINALIZE_ATOMIC_BLOCKS_DESC,
+    FINALIZE_LOCALIZED_SCENARIO_DESC,
 )
 
 
-class AtomicBlockList(BaseModel):
-    atomic_blocks: List[AtomicBlock] = Field(..., description="List of atomic blocks.")
+# Use AtomicBlockList from models
 
 
 class LocalizationTools:
@@ -55,11 +60,13 @@ class LocalizationTools:
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         structured_llm: LLMClient,
+        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
     ):
         self.analysis = analysis
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
         self.structured_llm = structured_llm
+        self.decomposition_mode = decomposition_mode
 
         self.tools = [
             self._make_query_method_tool(),
@@ -71,7 +78,7 @@ class LocalizationTools:
             self._make_get_inherited_library_classes_tool(),
             # self._make_call_site_details_tool(),
             # self._make_modify_blocks_tool(),
-            self._make_finalize_atomic_blocks_tool(),
+            self._make_finalize_blocks_tool(),
         ]
 
     def all(self) -> List[BaseTool]:
@@ -326,11 +333,11 @@ class LocalizationTools:
     # Make modifications to the atomic blocks based on static analysis
     def _make_modify_blocks_tool(self) -> StructuredTool:
         def _modify_atomic_blocks(
-            instructions: str, current_blocks: List[AtomicBlock] = None
-        ) -> List[AtomicBlock]:
+            instructions: str, current_blocks: AtomicBlockList = None
+        ) -> AtomicBlockList:
             # NOTE: current_blocks is passed in as an argument from the agent state
             if current_blocks is None:
-                raise AtomicBlockNotFoundError(
+                raise BlockNotFoundError(
                     "Current blocks not found",
                     extra_info={"current_blocks": current_blocks},
                 )
@@ -340,7 +347,7 @@ class LocalizationTools:
             ).format()
             modification_chat = LoadPrompt.load_prompt(
                 "modify_atomic_blocks.jinja2", PromptFormat.JINJA2, prompt_type="chat"
-            ).format(atomic_blocks=current_blocks, instructions=instructions)
+            ).format(atomic_blocks=current_blocks.atomic_blocks, instructions=instructions)
 
             result: AtomicBlockList = self.structured_llm.invoke_prompts(
                 modification_system,
@@ -349,7 +356,7 @@ class LocalizationTools:
                 strict=True,
             )
 
-            return result.atomic_blocks
+            return result
 
         return StructuredTool.from_function(
             func=_modify_atomic_blocks,
@@ -360,23 +367,45 @@ class LocalizationTools:
         )
 
     # Finalize the atomic blocks and end the agent
-    def _make_finalize_atomic_blocks_tool(self) -> StructuredTool:
-        def _finalize_atomic_blocks(
-            comments: str, current_blocks: List[AtomicBlock] = None
-        ) -> Tuple[List[AtomicBlock], str]:
-            # NOTE: current_blocks is passed in as an argument from the agent state
-            if current_blocks is None:
-                raise AtomicBlockNotFoundError(
-                    "Current blocks not found",
-                    extra_info={"current_blocks": current_blocks},
-                )
+    def _make_finalize_blocks_tool(self) -> StructuredTool:
+        # Choose implementation based on decomposition mode
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
 
-            return current_blocks, comments
+            def _finalize_blocks(
+                scenario: LocalizedScenario, comments: str
+            ) -> Tuple[LocalizedScenario, str]:
+                if scenario is None:
+                    raise BlockNotFoundError(
+                        "Current blocks not found",
+                        extra_info={"scenario": scenario},
+                    )
+                return scenario, comments
 
-        return StructuredTool.from_function(
-            func=_finalize_atomic_blocks,
-            name="finalize_atomic_blocks",
-            description=FINALIZE_BLOCKS_DESC,
-            args_schema=FinalizeBlocksArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
+            return StructuredTool.from_function(
+                func=_finalize_blocks,
+                name="finalize_blocks",
+                description=FINALIZE_LOCALIZED_SCENARIO_DESC,
+                args_schema=FinalizeScenarioArgs,
+                handle_tool_error=ToolExceptionHandler.handle_error,
+            )
+        else:
+
+            def _finalize_blocks(
+                current_blocks: AtomicBlockList, comments: str
+            ) -> Tuple[AtomicBlockList, str]:
+                # NOTE: current_blocks is passed in as an argument from the agent state
+                if current_blocks is None:
+                    raise BlockNotFoundError(
+                        "Current blocks not found",
+                        extra_info={"current_blocks": current_blocks},
+                    )
+
+                return current_blocks, comments
+
+            return StructuredTool.from_function(
+                func=_finalize_blocks,
+                name="finalize_blocks",
+                description=FINALIZE_ATOMIC_BLOCKS_DESC,
+                args_schema=FinalizeAtomicBlockArgs,
+                handle_tool_error=ToolExceptionHandler.handle_error,
+            )

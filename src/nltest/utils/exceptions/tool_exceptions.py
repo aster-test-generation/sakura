@@ -48,6 +48,6 @@ class CompilationUnitNotFound(BaseToolException):
     """Raised when a compilation unit cannot be found."""
     pass
 
-class AtomicBlockNotFoundError(BaseToolException):
-    """Raised when an atomic block cannot be found."""
+class BlockNotFoundError(BaseToolException):
+    """Raised when a block cannot be found."""
     pass

@@ -5,7 +5,7 @@ from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
 from hamster.code_analysis.model.models import TestingFramework
 
-from nltest.nl2test.models import NL2TestInput, AtomicBlock, CandidateMethod
+from nltest.nl2test.models import NL2TestInput, AtomicBlock, CandidateMethod, AtomicBlockList
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.pretty.prints import pretty_print
 
@@ -17,7 +17,7 @@ class LocalizationGrader:
         self.project_root = project_root
         self.common_analysis = CommonAnalysis(analysis)
 
-    def grade(self, atomic_blocks: List[AtomicBlock], detailed_output: bool = False) -> Tuple[float, Optional[Dict[str, Any]]]:
+    def grade(self, atomic_blocks: AtomicBlockList, detailed_output: bool = False) -> Tuple[float, Optional[Dict[str, Any]]]:
         """
         Grade the localization of atomic blocks to focal methods.
         
@@ -55,7 +55,7 @@ class LocalizationGrader:
         
         return coverage_score, detailed_results
 
-    def _find_optimal_coverage(self, focal_methods: Set[Tuple[str, str]], atomic_blocks: List[AtomicBlock]) -> Set[Tuple[str, str]]:
+    def _find_optimal_coverage(self, focal_methods: Set[Tuple[str, str]], atomic_blocks: AtomicBlockList) -> Set[Tuple[str, str]]:
         """
         Find optimal coverage by going through atomic blocks one-by-one.
         Each focal method can only be matched once across all atomic blocks.
@@ -64,7 +64,7 @@ class LocalizationGrader:
         available_focal_methods = focal_methods.copy()
         
         # Go through each atomic block in order
-        for block in atomic_blocks:
+        for block in atomic_blocks.atomic_blocks:
             block_candidates = set()
             
             # Extract candidate methods from this block
@@ -85,7 +85,7 @@ class LocalizationGrader:
     def _create_detailed_results(self, focal_methods: Set[Tuple[str, str]], 
                                 covered_focal_methods: Set[Tuple[str, str]], 
                                 coverage_score: float, 
-                                atomic_blocks: List[AtomicBlock]) -> Dict[str, Any]:
+                                atomic_blocks: AtomicBlockList) -> Dict[str, Any]:
         """Create comprehensive evaluation results for detailed output."""
         focal_methods_str = [f"{class_name}.{method_sig}" for class_name, method_sig in focal_methods]
         covered_methods_str = [f"{class_name}.{method_sig}" for class_name, method_sig in covered_focal_methods]
@@ -93,7 +93,7 @@ class LocalizationGrader:
         
         # Analyze atomic blocks and their coverage
         block_analysis = []
-        for i, block in enumerate(atomic_blocks):
+        for i, block in enumerate(atomic_blocks.atomic_blocks):
             block_candidates = []
             for candidate in block.candidate_methods:
                 method_key = (candidate.containing_class_name, candidate.method_signature)

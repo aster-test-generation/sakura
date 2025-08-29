@@ -13,6 +13,7 @@ OUTPUT_DIR = "../tests/output"
 CSV_FILE = "spring-petclinic/test2nl.csv"
 MAX_ENTRIES = 6  # Note: 0 = unlimited
 LLM_MODEL = "mistralai/devstral-small"
+DECOMPOSITION_MODE = "grammatical"  # or "gherkin"
 
 def main() -> None:
     script_dir = Path(__file__).resolve().parent
@@ -58,6 +59,9 @@ def main() -> None:
     
     if MAX_ENTRIES > 0:
         cmd.extend(["--max-entries", str(MAX_ENTRIES)])
+
+    if DECOMPOSITION_MODE:
+        cmd.extend(["--decomposition-mode", DECOMPOSITION_MODE])
     
     print(f"Running RQ4 localization evaluation...", flush=True)
     print(f"Command: {' '.join(cmd)}", flush=True)

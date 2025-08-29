@@ -6,7 +6,7 @@ from langchain.schema import Document
 from langchain_community.vectorstores import FAISS
 from langchain_community.docstore import InMemoryDocstore
 
-from .base_vector_store import BaseVectorStore
+from .base import BaseVectorStore
 
 from nltest.nl2test.preprocessing.embedders import BaseEmbedder
 from nltest.nl2test.models import SnippetType, Snippet, MethodSnippet, ClassSnippet

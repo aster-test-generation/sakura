@@ -6,10 +6,10 @@ from langgraph.checkpoint.memory import MemorySaver
 
 from nltest.nl2test.generation.composition.agent import CompositionReActAgent
 from nltest.nl2test.generation.composition.tools import CompositionTools
-from nltest.nl2test.models import AgentState, AtomicBlock, NL2TestInput
+from nltest.nl2test.models import AgentState, AtomicBlock, AtomicBlockList, NL2TestInput
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
-from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher
+from nltest.nl2test.preprocessing.searchers import ClassSearcher
+from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.utils.llm.llm_client import LLMClient, ClientType
 from nltest.utils.config.config import Config
 
@@ -39,16 +39,16 @@ class CompositionOrchestrator:
             max_iters=Config().get("composition", "max_iters")
         )
 
-    def assign_task(self, instructions: str, atomic_blocks: List[AtomicBlock]) -> Tuple[List[AtomicBlock], str]:
+    def assign_task(self, instructions: str, atomic_blocks: AtomicBlockList) -> Tuple[AtomicBlockList, str]:
         """
         Instruct the agent on how or why the atomic_blocks should be updated, and return the result.
 
         Args:
             instructions: What changes to make, or criticisms with the current decomposition.
-            atomic_blocks: The current list of AtomicBlock objects to be modified and improved.
+            atomic_blocks: The current AtomicBlockList to be modified and improved.
 
         Returns:
-            A tuple containing the revised list of AtomicBlock objects and any final comments.
+            A tuple containing the revised AtomicBlockList and any final comments.
         """
         initial_state = AgentState(
             atomic_blocks=atomic_blocks,
@@ -57,7 +57,7 @@ class CompositionOrchestrator:
         chat_prompt = self.chat_prompt.format(
             nl_description=self.nl2_input.description,
             instructions=instructions,
-            atomic_blocks=atomic_blocks,
+            atomic_blocks=atomic_blocks.atomic_blocks,
         )
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)

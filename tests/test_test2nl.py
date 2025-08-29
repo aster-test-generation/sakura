@@ -30,10 +30,12 @@ class TestTest2NL(TestCase):
 
         emb_model = "NOMIC-AI-EMB-7B"
 
-        project_root = Path(f"./resources/{self.project_name}")
+        # Make paths relative to this test file's directory
+        test_dir = Path(__file__).resolve().parent
+        project_root = (test_dir / "resources" / self.project_name).resolve()
         if not (project_root.exists() and project_root.is_dir()):
             raise Exception(f"Project root directory {project_root} does not exist.")
-        output_dir = Path(f"./output/{self.project_name}")
+        output_dir = (test_dir / "output" / self.project_name).resolve()
 
         self.assertTrue(os.getenv("OPENROUTER_API_KEY"), "OPENROUTER_API_KEY environment variable is not set.")
 
@@ -279,5 +281,4 @@ class TestTest2NL(TestCase):
                 "num_methods": len(focal_class.focal_method_names)
             })
         
-
 

@@ -1,6 +1,6 @@
 from typing import List
 
-from .base_indexer import BaseIndexer
+from .base import BaseIndexer
 
 from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor, MethodSnippetExtractor

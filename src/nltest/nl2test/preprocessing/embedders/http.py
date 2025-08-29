@@ -2,7 +2,7 @@ from typing import List
 
 import requests
 
-from .base_embedder import BaseEmbedder
+from .base import BaseEmbedder
 
 
 class HttpEmbedder(BaseEmbedder):

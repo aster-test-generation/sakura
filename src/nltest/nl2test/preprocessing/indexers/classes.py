@@ -2,7 +2,7 @@ from typing import List
 
 from cldk.analysis.java import JavaAnalysis
 
-from .base_indexer import BaseIndexer
+from .base import BaseIndexer
 
 from nltest.nl2test.models import ClassSnippet
 from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor

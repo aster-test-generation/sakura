@@ -1,8 +1,14 @@
 from __future__ import annotations
 
-from typing import List, Optional, Literal, Dict, Any
+from enum import Enum
+from typing import List, Optional, Literal, Dict, Any, Annotated
 
 from pydantic import BaseModel, Field, ConfigDict
+
+
+class DecompositionMode(Enum):
+    GHERKIN = "gherkin"
+    GRAMMATICAL = "grammatical"
 
 
 # ---- Gherkin Task Decomposition ----
@@ -118,3 +124,18 @@ class LocalizationEvaluationResults(BaseModel):
     uncovered_methods: List[str]
     atomic_blocks_analysis: List[Dict[str, Any]]
     evaluation_algorithm: str
+
+
+# ---- Aggregations ----
+
+
+class GrammaticalBlockList(BaseModel):
+    grammatical_blocks: Annotated[
+        List[GrammaticalBlock], Field(description="Ordered list of grammatical blocks.")
+    ]
+
+
+class AtomicBlockList(BaseModel):
+    atomic_blocks: Annotated[
+        List[AtomicBlock], Field(description="Ordered list of atomic blocks.")
+    ]

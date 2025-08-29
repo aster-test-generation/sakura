@@ -111,19 +111,34 @@ Returns:
   On failure, a structured error dict is returned.
 """
 
-FINALIZE_BLOCKS_DESC = """
-Finish and return the final AtomicBlocks for downstream execution after all modifications.
-Focus on clear comments for describing any challenges or rationale for the final plan.
+FINALIZE_ATOMIC_BLOCKS_DESC = """
+Finish and return the final grammatical AtomicBlocks with localized methods and clear comments for downstream execution after all modifications.
+Focus on concise, actionable comments capturing rationale, caveats, or localization notes relevant to implementation.
 Args:
   comments: Short rationale or execution notes for the finalized plan.
-  current_blocks: Current list of AtomicBlock objects. Take this from the output of the last `modify_atomic_blocks` call.
+  current_blocks: The finalized list of AtomicBlock objects.
 Use when:
-  You are done editing and ready to hand off to the next stage (e.g., test generation/execution).
-  Only call this once you are satisfied with the blocks and have called modify_atomic_blocks at least once.
+  You are done editing the grammatical blocks and ready to hand off to the next stage (e.g., test generation/execution).
+  Only call this once you are satisfied with potential methods and comments for the grammatical blocks.
 Limitations:
-  Does not modify content; simply packages the final state and comments.
+  Requires precise formatted block outputs that must be carefully checked and cross-referenced with the static analysis results.
 Returns:
   Tuple of (final AtomicBlock list, comments string).
+  On failure, a structured error dict is returned.
+"""
+
+FINALIZE_LOCALIZED_SCENARIO_DESC = """
+Finish and return the final LocalizedScenario plus clear comments for downstream execution after all modifications.
+The `scenario` argument is the localized scenario consisting of setup, tasks, and teardown blocks that have already been localized.
+Args:
+  comments: Short rationale or execution notes for the finalized plan.
+  scenario: LocalizedScenario aggregating setup, tasks, and teardown (localized) blocks.
+Use when:
+  You are done editing the scenario structure and method localization and ready to hand off to the next stage (e.g., test generation/execution).
+Limitations:
+  Requires precise formatted scenario outputs that must be carefully checked and cross-referenced with the static analysis results.
+Returns:
+  Tuple of (final LocalizedScenario, comments string).
   On failure, a structured error dict is returned.
 """
 

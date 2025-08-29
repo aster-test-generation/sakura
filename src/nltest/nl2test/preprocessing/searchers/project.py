@@ -2,7 +2,7 @@ from typing import List
 
 from langchain.schema import Document
 
-from .base_searcher import BaseSearcher
+from .base import BaseSearcher
 
 from nltest.nl2test.models import SnippetType
 from nltest.nl2test.preprocessing.vector_stores import (

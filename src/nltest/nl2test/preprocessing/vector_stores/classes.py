@@ -1,6 +1,6 @@
 from langchain.schema import Document
 
-from .base_faiss_vector_store import BaseFAISSVectorStore
+from .faiss_base import BaseFAISSVectorStore
 
 from nltest.nl2test.preprocessing.embedders import BaseEmbedder
 from nltest.nl2test.models import ClassSnippet

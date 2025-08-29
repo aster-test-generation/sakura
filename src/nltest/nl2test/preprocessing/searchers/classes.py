@@ -1,4 +1,4 @@
-from .base_searcher import BaseSearcher
+from .base import BaseSearcher
 
 from nltest.nl2test.preprocessing.vector_stores import ClassVectorStore
 

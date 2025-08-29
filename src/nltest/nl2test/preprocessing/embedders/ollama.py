@@ -3,7 +3,7 @@ from typing import List, Optional
 import numpy as np
 import ollama
 
-from .base_embedder import BaseEmbedder
+from .base import BaseEmbedder
 
 
 class OllamaEmbedder(BaseEmbedder):

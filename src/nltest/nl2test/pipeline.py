@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Union
 from pathlib import Path
 
 from cldk.analysis.java import JavaAnalysis
@@ -7,11 +7,23 @@ from nltest.nl2test.generation.localization.orchestrator import LocalizationOrch
 from nltest.nl2test.generation.composition.orchestrator import CompositionOrchestrator
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.tools import SupervisorTools
-from nltest.nl2test.models import AgentState, NL2TestInput, AtomicBlock, GrammaticalBlock, NL2LocalizationOutput, LocalizationEvaluationResults
-from nltest.nl2test.preprocessing.indexers.class_indexer import ClassIndexer
-from nltest.nl2test.preprocessing.indexers.method_indexer import MethodIndexer
-from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
-from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher
+from nltest.nl2test.models import (
+    AgentState,
+    NL2TestInput,
+    AtomicBlock,
+    GrammaticalBlock,
+    GrammaticalBlockList,
+    AtomicBlockList,
+    NL2LocalizationOutput,
+    LocalizationEvaluationResults,
+    Scenario,
+    LocalizedScenario,
+)
+from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.nl2test.preprocessing.indexers import ClassIndexer
+from nltest.nl2test.preprocessing.indexers import MethodIndexer
+from nltest.nl2test.preprocessing.searchers import ClassSearcher
+from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm.llm_client import LLMClient, ClientType
@@ -22,16 +34,17 @@ from nltest.utils.pretty.prints import pretty_print
 
 
 class Pipeline:
-    def __init__(self, analysis: JavaAnalysis, project_root: Path):
+    def __init__(self, analysis: JavaAnalysis, project_root: Path, *, decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL):
         self.analysis = analysis
         self.project_root = Path(project_root)
+        self.decomposition_mode = decomposition_mode
         
         # Get output directory from config
         config = Config()
         output_dir = Path(config.get("project", "output_dir"))
         self.data_manager = StructuredDataManager(output_dir)
         
-        self.nl_decomposer = NLDecomposer()
+        self.nl_decomposer = NLDecomposer(mode=self.decomposition_mode)
         self.method_indexer = MethodIndexer(analysis)
         self.class_indexer = ClassIndexer(analysis)
         
@@ -54,10 +67,18 @@ class Pipeline:
         
         return self.method_searcher, self.class_searcher
 
-    def decompose_natural_language(self, nl_description: str) -> List[GrammaticalBlock]:
+    def decompose_natural_language(self, nl_description: str) -> Union[GrammaticalBlockList, Scenario]:
+        """Decompose natural language based on pipeline decomposition mode.
+
+        Returns GrammaticalBlockList if GRAMMATICAL, or Scenario if GHERKIN.
+        """
         return self.nl_decomposer.decompose(nl_description)
 
-    def run_localization_agent(self, nl2_input: NL2TestInput, atomic_blocks: List[AtomicBlock]) -> Tuple[List[AtomicBlock], str]:
+    def run_localization_agent(
+        self,
+        nl2_input: NL2TestInput,
+        blocks: Union[GrammaticalBlockList, Scenario],
+    ) -> Tuple[Union[AtomicBlockList, LocalizedScenario], str]:
         if not self.method_searcher or not self.class_searcher:
             raise RuntimeError("Preprocessing must be run before localization agent")
             
@@ -65,26 +86,35 @@ class Pipeline:
             analysis=self.analysis,
             method_searcher=self.method_searcher,
             class_searcher=self.class_searcher,
-            nl2_input=nl2_input
+            nl2_input=nl2_input,
+            decomposition_mode=self.decomposition_mode,
         )
         
-        instructions = "Localize each atomic block to relevant methods in the code base, looking for both application and inherited library methods."
-        return self.localization_orchestrator.assign_task(instructions, atomic_blocks)
+        instructions = (
+            "Localize to relevant code: For grammatical blocks, convert them into atomic blocks"
+            " with candidate methods and notes. For Gherkin scenarios, produce a LocalizedScenario"
+            " that annotates each block with candidate methods and comments."
+        )
+        return self.localization_orchestrator.assign_task(instructions, blocks)
 
     def run_localization_evaluation_pipeline(self, nl2_input: NL2TestInput) -> NL2LocalizationOutput:
         # Run preprocessing
         self.run_preprocessing()
         
-        # Decompose natural language
-        grammatical_blocks = self.decompose_natural_language(nl2_input.description)
-        
-        # Convert to atomic blocks
-        atomic_blocks = [
-            AtomicBlock.from_grammatical_block(block) for block in grammatical_blocks
-        ]
-        
+        # Decompose natural language (type depends on mode)
+        blocks = self.decompose_natural_language(nl2_input.description)
+
         # Run localization agent
-        localized_blocks, comments = self.run_localization_agent(nl2_input, atomic_blocks)
+        result, comments = self.run_localization_agent(nl2_input, blocks)
+
+        # Only grammatical mode is currently supported for evaluation
+        if self.decomposition_mode != DecompositionMode.GRAMMATICAL:
+            raise RuntimeError("run_localization_evaluation_pipeline currently supports GRAMMATICAL mode only.")
+
+        if not isinstance(result, AtomicBlockList):
+            raise TypeError("Expected AtomicBlockList from localization in GRAMMATICAL mode.")
+
+        localized_blocks = result
 
         # Run evaluation using LocalizationGrader with detailed output
         grader = LocalizationGrader(nl2_input, self.analysis, self.project_root)

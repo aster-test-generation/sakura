@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from typing import List
 from unittest import TestCase
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -12,6 +11,12 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from nltest.nl2test.generation.localization import LocalizationOrchestrator, LocalizationTools
 from nltest.nl2test.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod, AbstractionLevel
+from nltest.nl2test.models.decomposition import (
+    DecompositionMode,
+    Scenario,
+    GrammaticalBlockList,
+    AtomicBlockList,
+)
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer, ProjectIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher, ProjectSearcher
@@ -41,15 +46,20 @@ class TestNL2Test(TestCase):
         llm_model = "mistralai/devstral-medium"
         emb_model = "nomic-embed-text:v1.5"
 
-        project_root = Path(f"./resources/{project_name}")
+        # Make paths relative to this test file's directory
+        test_dir = Path(__file__).resolve().parent
+        resources_dir = test_dir / "resources"
+        output_base_dir = test_dir / "output"
+
+        project_root = resources_dir / project_name
         if not (project_root.exists() and project_root.is_dir()):
-            raise Exception(f"Project root directory {project_root} does not exist.")
-        output_dir = Path(f"./output/{project_name}")
+            raise Exception(f"Project root directory {project_root.resolve()} does not exist.")
+        output_dir = output_base_dir / project_name
         print(output_dir.resolve())
 
         self.config = init_config(
             project_name=project_name,
-            base_project_dir="./resources",
+            base_project_dir=str(resources_dir),
             output_dir=str(output_dir),
             llm_provider=Provider.OPENROUTER,
             llm_model=llm_model,
@@ -272,31 +282,32 @@ class TestNL2Test(TestCase):
         search_results = proj_searcher.find_methods_in_range(desc_substr, i=1, j=num_similar)
         pretty_print("Get pet id", f"FOUND: {search_results}\nACTUAL: Pet.getId")
 
-    def test_nl_decomposition(self):
+    def test_nl_grammatical_decomposition_grammatical(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
-        nl_decomposer = NLDecomposer()
-        grammatical_blocks: List[GrammaticalBlock] = nl_decomposer.decompose(nl_description)
+        nl_decomposer = NLDecomposer(mode=DecompositionMode.GRAMMATICAL)
+        grammatical_blocks: GrammaticalBlockList = nl_decomposer.decompose(nl_description)
         pretty_print("Grammatical blocks", grammatical_blocks)
-        self.assertEqual(len(grammatical_blocks), 2)
+        self.assertEqual(len(grammatical_blocks.grammatical_blocks), 2)
 
-        self.assertEqual(len(grammatical_blocks[0].subjects), 1)
-        self.assertEqual(grammatical_blocks[0].subjects[0].lower(), "pet")
-        self.assertEqual(len(grammatical_blocks[0].prep_phrases), 1)
-        self.assertEqual(grammatical_blocks[0].prep_phrases[0].object.lower(), "owner")
+        blocks = grammatical_blocks.grammatical_blocks
+        self.assertEqual(len(blocks[0].subjects), 1)
+        self.assertEqual(blocks[0].subjects[0].lower(), "pet")
+        self.assertEqual(len(blocks[0].prep_phrases), 1)
+        self.assertEqual(blocks[0].prep_phrases[0].object.lower(), "owner")
 
-        self.assertEqual(len(grammatical_blocks[1].direct_objs), 0)
-        self.assertEqual(len(grammatical_blocks[1].subjects), 1)
-        self.assertEqual(grammatical_blocks[1].subjects[0].lower(), "id")
+        self.assertEqual(len(blocks[1].direct_objs), 0)
+        self.assertEqual(len(blocks[1].subjects), 1)
+        self.assertEqual(blocks[1].subjects[0].lower(), "id")
 
-    def test_nl_decomposition_high_abs(self):
+    def test_nl_grammatical_decomposition_high_abs_grammatical(self):
         nl_description = """
         Create a test case that verifies the ability to add a new pet to an owner's collection and persist it to the database. 
         The test should check that the pet is correctly associated with the owner, that the owner's pet count increases by one, and that the database assigns a unique identifier to the new pet. 
         Use JUnit 5 for test annotations and structure, along with AssertJ for making assertions about the state of the objects and the database. 
         The test should also ensure that the transactional behavior is correctly applied, allowing for a clean and consistent state after the test execution.
         """
-        nl_decomposer = NLDecomposer()
-        grammatical_blocks: List[GrammaticalBlock] = nl_decomposer.decompose(nl_description)
+        nl_decomposer = NLDecomposer(mode=DecompositionMode.GRAMMATICAL)
+        grammatical_blocks: GrammaticalBlockList = nl_decomposer.decompose(nl_description)
         pretty_print("Grammatical blocks", grammatical_blocks)
 
     def test_localization_call_site_tool(self):
@@ -314,21 +325,22 @@ class TestNL2Test(TestCase):
 
         cleaned_call_sites = call_site_tool.func(qualified_class_name, method_signature)
         pretty_print("Cleaned call site details", cleaned_call_sites)
+        
 
-    def test_localization_modify_atomic_block_tool(self):
-        pass
-
-    def test_localization_agent_simple(self):
+    def test_localization_agent_simple_grammatical(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
-        nl_decomposer = NLDecomposer()
-        grammatical_blocks: List[GrammaticalBlock] = nl_decomposer.decompose(nl_description)
+        nl_decomposer = NLDecomposer(mode=DecompositionMode.GRAMMATICAL)
+        grammatical_blocks: GrammaticalBlockList = nl_decomposer.decompose(nl_description)
 
         method_searcher = MethodIndexer(self.analysis).build_index()
         class_searcher = ClassIndexer(self.analysis).build_index()
 
-        atomic_blocks: List[AtomicBlock] = [
-            AtomicBlock.from_grammatical_block(gb) for gb in grammatical_blocks
-        ]
+        atomic_blocks = AtomicBlockList(
+            atomic_blocks=[
+                AtomicBlock.from_grammatical_block(gb)
+                for gb in grammatical_blocks.grammatical_blocks
+            ]
+        )
         pretty_print("Initial atomic blocks", atomic_blocks)
 
         supervisor_instructions = "Find the relevant methods and refine the atomic blocks."
@@ -343,12 +355,50 @@ class TestNL2Test(TestCase):
         localization_agent = LocalizationOrchestrator(self.analysis, method_searcher, class_searcher, nl2_input)
 
         usage_tracker.start()
-        refined_blocks, comments = localization_agent.assign_task(supervisor_instructions, atomic_blocks)
+        refined_blocks, comments = localization_agent.assign_task(
+            supervisor_instructions, atomic_blocks
+        )
         prices = usage_tracker.stop()
 
         pretty_print("Refined atomic blocks", refined_blocks)
         pretty_print("Comments", comments)
         pretty_print("Token usage", prices)
+
+    def test_localization_agent_simple_gherkin(self):
+        nl_description = "Ensure pet is added to owner and ID is generated."
+        nl_decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN)
+        scenario: Scenario = nl_decomposer.decompose(nl_description)
+
+        # Build searchers (not strictly needed for finalize, but keeps parity)
+        method_searcher = MethodIndexer(self.analysis).build_index()
+        class_searcher = ClassIndexer(self.analysis).build_index()
+
+        # Create tools configured for GHERKIN mode and exercise finalize tool
+        localization_tools = LocalizationTools(
+            analysis=self.analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+            structured_llm=MagicMock(),
+            decomposition_mode=DecompositionMode.GHERKIN,
+        )
+        finalize_tool = next(t for t in localization_tools.all() if t.name == "finalize_blocks")
+
+        result = finalize_tool.func(scenario, "No comments.")
+        self.assertIsInstance(result, tuple)
+        self.assertIsInstance(result[0], Scenario)
+        self.assertIsInstance(result[1], str)
+        pretty_print("Gherkin scenario", result[0])
+        pretty_print("Comments", result[1])
+
+    def test_nl_gherkin_decomposition_basic(self):
+        nl_description = "User logs in and sees the dashboard."
+        nl_decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN)
+        scenario = nl_decomposer.decompose(nl_description)
+        pretty_print("Gherkin scenario", scenario)
+        # Basic structural assertions
+        self.assertIsInstance(scenario, Scenario)
+        self.assertIsInstance(scenario.testing_framework, str)
+        self.assertIsInstance(scenario.tasks, list)
 
     def test_localization_grader(self):
         nl2_input = NL2TestInput(
@@ -429,7 +479,8 @@ class TestNL2Test(TestCase):
         )
         
         # Initialize pipeline
-        project_root = Path("./resources/spring-petclinic")
+        test_dir = Path(__file__).resolve().parent
+        project_root = (test_dir / "resources" / "spring-petclinic").resolve()
         pipeline = Pipeline(self.analysis, project_root)
         
         # Run preprocessing
@@ -483,7 +534,8 @@ class TestNL2Test(TestCase):
         )
         
         # Initialize pipeline
-        project_root = Path("./resources/spring-petclinic")
+        test_dir = Path(__file__).resolve().parent
+        project_root = (test_dir / "resources" / "spring-petclinic").resolve()
         pipeline = Pipeline(self.analysis, project_root)
         
         # Run the complete evaluation pipeline

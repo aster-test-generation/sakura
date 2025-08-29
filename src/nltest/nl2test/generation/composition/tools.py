@@ -13,13 +13,14 @@ from nltest.nl2test.models import (
     QueryMethodArgs,
     InstructionArgs,
     AtomicBlock,
+    AtomicBlockList,
     ModifyAtomicBlockNotesArgs,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
-from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher
+from nltest.nl2test.preprocessing.searchers import ClassSearcher
+from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.utils.analysis.common_analysis import CommonAnalysis
-from nltest.utils.exceptions import CallSiteNotFoundError, ClassNotFoundError, MethodNotFoundError, ToolExceptionHandler, AtomicBlockNotFoundError
+from nltest.utils.exceptions import CallSiteNotFoundError, ClassNotFoundError, MethodNotFoundError, ToolExceptionHandler, BlockNotFoundError
 from nltest.utils.execution import JavaCompilation
 from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
@@ -337,20 +338,20 @@ class CompositionTools:
 
     # Modify the notes of an atomic block if there is challenges with generating the test case for the block. Eg if the qualified class name is not in the same package as a package-private method.
     def _make_modify_atomic_block_notes_tool(self) -> StructuredTool:
-        def _modify_atomic_block_notes(order: int, new_notes: str) -> List[AtomicBlock]:
-            atomic_blocks = self.state.atomic_blocks
-            if not atomic_blocks or order < 0 or not any(atomic_block.order == order for atomic_block in atomic_blocks):
-                raise AtomicBlockNotFoundError(
+        def _modify_atomic_block_notes(order: int, new_notes: str) -> AtomicBlockList:
+            atomic_blocks_list = self.state.atomic_blocks.atomic_blocks
+            if not atomic_blocks_list or order < 0 or not any(atomic_block.order == order for atomic_block in atomic_blocks_list):
+                raise BlockNotFoundError(
                     f"Atomic block with order {order} not found.",
                     extra_info={"order": order},
                 )
 
-            for block in atomic_blocks:
+            for block in atomic_blocks_list:
                 if block.order == order:
                     block.notes = new_notes
                     break
 
-            return atomic_blocks
+            return self.state.atomic_blocks
 
         return StructuredTool.from_function(
             func=_modify_atomic_block_notes,

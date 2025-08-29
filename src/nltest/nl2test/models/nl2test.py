@@ -5,7 +5,7 @@ from typing import Annotated, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from .decomposition import AtomicBlock, LocalizationEvaluationResults
+from .decomposition import AtomicBlock, AtomicBlockList, LocalizationEvaluationResults
 
 
 class AbstractionLevel(Enum):
@@ -32,6 +32,6 @@ class NL2LocalizationOutput(BaseModel):
     """Combined output from NL2Test localization evaluation."""
 
     nl2_input: NL2TestInput
-    localized_blocks: List[AtomicBlock]
+    localized_blocks: AtomicBlockList
     evaluation_results: Optional[LocalizationEvaluationResults] = None
     coverage_score: float

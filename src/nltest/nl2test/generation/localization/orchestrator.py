@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, overload
 
 from cldk.analysis.java import JavaAnalysis
 from langchain_core.tools import BaseTool
@@ -16,6 +16,7 @@ from nltest.nl2test.models import (
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from langchain_core.prompts import PromptTemplate
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.utils.llm.llm_client import LLMClient, ClientType
@@ -46,42 +47,71 @@ class LocalizationOrchestrator:
         self.nl2_input = nl2_input
         self.decomposition_mode = decomposition_mode
 
-        self.chat_prompt = LoadPrompt().load_prompt(
-            "localization_agent.jinja2", PromptFormat.JINJA2, prompt_type="chat"
-        )
+        # Initialize prompts (chat + system) based on decomposition mode
+        chat_prompt, system_prompt = self._init_prompts()
+        self.chat_prompt = chat_prompt
+        system_message = system_prompt.format()
 
         self.agent = LocalizationReActAgent(
             llm=decision_llm,
             tools=tools,
             max_iters=Config().get("localization", "max_iters"),
+            system_message=system_message,
+            decomposition_mode=self.decomposition_mode,
         )
 
-    def assign_task(
-        self, instructions: str, blocks: Union[GrammaticalBlockList, Scenario]
-    ) -> Tuple[Union[AtomicBlockList, LocalizedScenario], str]:
-        """
-        Instruct the agent on how or why the blocks should be updated, and return the result.
-
-        Args:
-            instructions: What changes to make, or criticisms with the current decomposition.
-            blocks: Either the current GrammaticalBlockList (grammatical) or a Scenario (gherkin).
-
-        Returns:
-            - GRAMMATICAL mode: AtomicBlockList and final comments
-            - GHERKIN mode: LocalizedScenario and final comments
-        """
+    def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:
         if self.decomposition_mode == DecompositionMode.GHERKIN:
-            if not isinstance(blocks, Scenario):
-                raise TypeError("In GHERKIN mode, blocks must be a Scenario")
-            initial_state = AgentState(scenario=blocks)
-            prompt_blocks = blocks
+            chat_file = "localization_agent_gherkin.jinja2"
+            system_file = "localization_agent_gherkin.jinja2"
+        else:
+            chat_file = "localization_agent_grammatical.jinja2"
+            system_file = "localization_agent_grammatical.jinja2"
+
+        chat_prompt = LoadPrompt.load_prompt(
+            chat_file, PromptFormat.JINJA2, prompt_type="chat"
+        )
+        system_prompt = LoadPrompt.load_prompt(
+            system_file, PromptFormat.JINJA2, prompt_type="system"
+        )
+        return chat_prompt, system_prompt
+
+    @overload
+    def assign_task(
+        self, instructions: str, *, grammatical_blocks: GrammaticalBlockList
+    ) -> Tuple[AtomicBlockList, str]: ...
+
+    @overload
+    def assign_task(
+        self, instructions: str, *, scenario: Scenario
+    ) -> Tuple[LocalizedScenario, str]: ...
+
+    def assign_task(
+        self,
+        instructions: str,
+        *,
+        grammatical_blocks: GrammaticalBlockList | None = None,
+        scenario: Scenario | None = None,
+    ) -> Tuple[LocalizedScenario, str] | Tuple[AtomicBlockList, str]:
+        """
+        Assign a localization task with mode-specific inputs and outputs.
+
+        - GRAMMATICAL mode: provide grammatical_blocks, returns (AtomicBlockList, comments)
+        - GHERKIN mode: provide scenario, returns (LocalizedScenario, comments)
+        """
+        if (grammatical_blocks is None) == (scenario is None):
+            raise ValueError("Provide exactly one of grammatical_blocks or scenario.")
+
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            if scenario is None:
+                raise TypeError("In GHERKIN mode, pass scenario=")
+            initial_state = AgentState(scenario=scenario)
+            prompt_blocks = scenario
         elif self.decomposition_mode == DecompositionMode.GRAMMATICAL:
-            if not isinstance(blocks, GrammaticalBlockList):
-                raise TypeError(
-                    "In GRAMMATICAL mode, blocks must be a GrammaticalBlockList"
-                )
-            initial_state = AgentState(grammatical_blocks=blocks)
-            prompt_blocks = blocks.grammatical_blocks
+            if grammatical_blocks is None:
+                raise TypeError("In GRAMMATICAL mode, pass grammatical_blocks=")
+            initial_state = AgentState(grammatical_blocks=grammatical_blocks)
+            prompt_blocks = grammatical_blocks.grammatical_blocks
         else:
             raise ValueError(
                 f"Unsupported decomposition mode: {self.decomposition_mode}"
@@ -95,22 +125,17 @@ class LocalizationOrchestrator:
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
 
-        # Gherkin mode
         if self.decomposition_mode == DecompositionMode.GHERKIN:
-            if updated_state.localized_scenario is None:
+            if not updated_state.localized_scenario:
                 raise ValueError(
-                    "Agent did not return a LocalizedScenario in GHERKIN mode"
+                    "Agent did not return LocalizedScenario in GHERKIN mode"
                 )
-            if not isinstance(updated_state.localized_scenario, LocalizedScenario):
-                raise TypeError("Expected LocalizedScenario from agent in GHERKIN mode")
             return updated_state.localized_scenario, (
                 updated_state.final_comments or "No comments."
             )
 
-        # Grammatical mode
-        if updated_state.atomic_blocks is None:
+        if not updated_state.atomic_blocks:
             raise ValueError("Agent did not return AtomicBlockList in GRAMMATICAL mode")
-
         return updated_state.atomic_blocks, (
             updated_state.final_comments or "No comments."
         )

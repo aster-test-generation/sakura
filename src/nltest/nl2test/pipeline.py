@@ -95,7 +95,10 @@ class Pipeline:
             " with candidate methods and notes. For Gherkin scenarios, produce a LocalizedScenario"
             " that annotates each block with candidate methods and comments."
         )
-        return self.localization_orchestrator.assign_task(instructions, blocks)
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            return self.localization_orchestrator.assign_task(instructions, scenario=blocks)  # type: ignore[arg-type]
+        else:
+            return self.localization_orchestrator.assign_task(instructions, grammatical_blocks=blocks)  # type: ignore[arg-type]
 
     def run_localization_evaluation_pipeline(self, nl2_input: NL2TestInput) -> NL2LocalizationOutput:
         # Run preprocessing

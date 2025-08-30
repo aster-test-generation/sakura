@@ -10,7 +10,14 @@ from cldk.analysis import AnalysisLevel
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 from nltest.nl2test.generation.localization import LocalizationOrchestrator, LocalizationTools
-from nltest.nl2test.models import GrammaticalBlock, AtomicBlock, NL2TestInput, CandidateMethod, AbstractionLevel
+from nltest.nl2test.models import (
+    GrammaticalBlock,
+    AtomicBlock,
+    NL2TestInput,
+    CandidateMethod,
+    AbstractionLevel,
+    LocalizedScenario,
+)
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
     Scenario,
@@ -43,7 +50,7 @@ class TestNL2Test(TestCase):
         # llm_model = "qwen/qwen3-coder"
         # llm_model = "moonshotai/kimi-k2"
         # llm_model = "mistralai/devstral-small"
-        llm_model = "mistralai/devstral-medium"
+        # llm_model = "mistralai/devstral-medium"
         emb_model = "nomic-embed-text:v1.5"
 
         # Make paths relative to this test file's directory
@@ -356,7 +363,7 @@ class TestNL2Test(TestCase):
 
         usage_tracker.start()
         refined_blocks, comments = localization_agent.assign_task(
-            supervisor_instructions, atomic_blocks
+            supervisor_instructions, grammatical_blocks=grammatical_blocks
         )
         prices = usage_tracker.stop()
 
@@ -367,28 +374,44 @@ class TestNL2Test(TestCase):
     def test_localization_agent_simple_gherkin(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
         nl_decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN)
-        scenario: Scenario = nl_decomposer.decompose(nl_description)
 
-        # Build searchers (not strictly needed for finalize, but keeps parity)
+        scenario: Scenario = nl_decomposer.decompose(nl_description)
+        pretty_print("Initial scenario", scenario)
+
+        # Build searchers
         method_searcher = MethodIndexer(self.analysis).build_index()
         class_searcher = ClassIndexer(self.analysis).build_index()
 
-        # Create tools configured for GHERKIN mode and exercise finalize tool
-        localization_tools = LocalizationTools(
-            analysis=self.analysis,
-            method_searcher=method_searcher,
-            class_searcher=class_searcher,
-            structured_llm=MagicMock(),
+        supervisor_instructions = "Find the relevant methods and refine the scenario blocks."
+
+        nl2_input = NL2TestInput(
+            description=nl_description,
+            project_name="spring-petclinic",
+            qualified_class_name="",
+            method_signature="",
+        )
+
+        # Run localization agent in GHERKIN mode
+        localization_agent = LocalizationOrchestrator(
+            self.analysis,
+            method_searcher,
+            class_searcher,
+            nl2_input,
             decomposition_mode=DecompositionMode.GHERKIN,
         )
-        finalize_tool = next(t for t in localization_tools.all() if t.name == "finalize_blocks")
 
-        result = finalize_tool.func(scenario, "No comments.")
-        self.assertIsInstance(result, tuple)
-        self.assertIsInstance(result[0], Scenario)
-        self.assertIsInstance(result[1], str)
-        pretty_print("Gherkin scenario", result[0])
-        pretty_print("Comments", result[1])
+        usage_tracker.start()
+        localized_scenario, comments = localization_agent.assign_task(
+            supervisor_instructions, scenario=scenario
+        )
+        prices = usage_tracker.stop()
+
+        # Assertions and output
+        self.assertIsInstance(localized_scenario, LocalizedScenario)
+        self.assertIsInstance(comments, str)
+        pretty_print("Localized scenario", localized_scenario)
+        pretty_print("Comments", comments)
+        pretty_print("Token usage", prices)
 
     def test_nl_gherkin_decomposition_basic(self):
         nl_description = "User logs in and sees the dashboard."

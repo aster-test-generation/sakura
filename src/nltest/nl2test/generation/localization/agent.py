@@ -13,7 +13,7 @@ from nltest.nl2test.models import (
     Scenario,
     LocalizedScenario,
 )
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.utils.llm.llm_client import LLMClient
 
 
@@ -23,13 +23,12 @@ class LocalizationReActAgent(ReActAgent):
             *,
             llm: LLMClient,
             tools: List[BaseTool],
+            system_message: str,
             max_iters: int = 8,
+            decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
     ):
-        system_message = self._build_system_message()
         super().__init__(llm=llm, tools=tools, system_message=system_message, max_iters=max_iters)
-
-    def _build_system_message(self) -> str:
-        return LoadPrompt.load_prompt("localization_agent.jinja2", PromptFormat.JINJA2, prompt_type="system").format()
+        self.decomposition_mode = decomposition_mode
 
     def _prepare_tool_args(self, tool_name: str, raw_args: Dict, state: AgentState) -> Tuple[str, Dict]:
         # Stopped injecting from state to reduce tool complexity
@@ -48,33 +47,34 @@ class LocalizationReActAgent(ReActAgent):
         return tool_name, raw_args
 
     def _process_tool_output(self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List) -> None:
-        if tool_call["name"] == "modify_atomic_blocks" and isinstance(result, AtomicBlockList):
-            state.atomic_blocks = result
-            outputs.append(ToolMessage(content="AtomicBlocks successfully updated.", tool_call_id=tool_call["id"]))
-        elif tool_call["name"] == "finalize_blocks":
-            
-            try:
-                blocks, comments = result
-                if isinstance(blocks, AtomicBlockList):
-                    state.atomic_blocks = blocks
-                    state.final_comments = str(comments)
+        # In grammatical mode, modify_atomic_blocks updates the working AtomicBlockList
+        if tool_call["name"] == "modify_atomic_blocks":
+            if self.decomposition_mode == DecompositionMode.GRAMMATICAL and isinstance(result, AtomicBlockList):
+                state.atomic_blocks = result
+                outputs.append(
+                    ToolMessage(
+                        content="AtomicBlocks successfully updated.",
+                        tool_call_id=tool_call["id"],
+                    )
+                )
+            else:
+                outputs.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))
+            return
 
-                    outputs.append(ToolMessage(content=str(comments), tool_call_id=tool_call["id"]))
+        # Finalize and end based on decomposition mode; avoid per-type isinstance checks
+        if tool_call["name"] == "finalize_blocks":
+            blocks, comments = result
+            state.final_comments = str(comments)
 
-                    # End the agent
-                    setattr(self, "_end_now", True)
+            if self.decomposition_mode == DecompositionMode.GHERKIN:
+                state.localized_scenario = blocks  # Expected LocalizedScenario
+            else:
+                state.atomic_blocks = blocks  # Expected AtomicBlockList
 
-                    return
-                # Handle Gherkin LocalizedScenario finalization
-                if isinstance(blocks, LocalizedScenario):
-                    state.localized_scenario = blocks
-                    state.final_comments = str(comments)
-                    outputs.append(ToolMessage(content=str(comments), tool_call_id=tool_call["id"]))
-                    setattr(self, "_end_now", True)
-                    return
-            except Exception:
-                pass
-            
-            outputs.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))
-        else:
-            outputs.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))
+            outputs.append(ToolMessage(content=str(comments), tool_call_id=tool_call["id"]))
+            # End the agent
+            setattr(self, "_end_now", True)
+            return
+
+        # Default: just surface the tool result
+        outputs.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))

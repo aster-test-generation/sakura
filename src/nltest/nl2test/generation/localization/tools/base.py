@@ -1,28 +1,18 @@
-from typing import List, Dict, Any, Union, Literal, Tuple
+from typing import List, Dict, Any, Union
 
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java.models import JMethodDetail, JCallable
-from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.tools import StructuredTool, BaseTool
-from pydantic import RootModel, BaseModel, Field
 
 from nltest.nl2test.models import (
-    AtomicBlock,
     AtomicBlockList,
     QueryMethodArgs,
     QueryClassArgs,
     QueryVectorDataArgs,
     ReachableMethodsArgs,
-    InstructionArgs,
-    FinalizeScenarioArgs,
-    FinalizeAtomicBlockArgs,
-    DecompositionMode,
-    Scenario,
-    LocalizedScenario,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.nl2test.preprocessing.searchers import ClassSearcher
-from nltest.nl2test.preprocessing.searchers import MethodSearcher
+from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis import CommonAnalysis, Reachability
 from nltest.utils.exceptions import (
     InvalidArgumentError,
@@ -30,10 +20,9 @@ from nltest.utils.exceptions import (
     ClassNotFoundError,
     MethodNotFoundError,
     CallSiteNotFoundError,
-    FormatError,
 )
 from nltest.utils.exceptions.tool_exceptions import BlockNotFoundError
-from nltest.utils.llm import FormatValidator, LLMClient
+from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.localization.tool_descriptions import (
     QUERY_METHOD_DESC,
     QUERY_CLASS_DESC,
@@ -43,16 +32,12 @@ from nltest.nl2test.generation.localization.tool_descriptions import (
     CLASS_DETAILS_DESC,
     INHERITED_LIBRARY_CLASSES_DESC,
     CALL_SITE_DETAILS_DESC,
-    MODIFY_BLOCKS_DESC,
-    FINALIZE_ATOMIC_BLOCKS_DESC,
-    FINALIZE_LOCALIZED_SCENARIO_DESC,
 )
 
 
-# Use AtomicBlockList from models
+class BaseLocalizationTools:
+    """Shared localization tools; subclasses implement finalize step."""
 
-
-class LocalizationTools:
     def __init__(
         self,
         *,
@@ -60,15 +45,14 @@ class LocalizationTools:
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         structured_llm: LLMClient,
-        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
-    ):
+    ) -> None:
         self.analysis = analysis
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
         self.structured_llm = structured_llm
-        self.decomposition_mode = decomposition_mode
 
-        self.tools = [
+        # Subclasses should add their finalize tool if desired
+        self.tools: List[BaseTool] = [
             self._make_query_method_tool(),
             self._make_query_class_tool(),
             self._make_reachable_methods_tool(),
@@ -76,9 +60,6 @@ class LocalizationTools:
             self._make_method_details_tool(),
             self._make_class_details_tool(),
             self._make_get_inherited_library_classes_tool(),
-            # self._make_call_site_details_tool(),
-            # self._make_modify_blocks_tool(),
-            self._make_finalize_blocks_tool(),
         ]
 
     def all(self) -> List[BaseTool]:
@@ -210,7 +191,7 @@ class LocalizationTools:
                 "return_type": method_details.return_type,
                 "parameter_types": [p.type for p in method_details.parameters],
                 "comments": [c.content for c in method_details.comments],
-                "visibility": visibility,  # Options: "public", "same_package_or_subclass", "same_package"
+                "visibility": visibility,
             }
 
         return StructuredTool.from_function(
@@ -222,7 +203,6 @@ class LocalizationTools:
         )
 
     # Get basic class details like what it extends, implements, modifiers, and annotations.
-    # Only includes information from the class itself, not its inheritance graph.
     def _make_class_details_tool(self) -> StructuredTool:
         def _get_class_details(
             qualified_class_name: str,
@@ -240,7 +220,6 @@ class LocalizationTools:
                 "extends_list": class_details.extends_list,
                 "implements_list": class_details.implements_list,
                 "annotations": class_details.annotations,
-                # TODO: Decide if we should get field declarations
             }
 
         return StructuredTool.from_function(
@@ -329,83 +308,3 @@ class LocalizationTools:
             args_schema=QueryMethodArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
-
-    # Make modifications to the atomic blocks based on static analysis
-    def _make_modify_blocks_tool(self) -> StructuredTool:
-        def _modify_atomic_blocks(
-            instructions: str, current_blocks: AtomicBlockList = None
-        ) -> AtomicBlockList:
-            # NOTE: current_blocks is passed in as an argument from the agent state
-            if current_blocks is None:
-                raise BlockNotFoundError(
-                    "Current blocks not found",
-                    extra_info={"current_blocks": current_blocks},
-                )
-
-            modification_system = LoadPrompt.load_prompt(
-                "modify_atomic_blocks.jinja2", PromptFormat.JINJA2, prompt_type="system"
-            ).format()
-            modification_chat = LoadPrompt.load_prompt(
-                "modify_atomic_blocks.jinja2", PromptFormat.JINJA2, prompt_type="chat"
-            ).format(atomic_blocks=current_blocks.atomic_blocks, instructions=instructions)
-
-            result: AtomicBlockList = self.structured_llm.invoke_prompts(
-                modification_system,
-                modification_chat,
-                schema=AtomicBlockList,
-                strict=True,
-            )
-
-            return result
-
-        return StructuredTool.from_function(
-            func=_modify_atomic_blocks,
-            name="modify_atomic_blocks",
-            description=MODIFY_BLOCKS_DESC,
-            args_schema=InstructionArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    # Finalize the atomic blocks and end the agent
-    def _make_finalize_blocks_tool(self) -> StructuredTool:
-        # Choose implementation based on decomposition mode
-        if self.decomposition_mode == DecompositionMode.GHERKIN:
-
-            def _finalize_blocks(
-                scenario: LocalizedScenario, comments: str
-            ) -> Tuple[LocalizedScenario, str]:
-                if scenario is None:
-                    raise BlockNotFoundError(
-                        "Current blocks not found",
-                        extra_info={"scenario": scenario},
-                    )
-                return scenario, comments
-
-            return StructuredTool.from_function(
-                func=_finalize_blocks,
-                name="finalize_blocks",
-                description=FINALIZE_LOCALIZED_SCENARIO_DESC,
-                args_schema=FinalizeScenarioArgs,
-                handle_tool_error=ToolExceptionHandler.handle_error,
-            )
-        else:
-
-            def _finalize_blocks(
-                current_blocks: AtomicBlockList, comments: str
-            ) -> Tuple[AtomicBlockList, str]:
-                # NOTE: current_blocks is passed in as an argument from the agent state
-                if current_blocks is None:
-                    raise BlockNotFoundError(
-                        "Current blocks not found",
-                        extra_info={"current_blocks": current_blocks},
-                    )
-
-                return current_blocks, comments
-
-            return StructuredTool.from_function(
-                func=_finalize_blocks,
-                name="finalize_blocks",
-                description=FINALIZE_ATOMIC_BLOCKS_DESC,
-                args_schema=FinalizeAtomicBlockArgs,
-                handle_tool_error=ToolExceptionHandler.handle_error,
-            )

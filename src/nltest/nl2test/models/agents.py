@@ -19,6 +19,10 @@ class AgentState(BaseModel):
         List[Union[BaseMessage, Dict[str, str]]], "List of messages (Human/AI/Tool)"
     ] = Field(default_factory=list)
     iterations: Annotated[int, "The current iteration number of the agent"] = 0
+    tool_calls: Annotated[
+        Dict[str, Dict[str, int]],
+        "Mapping: tool name -> encoded argument -> count of calls",
+    ] = Field(default_factory=dict)
     grammatical_blocks: Annotated[
         Optional[GrammaticalBlockList],
         "Input grammatical blocks when using grammatical mode",

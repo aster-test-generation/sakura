@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
 from typing import List, Any, Dict, Union
@@ -12,33 +14,42 @@ from nltest.nl2test.models import (
     QueryClassArgs,
     QueryMethodArgs,
     InstructionArgs,
-    AtomicBlock,
     AtomicBlockList,
     ModifyAtomicBlockNotesArgs,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.nl2test.preprocessing.searchers import ClassSearcher
-from nltest.nl2test.preprocessing.searchers import MethodSearcher
+from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis.common_analysis import CommonAnalysis
-from nltest.utils.exceptions import CallSiteNotFoundError, ClassNotFoundError, MethodNotFoundError, ToolExceptionHandler, BlockNotFoundError
+from nltest.utils.exceptions import (
+    CallSiteNotFoundError,
+    ClassNotFoundError,
+    MethodNotFoundError,
+    ToolExceptionHandler,
+)
+from nltest.utils.exceptions.tool_exceptions import BlockNotFoundError
 from nltest.utils.execution import JavaCompilation
 from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import FormatValidator, LLMClient
-from nltest.nl2test.generation.composition.tool_descriptions import EXTRACT_CODE_DESC
+from nltest.nl2test.generation.composition.tool_descriptions import (
+    EXTRACT_CODE_DESC,
+    METHOD_DETAILS_DESC,
+)
 
 
-class CompositionTools:
+class BaseCompositionTools:
+    """Shared composition tools; subclasses can extend with mode-specific tools."""
+
     def __init__(
-            self,
-            *,
-            analysis: JavaAnalysis,
-            method_searcher: MethodSearcher,
-            class_searcher: ClassSearcher,
-            structured_llm: LLMClient,
-            base_project_dir: Union[str, Path],
-            nl2_input: NL2TestInput,
-    ):
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        structured_llm: LLMClient,
+        base_project_dir: Union[str, Path],
+        nl2_input: NL2TestInput,
+    ) -> None:
         self.analysis = analysis
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
@@ -47,13 +58,14 @@ class CompositionTools:
         self.project_root: Path = Path(base_project_dir) / nl2_input.project_name
         self.nl2_input: NL2TestInput = nl2_input
 
-        self.tools = [
+        # Keep the same initial tool set as before; subclasses may append.
+        self.tools: List[BaseTool] = [
             self._make_extract_code_tool(),
             self._make_method_details_tool(),
             self._make_view_test_code_tool(),
             self._make_generate_test_tool(),
             self._make_compile_test_tool(),
-            self._make_execution_test_tool()
+            self._make_execution_test_tool(),
         ]
 
     def all(self) -> List[BaseTool]:
@@ -75,11 +87,11 @@ class CompositionTools:
             func=_extract_method_code,
             name="extract_method_code",
             description=EXTRACT_CODE_DESC,
-            handle_tool_error=ToolExceptionHandler.handle_error
+            handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     # Get basic method details like what it returns, parameters, modifiers, and comments.
-    def _make_method_details_tool(self) -> StructuredTool: 
+    def _make_method_details_tool(self) -> StructuredTool:
         def _get_method_details(qualified_class_name: str, method_signature: str) -> Dict[str, Union[str, List[str]]]:
             method_details = self.analysis.get_method(qualified_class_name, method_signature)
             if not method_details:
@@ -97,7 +109,7 @@ class CompositionTools:
                 "return_type": method_details.return_type,
                 "parameter_types": [p.type for p in method_details.parameters],
                 "comments": [c.content for c in method_details.comments],
-                "visibility": visibility,  # Options: "public", "same_package_or_subclass", "same_package"
+                "visibility": visibility,
             }
 
         return StructuredTool.from_function(
@@ -105,12 +117,11 @@ class CompositionTools:
             name="get_method_details",
             description=METHOD_DETAILS_DESC,
             args_schema=QueryMethodArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error
+            handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_call_site_details_tool(self) -> StructuredTool:
-        def _get_call_site_details(qualified_class_name: str, method_signature: str) -> List[
-            Dict[str, Union[str, List[str]]]]:
+        def _get_call_site_details(qualified_class_name: str, method_signature: str) -> List[Dict[str, Union[str, List[str]]]]:
             method_details = self.analysis.get_method(qualified_class_name, method_signature)
             if not method_details:
                 raise CallSiteNotFoundError(
@@ -121,30 +132,32 @@ class CompositionTools:
             entries = self.analysis.get_callees(
                 source_class_name=qualified_class_name,
                 source_method_declaration=method_signature,
-                using_symbol_table=True
+                using_symbol_table=True,
             ).get("callee_details", [])
 
-            result = []
+            result: List[Dict[str, Any]] = []
             for entry in entries:
                 callee_details: JMethodDetail = entry["callee_method"]
                 method_details: JCallable = callee_details.method
                 lines = entry.get("calling_lines", [])
                 count = max(len(lines), 1)
-                result.append({
-                    "qualified_class_name": callee_details.klass,
-                    "method_signature": method_details.signature,
-                    "return_type": method_details.return_type,
-                    "parameter_types": [p.type for p in method_details.parameters],
-                    "modifiers": method_details.modifiers,
-                    "num_times_called": count,
-                })
+                result.append(
+                    {
+                        "qualified_class_name": callee_details.klass,
+                        "method_signature": method_details.signature,
+                        "return_type": method_details.return_type,
+                        "parameter_types": [p.type for p in method_details.parameters],
+                        "modifiers": method_details.modifiers,
+                        "num_times_called": count,
+                    }
+                )
             return result
 
         return StructuredTool.from_function(
             func=_get_call_site_details,
             name="get_call_site_details",
             description="",
-            handle_tool_error=ToolExceptionHandler.handle_error
+            handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     # For instantiating class properties that might be used
@@ -159,11 +172,13 @@ class CompositionTools:
 
             field_details = []
             for field in class_details.field_declarations:
-                field_details.append({
-                    "variable_names": field.variables,
-                    "type": field.type,
-                    "modifiers": field.modifiers,
-                })
+                field_details.append(
+                    {
+                        "variable_names": field.variables,
+                        "type": field.type,
+                        "modifiers": field.modifiers,
+                    }
+                )
 
             return field_details
 
@@ -172,7 +187,7 @@ class CompositionTools:
             name="get_class_fields",
             description="",
             args_schema=QueryClassArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error
+            handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     # For mocking dependencies or imports in test file
@@ -198,8 +213,8 @@ class CompositionTools:
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
-            class_constructors = []
-            class_factories = []
+            class_constructors: List[str] = []
+            class_factories: List[str] = []
 
             for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
                 method_details = self.analysis.get_method(qualified_class_name, method_sig)
@@ -209,22 +224,20 @@ class CompositionTools:
                 if method_details.is_constructor:
                     class_constructors.append(method_sig)
                 elif (
-                        "static" in method_details.modifiers
-                        and qualified_class_name == method_details.return_type
+                    "static" in method_details.modifiers
+                    and qualified_class_name == method_details.return_type
                 ):
                     class_factories.append(method_sig)
 
-            class_constructors_and_factories = []
+            class_constructors_and_factories: List[Dict[str, str]] = []
             for method_sig in class_constructors:
-                class_constructors_and_factories.append({
-                    "method_signature": method_sig,
-                    "type": "constructor"
-                })
+                class_constructors_and_factories.append(
+                    {"method_signature": method_sig, "type": "constructor"}
+                )
             for method_sig in class_factories:
-                class_constructors_and_factories.append({
-                    "method_signature": method_sig,
-                    "type": "factory"
-                })
+                class_constructors_and_factories.append(
+                    {"method_signature": method_sig, "type": "factory"}
+                )
 
             return class_constructors_and_factories
 
@@ -233,12 +246,12 @@ class CompositionTools:
             name="get_class_constructors_and_factories",
             description="",
             args_schema=QueryClassArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error
+            handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_get_getters_and_setters_tool(self) -> StructuredTool:
         def _get_getters_and_setters(qualified_class_name: str) -> List[str]:
-            getters_and_setters = []
+            getters_and_setters: List[str] = []
             for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
                 method_details = self.analysis.get_method(qualified_class_name, method_sig)
                 if not method_details:
@@ -254,7 +267,7 @@ class CompositionTools:
             name="get_getters_and_setters",
             description="",
             args_schema=QueryClassArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error
+            handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_view_test_code_tool(self) -> StructuredTool:
@@ -274,9 +287,7 @@ class CompositionTools:
     def _make_generate_test_tool(self) -> StructuredTool:
         def _generate_test_code(instructions: str) -> str:
             generation_prompt = LoadPrompt.load_prompt("generate_tests.jinja2", PromptFormat.JINJA2)
-            generation_prompt = generation_prompt.format(
-                instructions=instructions,
-            )  # TODO: Refine prompts
+            generation_prompt = generation_prompt.format(instructions=instructions)
             try:
                 java_raw = self.structured_llm.generate(generation_prompt, sanitize=True)
                 java_code = FormatValidator.strip_java_block(java_raw)
@@ -286,11 +297,11 @@ class CompositionTools:
                     test_code=java_code,
                 )
 
-                saved_path = TestFileManager(self.project_root).save_single(test_file_info)
+                _ = TestFileManager(self.project_root).save_single(test_file_info)
                 return "Successfully generated test code."
-            except HTTPError as e:
+            except HTTPError:
                 return "Failed to generation test code due to HTTP error."
-            except JSONDecodeError as e:
+            except JSONDecodeError:
                 return "Failed to generation test code due to JSON decode error."
 
         return StructuredTool.from_function(
@@ -336,11 +347,17 @@ class CompositionTools:
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    # Modify the notes of an atomic block if there is challenges with generating the test case for the block. Eg if the qualified class name is not in the same package as a package-private method.
+    # Modify the notes of an atomic block if there are challenges with generating the test case for the block.
     def _make_modify_atomic_block_notes_tool(self) -> StructuredTool:
         def _modify_atomic_block_notes(order: int, new_notes: str) -> AtomicBlockList:
-            atomic_blocks_list = self.state.atomic_blocks.atomic_blocks
-            if not atomic_blocks_list or order < 0 or not any(atomic_block.order == order for atomic_block in atomic_blocks_list):
+            # NOTE: This expects the tool function to have access to agent state via composition in future.
+            # Kept for parity with prior implementation; not registered by default in tools list.
+            atomic_blocks_list = self.state.atomic_blocks.atomic_blocks  # type: ignore[attr-defined]
+            if (
+                not atomic_blocks_list
+                or order < 0
+                or not any(atomic_block.order == order for atomic_block in atomic_blocks_list)
+            ):
                 raise BlockNotFoundError(
                     f"Atomic block with order {order} not found.",
                     extra_info={"order": order},
@@ -351,7 +368,7 @@ class CompositionTools:
                     block.notes = new_notes
                     break
 
-            return self.state.atomic_blocks
+            return self.state.atomic_blocks  # type: ignore[attr-defined]
 
         return StructuredTool.from_function(
             func=_modify_atomic_block_notes,
@@ -361,7 +378,6 @@ class CompositionTools:
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-
     def _parse_and_validate(self, content: str, expected_type: type) -> Any:
         for _ in range(3):
             try:
@@ -369,6 +385,7 @@ class CompositionTools:
                 if isinstance(data, expected_type):
                     return data
             except json.JSONDecodeError:
-                correction = self.structured_llm.generate("TEMP")  # TODO: Modify this prompts
+                correction = self.structured_llm.generate("TEMP")  # TODO: refine prompt
                 content = correction
         raise ValueError(f"Failed to parse output as {expected_type}")
+

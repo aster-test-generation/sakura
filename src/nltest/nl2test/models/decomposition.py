@@ -14,24 +14,24 @@ class DecompositionMode(Enum):
 # ---- Gherkin Task Decomposition ----
 
 
-class Block(BaseModel):
+class Step(BaseModel):
     id: int
     task: str
     uses: str
     produces: str
 
 
-class GherkinBlock(BaseModel):
-    given: List[Block]
-    when: List[Block]
-    then: List[Block]
+class GherkinStep(BaseModel):
+    given: List[Step]
+    when: List[Step]
+    then: List[Step]
 
 
 class Scenario(BaseModel):
     testing_framework: str
-    setup: List[Block]
-    tasks: List[GherkinBlock]
-    teardown: List[Block]
+    setup: List[Step]
+    steps: List[GherkinStep]
+    teardown: List[Step]
 
 
 # ---- Localized Gherkin Task Decomposition ----
@@ -46,22 +46,68 @@ class CandidateMethod(BaseModel):
     return_type: str
 
 
-class LocalizedBlock(Block):
+class LocalizedStep(Step):
     candidate_methods: List[CandidateMethod]
+    best_candidate: CandidateMethod
+    arg_bindings: List[ArgBinding]
     comments: str
 
 
-class LocalizedGherkinBlock(BaseModel):
-    given: List[LocalizedBlock]
-    when: List[LocalizedBlock]
-    then: List[LocalizedBlock]
+class LocalizedGherkinStep(BaseModel):
+    given: List[LocalizedStep]
+    when: List[LocalizedStep]
+    then: List[LocalizedStep]
 
 
 class LocalizedScenario(Scenario):
     testing_framework: str
-    setup: List[LocalizedBlock]
-    tasks: List[LocalizedGherkinBlock]
-    teardown: List[LocalizedBlock]
+    setup: List[LocalizedStep]
+    steps: List[LocalizedGherkinStep]
+    teardown: List[LocalizedStep]
+
+    @classmethod
+    def from_scenario(cls, scenario: Scenario) -> "LocalizedScenario":
+        """Create a LocalizedScenario from a plain Scenario.
+
+        Fields not present in Scenario are initialized with empty defaults so the
+        localization agent can fill them in later.
+        """
+
+        def _to_localized_step(s: Step) -> LocalizedStep:
+            # Initialize required fields with empty defaults
+            empty_candidate = CandidateMethod(
+                implementing_class_name="",
+                containing_class_name="",
+                method_signature="",
+                return_type="",
+            )
+            return LocalizedStep(
+                id=s.id,
+                task=s.task,
+                uses=s.uses,
+                produces=s.produces,
+                candidate_methods=[],
+                best_candidate=empty_candidate,
+                arg_bindings=[],
+                comments="",
+            )
+
+        localized_steps: List[LocalizedGherkinStep] = []
+        for gstep in scenario.steps:
+            localized_steps.append(
+                LocalizedGherkinStep(
+                    given=[_to_localized_step(s) for s in gstep.given],
+                    when=[_to_localized_step(s) for s in gstep.when],
+                    then=[_to_localized_step(s) for s in gstep.then],
+                )
+            )
+
+        return cls(
+            testing_framework=scenario.testing_framework,
+            setup=[_to_localized_step(s) for s in scenario.setup],
+            steps=localized_steps,
+            teardown=[_to_localized_step(s) for s in scenario.teardown],
+        )
 
 
 class ArgBinding(BaseModel):
@@ -124,6 +170,10 @@ class LocalizationEvaluationResults(BaseModel):
     uncovered_methods: List[str]
     atomic_blocks_analysis: List[Dict[str, Any]]
     evaluation_algorithm: str
+    # Include original structures for analysis without flattening
+    atomic_blocks: Optional[AtomicBlockList] = None
+    localized_scenario: Optional[LocalizedScenario] = None
+    scenario_analysis: Optional[Dict[str, Any]] = None
 
 
 # ---- Aggregations ----

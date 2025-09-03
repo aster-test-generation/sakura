@@ -14,21 +14,21 @@ from nltest.utils.llm.model import Provider
 
 
 def init_config(
-        project_name: str,
-        *,
-        base_project_dir: str,
-        output_dir: str,
-        llm_provider: Provider,
-        llm_model: str,
-        emb_provider: Provider = None,
-        emb_model: str = None,
-        llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint
-        emb_api_url: str = None,
-        llm_api_key: str = None,
-        emb_api_key: str = None,
-        localization_max_iters: int = 20,
-        composition_max_iters: int = 20,
-        reuse_config: bool = False,
+    project_name: str,
+    *,
+    base_project_dir: str,
+    output_dir: str,
+    llm_provider: Provider,
+    llm_model: str,
+    emb_provider: Provider = None,
+    emb_model: str = None,
+    llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint
+    emb_api_url: str = None,
+    llm_api_key: str = None,
+    emb_api_key: str = None,
+    localization_max_iters: int = 40,
+    composition_max_iters: int = 40,
+    reuse_config: bool = False,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -73,6 +73,7 @@ def init_config(
     config.set("emb", "api_key", val=emb_api_key)
 
     # Assign localization agent settings
+    # NOTE: Max iters should be higher for open-source models that do not support parallel tool calling
     config.set("localization", "max_iters", val=localization_max_iters or 20)
 
     # Assign composition agent settings
@@ -161,9 +162,9 @@ class Config:
             try:
                 current_modified = os.path.getmtime(self._conf_file)
                 if (
-                        self._last_modified is None
-                        or current_modified != self._last_modified
-                        or reuse is False
+                    self._last_modified is None
+                    or current_modified != self._last_modified
+                    or reuse is False
                 ):
                     self.config = toml.load(self._conf_file)
                     self.last_modified = current_modified

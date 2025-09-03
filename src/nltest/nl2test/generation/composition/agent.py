@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Optional
 
 from langchain_core.messages import ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
@@ -18,8 +18,10 @@ class CompositionReActAgent(ReActAgent):
             llm: LLMClient,
             tools: List[BaseTool],
             max_iters: int = 8,
+            system_message: Optional[str] = None,
     ):
-        system_message = self._build_system_message()
+        # Allow caller to inject system_message for parity with localization
+        system_message = system_message or self._build_system_message()
         super().__init__(llm=llm, tools=tools, system_message=system_message, max_iters=max_iters)
 
     def _build_system_message(self) -> str:

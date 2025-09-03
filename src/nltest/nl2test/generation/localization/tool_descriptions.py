@@ -129,10 +129,10 @@ Returns:
 
 FINALIZE_LOCALIZED_SCENARIO_DESC = """
 Finish and return the final LocalizedScenario plus clear comments for downstream execution after all modifications.
-The `scenario` argument is the localized scenario consisting of setup, tasks, and teardown blocks that have already been localized.
+The `scenario` argument is the localized scenario consisting of setup, steps, and teardown that have already been localized.
 Args:
   comments: Short rationale or execution notes for the finalized plan.
-  scenario: LocalizedScenario aggregating setup, tasks, and teardown (localized) blocks.
+  scenario: LocalizedScenario aggregating setup, steps, and teardown.
 Use when:
   You are done editing the scenario structure and method localization and ready to hand off to the next stage (e.g., test generation/execution).
 Limitations:

@@ -36,7 +36,7 @@ class LocalizationReActAgent(ReActAgent):
         #if tool_name == "modify_atomic_blocks":
         #    raw_args = dict(raw_args)
         #    raw_args.setdefault("current_blocks", getattr(state, "atomic_blocks", AtomicBlockList(atomic_blocks=[])))
-        #elif tool_name == "finalize_blocks":
+        #elif tool_name == "finalize":
         #    raw_args = dict(raw_args)
         #    # Support either Gherkin Scenario or AtomicBlockList depending on the flow
         #    if "scenario" not in raw_args and getattr(state, "scenario", None) is not None:
@@ -62,7 +62,7 @@ class LocalizationReActAgent(ReActAgent):
             return
 
         # Finalize and end based on decomposition mode; avoid per-type isinstance checks
-        if tool_call["name"] == "finalize_blocks":
+        if tool_call["name"] == "finalize":
             blocks, comments = result
             state.final_comments = str(comments)
 

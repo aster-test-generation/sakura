@@ -176,10 +176,21 @@ class LocalizationGrader:
         available_focal_methods = set(focal_methods)
 
         for block in blocks:
-            block_candidates = {
-                (cm.containing_class_name, cm.method_signature)
-                for cm in getattr(block, "candidate_methods", [])
-            }
+            block_candidates: Set[Tuple[str, str]] = set()
+
+            for cm in getattr(block, "candidate_methods", []) or []:
+                block_candidates.add((cm.containing_class_name, cm.method_signature))
+
+            best = getattr(block, "best_candidate", None)
+            if best is not None:
+                # Guard against placeholder/empty candidates
+                if getattr(best, "containing_class_name", "") and getattr(
+                    best, "method_signature", ""
+                ):
+                    block_candidates.add(
+                        (best.containing_class_name, best.method_signature)
+                    )
+
             for focal_method in list(available_focal_methods):
                 if focal_method in block_candidates:
                     covered_focal_methods.add(focal_method)

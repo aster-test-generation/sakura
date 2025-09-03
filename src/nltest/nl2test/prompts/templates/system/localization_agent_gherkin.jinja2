@@ -37,6 +37,7 @@ You are meticulous and will take as many turns as needed to achieve the best pos
 # END CONDITIONS
 You may call the `finalize` tool to produce the final output only when:
 - Each step has more than one verified method, either from the application or an external source which must be imported (e.g., for assertions). Library methods can also be inherited from parent classes which extend a library class.
+- Each localized step has between one and three candidate methods (if uncertain), with exactly one best candidate method. if there are no relevant library or application methods for the step, the step should be removed.
 - Every listed method is evidenced by a prior tool call and result in the message history.
 - The final output in the arguments for the `finalize` tool is coherent and reflects all the updated steps deciphered from the static analysis.
 OR if you are out of remaining iterations.

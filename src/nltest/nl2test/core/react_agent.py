@@ -14,8 +14,6 @@ from langchain_core.messages import (
     ToolCall,
 )
 from langchain_core.tools import BaseTool
-
-# These imports exist in your repo; we keep them to avoid breaking callers.
 from nltest.nl2test.models import AgentState
 from nltest.utils.llm import LLMClient
 
@@ -110,9 +108,7 @@ class ReActAgent:
 
         # Conditional edge to determine if the agent should continue
         def should_continue(state: AgentState) -> str:
-            if state.iterations >= self.max_iters:
-                return "force_end"
-
+            # If the last AI message has tool calls, always resolve them first
             last_ai: Optional[AIMessage] = None
             for msg in reversed(state.messages):
                 if isinstance(msg, AIMessage):
@@ -122,6 +118,10 @@ class ReActAgent:
             # If the last message is an AI message and it has tool calls, continue
             if last_ai and getattr(last_ai, "tool_calls", None):
                 return "use_tools"
+
+            # No tool calls: if we've reached the limit, transition to force_end
+            if state.iterations >= self.max_iters:
+                return "force_end"
 
             return "end"
 
@@ -228,9 +228,14 @@ class ReActAgent:
                 return "use_tools"
             return "end"
 
-        # Decide whether to end after tools or continue
+        # Decide whether to end after tools or continue/force end
         def should_continue_after_tools(state: AgentState) -> str:
-            return "end" if self._should_end_after_tools(state) else "continue"
+            if self._should_end_after_tools(state):
+                return "end"
+            # If we've consumed the final allowed model step already, switch to force_end
+            if state.iterations >= self.max_iters:
+                return "force_end"
+            return "continue"
 
         # Assemble graph: define all nodes and edges together for readability
         workflow.add_node("call_model", call_model)
@@ -260,6 +265,7 @@ class ReActAgent:
             should_continue_after_tools,
             {
                 "continue": "call_model",
+                "force_end": "force_end",
                 "end": END,
             },
         )
@@ -295,6 +301,38 @@ class ReActAgent:
                 effective.messages[0], SystemMessage
             ):
                 effective.messages.insert(0, SystemMessage(content=self.system_message))
+
+            # If continuing conversation, resolve toool calls if possible
+            last_ai: Optional[AIMessage] = None
+            for msg in reversed(effective.messages):
+                if isinstance(msg, AIMessage):
+                    last_ai = msg
+                    break
+            if last_ai and getattr(last_ai, "tool_calls", None):
+                try:
+                    start_idx = (
+                        len(effective.messages)
+                        - 1
+                        - effective.messages[::-1].index(last_ai)
+                    )
+                except ValueError:
+                    start_idx = len(effective.messages)
+                responded_ids = set(
+                    getattr(m, "tool_call_id", None)
+                    for m in effective.messages[start_idx + 1 :]
+                    if isinstance(m, ToolMessage)
+                )
+                for tc in last_ai.tool_calls:
+                    if tc.get("id") not in responded_ids:
+                        effective.messages.append(
+                            ToolMessage(
+                                content=(
+                                    "Carried-over tool call skipped prior to new input."
+                                ),
+                                tool_call_id=tc["id"],
+                            )
+                        )
+
             # Append the new user input
             effective.messages.append(HumanMessage(content=input_msg))
 

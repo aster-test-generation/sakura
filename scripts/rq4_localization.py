@@ -15,11 +15,11 @@ MAX_ENTRIES = 90  # Note: 0 = unlimited
 LLM_MODEL = "google/gemini-2.5-flash"
 
 # Localization settings
-LOCALIZATION_MAX_ITERS = 20
+LOCALIZATION_MAX_ITERS = 30
 
 # Parallelization controls
 PARALLELIZE = True
-NUM_WORKERS = 4
+NUM_WORKERS = 10
 
 _ALLOWED_DECOMP_MODES = {"grammatical", "gherkin"}
 DECOMPOSITION_MODE = "gherkin"

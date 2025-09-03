@@ -758,7 +758,7 @@ class TestNL2Test(TestCase):
         pretty_print("Comments", comments)
         pretty_print("Token usage", prices)
 
-    def test_pipeline_run_localization_evaluation_pipeline(self):
+    def test_pipeline_run_localization_evaluation_pipeline_gherkin(self):
         """Test the complete run_localization_evaluation_pipeline method with a petclinic-based test case."""
 
         # Create NL2TestInput using data from test2nl.csv (row 6 - low abstraction vet list test)
@@ -773,7 +773,9 @@ class TestNL2Test(TestCase):
         # Initialize pipeline
         test_dir = Path(__file__).resolve().parent
         project_root = (test_dir / "resources" / "spring-petclinic").resolve()
-        pipeline = Pipeline(self.analysis, project_root)
+        pipeline = Pipeline(
+            self.analysis, project_root, decomposition_mode=DecompositionMode.GHERKIN
+        )
 
         # Run the complete evaluation pipeline
         usage_tracker.start()

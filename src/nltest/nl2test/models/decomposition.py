@@ -142,6 +142,7 @@ class GrammaticalBlock(BaseModel):
 
 class AtomicBlock(GrammaticalBlock):
     candidate_methods: List[CandidateMethod]
+    best_candidate: CandidateMethod
     notes: str
 
     @classmethod

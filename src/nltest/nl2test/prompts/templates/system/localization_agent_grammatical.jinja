@@ -32,6 +32,7 @@ You are meticulous and will take as many turns as needed to achieve the best out
 # END CONDITIONS
 You may call the `finalize` tool to produce the final output only when:
 - Each grammatical block has more than one verified method (from the application or an external source that must be imported, such as assertion libraries). Library methods may be inherited via parent classes that extend a library class.
+- Each localized grammatical block has between one and three candidate methods (if uncertain), with exactly one best candidate method. if there are no relevant library or application methods for the step, the step should be removed.
 - Every listed method is evidenced by a prior tool call and its result in the message history.
 - The final `finalize` arguments are coherent and reflect all updates to the grammatical blocks derived from static analysis.  
 OR you have exhausted the allowed iterations.

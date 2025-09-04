@@ -45,7 +45,10 @@ class AgentState(BaseModel):
 
 class QueryMethodArgs(BaseModel):
     qualified_class_name: Annotated[
-        str, Field(description="The qualified class name of the class implementing the method.")
+        str,
+        Field(
+            description="The qualified class name of the class implementing the method."
+        ),
     ]
     method_signature: Annotated[
         str, Field(description="The method signature of the method to query.")
@@ -90,6 +93,12 @@ class InstructionArgs(BaseModel):
     # NOTE: We don't need to pass in the atomic blocks here for modify_atomic_blocks because we're using the state.atomic_blocks
 
 
+class TestCodeArgs(BaseModel):
+    """Arguments for providing raw test code directly to the generate tool."""
+
+    test_code: Annotated[str, Field(description="")]
+
+
 class FinalizeAtomicBlockArgs(BaseModel):
     current_blocks: Annotated[
         AtomicBlockList, Field(description="The current state of the AtomicBlocks.")
@@ -119,3 +128,25 @@ class FinalizeScenarioArgs(BaseModel):
             description="Comments about any problems with the procedure or concerns."
         ),
     ]
+
+
+class ModifyScenarioArgs(BaseModel):
+    """Arguments for modifying a localized scenario in composition tools."""
+
+    scenario: Annotated[LocalizedScenario, Field(description="")]
+
+
+class ModifyAtomicBlocksArgs(BaseModel):
+    """Arguments for modifying atomic blocks in composition tools."""
+
+    atomic_blocks: Annotated[AtomicBlockList, Field(description="")]
+
+
+class ModifyScenarioCommentArgs(BaseModel):
+    id: Annotated[int, Field(description="The id of the localized step to update.")]
+    comment: Annotated[str, Field(description="The new comment for the step.")]
+
+
+class ModifyAtomicBlockNoteArgs(BaseModel):
+    order: Annotated[int, Field(description="The order of the atomic block to update.")]
+    note: Annotated[str, Field(description="The new note for the atomic block.")]

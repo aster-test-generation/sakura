@@ -8,11 +8,9 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from typing_extensions import Annotated
 
-from nltest.test2nl.generation import DescriptionGenerator
 from nltest.test2nl.model.models import AbstractionLevel
 from nltest.test2nl import Pipeline
-from nltest.utils.config import Config, init_config
-from nltest.utils import constants
+from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
@@ -30,6 +28,59 @@ app = typer.Typer(
 )
 
 load_dotenv()
+
+
+# -------------------------
+# Internal helper functions
+# -------------------------
+def _resolve_output_dir(output_dir: str | None) -> Path:
+    """Return a Path for the output directory with a default."""
+    return Path(output_dir or "./output")
+
+
+def _log_section(title: str) -> None:
+    sep = "=" * 60
+    RichLog.info(f"\n{sep}")
+    RichLog.info(title)
+    RichLog.info(sep)
+
+
+def _init_project_config(
+    *,
+    project_name: str,
+    base_project_dir: Path,
+    output_dir: Path,
+    llm_model: str,
+    emb_model: str | None = None,
+    localization_max_iters: int | None = None,
+) -> None:
+    """Initialize Config singleton for a project.
+
+    Note: This uses OPENROUTER for LLM and OLLAMA for embeddings when provided.
+    """
+    init_config(
+        project_name=project_name,
+        base_project_dir=str(base_project_dir),
+        output_dir=str(output_dir),
+        llm_provider=Provider.OPENROUTER,
+        llm_model=llm_model,
+        emb_provider=Provider.OLLAMA if emb_model else None,
+        emb_model=emb_model,
+        llm_api_key=os.getenv("OPENROUTER_API_KEY"),
+        emb_api_key=None,
+        localization_max_iters=(localization_max_iters or 20),
+    )
+
+
+def _run_analysis(*, project_root: Path, analysis_dir: Path, eager: bool = True):
+    """Run or load CLDK analysis for a project."""
+    return CLDK(language="java").analysis(
+        project_path=project_root,
+        analysis_backend_path=None,
+        analysis_level=AnalysisLevel.symbol_table,
+        analysis_json_path=analysis_dir,
+        eager=eager,
+    )
 
 
 @app.callback()
@@ -94,9 +145,7 @@ def generate_descriptions(
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
-    if not output_dir:
-        output_dir = f"./output"
-    output_dir = Path(output_dir)
+    output_dir = _resolve_output_dir(output_dir)
 
     # Get all project directories in base_project_dir
     all_projects = sorted([p for p in base_project_dir.iterdir() if p.is_dir()])
@@ -112,31 +161,23 @@ def generate_descriptions(
     # Process each project separately
     for project_root in all_projects:
         project_name = project_root.name
-        RichLog.info(f"\n{'='*60}")
-        RichLog.info(f"Processing project: {project_name}")
-        RichLog.info(f"{'='*60}")
+        _log_section(f"Processing project: {project_name}")
 
         # Create project-specific output directory
         project_output_dir = output_dir / project_name
         project_output_dir.mkdir(parents=True, exist_ok=True)
 
-        config = init_config(
+        _init_project_config(
             project_name=project_name,
-            base_project_dir=str(project_root),
-            output_dir=str(project_output_dir),
-            llm_provider=Provider.OPENROUTER,
+            base_project_dir=project_root,
+            output_dir=project_output_dir,
             llm_model=llm_model,
-            llm_api_key=os.getenv("OPENROUTER_API_KEY"),  # Assign from env
         )
 
         # Generate analysis of the current project
         RichLog.info(f"Gathering static analysis results for {project_name}")
-        analysis = CLDK(language="java").analysis(
-            project_path=project_root,
-            analysis_backend_path=None,
-            analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=project_output_dir,
-            eager=True,
+        analysis = _run_analysis(
+            project_root=project_root, analysis_dir=project_output_dir, eager=True
         )
         RichLog.info(
             f"Successfully finished gathering static analysis results for {project_name}"
@@ -322,9 +363,7 @@ def evaluate_localization(
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
-    if not output_dir:
-        output_dir = f"./output"
-    output_dir = Path(output_dir)
+    output_dir = _resolve_output_dir(output_dir)
 
     if not output_dir.exists():
         raise Exception(f"Output directory {output_dir} does not exist.")
@@ -395,9 +434,7 @@ def evaluate_localization(
     all_localization_outputs = []
 
     for project_name, nl2test_inputs in nl2test_inputs_by_project.items():
-        RichLog.info(f"\n{'='*60}")
-        RichLog.info(f"Processing project: {project_name}")
-        RichLog.info(f"{'='*60}")
+        _log_section(f"Processing project: {project_name}")
 
         # Create project-specific paths
         project_root = base_project_dir / project_name
@@ -410,27 +447,19 @@ def evaluate_localization(
         project_output_dir = output_dir / project_name
 
         # Initialize configuration for this project
-        config = init_config(
+        _init_project_config(
             project_name=project_name,
-            base_project_dir=str(project_root),
-            output_dir=str(project_output_dir),
-            llm_provider=Provider.OPENROUTER,
+            base_project_dir=project_root,
+            output_dir=project_output_dir,
             llm_model=llm_model,
-            emb_provider=Provider.OLLAMA,
             emb_model=emb_model,
-            llm_api_key=os.getenv("OPENROUTER_API_KEY"),
-            emb_api_key=None,
             localization_max_iters=localization_max_iters,
         )
 
         # Generate analysis for this specific project
         RichLog.info(f"Gathering static analysis results for {project_name}")
-        analysis = CLDK(language="java").analysis(
-            project_path=project_root,
-            analysis_backend_path=None,
-            analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=project_output_dir,
-            eager=True,
+        analysis = _run_analysis(
+            project_root=project_root, analysis_dir=project_output_dir, eager=True
         )
         RichLog.info(
             f"Successfully finished gathering static analysis results for {project_name}"
@@ -460,50 +489,32 @@ def evaluate_localization(
                 localization_max_iters_val: int,
             ) -> dict:
                 try:
-                    import os
-                    from pathlib import Path
-                    from cldk import CLDK
-                    from cldk.analysis import AnalysisLevel
-                    from nltest.utils.config import init_config
-                    from nltest.utils.llm.model import Provider
-                    from nltest.nl2test import Pipeline as _NL2TestPipeline
-                    from nltest.nl2test.models import (
-                        NL2TestInput as _NL2TestInput,
-                        DecompositionMode as _DecompositionMode,
-                    )
-
                     project_root_local = Path(base_project_dir_str) / project_name
                     project_output_dir_local = Path(output_dir_str) / project_name
 
                     # Each worker initializes its own config and loads analysis from JSON
-                    init_config(
+                    _init_project_config(
                         project_name=project_name,
-                        base_project_dir=str(Path(base_project_dir_str)),
-                        output_dir=str(project_output_dir_local),
-                        llm_provider=Provider.OPENROUTER,
+                        base_project_dir=Path(base_project_dir_str),
+                        output_dir=project_output_dir_local,
                         llm_model=llm_model_str,
-                        emb_provider=Provider.OLLAMA,
                         emb_model=emb_model_str,
-                        llm_api_key=os.getenv("OPENROUTER_API_KEY"),
-                        emb_api_key=None,
                         localization_max_iters=localization_max_iters_val,
                     )
 
-                    analysis_local = CLDK(language="java").analysis(
-                        project_path=project_root_local,
-                        analysis_backend_path=None,
-                        analysis_level=AnalysisLevel.symbol_table,
-                        analysis_json_path=project_output_dir_local,
+                    analysis_local = _run_analysis(
+                        project_root=project_root_local,
+                        analysis_dir=project_output_dir_local,
                         eager=False,  # Load from JSON produced earlier
                     )
 
-                    pipeline_local = _NL2TestPipeline(
+                    pipeline_local = NL2TestPipeline(
                         analysis_local,
                         project_root_local,
-                        decomposition_mode=_DecompositionMode(decomposition_mode_val),
+                        decomposition_mode=DecompositionMode(decomposition_mode_val),
                     )
 
-                    nl2_input_local = _NL2TestInput(**input_payload)
+                    nl2_input_local = NL2TestInput(**input_payload)
                     output = pipeline_local.run_localization_evaluation_pipeline(
                         nl2_input_local
                     )

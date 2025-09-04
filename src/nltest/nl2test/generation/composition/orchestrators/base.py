@@ -60,19 +60,26 @@ class BaseCompositionOrchestrator:
 
         chat_prompt, system_prompt = self._init_prompts()
         self.chat_prompt = chat_prompt
+
+        max_iters = Config().get("localization", "max_iters")
         system_message = system_prompt.format()
 
         self.agent = CompositionReActAgent(
             llm=decision_llm,
             tools=tools,
-            max_iters=Config().get("composition", "max_iters"),
             system_message=system_message,
+            max_iters=max_iters,
+            decomposition_mode=decomposition_mode,
         )
 
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:
-        # For now, composition uses a single prompt template for both chat/system
-        chat_file = "composition_agent.jinja2"
-        system_file = "composition_agent.jinja2"
+        # Choose prompts according to decomposition mode
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            chat_file = "composition_agent.jinja2"
+            system_file = "composition_agent.jinja2"
+        else:
+            chat_file = "composition_agent.jinja2"
+            system_file = "composition_agent.jinja2"
 
         chat_prompt = LoadPrompt.load_prompt(
             chat_file, PromptFormat.JINJA2, prompt_type="chat"
@@ -82,6 +89,6 @@ class BaseCompositionOrchestrator:
         )
         return chat_prompt, system_prompt
 
-    # Shared signature implemented by subclasses. Intentionally untyped for blocks/output.
-    def assign_task(self, blocks, *, instructions: str):  # pragma: no cover - interface
+    # Shared signature implemented by subclasses. Intentionally untyped for different decomposition modes
+    def assign_task(self, blocks, *, instructions: str):
         raise NotImplementedError

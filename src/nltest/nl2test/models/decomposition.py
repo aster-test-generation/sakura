@@ -46,6 +46,11 @@ class CandidateMethod(BaseModel):
     return_type: str
 
 
+class ArgBinding(BaseModel):
+    arg_name: str
+    arg_value: str  # Can be ${...} or a literal value
+
+
 class LocalizedStep(Step):
     candidate_methods: List[CandidateMethod]
     best_candidate: CandidateMethod
@@ -108,11 +113,6 @@ class LocalizedScenario(Scenario):
             steps=localized_steps,
             teardown=[_to_localized_step(s) for s in scenario.teardown],
         )
-
-
-class ArgBinding(BaseModel):
-    arg_name: str
-    arg_value: str  # Can be ${...} or a literal value
 
 
 # ---- Grammatical Block Decomposition ----

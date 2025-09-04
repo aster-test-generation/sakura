@@ -9,8 +9,11 @@ class JavaExecution:
     """
     Execute tests in a Maven-based Java project.
     """
+
     @staticmethod
-    def execute(project_root: str, test_class_name: Optional[str] = None, timeout: int = 900) -> Dict[str, object]:
+    def execute(
+        project_root: str, test_class_name: Optional[str] = None, timeout: int = 900
+    ) -> Dict[str, object]:
         pom = os.path.join(project_root, "pom.xml")
 
         # Build the Maven command

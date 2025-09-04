@@ -66,9 +66,9 @@ class BaseLocalizationOrchestrator:
         self.agent = LocalizationReActAgent(
             llm=decision_llm,
             tools=tools,
-            max_iters=Config().get("localization", "max_iters"),
+            max_iters=max_iters,
             system_message=system_message,
-            decomposition_mode=self.decomposition_mode,
+            decomposition_mode=decomposition_mode,
         )
 
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:

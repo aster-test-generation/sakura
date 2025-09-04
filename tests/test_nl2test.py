@@ -21,6 +21,8 @@ from nltest.nl2test.models import (
     CandidateMethod,
     AbstractionLevel,
     LocalizedScenario,
+    NL2LocalizationOutput,
+    LocalizationEvaluationResults,
 )
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
@@ -162,9 +164,9 @@ class TestNL2Test(TestCase):
         )
         self.assertIsNotNone(method_details)
 
-        provider = self.config.get("emb_provider", "name")
-        emb_model = self.config.get(provider, "emb_model")
-        api_url = self.config.get(provider, "emb_api_url")
+        # Use embedding config keys directly
+        emb_model = self.config.get("emb", "model")
+        api_url = self.config.get("emb", "api_url")
 
         embedder = HttpEmbedder(
             model_id=emb_model,
@@ -617,7 +619,9 @@ class TestNL2Test(TestCase):
         # Basic structural assertions
         self.assertIsInstance(scenario, Scenario)
         self.assertIsInstance(scenario.testing_framework, str)
-        self.assertIsInstance(scenario.tasks, list)
+        self.assertIsInstance(scenario.setup, list)
+        self.assertIsInstance(scenario.steps, list)
+        self.assertIsInstance(scenario.teardown, list)
 
     def test_localization_grader(self):
         nl2_input = NL2TestInput(
@@ -644,6 +648,7 @@ class TestNL2Test(TestCase):
                         implementing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
                         containing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
                         method_signature="processCreationForm(Owner, BindingResult, ModelMap)",
+                        return_type="void",
                     )
                 ],
                 notes="",
@@ -723,35 +728,28 @@ class TestNL2Test(TestCase):
         self.assertIsNotNone(method_searcher)
         self.assertIsNotNone(class_searcher)
 
-        # Decompose natural language
-        grammatical_blocks = pipeline.decompose_natural_language(nl2_input.description)
-        self.assertIsInstance(grammatical_blocks, list)
-        self.assertGreater(len(grammatical_blocks), 0)
+        # Decompose natural language (Pipeline returns GrammaticalBlockList in grammatical mode)
+        blocks = pipeline.decompose_natural_language(nl2_input.description)
+        self.assertIsInstance(blocks, GrammaticalBlockList)
+        self.assertGreater(len(blocks.grammatical_blocks), 0)
 
-        # Convert to atomic blocks
-        atomic_blocks = [
-            AtomicBlock.from_grammatical_block(block) for block in grammatical_blocks
-        ]
-        self.assertIsInstance(atomic_blocks, list)
-        self.assertEqual(len(atomic_blocks), len(grammatical_blocks))
-
-        # Run localization agent
+        # Run localization agent directly with decomposed blocks
         usage_tracker.start()
-        localized_blocks, comments = pipeline.run_localization_agent(
-            nl2_input, atomic_blocks
-        )
+        localized_blocks, comments = pipeline.run_localization_agent(nl2_input, blocks)
         prices = usage_tracker.stop()
 
         # Verify outputs
-        self.assertIsInstance(localized_blocks, list)
+        self.assertIsInstance(localized_blocks, AtomicBlockList)
         self.assertIsInstance(comments, str)
-        self.assertEqual(len(localized_blocks), len(atomic_blocks))
+        self.assertEqual(
+            len(localized_blocks.atomic_blocks), len(blocks.grammatical_blocks)
+        )
 
         # Verify that atomic blocks have been enhanced with candidate methods
-        for i, block in enumerate(localized_blocks):
+        for i, block in enumerate(localized_blocks.atomic_blocks):
             self.assertIsInstance(block, AtomicBlock)
             self.assertEqual(block.order, i)
-            # Check that candidate methods have been added (localization should enhance the blocks)
+            # Candidate methods list should exist (may be empty depending on LLM)
             self.assertIsInstance(block.candidate_methods, list)
 
         pretty_print("Localized blocks", localized_blocks)
@@ -779,24 +777,20 @@ class TestNL2Test(TestCase):
 
         # Run the complete evaluation pipeline
         usage_tracker.start()
-        localized_blocks, coverage_score = (
-            pipeline.run_localization_evaluation_pipeline(nl2_input)
-        )
+        output = pipeline.run_localization_evaluation_pipeline(nl2_input)
         prices = usage_tracker.stop()
 
-        # Verify outputs
-        self.assertIsInstance(localized_blocks, list)
-        self.assertIsInstance(coverage_score, float)
-        self.assertGreaterEqual(coverage_score, 0.0)
-        self.assertLessEqual(coverage_score, 1.0)
-        self.assertGreater(len(localized_blocks), 0)
+        # Verify output container and fields
+        self.assertIsInstance(output, NL2LocalizationOutput)
+        self.assertIsInstance(output.coverage_score, float)
+        self.assertGreaterEqual(output.coverage_score, 0.0)
+        self.assertLessEqual(output.coverage_score, 1.0)
+        # In GHERKIN mode, localized_blocks is a LocalizedScenario
+        self.assertIsInstance(output.localized_blocks, LocalizedScenario)
+        # evaluation_results may be present depending on grader
+        if output.evaluation_results is not None:
+            self.assertIsInstance(output.evaluation_results, LocalizationEvaluationResults)
 
-        # Verify that atomic blocks have been enhanced
-        for i, block in enumerate(localized_blocks):
-            self.assertIsInstance(block, AtomicBlock)
-            self.assertEqual(block.order, i)
-            self.assertIsInstance(block.candidate_methods, list)
-
-        pretty_print("Localized blocks from evaluation pipeline", localized_blocks)
-        pretty_print("Coverage score", coverage_score)
+        pretty_print("Localized blocks from evaluation pipeline", output.localized_blocks)
+        pretty_print("Coverage score", output.coverage_score)
         pretty_print("Token usage", prices)

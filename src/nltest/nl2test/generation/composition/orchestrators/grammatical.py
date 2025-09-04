@@ -27,5 +27,6 @@ class GrammaticalCompositionOrchestrator(BaseCompositionOrchestrator):
         )
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
-        return updated_state.atomic_blocks, (updated_state.final_comments or "No comments.")
-
+        return updated_state.atomic_blocks, (
+            updated_state.final_comments or "No comments."
+        )

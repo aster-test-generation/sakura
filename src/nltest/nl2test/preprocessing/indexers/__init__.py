@@ -1,3 +1,4 @@
-from .method_indexer import MethodIndexer
-from .class_indexer import ClassIndexer
-from .project_indexer import ProjectIndexer
+from .base import BaseIndexer
+from .methods import MethodIndexer
+from .classes import ClassIndexer
+from .project import ProjectIndexer

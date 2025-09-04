@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, List, Optional
+from typing import Annotated, List, Optional, Union
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from .decomposition import AtomicBlock, LocalizationEvaluationResults
+from .decomposition import (
+    AtomicBlock,
+    AtomicBlockList,
+    LocalizationEvaluationResults,
+    LocalizedScenario,
+)
 
 
 class AbstractionLevel(Enum):
@@ -32,6 +37,6 @@ class NL2LocalizationOutput(BaseModel):
     """Combined output from NL2Test localization evaluation."""
 
     nl2_input: NL2TestInput
-    localized_blocks: List[AtomicBlock]
+    localized_blocks: Union[AtomicBlockList, LocalizedScenario]
     evaluation_results: Optional[LocalizationEvaluationResults] = None
     coverage_score: float

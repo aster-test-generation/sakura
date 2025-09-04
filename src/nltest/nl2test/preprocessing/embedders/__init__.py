@@ -1,3 +1,3 @@
-from .base_embedder import BaseEmbedder
-from .http_embedder import HttpEmbedder
-from .ollama_embedder import OllamaEmbedder
+from .base import BaseEmbedder
+from .http import HttpEmbedder
+from .ollama import OllamaEmbedder

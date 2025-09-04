@@ -1,64 +1,51 @@
-from typing import List, Tuple
+from __future__ import annotations
+
+from typing import Tuple
 
 from cldk.analysis.java import JavaAnalysis
-from langchain_core.tools import BaseTool
-from langgraph.checkpoint.memory import MemorySaver
 
-from nltest.nl2test.generation.composition.agent import CompositionReActAgent
-from nltest.nl2test.generation.composition.tools import CompositionTools
-from nltest.nl2test.models import AgentState, AtomicBlock, NL2TestInput
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.nl2test.preprocessing.searchers.class_searcher import ClassSearcher
-from nltest.nl2test.preprocessing.searchers.method_searcher import MethodSearcher
-from nltest.utils.llm.llm_client import LLMClient, ClientType
-from nltest.utils.config.config import Config
+from nltest.nl2test.generation.composition.orchestrators import (
+    GrammaticalCompositionOrchestrator,
+    GherkinCompositionOrchestrator,
+)
+from nltest.nl2test.models import AtomicBlockList, NL2TestInput
+from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 
 
 class CompositionOrchestrator:
-    def __init__(self, analysis: JavaAnalysis, method_searcher: MethodSearcher,
-                 class_searcher: ClassSearcher, nl2_input: NL2TestInput):
-        decision_llm = LLMClient(ClientType.DECISION)
-        structured_llm = LLMClient(ClientType.STRUCTURED)
+    """Compatibility wrapper that delegates to mode-specific orchestrators.
 
-        tools: List[BaseTool] = CompositionTools(
-            analysis=analysis,
-            method_searcher=method_searcher,
-            class_searcher=class_searcher,
-            structured_llm=structured_llm,
-            base_project_dir=".",  # This should be the actual project root
-            nl2_input=nl2_input,
-        ).all()
+    Default mode is GRAMMATICAL to match legacy usage.
+    """
 
-        self.nl2_input = nl2_input
+    def __init__(
+        self,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+        *,
+        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
+        base_project_dir: str | None = None,
+    ) -> None:
+        if decomposition_mode == DecompositionMode.GHERKIN:
+            self._delegate = GherkinCompositionOrchestrator(
+                analysis=analysis,
+                method_searcher=method_searcher,
+                class_searcher=class_searcher,
+                nl2_input=nl2_input,
+                base_project_dir=base_project_dir,
+            )
+        else:
+            self._delegate = GrammaticalCompositionOrchestrator(
+                analysis=analysis,
+                method_searcher=method_searcher,
+                class_searcher=class_searcher,
+                nl2_input=nl2_input,
+                base_project_dir=base_project_dir,
+            )
 
-        self.chat_prompt = LoadPrompt().load_prompt("composition_agent.jinja2", PromptFormat.JINJA2, prompt_type="chat")
-
-        self.agent = CompositionReActAgent(
-            llm=decision_llm,
-            tools=tools,
-            max_iters=Config().get("composition", "max_iters")
-        )
-
-    def assign_task(self, instructions: str, atomic_blocks: List[AtomicBlock]) -> Tuple[List[AtomicBlock], str]:
-        """
-        Instruct the agent on how or why the atomic_blocks should be updated, and return the result.
-
-        Args:
-            instructions: What changes to make, or criticisms with the current decomposition.
-            atomic_blocks: The current list of AtomicBlock objects to be modified and improved.
-
-        Returns:
-            A tuple containing the revised list of AtomicBlock objects and any final comments.
-        """
-        initial_state = AgentState(
-            atomic_blocks=atomic_blocks,
-        )
-
-        chat_prompt = self.chat_prompt.format(
-            nl_description=self.nl2_input.description,
-            instructions=instructions,
-            atomic_blocks=atomic_blocks,
-        )
-
-        updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
-        return updated_state.atomic_blocks, (updated_state.final_comments or "No comments.")
+    # Backwards-compatible signature (grammatical blocks)
+    def assign_task(self, instructions: str, atomic_blocks: AtomicBlockList) -> Tuple[AtomicBlockList, str]:
+        return self._delegate.assign_task(atomic_blocks, instructions=instructions)

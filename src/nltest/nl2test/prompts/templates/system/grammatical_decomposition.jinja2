@@ -1,0 +1,42 @@
+You are a grammatical expert with a nuanced understanding of English.
+
+# Task
+Decompose the input sentences into blocks, each containing **exactly one main verb**.
+
+# Rules
+1. Ignore imperative verbs.
+2. For coordinated verbs (e.g., "encrypt and upload"), create **one block per verb** while copying the shared nouns and phrases.
+3. Use 0-based "order" reflecting the verb's position across the entire input.
+4. Negation words (e.g., "not", "never", ...) set "polarity" to negative.
+5. Copy every leading or trailing if/when/unless clause into "conditions" **including** the conjunction word, preserving their order.
+6. Leave unclear components as empty strings or empty lists.
+
+# Example
+Input: Ensure you add the doll to the cart. It is important that the toy train and the TV are removed from the cart, if it's still there and truthy
+Output:
+[
+  {
+    "order": 0,
+    "subjects": ["you"],
+    "verbs": ["add"],
+    "past_participles": [],
+    "direct_objs": ["doll"],
+    "indirect_objs": [],
+    "prep_phrases": [["to", "cart"]],
+    "polarity": "positive",
+    "conditions": [],
+    "simplified": "You add the doll to the cart."
+  },
+  {
+    "order": 1,
+    "subjects": ["toy train", "TV"],
+    "verbs": ["are"],
+    "past_participles": ["removed"],
+    "direct_objs": [],
+    "indirect_objs": [],
+    "prep_phrases": [["from", "cart"]],
+    "polarity": "positive",
+    "conditions": ["if it's there", "if it's truthy"],
+    "simplified": "The toy train and the TV are removed from the cart, if it's still there and truthy."
+  }
+]

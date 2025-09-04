@@ -30,11 +30,7 @@ app = typer.Typer(
 load_dotenv()
 
 
-# -------------------------
-# Internal helper functions
-# -------------------------
 def _resolve_output_dir(output_dir: str | None) -> Path:
-    """Return a Path for the output directory with a default."""
     return Path(output_dir or "./output")
 
 
@@ -54,9 +50,8 @@ def _init_project_config(
     emb_model: str | None = None,
     localization_max_iters: int | None = None,
 ) -> None:
-    """Initialize Config singleton for a project.
-
-    Note: This uses OPENROUTER for LLM and OLLAMA for embeddings when provided.
+    """
+    Initialize Config singleton for a project.
     """
     init_config(
         project_name=project_name,
@@ -85,7 +80,6 @@ def _run_analysis(*, project_root: Path, analysis_dir: Path, eager: bool = True)
 
 @app.callback()
 def main() -> None:
-    """Handles the global options"""
     return
 
 

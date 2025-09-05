@@ -15,9 +15,10 @@ from hamster.code_analysis.test_statistics import (
     TestMethodAnalysisInfo,
     SetupAnalysisInfo,
 )
-from reaster.coverage.individual_test_coverage import IndividualTestCoverage
+
 
 from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.coverage.individual_test_coverage import IndividualTestCoverage
 
 
 class TestGrader:
@@ -176,10 +177,10 @@ class TestGrader:
                                 .generate(tests_to_run=tests_to_run))
         for class_method_pair in class_method_pairs:
             # Get overall coverage
-            coverage = self.grade_coverage(pred_method_sig=class_method_pair[0][1],
+            coverage = self.grade_coverage(pred_method_name=class_method_pair[0][1],
                                            pred_class_name=class_method_pair[0][0],
                                            gt_class_name=class_method_pair[1][0],
-                                           gt_method_sig=class_method_pair[1][1],
+                                           gt_method_name=class_method_pair[1][1],
                                            all_coverage_details=all_coverage_details)
             # Add to the list
             if coverage is not None:
@@ -192,18 +193,18 @@ class TestGrader:
         return coverage_details
 
     @staticmethod
-    def grade_coverage(pred_method_sig: str,
+    def grade_coverage(pred_method_name: str,
                        pred_class_name: str,
-                       gt_method_sig: str,
+                       gt_method_name: str,
                        gt_class_name: str,
                        all_coverage_details: dict
                        ) -> Dict[str, float]:
         """
         Compute the overall coverage between the prediction and ground truth
         Args:
-            pred_method_sig:
+            pred_method_name:
             pred_class_name:
-            gt_method_sig:
+            gt_method_name:
             gt_class_name:
             all_coverage_details:
 
@@ -213,59 +214,84 @@ class TestGrader:
         gt_coverage_details = {}
         pred_coverage_details = {}
         if gt_class_name in all_coverage_details:
-            if gt_method_sig in all_coverage_details[gt_class_name]:
-                gt_coverage_details = all_coverage_details[gt_class_name][gt_method_sig]
+            for gt_method_coverage in all_coverage_details[gt_class_name]:
+                if gt_method_coverage['test_name'] == gt_method_name:
+                    gt_coverage_details = gt_method_coverage['coverage_details']
 
         if pred_class_name in all_coverage_details:
-            if pred_method_sig in all_coverage_details[pred_class_name]:
-                pred_coverage_details = all_coverage_details[pred_class_name][pred_method_sig]
+            for pred_method_coverage in all_coverage_details[pred_class_name]:
+                if pred_method_coverage['test_name'] == pred_method_name:
+                    pred_coverage_details = pred_method_coverage['coverage_details']
 
-        # union coverage maps from both tests
-        coverage_details = {}
-        for app_class, cov in {**gt_coverage_details, **pred_coverage_details}.items():
-            # union class coverage if app_class appears in both
-            merged = {}
-            for k in ['covered_lines', 'method_covered', 'method_missed',
-                      'branch_lines_covered', 'branch_lines_partial', 'branch_lines_missed']:
-                merged[k] = set(gt_coverage_details.get(app_class, {}).get(k, set())) | \
-                            set(pred_coverage_details.get(app_class, {}).get(k, set()))
-            coverage_details[app_class] = merged
+        def _as_set(x) -> Set[int]:
+            if x is None:
+                return set()
+            if isinstance(x, set):
+                return x
+            if isinstance(x, (list, tuple)):
+                return set(x)
+            return {x}
 
-        # --- Compute metrics ---
-        total_classes = len(coverage_details)
-        covered_classes = sum(1 for app_class, cov in coverage_details.items()
-                              if cov['covered_lines'] or cov['branch_lines_covered'] or cov['branch_lines_partial'])
+        # Collect (from a single test's per-app-class map) the covered sets we’ll compare
+        def _collect(coverage_map: Dict[str, Dict[str, Any]]) -> Tuple[
+            Set[str],  # covered classes
+            Set[Tuple[str, str]],  # covered methods keyed by (app_class, method_name)
+            Set[Tuple[str, int]],  # covered lines keyed by (app_class, line)
+            Set[Tuple[str, int]]  # covered branch lines keyed by (app_class, line)
+        ]:
+            covered_classes: Set[str] = set()
+            covered_methods: Set[Tuple[str, str]] = set()
+            covered_lines: Set[Tuple[str, int]] = set()
+            covered_branch_lines: Set[Tuple[str, int]] = set()
 
-        total_methods = 0
-        covered_methods = 0
-        total_lines = 0
-        covered_lines = 0
-        total_branches = 0
-        covered_branches = 0
+            for app_cls, leaf in (coverage_map or {}).items():
+                if not isinstance(leaf, dict):
+                    continue
 
-        for app_class, cov in coverage_details.items():
-            # Methods
-            methods_all = set(cov['method_covered']) | set(cov['method_missed'])
-            total_methods += len(methods_all)
-            covered_methods += len(cov['method_covered'])
+                # Methods
+                for m in leaf.get('method_covered', []) or []:
+                    covered_methods.add((app_cls, m))
 
-            # Lines
-            lines_all = set(cov['covered_lines']) | set(cov['branch_lines_covered']) | \
-                        set(cov['branch_lines_partial']) | set(cov['branch_lines_missed'])
-            total_lines += len(lines_all)
-            covered_lines += len(cov['covered_lines'])
+                # Lines considered "covered": source lines + covered branches + partial branches
+                c = _as_set(leaf.get('covered_lines'))
+                bc = _as_set(leaf.get('branch_lines_covered'))
+                bp = _as_set(leaf.get('branch_lines_partial'))
 
-            # Branches
-            branches_all = set(cov['branch_lines_covered']) | set(cov['branch_lines_partial']) | set(
-                cov['branch_lines_missed'])
-            total_branches += len(branches_all)
-            covered_branches += len(cov['branch_lines_covered']) | len(cov['branch_lines_partial'])
+                # If any covered content exists in this class, mark class as covered
+                if c or bc or bp:
+                    covered_classes.add(app_cls)
+
+                for ln in (c | bc | bp):
+                    covered_lines.add((app_cls, ln))
+
+                # Branch coverage counts both fully and partially covered
+                for ln in (bc | bp):
+                    covered_branch_lines.add((app_cls, ln))
+
+            return covered_classes, covered_methods, covered_lines, covered_branch_lines
+
+        gt_classes, gt_methods, gt_lines, gt_branch_lines = _collect(gt_coverage_details)
+        pred_classes, pred_methods, pred_lines, pred_branch_lines = _collect(pred_coverage_details)
+
+        # Intersections (hits)
+        hit_classes = pred_classes & gt_classes
+        hit_methods = pred_methods & gt_methods
+        hit_lines = pred_lines & gt_lines
+        hit_branch_lines = pred_branch_lines & gt_branch_lines
+
+        # Helper for safe percent
+        def pct(n: int, d: int) -> float:
+            return (n / d * 100.0) if d > 0 else 0.0
 
         return {
-            "class_coverage_percent": (covered_classes / total_classes * 100) if total_classes else 0.0,
-            "method_coverage_percent": (covered_methods / total_methods * 100) if total_methods else 0.0,
-            "line_coverage_percent": (covered_lines / total_lines * 100) if total_lines else 0.0,
-            "branch_coverage_percent": (covered_branches / total_branches * 100) if total_branches else 0.0
+
+            "class_coverage_percent": round(pct(len(hit_classes), len(gt_classes)), 2),
+
+            "method_coverage_percent": round(pct(len(hit_methods), len(gt_methods)), 2),
+
+            "line_coverage_percent": round(pct(len(hit_lines), len(gt_lines)), 2),
+
+            "branch_coverage_percent": round(pct(len(hit_branch_lines), len(gt_branch_lines)), 2),
         }
 
     def grade_structural(

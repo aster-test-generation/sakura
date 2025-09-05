@@ -15,16 +15,17 @@ from hamster.code_analysis.test_statistics import (
     TestMethodAnalysisInfo,
     SetupAnalysisInfo,
 )
+from reaster.coverage.individual_test_coverage import IndividualTestCoverage
 
 from nltest.utils.analysis import CommonAnalysis
 
 
 class TestGrader:
     def __init__(
-        self,
-        analysis: JavaAnalysis,
-        project_root: Path,
-        project_erroneous_classes: Optional[Set[str]] = None,
+            self,
+            analysis: JavaAnalysis,
+            project_root: Path,
+            project_erroneous_classes: Optional[Set[str]] = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = project_root
@@ -37,7 +38,7 @@ class TestGrader:
 
     @staticmethod
     def _get_assertion_types(
-        seqs: List[CallAndAssertionSequenceDetails],
+            seqs: List[CallAndAssertionSequenceDetails],
     ) -> List[List[AssertionType]]:
         assertion_types: List[List[AssertionType]] = []
         for seq in seqs:
@@ -47,7 +48,7 @@ class TestGrader:
 
     @staticmethod
     def _get_expanded_seqs(
-        seqs: List[CallAndAssertionSequenceDetails],
+            seqs: List[CallAndAssertionSequenceDetails],
     ) -> List[CallableDetails | AssertionDetails]:
         expanded: List[CallableDetails | AssertionDetails] = []
         for seq in seqs:
@@ -57,8 +58,8 @@ class TestGrader:
 
     @staticmethod
     def _exact_assertion_matching(
-        gt_assertions: List[List[AssertionType]],
-        pred_assertions: List[List[AssertionType]],
+            gt_assertions: List[List[AssertionType]],
+            pred_assertions: List[List[AssertionType]],
     ) -> float:
         pred_sets = [set(pred) for pred in pred_assertions]
         matches = sum(
@@ -67,9 +68,9 @@ class TestGrader:
         return matches / len(gt_assertions) if gt_assertions else 0.0
 
     def _longest_callable_subsequence(
-        self,
-        gt_seqs: List[CallAndAssertionSequenceDetails],
-        pred_seqs: List[CallAndAssertionSequenceDetails],
+            self,
+            gt_seqs: List[CallAndAssertionSequenceDetails],
+            pred_seqs: List[CallAndAssertionSequenceDetails],
     ) -> float:
         gt_expanded = self._get_expanded_seqs(gt_seqs)
         pred_expanded = self._get_expanded_seqs(pred_seqs)
@@ -101,9 +102,9 @@ class TestGrader:
         return lcs_len / n
 
     def _callable_coverage(
-        self,
-        gt_seqs: List[CallAndAssertionSequenceDetails],
-        pred_seqs: List[CallAndAssertionSequenceDetails],
+            self,
+            gt_seqs: List[CallAndAssertionSequenceDetails],
+            pred_seqs: List[CallAndAssertionSequenceDetails],
     ) -> float:
         from collections import Counter
 
@@ -135,8 +136,8 @@ class TestGrader:
 
     @staticmethod
     def _assertion_coverage(
-        gt_assertions: List[List[AssertionType]],
-        pred_assertions: List[List[AssertionType]],
+            gt_assertions: List[List[AssertionType]],
+            pred_assertions: List[List[AssertionType]],
     ) -> float:
         pred_groups = [set(group) for group in pred_assertions]
         visited = set()
@@ -151,12 +152,128 @@ class TestGrader:
                     break
         return matched / len(gt_assertions) if gt_assertions else 0.0
 
+    def grade_coverage_all(self, class_method_pairs: List[Tuple[Tuple[str, str], Tuple[str, str]]],
+                           ) -> list:
+        """
+        Calculate coverage for each generated test and the ground truth
+        Args:
+            class_method_pairs: List of tuples, where each tuple is a tuple of (pred_class_name, pred_method_name) and
+            (gt_class_name, gt_method_name)
+
+        Returns:
+            list: Each element is a dict where each pred and ground truth pair overlap coverage is computed
+        """
+        coverage_details = []
+        tests_to_run = []
+        # Run the tests needed
+        for class_method_pair in class_method_pairs:
+            # Add pred tests
+            tests_to_run.append((class_method_pair[0][0], class_method_pair[0][1]))
+            # Add ground truth tests
+            tests_to_run.append((class_method_pair[1][0], class_method_pair[1][1]))
+
+        all_coverage_details = (IndividualTestCoverage(project_root=self.project_root)
+                                .generate(tests_to_run=tests_to_run))
+        for class_method_pair in class_method_pairs:
+            # Get overall coverage
+            coverage = self.grade_coverage(pred_method_sig=class_method_pair[0][1],
+                                           pred_class_name=class_method_pair[0][0],
+                                           gt_class_name=class_method_pair[1][0],
+                                           gt_method_sig=class_method_pair[1][1],
+                                           all_coverage_details=all_coverage_details)
+            # Add to the list
+            if coverage is not None:
+                coverage_details.append({"pred_class_name": class_method_pair[0][0],
+                                         "pred_method_signature": class_method_pair[0][1],
+                                         "gt_class_name": class_method_pair[1][0],
+                                         "gt_method_signature": class_method_pair[1][1],
+                                         "coverage_details": coverage})
+
+        return coverage_details
+
+    @staticmethod
+    def grade_coverage(pred_method_sig: str,
+                       pred_class_name: str,
+                       gt_method_sig: str,
+                       gt_class_name: str,
+                       all_coverage_details: dict
+                       ) -> Dict[str, float]:
+        """
+        Compute the overall coverage between the prediction and ground truth
+        Args:
+            pred_method_sig:
+            pred_class_name:
+            gt_method_sig:
+            gt_class_name:
+            all_coverage_details:
+
+        Returns:
+
+        """
+        gt_coverage_details = {}
+        pred_coverage_details = {}
+        if gt_class_name in all_coverage_details:
+            if gt_method_sig in all_coverage_details[gt_class_name]:
+                gt_coverage_details = all_coverage_details[gt_class_name][gt_method_sig]
+
+        if pred_class_name in all_coverage_details:
+            if pred_method_sig in all_coverage_details[pred_class_name]:
+                pred_coverage_details = all_coverage_details[pred_class_name][pred_method_sig]
+
+        # union coverage maps from both tests
+        coverage_details = {}
+        for app_class, cov in {**gt_coverage_details, **pred_coverage_details}.items():
+            # union class coverage if app_class appears in both
+            merged = {}
+            for k in ['covered_lines', 'method_covered', 'method_missed',
+                      'branch_lines_covered', 'branch_lines_partial', 'branch_lines_missed']:
+                merged[k] = set(gt_coverage_details.get(app_class, {}).get(k, set())) | \
+                            set(pred_coverage_details.get(app_class, {}).get(k, set()))
+            coverage_details[app_class] = merged
+
+        # --- Compute metrics ---
+        total_classes = len(coverage_details)
+        covered_classes = sum(1 for app_class, cov in coverage_details.items()
+                              if cov['covered_lines'] or cov['branch_lines_covered'] or cov['branch_lines_partial'])
+
+        total_methods = 0
+        covered_methods = 0
+        total_lines = 0
+        covered_lines = 0
+        total_branches = 0
+        covered_branches = 0
+
+        for app_class, cov in coverage_details.items():
+            # Methods
+            methods_all = set(cov['method_covered']) | set(cov['method_missed'])
+            total_methods += len(methods_all)
+            covered_methods += len(cov['method_covered'])
+
+            # Lines
+            lines_all = set(cov['covered_lines']) | set(cov['branch_lines_covered']) | \
+                        set(cov['branch_lines_partial']) | set(cov['branch_lines_missed'])
+            total_lines += len(lines_all)
+            covered_lines += len(cov['covered_lines'])
+
+            # Branches
+            branches_all = set(cov['branch_lines_covered']) | set(cov['branch_lines_partial']) | set(
+                cov['branch_lines_missed'])
+            total_branches += len(branches_all)
+            covered_branches += len(cov['branch_lines_covered']) | len(cov['branch_lines_partial'])
+
+        return {
+            "class_coverage_percent": (covered_classes / total_classes * 100) if total_classes else 0.0,
+            "method_coverage_percent": (covered_methods / total_methods * 100) if total_methods else 0.0,
+            "line_coverage_percent": (covered_lines / total_lines * 100) if total_lines else 0.0,
+            "branch_coverage_percent": (covered_branches / total_branches * 100) if total_branches else 0.0
+        }
+
     def grade_structural(
-        self,
-        pred_method_sig: str,
-        pred_class_name: str,
-        gt_method_sig: str,
-        gt_class_name: str,
+            self,
+            pred_method_sig: str,
+            pred_class_name: str,
+            gt_method_sig: str,
+            gt_class_name: str,
     ) -> Tuple[float, Dict[str, float]]:
         """
         Grades structural similarity of a predicted test vs ground truth.
@@ -263,7 +380,7 @@ class TestGrader:
         return avg_score, metrics
 
     def _get_focal_methods_for_test(
-        self, qualified_class_name: str, method_signature: str
+            self, qualified_class_name: str, method_signature: str
     ) -> Set[Tuple[str, str]]:
         try:
             testing_frameworks = self.common.get_testing_frameworks_for_class(
@@ -296,11 +413,11 @@ class TestGrader:
         return (numer / denom) if denom > 0 else 1.0
 
     def grade_focal_coverage_between_tests(
-        self,
-        test_a_class: str,
-        test_a_method_sig: str,
-        test_b_class: str,
-        test_b_method_sig: str,
+            self,
+            test_a_class: str,
+            test_a_method_sig: str,
+            test_b_class: str,
+            test_b_method_sig: str,
     ) -> Tuple[float, Dict[str, Any]]:
         """
         Grades focal class/method coverage between two test methods. Returns how well the focal methods from A cover

@@ -61,8 +61,13 @@ class BaseCompositionOrchestrator:
         chat_prompt, system_prompt = self._init_prompts()
         self.chat_prompt = chat_prompt
 
-        max_iters = Config().get("localization", "max_iters")
-        system_message = system_prompt.format()
+        # Determine if the model supports parallel tool calls and pass max_iters to the system prompt
+        parallelizable: bool = decision_llm.can_parallel_tool_call()
+        max_iters = Config().get("composition", "max_iters")
+        system_message = system_prompt.format(
+            parallelizable=parallelizable,
+            max_iters=max_iters,
+        )
 
         self.agent = CompositionReActAgent(
             llm=decision_llm,
@@ -75,11 +80,11 @@ class BaseCompositionOrchestrator:
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:
         # Choose prompts according to decomposition mode
         if self.decomposition_mode == DecompositionMode.GHERKIN:
-            chat_file = "composition_agent.jinja2"
-            system_file = "composition_agent.jinja2"
+            chat_file = "composition_agent_gherkin.jinja2"
+            system_file = "composition_agent_gherkin.jinja2"
         else:
-            chat_file = "composition_agent.jinja2"
-            system_file = "composition_agent.jinja2"
+            chat_file = "composition_agent_grammatical.jinja2"
+            system_file = "composition_agent_grammatical.jinja2"
 
         chat_prompt = LoadPrompt.load_prompt(
             chat_file, PromptFormat.JINJA2, prompt_type="chat"

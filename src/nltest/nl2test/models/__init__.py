@@ -19,6 +19,11 @@ from .agents import (
     FinalizeAtomicBlockArgs,
     FinalizeScenarioArgs,
     ModifyAtomicBlockNotesArgs,
+    TestCodeArgs,
+    ModifyAtomicBlocksArgs,
+    ModifyScenarioArgs,
+    ModifyScenarioCommentArgs,
+    ModifyAtomicBlockNoteArgs,
 )
 
 from .decomposition import (

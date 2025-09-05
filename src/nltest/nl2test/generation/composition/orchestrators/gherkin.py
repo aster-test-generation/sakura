@@ -18,11 +18,10 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
         localized_scenario: LocalizedScenario = blocks
         initial_state = AgentState(localized_scenario=localized_scenario)
 
-        # TODO: Revise composition prompt
         chat_prompt = self.chat_prompt.format(
             nl_description=self.nl2_input.description,
             instructions=instructions,
-            atomic_blocks=localized_scenario,
+            localized_scenario=localized_scenario,
         )
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from .base import BaseCompositionTools
 from langchain_core.tools import StructuredTool
 
-from nltest.nl2test.models import LocalizedScenario
-from nltest.nl2test.models.agents import ModifyScenarioCommentArgs
+from nltest.nl2test.models import LocalizedScenario, ModifyScenarioCommentArgs
 from nltest.utils.exceptions import ToolExceptionHandler
+
+from .base import BaseCompositionTools
 
 
 class GherkinCompositionTools(BaseCompositionTools):

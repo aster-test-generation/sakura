@@ -354,7 +354,7 @@ class BaseCompositionTools:
         return StructuredTool.from_function(
             func=_generate_test_code,
             name="generate_test_code",
-            description="",
+            description="",  # Note: Ensure package and imports are included in code
             args_schema=TestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

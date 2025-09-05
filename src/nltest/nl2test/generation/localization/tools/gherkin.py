@@ -2,13 +2,14 @@ from typing import Tuple
 
 from langchain_core.tools import StructuredTool
 
-from nltest.nl2test.generation.localization.tools.base import BaseLocalizationTools
 from nltest.nl2test.generation.localization.tool_descriptions import (
     FINALIZE_LOCALIZED_SCENARIO_DESC,
 )
 from nltest.nl2test.models import LocalizedScenario, FinalizeScenarioArgs
 from nltest.utils.exceptions import ToolExceptionHandler
 from nltest.utils.exceptions.tool_exceptions import BlockNotFoundError
+
+from .base import BaseLocalizationTools
 
 
 class GherkinLocalizationTools(BaseLocalizationTools):

@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from .base import BaseCompositionTools
+
 from langchain_core.tools import StructuredTool
 
-from nltest.nl2test.models import AtomicBlockList, ModifyAtomicBlocksArgs
-from nltest.nl2test.models.agents import ModifyAtomicBlockNoteArgs
+from nltest.nl2test.models import (
+    AtomicBlockList,
+    ModifyAtomicBlocksArgs,
+    ModifyAtomicBlockNoteArgs,
+)
 from nltest.utils.exceptions import ToolExceptionHandler
+
+from .base import BaseCompositionTools
 
 
 class GrammaticalCompositionTools(BaseCompositionTools):

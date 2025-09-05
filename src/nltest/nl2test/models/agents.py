@@ -23,16 +23,28 @@ class AgentState(BaseModel):
         Dict[str, Dict[str, int]],
         "Mapping: tool name -> encoded argument -> count of calls",
     ] = Field(default_factory=dict)
+
+    # Inputs
     grammatical_blocks: Annotated[
         Optional[GrammaticalBlockList],
         "Input grammatical blocks when using grammatical mode",
     ] = None
-    atomic_blocks: Annotated[
-        Optional[AtomicBlockList], "The current state of the AtomicBlocks"
-    ] = None
     scenario: Annotated[
         Optional[Scenario],
         "Input Scenario when using Gherkin mode",
+    ] = None
+
+    # For test packaging
+    package: Annotated[
+        Optional[str], "The package selected by the agent for the test code."
+    ] = None
+    class_name: Annotated[
+        Optional[str], "The test class name selected by the agent."
+    ] = None
+
+    # Outputs
+    atomic_blocks: Annotated[
+        Optional[AtomicBlockList], "The current state of the AtomicBlocks"
     ] = None
     localized_scenario: Annotated[
         Optional[LocalizedScenario],

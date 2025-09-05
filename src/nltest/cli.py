@@ -19,6 +19,8 @@ from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
+from nltest.dataset_creation.model import NL2TestDataset, Test as DatasetTest
+from nltest.utils.models import Method
 
 app = typer.Typer(
     help="ASTER-Test2NL: [A]utomated Te[s][t] Cas[e] Generato[r] from Natural Language",
@@ -85,10 +87,144 @@ def main() -> None:
 
 @app.command()
 def generate_descriptions(
+    analysis_dir: str,
+    organized_methods_dir: str,
+    llm_model: str,
+    clear_dataset: bool = True,
+    max_entries: int = 0,
+):
+    output_dir = _resolve_output_dir(None)
+
+    analysis_root = Path(analysis_dir)
+    methods_root = Path(organized_methods_dir)
+
+    if not (methods_root.exists() and methods_root.is_dir()):
+        raise Exception(
+            f"Organized methods directory {methods_root} does not exist or is not a directory."
+        )
+
+    if not (analysis_root.exists() and analysis_root.is_dir()):
+        raise Exception(
+            f"Analysis directory {analysis_root} does not exist or is not a directory."
+        )
+
+    organized_methods_file_name = "nl2test.json"
+    project_dirs = [
+        p
+        for p in sorted(methods_root.iterdir())
+        if p.is_dir() and (p / organized_methods_file_name).exists()
+    ]
+
+    if not project_dirs:
+        RichLog.warn(
+            f"No project directories with nl2test.json found under {methods_root}"
+        )
+        return
+
+    data_manager = StructuredDataManager(output_dir)
+    if clear_dataset:
+        RichLog.info(f"Clearing the existing Test2NL dataset at the output directory.")
+        targets = ["descriptions.json", "test2nl.csv"]
+        data_manager.delete_many(targets)
+
+    RichLog.info(
+        f"Found {len(project_dirs)} project(s) with nl2test.json: {[p.name for p in project_dirs]}"
+    )
+
+    start_id = 0
+
+    for project_dir in project_dirs:
+        project_name = project_dir.name
+
+        # Ensuring matching analysis.json exists
+        analysis_project_dir = Path(analysis_root) / project_name
+        analysis_json_path = analysis_project_dir / "analysis.json"
+
+        if not (analysis_project_dir.exists() and analysis_project_dir.is_dir()):
+            RichLog.warn(
+                f"Skipping {project_name}: missing analysis directory {analysis_project_dir}"
+            )
+            continue
+
+        if not analysis_json_path.exists():
+            RichLog.warn(
+                f"Skipping {project_name}: missing analysis.json at {analysis_json_path}"
+            )
+            continue
+
+        _log_section(f"Preparing project: {project_name}")
+
+        analysis = CLDK(language="java").analysis(
+            project_path="",
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=analysis_project_dir,
+            eager=False,
+        )
+
+        _init_project_config(
+            project_name=project_name,
+            base_project_dir=project_dir,
+            output_dir=output_dir,
+            llm_model=llm_model,
+        )
+
+        pipeline = Pipeline(analysis, project_name, output_dir)
+
+        dataset_path = project_dir / organized_methods_file_name
+        try:
+            dataset = NL2TestDataset.model_validate_json(
+                dataset_path.read_text("utf-8")
+            )
+        except Exception as exc:
+            RichLog.warn(
+                f"Skipping {project_name}: failed to load dataset from {dataset_path} ({exc})"
+            )
+            continue
+
+        groups = [
+            "tests_with_one_focal_methods",
+            "tests_with_two_focal_methods",
+            "tests_with_more_than_two_to_five_focal_methods",
+            "tests_with_more_than_five_to_ten_focal_methods",
+            "tests_with_more_than_ten_focal_methods",
+        ]
+
+        tests_to_process: list[Method] = []
+        for group_name in groups:
+            tests: list[DatasetTest] = getattr(dataset, group_name, []) or []
+            for t in tests:
+                tests_to_process.append(
+                    Method(
+                        qualified_class_name=t.qualified_class_name,
+                        method_signature=t.method_signature,
+                    )
+                )
+
+        RichLog.info(
+            f"Prepared {len(tests_to_process)} test methods from {dataset_path} for {project_name}"
+        )
+
+        test2nl_entries, test_descriptions, start_id = (
+            pipeline.run_descriptions_on_select(
+                test_methods=tests_to_process, start_id=start_id
+            )
+        )
+
+        pipeline.data_manager.save(
+            "descriptions.json", test_descriptions, format="json", mode="append"
+        )
+        pipeline.data_manager.save(
+            "test2nl.csv", test2nl_entries, format="csv", mode="append"
+        )
+
+
+@app.command()
+def generate_descriptions_old(
     base_project_dir: Annotated[
         str,
         typer.Option(
-            help="Path to the base directory containing the projects.",
+            help="Path to the directory containing the project directories.",
             show_default=False,
         ),
     ] = "./resources",

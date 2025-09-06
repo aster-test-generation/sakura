@@ -1,0 +1,4166 @@
+{
+  "dataset_name": "commons-numbers",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.GeneralizedContinuedFractionTest",
+      "method_signature": "testSimpleContinuedFraction(double, java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.GeneralizedContinuedFraction.Coefficient",
+          "focal_method_names": [
+            "of(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.field.FP64Test",
+      "method_signature": "testEqualsCloseValues(double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.field.FP64",
+          "focal_method_names": [
+            "of(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testMultiplyRealInf()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testEqualsWithAnotherClass()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.SortingTest",
+      "method_signature": "testSortUniqueIndexSet(int[], int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexSet",
+          "focal_method_names": [
+            "forEach(java.util.function.IntConsumer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.PrecisionTest",
+      "method_signature": "testFloatEqualsIncludingNaN()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.PrecisionTest.FloatEquals",
+          "focal_method_names": [
+            "equals(float, float)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.EpsilonDoubleEquivalenceTest",
+      "method_signature": "testEqZero()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.Precision.DoubleEquivalence",
+          "focal_method_names": [
+            "eqZero(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PartitionTest",
+      "method_signature": "testHeapSelectPair(double[], int, int, int, int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.Partition",
+          "focal_method_names": [
+            "heapSelectPair(double[], int, int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.combinatorics.BinomialCoefficientTest",
+      "method_signature": "testBinomialCoefficientLarge()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.combinatorics.BinomialCoefficient",
+          "focal_method_names": [
+            "value(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PartitionTest",
+      "method_signature": "testHeapSelectRight2(double[], int, int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.Partition",
+          "focal_method_names": [
+            "heapSelectRight2(double[], int, int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.RegularizedBetaTest",
+      "method_signature": "testAlpha1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.RegularizedBeta",
+          "focal_method_names": [
+            "value(double, double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.streams.ComplexUtilsTest",
+      "method_signature": "testPolar2ComplexIllegalModulus3D()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.streams.ComplexUtils",
+          "focal_method_names": [
+            "polar2Complex(double[][][], double[][][])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testEqualsWithRealDifference()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.combinatorics.FactorialTest",
+      "method_signature": "testFactorialDoubleValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.combinatorics.Factorial",
+          "focal_method_names": [
+            "doubleValue(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.ExtendedPrecisionTest",
+      "method_signature": "testSubNormalSplit()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "highPart(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testAddRealWithNegZeroImaginary()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.InverseErfTest",
+      "method_signature": "testErfInvNaN()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.InverseErf",
+          "focal_method_names": [
+            "value(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.TestUtilsTest",
+      "method_signature": "testAssertEquals()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.TestUtils",
+          "focal_method_names": [
+            "assertEquals(double, double, long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.BoostErfTest",
+      "method_signature": "testExpmxxCloseToSubNormal(double, java.math.BigDecimal)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.BoostErf",
+          "focal_method_names": [
+            "expmxx(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.field.FieldParametricTest",
+      "method_signature": "testMultiplicationAssociativity(org.apache.commons.numbers.field.FieldTestData)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.field.FieldTestData",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.field.Field",
+          "focal_method_names": [
+            "multiply(java.lang.Object, java.lang.Object)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.numbers.rootfinder.UserGuideTest",
+      "method_signature": "testBrentSolver1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.rootfinder.BrentSolver",
+          "focal_method_names": [
+            "findRoot(java.util.function.DoubleUnaryOperator, double, double)",
+            "findRoot(java.util.function.DoubleUnaryOperator, double, double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PartitionTest",
+      "method_signature": "testSearch(int[], int, int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.Partition",
+          "focal_method_names": [
+            "searchLessOrEqual(int[], int, int, int)",
+            "searchGreaterOrEqual(int[], int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.TestUtilsTest",
+      "method_signature": "testErrorStatisticsMean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.TestUtils.ErrorStatistics",
+          "focal_method_names": [
+            "add(double)",
+            "getMean()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.IncompleteBetaTest",
+      "method_signature": "testIBetaComplement(double, double, double, double, double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.TestUtils",
+          "focal_method_names": [
+            "assertEquals(double, double, long)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.IncompleteBeta",
+          "focal_method_names": [
+            "complement(double, double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.combinatorics.CombinationsTest",
+      "method_signature": "testLexicographicComparatorUnsorted()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.combinatorics.Combinations",
+          "focal_method_names": [
+            "of(int, int)",
+            "comparator()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testSqrtSmall(double, double, java.math.BigDecimal)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "fastTwoSum(double, double)",
+            "sqrt()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.HashIndexSetTest",
+      "method_signature": "testCapacityExceededThrows(int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.HashIndexSet",
+          "focal_method_names": [
+            "add(int)",
+            "size()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "toString()",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.quaternion.QuaternionTest",
+      "method_signature": "testScalarMultiplyDouble()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.quaternion.Quaternion",
+          "focal_method_names": [
+            "multiply(double)",
+            "of(double, double, double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.combinatorics.FactorialDoubleTest",
+      "method_signature": "testFactorials()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.combinatorics.FactorialDouble",
+          "focal_method_names": [
+            "create()",
+            "value(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.arrays.MultidimensionalCounterTest",
+      "method_signature": "testAccessors()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.arrays.MultidimensionalCounter",
+          "focal_method_names": [
+            "getSizes()",
+            "of(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.FractionTest",
+      "method_signature": "testConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "signum()",
+            "of(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.CommonTestCases.UnaryOperatorTestCase",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testDoubleValueForLargeNumeratorAndDenominator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "of(java.math.BigInteger, java.math.BigInteger)",
+            "doubleValue()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.UserGuideTest",
+      "method_signature": "testSum2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.Sum",
+          "focal_method_names": [
+            "of(double[])",
+            "getAsDouble()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testSubtractFromImaginaryNaN()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "subtract(org.apache.commons.numbers.complex.Complex)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.quaternion.QuaternionTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.quaternion.Quaternion",
+          "focal_method_names": [
+            "of(double, double, double, double)",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.PrecisionTest",
+      "method_signature": "testSortWithCompareToMaxUlps()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.PrecisionTest.CompareFunction",
+          "focal_method_names": [
+            "compare(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.core.PrecisionTest.CompareToWithUlps",
+          "focal_method_names": [
+            "compareTo(double, double, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.SumTest",
+      "method_signature": "testSumOfProducts_huge()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.Sum",
+          "focal_method_names": [
+            "ofProducts(double[], double[])",
+            "getAsDouble()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.combinatorics.LogBinomialCoefficientTest",
+      "method_signature": "testBinomialCoefficient(int, int, double, int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.combinatorics.LogBinomialCoefficient",
+          "focal_method_names": [
+            "value(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.core.Precision",
+          "focal_method_names": [
+            "equals(double, double, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.SumTest",
+      "method_signature": "testSumOfProducts()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.Sum",
+          "focal_method_names": [
+            "ofProducts(double[], double[])",
+            "getAsDouble()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testTwoProd(double, double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "ofProduct(double, double)",
+            "lo()",
+            "doubleValue()",
+            "hi()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.DualPivotingStrategyTest",
+      "method_signature": "testSort5C(double[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.DualPivotingStrategy",
+          "focal_method_names": [
+            "pivotIndex(double[], int, int, int[])",
+            "getSampledIndices(int, int)",
+            "samplingEffect()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CReferenceTest",
+      "method_signature": "testAcosh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.TestUtils",
+          "focal_method_names": [
+            "loadTestData(java.lang.String, org.apache.commons.numbers.complex.TestUtils.TestDataFlagOption, java.util.function.Consumer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "real()",
+            "imag()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "real()",
+            "imag()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testNonZeroMultiplyNegativeI()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "multiply(org.apache.commons.numbers.complex.Complex)",
+            "multiplyImaginary(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.BoostErfTest",
+      "method_signature": "testInverseErf(double, java.math.BigDecimal)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.BoostErfTest.TestCase",
+          "focal_method_names": [
+            "isOdd()",
+            "getFunction()",
+            "getTolerance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.FractionTest",
+      "method_signature": "testConstructorZero()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "from(double, double, int)",
+            "of(int)",
+            "from(double)",
+            "from(double, int)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.quaternion.QuaternionTest",
+      "method_signature": "testMultiplyQuaternionQuaternion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.quaternion.Quaternion",
+          "focal_method_names": [
+            "multiply(org.apache.commons.numbers.quaternion.Quaternion, org.apache.commons.numbers.quaternion.Quaternion)",
+            "of(double, double, double, double)",
+            "multiply(org.apache.commons.numbers.quaternion.Quaternion)",
+            "conjugate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testNumberType()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.ComplexTest.NumberType",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "isFinite()",
+            "isInfinite()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testTwoSum(double, double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "ofDifference(double, double)",
+            "doubleValue()",
+            "hi()",
+            "lo()",
+            "ofSum(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testOfDouble(double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(double)",
+            "lo()",
+            "hi()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testNegate(double, double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(double, double)",
+            "negate()",
+            "lo()",
+            "hi()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PivotingStrategyTest",
+      "method_signature": "testMedianOf9(double[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.PivotingStrategy",
+          "focal_method_names": [
+            "getSampledIndices(int, int, int)",
+            "pivotIndex(double[], int, int, int)",
+            "samplingEffect()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.CompressedIndexSetTest",
+      "method_signature": "testNextIndexOrRightPlus1(int[], int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.CompressedIndexSet",
+          "focal_method_names": [
+            "left()",
+            "nextIndexOrRightPlus1(int)",
+            "right()",
+            "set(int)",
+            "ofRange(int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testAccurateSqrtSmall(double, double, java.math.BigDecimal)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "fastTwoSum(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.core.TestUtils",
+          "focal_method_names": [
+            "assertEquals(java.math.BigDecimal, org.apache.commons.numbers.core.DD, double, java.util.function.Supplier)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.core.DDExt",
+          "focal_method_names": [
+            "sqrt(org.apache.commons.numbers.core.DD)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testSerial()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "from(double, int)",
+            "of(int)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testIsOne()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(double)",
+            "divide(org.apache.commons.numbers.core.DD)",
+            "of(double, double)",
+            "add(org.apache.commons.numbers.core.DD)",
+            "ofSum(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testCompareTo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "doubleValue()",
+            "compareTo(org.apache.commons.numbers.fraction.BigFraction)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.FractionTest",
+      "method_signature": "testSubtract()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "signum()",
+            "subtract(org.apache.commons.numbers.fraction.Fraction)",
+            "subtract(int)",
+            "add(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testNumbers150()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "pow(int)",
+            "of(int)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.quaternion.QuaternionTest",
+      "method_signature": "testParseFromToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.quaternion.Quaternion",
+          "focal_method_names": [
+            "of(double, double, double, double)",
+            "parse(java.lang.String)",
+            "equals(org.apache.commons.numbers.quaternion.Quaternion, double)",
+            "toString()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testConstructorZero()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "from(double, double, int)",
+            "of(int)",
+            "of(long, long)",
+            "of(long)",
+            "from(double)",
+            "from(double, int)",
+            "of(java.math.BigInteger)",
+            "of(java.math.BigInteger, java.math.BigInteger)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.core.LinearCombinationsTest",
+      "method_signature": "testTwoSums(org.apache.commons.numbers.examples.jmh.core.LinearCombination.ND)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.core.LinearCombination.ND",
+          "focal_method_names": [
+            "value(double[], double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.core.LinearCombination.ThreeD",
+          "focal_method_names": [
+            "value(double, double, double, double, double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "of(long, long)",
+            "multiply(org.apache.commons.numbers.fraction.BigFraction)",
+            "add(org.apache.commons.numbers.fraction.BigFraction)",
+            "doubleValue()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.arrays.UpdatingIntervalTest",
+      "method_signature": "testUpdateBitIndexUpdatingInterval(int[], int[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.arrays.UpdatingInterval",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "updateLeft(int)",
+            "updateRight(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.arrays.UpdatingInterval",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "updateLeft(int)",
+            "updateRight(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testDoubleConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "signum()",
+            "from(double, double, int)",
+            "doubleValue()",
+            "getNumeratorAsInt()",
+            "getDenominatorAsInt()",
+            "from(double)",
+            "getNumeratorAsLong()",
+            "getDenominatorAsLong()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.CommonTestCases.DoubleToFractionTestCase",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.UserGuideTest",
+      "method_signature": "testDD1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(int)",
+            "longValue()",
+            "doubleValue()",
+            "of(double)",
+            "of(long)",
+            "intValue()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.streams.ComplexUtilsTest",
+      "method_signature": "testPolar2Complex()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "multiply(org.apache.commons.numbers.complex.Complex)",
+            "negate()",
+            "exp()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.streams.ComplexUtils",
+          "focal_method_names": [
+            "polar2Complex(double[][][], double[][][])",
+            "polar2Complex(double[][], double[][])",
+            "polar2Complex(double, double)",
+            "polar2Complex(double[], double[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.arrays.UpdatingIntervalTest",
+      "method_signature": "testUpdateIndexSupport(int[], int[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.arrays.UpdatingInterval",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "updateLeft(int)",
+            "updateRight(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.arrays.UpdatingInterval",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "updateLeft(int)",
+            "updateRight(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.BigFractionTest",
+      "method_signature": "testDoubleConstructorWithMaxDenominator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.BigFraction",
+          "focal_method_names": [
+            "signum()",
+            "from(double, int)",
+            "getNumeratorAsInt()",
+            "getDenominatorAsInt()",
+            "getNumeratorAsLong()",
+            "getDenominatorAsLong()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.CommonTestCases.DoubleToFractionTestCase",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PivotCacheTest",
+      "method_signature": "testSingleRange(int, int, int[][])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.PivotCache",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "sparse()",
+            "nextPivot(int)",
+            "contains(int)",
+            "previousPivot(int)",
+            "add(int)",
+            "nextPivotOrElse(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.ScanningPivotCache",
+          "focal_method_names": [
+            "previousNonPivot(int)",
+            "nextNonPivot(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.BoostGammaTest",
+      "method_signature": "testGammaQLargeXOriginal(java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.BoostGammaTest.DoubleDoubleBiPredicate",
+          "focal_method_names": [
+            "test(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.DataReader",
+          "focal_method_names": [
+            "getDouble(int)",
+            "next()",
+            "getBigDecimal(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.TestUtils.ErrorStatistics",
+          "focal_method_names": [
+            "size()",
+            "getRMS()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PivotCacheTest",
+      "method_signature": "testSetRangeSinglePoint(int, int, int[][])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.PivotCache",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "add(int, int)",
+            "sparse()",
+            "nextPivot(int)",
+            "contains(int)",
+            "previousPivot(int)",
+            "nextPivotOrElse(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testHashCodeWithDifferentZeros()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "of(double, double)",
+            "hashCode()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.quaternion.QuaternionTest",
+      "method_signature": "testInverseNormalized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.quaternion.Quaternion",
+          "focal_method_names": [
+            "multiply(org.apache.commons.numbers.quaternion.Quaternion)",
+            "equals(org.apache.commons.numbers.quaternion.Quaternion, double)",
+            "toString()",
+            "normalize()",
+            "of(double, double, double, double)",
+            "inverse()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.gamma.BoostGammaTest",
+      "method_signature": "testGammaPLargeXOriginal(java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.BoostGammaTest.DoubleDoubleBiPredicate",
+          "focal_method_names": [
+            "test(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.DataReader",
+          "focal_method_names": [
+            "getDouble(int)",
+            "next()",
+            "getBigDecimal(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.gamma.TestUtils.ErrorStatistics",
+          "focal_method_names": [
+            "size()",
+            "getRMS()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.core.DDTest",
+      "method_signature": "testAddDouble(double, double, double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.core.DD",
+          "focal_method_names": [
+            "add(double)",
+            "doubleValue()",
+            "hi()",
+            "of(double)",
+            "of(double, double)",
+            "add(org.apache.commons.numbers.core.DD)",
+            "lo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.UpdatingIntervalTest",
+      "method_signature": "testSplitBitIndexUpdatingInterval(int[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.UpdatingInterval",
+          "focal_method_names": [
+            "left()",
+            "splitLeft(int, int)",
+            "splitRight(int, int)",
+            "right()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.UpdatingInterval",
+          "focal_method_names": [
+            "left()",
+            "splitLeft(int, int)",
+            "splitRight(int, int)",
+            "right()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PivotCacheTest",
+      "method_signature": "testSingleRangeUsingScanningPivotCache(int, int, int[][])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.PivotCache",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "sparse()",
+            "nextPivot(int)",
+            "contains(int)",
+            "previousPivot(int)",
+            "add(int)",
+            "nextPivotOrElse(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.ScanningPivotCache",
+          "focal_method_names": [
+            "previousNonPivot(int)",
+            "nextNonPivot(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.IndexSetTest",
+      "method_signature": "testCardinalityEmpty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexSet",
+          "focal_method_names": [
+            "cardinality64()",
+            "cardinality32()",
+            "cardinality8()",
+            "cardinality4()",
+            "cardinality2()",
+            "cardinality16()",
+            "cardinality()",
+            "ofRange(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PivotCacheTest",
+      "method_signature": "testSetRangeUsingPairedIndex(int, int, int[][])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.PivotCache",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "sparse()",
+            "nextPivot(int)",
+            "contains(int)",
+            "previousPivot(int)",
+            "add(int)",
+            "nextPivotOrElse(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.ScanningPivotCache",
+          "focal_method_names": [
+            "previousNonPivot(int)",
+            "nextNonPivot(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.CommonsLangPortedFractionTest",
+      "method_signature": "testAdd()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "add(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "add(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "add(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "add(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "add(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.IndexIteratorTest",
+      "method_signature": "testCompressedIndexIterator5(int[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.fraction.CommonsLangPortedFractionTest",
+      "method_signature": "testDivide()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "divide(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)",
+            "reciprocal()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "divide(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)",
+            "reciprocal()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "divide(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)",
+            "reciprocal()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "divide(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)",
+            "reciprocal()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.fraction.Fraction",
+          "focal_method_names": [
+            "divide(org.apache.commons.numbers.fraction.Fraction)",
+            "of(int, int)",
+            "reciprocal()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testHashCode()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "hashCode()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.IndexIteratorTest",
+      "method_signature": "testCompressedIndexIterator3(int[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testMultiply()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.PivotCacheTest",
+      "method_signature": "testSingleRangeUsingFilledIndexSetAsScanningPivotCache(int, int, int[][])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.PivotCache",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "sparse()",
+            "nextPivot(int)",
+            "contains(int)",
+            "previousPivot(int)",
+            "add(int)",
+            "nextPivotOrElse(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.ScanningPivotCache",
+          "focal_method_names": [
+            "previousNonPivot(int)",
+            "nextNonPivot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexSet",
+          "focal_method_names": [
+            "asScanningPivotCache(int, int)",
+            "of(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testAbsVsLog()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "abs()",
+            "log()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testNthRootNan()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testSignedArithmetic()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testTanh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testEqualsWithDifferentNaNs()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testAcosh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testNthRootInf()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "nthRoot(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.ComplexTest",
+      "method_signature": "testEqualsIsConsistentWithArraysEquals()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "equals(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testLog10()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testExp()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "multiply(double)",
+            "ofCis(double)",
+            "conj()",
+            "ofCartesian(double, double)",
+            "negate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.examples.jmh.arrays.IndexIteratorTest",
+      "method_signature": "testKeyIndexIterator(int[])",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.examples.jmh.arrays.IndexIterator",
+          "focal_method_names": [
+            "left()",
+            "right()",
+            "next()",
+            "end()",
+            "positionAfter(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testAtanh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testDivide()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.numbers.complex.CStandardTest",
+      "method_signature": "testSqrt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.numbers.complex.Complex",
+          "focal_method_names": [
+            "ofCartesian(double, double)",
+            "conj()",
+            "negate()"
+          ]
+        }
+      ]
+    }
+  ]
+}

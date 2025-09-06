@@ -1,0 +1,2409 @@
+{
+  "dataset_name": "commons-math",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.genetics.RandomKeyMutationTest",
+      "method_signature": "testMutate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.genetics.MutationPolicy",
+          "focal_method_names": [
+            "mutate(org.apache.commons.math4.legacy.genetics.Chromosome)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.genetics.Chromosome",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.AkimaSplineInterpolatorTest",
+      "method_signature": "testInterpolateCubic()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.UnivariateFunction",
+          "focal_method_names": [
+            "value(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.nonstiff.Decimal64Test",
+      "method_signature": "testMultiply()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.nonstiff.Decimal64",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.ode.nonstiff.Decimal64)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.RealVectorFormatAbstractTest",
+      "method_signature": "tesNegativeInfinity()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVectorFormat",
+          "focal_method_names": [
+            "format(org.apache.commons.math4.legacy.linear.RealVector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.SimpleValueCheckerTest",
+      "method_signature": "testIterationCheckDisabled()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.SimpleValueChecker",
+          "focal_method_names": [
+            "converged(int, org.apache.commons.math4.legacy.optim.PointValuePair, org.apache.commons.math4.legacy.optim.PointValuePair)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.univariate.BrentOptimizerTest",
+      "method_signature": "testQuinticMax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.univariate.UnivariateOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.optim.OptimizationData[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.SingularValueSolverTest",
+      "method_signature": "testSolve()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.MatrixUtils",
+          "focal_method_names": [
+            "createRealMatrix(double[][])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.SparseFieldMatrixTest",
+      "method_signature": "testGetEntry()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "toDouble()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.core.MathArraysTest",
+      "method_signature": "testConvolve()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.MathArrays",
+          "focal_method_names": [
+            "convolve(double[], double[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.OLSMultipleLinearRegressionTest",
+      "method_signature": "testNoDataNPESSTO()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.AbstractMultipleLinearRegression",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.OLSMultipleLinearRegression",
+          "focal_method_names": [
+            "calculateTotalSumOfSquares()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.UnmodifiableRealVectorAbstractTest",
+      "method_signature": "testAddToEntry()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+          "focal_method_names": [
+            "unmodifiableRealVector(org.apache.commons.math4.legacy.linear.RealVector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.core.PairTest",
+      "method_signature": "testCreate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.Pair",
+          "focal_method_names": [
+            "create(java.lang.Object, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.HarmonicCurveFitterTest",
+      "method_signature": "testUnsorted()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.function.HarmonicOscillator",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.WeightedObservedPoints",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.SimpleCurveFitter",
+          "focal_method_names": [
+            "fit(java.util.Collection)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.noderiv.BOBYQAOptimizerTest",
+      "method_signature": "testEllipse()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.optim.OptimizationData[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.PointValuePair",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.RRQRSolverTest",
+      "method_signature": "testOverdetermined()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getNorm()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.genetics.ListPopulationTest",
+      "method_signature": "testSetPopulationLimitTooSmall()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.genetics.ListPopulation",
+          "focal_method_names": [
+            "setPopulationLimit(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.util.ComplexFormatAbstractTest",
+      "method_signature": "testParseNegativeImaginary()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.util.ComplexFormat",
+          "focal_method_names": [
+            "parse(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.core.MathArraysTest",
+      "method_signature": "testIsMonotonic()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.MathArrays",
+          "focal_method_names": [
+            "isMonotonic(double[], org.apache.commons.math4.legacy.core.MathArrays.OrderDirection, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.core.MathArraysTest",
+      "method_signature": "testEbeMultiply()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.MathArrays",
+          "focal_method_names": [
+            "ebeMultiply(double[], double[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.correlation.KendallsCorrelationTest",
+      "method_signature": "testSingleElement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.correlation.KendallsCorrelation",
+          "focal_method_names": [
+            "correlation(double[], double[])"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.core.ExtendedFieldElementAbstractTest",
+      "method_signature": "testExpm1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)",
+            "expm1(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.HermiteInterpolatorTest",
+      "method_signature": "testQuadratic()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.HermiteInterpolator",
+          "focal_method_names": [
+            "getPolynomials()",
+            "value(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.events.EventFilterTest",
+      "method_signature": "testDecreasingOnly()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.FirstOrderIntegrator",
+          "focal_method_names": [
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])",
+            "addEventHandler(org.apache.commons.math4.legacy.ode.events.EventHandler, double, double, int, org.apache.commons.math4.legacy.analysis.solvers.UnivariateSolver)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.events.EventFilterTest.Event",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.sampling.StepNormalizerOutputTestBase",
+      "method_signature": "testIncLast()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.FirstOrderIntegrator",
+          "focal_method_names": [
+            "addStepHandler(org.apache.commons.math4.legacy.ode.sampling.StepHandler)",
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.RRQRDecompositionTest",
+      "method_signature": "testDimensions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RRQRDecomposition",
+          "focal_method_names": [
+            "getR()",
+            "getQ()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunctionTest",
+      "method_signature": "testAddition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction",
+          "focal_method_names": [
+            "degree()",
+            "add(org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.function.UnivariateDifferentiableFunctionTest",
+      "method_signature": "testAtanh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.function.Atanh",
+          "focal_method_names": [
+            "value(double)",
+            "value(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.nonstiff.ClassicalRungeKuttaIntegratorTest",
+      "method_signature": "testStepSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.FirstOrderIntegrator",
+          "focal_method_names": [
+            "addStepHandler(org.apache.commons.math4.legacy.ode.sampling.StepHandler)",
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DSCompilerTest",
+      "method_signature": "testIncompatibleParams()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DSCompiler",
+          "focal_method_names": [
+            "getCompiler(int, int)",
+            "checkCompatibility(org.apache.commons.math4.legacy.analysis.differentiation.DSCompiler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.events.CloseEventsTest",
+      "method_signature": "testSimultaneousEvents()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.FirstOrderIntegrator",
+          "focal_method_names": [
+            "addEventHandler(org.apache.commons.math4.legacy.ode.events.EventHandler, double, double, int)",
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.events.CloseEventsTest.TimeDetector",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.nonstiff.GillIntegratorTest",
+      "method_signature": "testDecreasingSteps()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "pow(double, double)",
+            "abs(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.BicubicInterpolatingFunctionTest",
+      "method_signature": "testIsValidPoint()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.BicubicInterpolatingFunction",
+          "focal_method_names": [
+            "isValidPoint(double, double)",
+            "value(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testInsufficientData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
+          "focal_method_names": [
+            "evaluate(double[])",
+            "evaluate(double[], double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.QRDecompositionTest",
+      "method_signature": "testRUpperTriangular()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor)",
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DSCompilerTest",
+      "method_signature": "testCompositionRules()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DSCompiler",
+          "focal_method_names": [
+            "getCompiler(int, int)",
+            "getPartialDerivativeOrders(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.univariate.BrentOptimizerTest",
+      "method_signature": "testQuinticMin()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.univariate.UnivariateOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.optim.OptimizationData[])",
+            "getEvaluations()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.function.UnivariateDifferentiableFunctionTest",
+      "method_signature": "testSinh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.function.Sinh",
+          "focal_method_names": [
+            "value(double)",
+            "value(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.nonstiff.LutherIntegratorTest",
+      "method_signature": "testKepler()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.FirstOrderIntegrator",
+          "focal_method_names": [
+            "addStepHandler(org.apache.commons.math4.legacy.ode.sampling.StepHandler)",
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.HarmonicCurveFitterTest",
+      "method_signature": "testPreconditions1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.HarmonicCurveFitter",
+          "focal_method_names": [
+            "fit(java.util.Collection)",
+            "create()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.FiniteDifferencesDifferentiatorTest",
+      "method_signature": "testBoundedSqrt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.UnivariateFunctionDifferentiator",
+          "focal_method_names": [
+            "differentiate(org.apache.commons.math4.legacy.analysis.UnivariateFunction)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.UnivariateDifferentiableFunction",
+          "focal_method_names": [
+            "value(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testSinCos()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "sin()",
+            "cos()",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "sin(double)",
+            "cos(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testSqrtPow2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "sqrt()",
+            "getPartialDerivative(int[])",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.nonstiff.GillStepInterpolatorTest",
+      "method_signature": "serialization()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.nonstiff.GillIntegrator",
+          "focal_method_names": [
+            "addStepHandler(org.apache.commons.math4.legacy.ode.sampling.StepHandler)",
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.ContinuousOutputModel",
+          "focal_method_names": [
+            "getInterpolatedState()",
+            "setInterpolatedTime(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.TricubicInterpolatingFunctionTest",
+      "method_signature": "testPlane()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.TrivariateFunction",
+          "focal_method_names": [
+            "value(double, double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)",
+            "max(double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.FunctionUtilsTest",
+      "method_signature": "testToDifferentiableMultivariateInconsistentGradient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.MultivariateDifferentiableFunction",
+          "focal_method_names": [
+            "value(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "sin()",
+            "cos()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ml.clustering.MiniBatchKMeansClustererTest",
+      "method_signature": "testCompareToKMeans()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ml.clustering.Clusterable",
+          "focal_method_names": [
+            "getPoint()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ml.distance.DistanceMeasure",
+          "focal_method_names": [
+            "compute(double[], double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ml.clustering.ClusterEvaluator",
+          "focal_method_names": [
+            "score(java.util.List)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.noderiv.SimplexOptimizerNelderMeadTest",
+      "method_signature": "testLeastSquares2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "operate(double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.noderiv.SimplexOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.optim.OptimizationData[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.PointValuePair",
+          "focal_method_names": [
+            "getPointRef()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.SymmLQTest",
+      "method_signature": "testSolveSaunders13()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.SymmLQ",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+          "focal_method_names": [
+            "getNorm()",
+            "setEntry(int, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testConstant()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "getValue()",
+            "getFreeParameters()",
+            "getPartialDerivative(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.correlation.SpearmansRankCorrelationTest",
+      "method_signature": "testConsistency()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.correlation.SpearmansCorrelation",
+          "focal_method_names": [
+            "correlation(double[], double[])",
+            "getCorrelationMatrix()",
+            "computeCorrelationMatrix(double[][])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.SimpleRegressionTest",
+      "method_signature": "testCorr()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.SimpleRegression",
+          "focal_method_names": [
+            "addData(double[][])",
+            "getR()",
+            "getRSquare()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.TricubicInterpolatingFunctionTest",
+      "method_signature": "testWave()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.TrivariateFunction",
+          "focal_method_names": [
+            "value(double, double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)",
+            "sin(double)",
+            "max(double, double)",
+            "cos(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest",
+      "method_signature": "test20090720()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatistics",
+          "focal_method_names": [
+            "getN()",
+            "clear()",
+            "addValue(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.SymmLQTest",
+      "method_signature": "testUnpreconditionedInPlaceSolutionWithInitialGuess()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.InverseHilbertMatrix",
+          "focal_method_names": [
+            "getEntry(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.IterativeLinearSolver",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+          "focal_method_names": [
+            "set(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradientTest",
+      "method_signature": "testCoshAcosh()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "getDerivative(int)",
+            "createVariable(int, double)",
+            "acosh()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "cosh()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.core.dfp.DfpTest",
+      "method_signature": "testReciprocal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.DfpField",
+          "focal_method_names": [
+            "clearIEEEFlags()",
+            "newDfp(byte, byte)",
+            "newDfp(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "divide(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "reciprocal()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.ResizableDoubleArrayTest",
+      "method_signature": "testGetArrayRef()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.ResizableDoubleArray",
+          "focal_method_names": [
+            "getArrayRef()",
+            "setElement(int, double)",
+            "getElement(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.QRDecompositionTest",
+      "method_signature": "testDimensions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.QRDecomposition",
+          "focal_method_names": [
+            "getR()",
+            "getQ()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.BlockRealMatrixTest",
+      "method_signature": "testGetSetColumnVectorLarge()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getEntry(int, int)",
+            "getColumnVector(int)",
+            "setColumnVector(int, org.apache.commons.math4.legacy.linear.RealVector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testNoVariance()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
+          "focal_method_names": [
+            "evaluate(double[], double, int, int)",
+            "evaluate(double[], int, int)",
+            "evaluate(double[])",
+            "evaluate(double[], double)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.FunctionUtilsTest",
+      "method_signature": "testMultiplyDifferentiable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.FunctionUtils",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.UnivariateDifferentiableFunction[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "sinh(double)",
+            "sin(double)",
+            "cosh(double)",
+            "sqrt(double)",
+            "pow(double, double)",
+            "cos(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.MillerUpdatingRegressionTest",
+      "method_signature": "testOneRedundantColumn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.MillerUpdatingRegression",
+          "focal_method_names": [
+            "addObservations(double[][], double[])",
+            "regress()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.RegressionResults",
+          "focal_method_names": [
+            "getErrorSumSquares()",
+            "getCovarianceOfParameters(int, int)",
+            "getParameterEstimates()",
+            "getRSquared()",
+            "getMeanSquareError()",
+            "getAdjustedRSquared()",
+            "getStdErrorOfEstimates()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.SimpleRegressionTest",
+      "method_signature": "testRemoveXY()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.SimpleRegression",
+          "focal_method_names": [
+            "addData(double, double)",
+            "getInterceptStdErr()",
+            "getSlopeConfidenceInterval()",
+            "removeData(double, double)",
+            "addData(double[][])",
+            "getSlopeStdErr()",
+            "getSignificance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.FieldMatrixImplTest",
+      "method_signature": "testExamples()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "subtract(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "toDouble()",
+            "add(org.apache.commons.math4.legacy.core.dfp.Dfp)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "subtract(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "toDouble()",
+            "add(org.apache.commons.math4.legacy.core.dfp.Dfp)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.nonstiff.DormandPrince54StepInterpolatorTest",
+      "method_signature": "checkClone()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.nonstiff.DormandPrince54Integrator",
+          "focal_method_names": [
+            "addStepHandler(org.apache.commons.math4.legacy.ode.sampling.StepHandler)",
+            "integrate(org.apache.commons.math4.legacy.ode.FirstOrderDifferentialEquations, double, double[], double, double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.sampling.StepInterpolator",
+          "focal_method_names": [
+            "getInterpolatedTime()",
+            "setInterpolatedTime(double)",
+            "getCurrentTime()",
+            "getPreviousTime()",
+            "copy()",
+            "getInterpolatedState()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.FrequencyTest",
+      "method_signature": "testCounts()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.Frequency",
+          "focal_method_names": [
+            "getPct(java.lang.Comparable<T>)",
+            "getCumFreq(java.lang.Comparable<T>)",
+            "getSumFreq()",
+            "getCount(java.lang.Comparable<T>)",
+            "addValue(java.lang.Comparable<T>)",
+            "clear()",
+            "getCumPct(java.lang.Comparable<T>)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.EigenDecompositionTest",
+      "method_signature": "testRandomUnsymmetricMatrix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getNorm()",
+            "subtract(org.apache.commons.math4.legacy.linear.RealMatrix)",
+            "multiply(org.apache.commons.math4.legacy.linear.RealMatrix)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "sqrt(double)",
+            "max(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.EigenDecomposition",
+          "focal_method_names": [
+            "getV()",
+            "getD()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testSinhDefinition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "sinh()",
+            "exp()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "reciprocal()",
+            "multiply(double)",
+            "getPartialDerivative(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.MultivariateFunctionPenaltyAdapterTest",
+      "method_signature": "testOptimumOutsideRange()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.noderiv.Simplex",
+          "focal_method_names": [
+            "alongAxes(double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.PointValuePair",
+          "focal_method_names": [
+            "getPoint()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.MultivariateFunctionPenaltyAdapterTest.BiQuadratic",
+          "focal_method_names": [
+            "getUpper()",
+            "getBoundedXOptimum()",
+            "getBoundedYOptimum()",
+            "getLower()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizerTest",
+      "method_signature": "testCircleFitting2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.CircleProblem",
+          "focal_method_names": [
+            "target()",
+            "weight()",
+            "getModelFunctionJacobian()",
+            "getModelFunction()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.RandomCirclePointGenerator",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getSigma(double)",
+            "getPoint()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.MillerUpdatingRegressionTest",
+      "method_signature": "testThreeRedundantColumn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.MillerUpdatingRegression",
+          "focal_method_names": [
+            "addObservations(double[][], double[])",
+            "regress()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.RegressionResults",
+          "focal_method_names": [
+            "getErrorSumSquares()",
+            "getCovarianceOfParameters(int, int)",
+            "getParameterEstimates()",
+            "getRSquared()",
+            "getMeanSquareError()",
+            "getAdjustedRSquared()",
+            "getStdErrorOfEstimates()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.MultivariateFunctionPenaltyAdapterTest",
+      "method_signature": "testHalfBounded()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.noderiv.Simplex",
+          "focal_method_names": [
+            "alongAxes(double[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.PointValuePair",
+          "focal_method_names": [
+            "getPoint()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.optim.nonlinear.scalar.MultivariateFunctionPenaltyAdapterTest.BiQuadratic",
+          "focal_method_names": [
+            "getUpper()",
+            "getBoundedXOptimum()",
+            "getBoundedYOptimum()",
+            "getLower()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.integration.MidPointIntegratorTest",
+      "method_signature": "testQuinticFunction()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "pow(double, double)",
+            "abs(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.integration.UnivariateIntegrator",
+          "focal_method_names": [
+            "getIterations()",
+            "getRelativeAccuracy()",
+            "getEvaluations()",
+            "integrate(int, org.apache.commons.math4.legacy.analysis.UnivariateFunction, double, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradientTest",
+      "method_signature": "testLog10Definition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "log10()",
+            "getDerivative(int)",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "log()",
+            "divide(double)",
+            "createVariable(int, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.EigenDecompositionTest",
+      "method_signature": "testAEqualVDVt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getNorm()",
+            "subtract(org.apache.commons.math4.legacy.linear.RealMatrix)",
+            "multiply(org.apache.commons.math4.legacy.linear.RealMatrix)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "sqrt(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.EigenDecomposition",
+          "focal_method_names": [
+            "getVT()",
+            "getV()",
+            "getD()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.EigenDecompositionTest",
+      "method_signature": "testDistinctEigenvalues()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getEntry(int, int)",
+            "multiply(org.apache.commons.math4.legacy.linear.RealMatrix)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getEntry(int, int)",
+            "multiply(org.apache.commons.math4.legacy.linear.RealMatrix)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "sqrt(double)",
+            "abs(double)",
+            "ulp(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getEntry(int, int)",
+            "multiply(org.apache.commons.math4.legacy.linear.RealMatrix)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.SingularValueSolverTest",
+      "method_signature": "testMath320B()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.SingularValueDecomposition",
+          "focal_method_names": [
+            "getS()",
+            "getU()",
+            "getVT()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getNorm()",
+            "subtract(org.apache.commons.math4.legacy.linear.RealMatrix)",
+            "multiply(org.apache.commons.math4.legacy.linear.RealMatrix)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.AggregateSummaryStatisticsTest",
+      "method_signature": "testAggregateSpecialValues()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.StatisticalSummary",
+          "focal_method_names": [
+            "getMin()",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "getN()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+          "focal_method_names": [
+            "getSummary()",
+            "addValue(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.StatisticalSummaryValues",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.AggregateSummaryStatisticsTest",
+      "method_signature": "testAggregate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.distribution.AbstractRealDistribution",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.StatisticalSummary",
+          "focal_method_names": [
+            "getMin()",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "getN()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+          "focal_method_names": [
+            "getSummary()",
+            "addValue(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.filter.KalmanFilterTest",
+      "method_signature": "testCannonball()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.filter.KalmanFilterTest.Cannonball",
+          "focal_method_names": [
+            "getY()",
+            "getXVelocity()",
+            "getYVelocity()",
+            "getX()",
+            "step()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.filter.KalmanFilter",
+          "focal_method_names": [
+            "predict(org.apache.commons.math4.legacy.linear.RealVector)",
+            "correct(double[])"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testPowDoubleDS()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "pow(double)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getAllDerivatives()",
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getOrder()",
+            "getValue()",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getFreeParameters()",
+            "pow(int)",
+            "getPartialDerivative(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.SimpleRegressionTest",
+      "method_signature": "testAppend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.SimpleRegression",
+          "focal_method_names": [
+            "getInterceptStdErr()",
+            "getSlopeConfidenceInterval()",
+            "getSlope()",
+            "getTotalSumSquares()",
+            "getSlopeStdErr()",
+            "getSumOfCrossProducts()",
+            "getSumSquaredErrors()",
+            "getRegressionSumSquares()",
+            "getSignificance()",
+            "getRSquare()",
+            "getIntercept()",
+            "getMeanSquareError()",
+            "getXSumSquares()",
+            "getR()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest",
+      "method_signature": "testMinpackRosenbrok()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest.MinpackFunction",
+          "focal_method_names": [
+            "getStartPoint()",
+            "checkTheoreticalMinParams(double[])",
+            "getModelFunction()",
+            "getWeight()",
+            "checkTheoreticalMinCost(double)",
+            "getModelFunctionJacobian()",
+            "getTarget()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresProblem)",
+            "withCostRelativeTolerance(double)",
+            "withOrthoTolerance(double)",
+            "withParameterRelativeTolerance(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getRMS()",
+            "getPoint()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testCreateConstant()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "getOrder()",
+            "getField()",
+            "getFreeParameters()",
+            "createConstant(double)",
+            "multiply(double)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "getOrder()",
+            "getField()",
+            "getFreeParameters()",
+            "createConstant(double)",
+            "multiply(double)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "getOrder()",
+            "getField()",
+            "getFreeParameters()",
+            "createConstant(double)",
+            "multiply(double)",
+            "getPartialDerivative(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.SparseFieldMatrixTest",
+      "method_signature": "testExamples()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "subtract(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "toDouble()",
+            "add(org.apache.commons.math4.legacy.core.dfp.Dfp)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "subtract(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "toDouble()",
+            "add(org.apache.commons.math4.legacy.core.dfp.Dfp)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.core.dfp.Dfp",
+          "focal_method_names": [
+            "multiply(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "subtract(org.apache.commons.math4.legacy.core.dfp.Dfp)",
+            "toDouble()",
+            "add(org.apache.commons.math4.legacy.core.dfp.Dfp)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradientTest",
+      "method_signature": "testLog1pDefinition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getField()",
+            "log1p()",
+            "log()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getField()",
+            "log1p()",
+            "log()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getField()",
+            "log1p()",
+            "log()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradientTest",
+      "method_signature": "testPowDoubleDS()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "pow(double, org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "getDerivative(int)",
+            "add(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "pow(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "createVariable(int, double)",
+            "createConstant(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.UnmodifiableRealVectorAbstractTest",
+      "method_signature": "testIterator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.core.jdkmath.JdkMath",
+          "focal_method_names": [
+            "abs(double)",
+            "min(double, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+          "focal_method_names": [
+            "unmodifiableRealVector(org.apache.commons.math4.legacy.linear.RealVector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector.Entry",
+          "focal_method_names": [
+            "getValue()",
+            "setValue(double)",
+            "setIndex(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector.Entry",
+          "focal_method_names": [
+            "getValue()",
+            "setValue(double)",
+            "setIndex(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector.Entry",
+          "focal_method_names": [
+            "getValue()",
+            "setValue(double)",
+            "setIndex(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector.Entry",
+          "focal_method_names": [
+            "getValue()",
+            "setValue(double)",
+            "setIndex(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.BlockRealMatrixTest",
+      "method_signature": "testWalk()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getEntry(int, int)",
+            "walkInRowOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor)",
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor, int, int, int, int)",
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor, int, int, int, int)",
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor)",
+            "walkInRowOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor, int, int, int, int)",
+            "walkInColumnOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor, int, int, int, int)",
+            "walkInColumnOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor)",
+            "walkInRowOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor)",
+            "walkInColumnOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor)",
+            "walkInColumnOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor, int, int, int, int)",
+            "walkInOptimizedOrder(org.apache.commons.math4.legacy.linear.RealMatrixPreservingVisitor)",
+            "walkInRowOrder(org.apache.commons.math4.legacy.linear.RealMatrixChangingVisitor, int, int, int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.BlockRealMatrixTest.GetVisitor",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.ode.JacobianMatricesTest",
+      "method_signature": "testInternalDifferentiation()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.AbstractIntegrator",
+          "focal_method_names": [
+            "setMaxEvaluations(int)",
+            "integrate(org.apache.commons.math4.legacy.ode.ExpandableStatefulODE, double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+          "focal_method_names": [
+            "getMax()",
+            "getStandardDeviation()",
+            "addValue(double)",
+            "getMin()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.JacobianMatrices",
+          "focal_method_names": [
+            "getCurrentMainSetJacobian(double[][])",
+            "setParameterizedODE(org.apache.commons.math4.legacy.ode.ParameterizedODE)",
+            "setInitialParameterJacobian(java.lang.String, double[])",
+            "setParameterStep(java.lang.String, double)",
+            "getCurrentParameterJacobian(java.lang.String, double[])",
+            "registerVariationalEquations(org.apache.commons.math4.legacy.ode.ExpandableStatefulODE)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.ode.JacobianMatricesTest.ParamBrusselator",
+          "focal_method_names": [
+            "setParameter(java.lang.String, double)",
+            "dYdP1()",
+            "dYdP0()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest",
+      "method_signature": "testMinpackFreudensteinRoth()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest.MinpackFunction",
+          "focal_method_names": [
+            "getStartPoint()",
+            "checkTheoreticalMinParams(double[])",
+            "getModelFunction()",
+            "getWeight()",
+            "checkTheoreticalMinCost(double)",
+            "getModelFunctionJacobian()",
+            "getTarget()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresProblem)",
+            "withCostRelativeTolerance(double)",
+            "withOrthoTolerance(double)",
+            "withParameterRelativeTolerance(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getRMS()",
+            "getPoint()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.regression.GLSMultipleLinearRegressionTest",
+      "method_signature": "testGLSEfficiency()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.AbstractMultipleLinearRegression",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.OLSMultipleLinearRegression",
+          "focal_method_names": [
+            "newYSampleData(double[])",
+            "calculateBeta()",
+            "getX()",
+            "newSampleData(double[], int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealMatrix",
+          "focal_method_names": [
+            "getNorm()",
+            "getData()",
+            "copy()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.regression.GLSMultipleLinearRegression",
+          "focal_method_names": [
+            "newYSampleData(double[])",
+            "newCovarianceData(double[][])",
+            "calculateBeta()",
+            "newSampleData(double[], int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatistics",
+          "focal_method_names": [
+            "getMean()",
+            "getStandardDeviation()",
+            "addValue(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+          "focal_method_names": [
+            "getDistance(org.apache.commons.math4.legacy.linear.RealVector)",
+            "toArray()",
+            "copy()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest",
+      "method_signature": "testMinpackLinearFullRank()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest.MinpackFunction",
+          "focal_method_names": [
+            "getStartPoint()",
+            "checkTheoreticalMinParams(double[])",
+            "getModelFunction()",
+            "getWeight()",
+            "checkTheoreticalMinCost(double)",
+            "getModelFunctionJacobian()",
+            "getTarget()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresProblem)",
+            "withCostRelativeTolerance(double)",
+            "withOrthoTolerance(double)",
+            "withParameterRelativeTolerance(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getRMS()",
+            "getPoint()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest",
+      "method_signature": "testMinpackWatson()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest.MinpackFunction",
+          "focal_method_names": [
+            "getStartPoint()",
+            "checkTheoreticalMinParams(double[])",
+            "getModelFunction()",
+            "getWeight()",
+            "checkTheoreticalMinCost(double)",
+            "getModelFunctionJacobian()",
+            "getTarget()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresProblem)",
+            "withCostRelativeTolerance(double)",
+            "withOrthoTolerance(double)",
+            "withParameterRelativeTolerance(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getRMS()",
+            "getPoint()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructureTest",
+      "method_signature": "testExpm1Definition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "expm1()",
+            "exp()",
+            "getField()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "expm1()",
+            "exp()",
+            "getField()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getPartialDerivative(int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure",
+          "focal_method_names": [
+            "expm1()",
+            "exp()",
+            "getField()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.DerivativeStructure)",
+            "getPartialDerivative(int[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest",
+      "method_signature": "testMinpackLinearRank1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest.MinpackFunction",
+          "focal_method_names": [
+            "getStartPoint()",
+            "checkTheoreticalMinParams(double[])",
+            "getModelFunction()",
+            "getWeight()",
+            "checkTheoreticalMinCost(double)",
+            "getModelFunctionJacobian()",
+            "getTarget()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresProblem)",
+            "withCostRelativeTolerance(double)",
+            "withOrthoTolerance(double)",
+            "withParameterRelativeTolerance(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getRMS()",
+            "getPoint()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradientTest",
+      "method_signature": "testCompose()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "getDerivative(int)",
+            "createVariable(int, double)",
+            "getField()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "compose(double, double)",
+            "add(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction",
+          "focal_method_names": [
+            "value(double)",
+            "polynomialDerivative()",
+            "degree()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient",
+          "focal_method_names": [
+            "getDerivative(int)",
+            "createVariable(int, double)",
+            "getField()",
+            "subtract(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "multiply(org.apache.commons.math4.legacy.analysis.differentiation.SparseGradient)",
+            "compose(double, double)",
+            "add(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest",
+      "method_signature": "testSummaryConsistency()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatistics",
+          "focal_method_names": [
+            "getMin()",
+            "addValue(double)",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "getSumsq()",
+            "setWindowSize(int)",
+            "getGeometricMean()",
+            "getValues()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+          "focal_method_names": [
+            "getMin()",
+            "addValue(double)",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.AggregateSummaryStatisticsTest",
+      "method_signature": "testAggregateStatisticalSummary()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.distribution.AbstractRealDistribution",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.StatisticalSummary",
+          "focal_method_names": [
+            "getMin()",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "getN()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.StatisticalSummary",
+          "focal_method_names": [
+            "getMin()",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "getN()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+          "focal_method_names": [
+            "getSummary()",
+            "addValue(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.StatisticalSummary",
+          "focal_method_names": [
+            "getMin()",
+            "getVariance()",
+            "getMax()",
+            "getSum()",
+            "getMean()",
+            "getStandardDeviation()",
+            "getN()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest",
+      "method_signature": "testMinpackOsborne2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.MinpackTest.MinpackFunction",
+          "focal_method_names": [
+            "getStartPoint()",
+            "checkTheoreticalMinParams(double[])",
+            "getModelFunction()",
+            "getWeight()",
+            "checkTheoreticalMinCost(double)",
+            "getModelFunctionJacobian()",
+            "getTarget()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LevenbergMarquardtOptimizer",
+          "focal_method_names": [
+            "optimize(org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresProblem)",
+            "withCostRelativeTolerance(double)",
+            "withOrthoTolerance(double)",
+            "withParameterRelativeTolerance(double)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.math4.legacy.fitting.leastsquares.LeastSquaresOptimizer.Optimum",
+          "focal_method_names": [
+            "getRMS()",
+            "getPoint()"
+          ]
+        }
+      ]
+    }
+  ]
+}

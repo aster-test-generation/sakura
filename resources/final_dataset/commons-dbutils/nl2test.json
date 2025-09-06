@@ -1,0 +1,992 @@
+{
+  "dataset_name": "commons-dbutils",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testExecuteBatchExceptionOnExec()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "batch(java.lang.String, java.lang.Object[][])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testRollbackNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils",
+          "focal_method_names": [
+            "rollback(java.sql.Connection)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testTooFewParamsUpdate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "update(java.lang.String, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.BeanProcessorTest",
+      "method_signature": "testCheckAnnotationOnMissingReadMethod()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.BeanProcessor",
+          "focal_method_names": [
+            "populateBean(java.sql.ResultSet, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.ScalarHandlerTest",
+      "method_signature": "testEmptyResultSetHandle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ResultSetHandler",
+          "focal_method_names": [
+            "handle(java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testCloseQuietlyStatementThrowingException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils",
+          "focal_method_names": [
+            "closeQuietly(java.sql.Statement)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils",
+          "focal_method_names": [
+            "printStackTrace(java.sql.SQLException)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.ScalarHandlerTest",
+      "method_signature": "testColumnIndexHandle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ResultSetHandler",
+          "focal_method_names": [
+            "handle(java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testStatementConfiguration()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "prepareStatement(java.sql.Connection, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.BeanMapHandlerTest",
+      "method_signature": "testEmptyResultSet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.RowProcessor",
+          "focal_method_names": [
+            "toBean(java.sql.ResultSet, java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.ScalarHandlerTest",
+      "method_signature": "testColumnNameHandle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ResultSetHandler",
+          "focal_method_names": [
+            "handle(java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.KeyedHandlerTest",
+      "method_signature": "testHandle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ResultSetHandler",
+          "focal_method_names": [
+            "handle(java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testNullConnectionExecuteWithResultSet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "execute(java.lang.String, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testNullParamsArgBatch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "batch(java.lang.String, java.lang.Object[][])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testCloseQuietlyConnectionResultSetStatementThrowingException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils",
+          "focal_method_names": [
+            "closeQuietly(java.sql.Connection, java.sql.Statement, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.BasicRowProcessorTest",
+      "method_signature": "testToBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.TestBean",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.RowProcessor",
+          "focal_method_names": [
+            "toBean(java.sql.ResultSet, java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testCommitAndClose()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils",
+          "focal_method_names": [
+            "commitAndClose(java.sql.Connection)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testTooManyParamsExecuteWithResultSet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "execute(java.lang.String, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testTooManyParamsUpdate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "update(java.lang.String, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testCloseQuietlyResultSet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils",
+          "focal_method_names": [
+            "closeQuietly(java.sql.ResultSet)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreateResultSet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testNoParamsQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testGoodQueryPmdTrue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreateDriver()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "instance()",
+            "createDriver(java.lang.reflect.InvocationHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testGoodQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryLoaderTest",
+      "method_signature": "testLoadThrowsIllegalArgumentException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryLoader",
+          "focal_method_names": [
+            "load(java.lang.String)",
+            "instance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testNoParamsQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreateStatement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createStatement(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreatePreparedStatement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "instance()",
+            "createPreparedStatement(java.lang.reflect.InvocationHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreateResultSetMetaData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSetMetaData(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreateCallableStatement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createCallableStatement(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testGoodQueryDefaultConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testGoodQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.ProxyFactoryTest",
+      "method_signature": "testCreateConnection()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "instance()",
+            "createConnection(java.lang.reflect.InvocationHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testGoodQueryDefaultConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testGoodQueryPmdTrue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "query(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullCharacterStream()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullCharacterStream(java.io.Reader)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullBytes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullBytes(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullDate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullDate(java.sql.Date)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullByte()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullByte(byte)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetShort()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullShort(short)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetCharacterStream()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullCharacterStream(java.io.Reader)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetBigDecimal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullBigDecimal(java.math.BigDecimal)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullDouble()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullDouble(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullFloat()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullFloat(float)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetTime()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullTime(java.sql.Time)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testNoParamsUpdate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "update(java.lang.String, java.lang.Object[])",
+            "update(java.lang.String)",
+            "update(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.QueryRunnerTest",
+      "method_signature": "testGoodUpdateDefaultConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.QueryRunner",
+          "focal_method_names": [
+            "update(java.sql.Connection, java.lang.String, java.lang.Object)",
+            "update(java.sql.Connection, java.lang.String, java.lang.Object[])",
+            "update(java.sql.Connection, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testURL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullURL(java.net.URL)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetLong()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullLong(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testGoodUpdateDefaultConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.ArrayHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "update(java.sql.Connection, java.lang.String, java.lang.Object)",
+            "update(java.sql.Connection, java.lang.String, java.lang.Object[])",
+            "update(java.sql.Connection, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.AsyncQueryRunnerTest",
+      "method_signature": "testInsertUsesGivenQueryRunner()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.AsyncQueryRunner",
+          "focal_method_names": [
+            "insert(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler)",
+            "insert(java.lang.String, org.apache.commons.dbutils.ResultSetHandler)",
+            "insert(java.sql.Connection, java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])",
+            "insert(java.lang.String, org.apache.commons.dbutils.ResultSetHandler, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testGetBoolean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullBoolean(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSetTest",
+      "method_signature": "testSetNullShort()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.ProxyFactory",
+          "focal_method_names": [
+            "createResultSet(java.lang.reflect.InvocationHandler)",
+            "instance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.wrappers.SqlNullCheckedResultSet",
+          "focal_method_names": [
+            "setNullShort(short)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest.DriverProxyTest",
+      "method_signature": "testProxiedMethods()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.DbUtils.DriverProxy",
+          "focal_method_names": [
+            "getPropertyInfo(java.lang.String, java.util.Properties)",
+            "connect(java.lang.String, java.util.Properties)",
+            "getMinorVersion()",
+            "getMajorVersion()",
+            "jdbcCompliant()",
+            "acceptsURL(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.StatementConfigurationTest",
+      "method_signature": "testEmptyBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.StatementConfiguration",
+          "focal_method_names": [
+            "isMaxFieldSizeSet()",
+            "isFetchDirectionSet()",
+            "isMaxRowsSet()",
+            "isFetchSizeSet()",
+            "isQueryTimeoutSet()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.StatementConfiguration.Builder",
+          "focal_method_names": [
+            "build()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.BeanHandlerTest",
+      "method_signature": "testHandleToInterface()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.BeanHandlerTest.SubTestBeanInterface",
+          "focal_method_names": [
+            "getDoNotSet()",
+            "getOne()",
+            "getTwo()",
+            "getThree()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.BeanHandlerTest.SubTestBeanInterface",
+          "focal_method_names": [
+            "getDoNotSet()",
+            "getOne()",
+            "getTwo()",
+            "getThree()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.handlers.BeanListHandlerTest",
+      "method_signature": "testHandleToInterface()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.BeanListHandlerTest.SubTestBeanInterface",
+          "focal_method_names": [
+            "getDoNotSet()",
+            "getOne()",
+            "getTwo()",
+            "getThree()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.BeanListHandlerTest.SubTestBeanInterface",
+          "focal_method_names": [
+            "getDoNotSet()",
+            "getOne()",
+            "getTwo()",
+            "getThree()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.BeanListHandlerTest.SubTestBeanInterface",
+          "focal_method_names": [
+            "getDoNotSet()",
+            "getOne()",
+            "getTwo()",
+            "getThree()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.handlers.BeanListHandlerTest.SubTestBeanInterface",
+          "focal_method_names": [
+            "getDoNotSet()",
+            "getOne()",
+            "getTwo()",
+            "getThree()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbutils.StatementConfigurationTest",
+      "method_signature": "testBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbutils.StatementConfiguration.Builder",
+          "focal_method_names": [
+            "queryTimeout(java.lang.Integer)",
+            "queryTimeout(java.time.Duration)",
+            "fetchSize(java.lang.Integer)",
+            "fetchDirection(java.lang.Integer)",
+            "build()",
+            "maxFieldSize(java.lang.Integer)",
+            "maxRows(java.lang.Integer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbutils.StatementConfiguration",
+          "focal_method_names": [
+            "isMaxFieldSizeSet()",
+            "isFetchDirectionSet()",
+            "isMaxRowsSet()",
+            "isFetchSizeSet()",
+            "getQueryTimeoutDuration()",
+            "isQueryTimeoutSet()"
+          ]
+        }
+      ]
+    }
+  ]
+}

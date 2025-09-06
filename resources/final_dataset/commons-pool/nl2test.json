@@ -1,0 +1,1020 @@
+{
+  "dataset_name": "commons-pool",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testClientWaitStats()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.TestException",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setMakeLatency(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testEviction()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.Waiter",
+          "focal_method_names": [
+            "sleepQuietly(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestPoolImplUtils",
+      "method_signature": "testMaxInstants()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.PoolImplUtils",
+          "focal_method_names": [
+            "max(java.time.Instant, java.time.Instant)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestEvictionConfig",
+      "method_signature": "testConstructor1s()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.EvictionConfig",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testNoInvalidateNPE()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testClientWaitStats()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.TestException",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setMakeLatency(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestPoolImplUtils",
+      "method_signature": "testFactoryTypeNotSimple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.PoolImplUtils",
+          "focal_method_names": [
+            "getFactoryType(java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testExceptionOnPassivateDuringReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnPassivate(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testExceptionOnPassivateDuringReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnPassivate(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.TestPoolUtils",
+      "method_signature": "testSynchronizedPoolableFactoryPoolableObjectFactory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "synchronizedPooledFactory(org.apache.commons.pool3.PooledObjectFactory)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testGetFactoryType_PoolUtilsSynchronizedNullPooledFactory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "synchronizedPooledFactory(org.apache.commons.pool3.PooledObjectFactory)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testMinIdle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.Waiter",
+          "focal_method_names": [
+            "sleepQuietly(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testMinIdleMaxTotalPerKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.Waiter",
+          "focal_method_names": [
+            "sleepQuietly(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testMinIdleNoPreparePool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.Waiter",
+          "focal_method_names": [
+            "sleepQuietly(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool",
+      "method_signature": "testUsageTracking()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool.TestObject",
+          "focal_method_names": [
+            "setData(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testEvictionWithNegativeNumTests()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.Waiter",
+          "focal_method_names": [
+            "sleepQuietly(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.TestPoolUtils",
+      "method_signature": "testCheckMinIdleKeyedObjectPool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "checkMinIdle(org.apache.commons.pool3.KeyedObjectPool, java.lang.Object, int, long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testConcurrentInvalidate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.InvalidateThread",
+          "focal_method_names": [
+            "complete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestPoolImplUtils",
+      "method_signature": "testToChronoUnit()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.PoolImplUtils",
+          "focal_method_names": [
+            "toChronoUnit(java.util.concurrent.TimeUnit)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testGetFactoryType_PoolUtilsSynchronizedDefaultPooledFactory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "synchronizedPooledFactory(org.apache.commons.pool3.PooledObjectFactory)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testExceptionOnDestroyDuringBorrow()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnDestroy(boolean)",
+            "setValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.AbstractTestKeyedObjectPool",
+      "method_signature": "testKPOFClearUsages()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.AbstractTestKeyedObjectPool.FailingKeyedPooledObjectFactory",
+          "focal_method_names": [
+            "setDestroyObjectFail(boolean)",
+            "reset()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.pool407.Pool407Test",
+      "method_signature": "testNullPoolableFactoryWaitMax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.pool407.AbstractPool407Factory",
+          "focal_method_names": [
+            "makeObject()",
+            "create()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testReturnToHead()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.TestException",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setValid(boolean)",
+            "setValidateLatency(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testValidationFailureOnReturnFreesCapacity()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setValid(boolean)",
+            "setValidationEnabled(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testFailingFactoryDoesNotBlockThreads()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.CreateFailFactory",
+          "focal_method_names": [
+            "release()",
+            "hasQueuedThreads()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.AbstractTestKeyedObjectPool",
+      "method_signature": "testKPOFCloseUsages()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.AbstractTestKeyedObjectPool.FailingKeyedPooledObjectFactory",
+          "focal_method_names": [
+            "setDestroyObjectFail(boolean)",
+            "reset()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestDefaultPooledObjectInfo",
+      "method_signature": "testGetLastBorrowTrace()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.TestException",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.DefaultPooledObjectInfo",
+          "focal_method_names": [
+            "getLastBorrowTrace()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.DefaultPooledObjectInfo",
+          "focal_method_names": [
+            "getLastBorrowTrace()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.pool407.Pool407Test",
+      "method_signature": "testNormalFactoryNonNullFixtureWaitMax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.pool407.AbstractPool407Factory",
+          "focal_method_names": [
+            "makeObject()",
+            "create()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool",
+      "method_signature": "testBorrowObject()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool.TestObject",
+          "focal_method_names": [
+            "setData(java.lang.String)",
+            "getData()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testExceptionOnDestroyDuringReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnDestroy(boolean)",
+            "setValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.TestPoolUtils",
+      "method_signature": "testErodingPerKeyKeyedObjectPool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "erodingPool(org.apache.commons.pool3.KeyedObjectPool, float, boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.TestPoolUtils.MethodCallLogger",
+          "focal_method_names": [
+            "invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.AbstractTestKeyedObjectPool",
+      "method_signature": "testKPOFInvalidateObjectUsages()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.AbstractTestKeyedObjectPool.FailingKeyedPooledObjectFactory",
+          "focal_method_names": [
+            "setDestroyObjectFail(boolean)",
+            "reset()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testBorrowObjectFairness()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestDefaultPooledObject",
+      "method_signature": "testInitialStateIdleDuration()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PooledObject",
+          "focal_method_names": [
+            "getActiveDuration()",
+            "getIdleDuration()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool",
+      "method_signature": "testAccessAfterReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool.TestObject",
+          "focal_method_names": [
+            "setData(java.lang.String)",
+            "getData()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testBorrowObjectFairness()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.pool407.Pool407Test",
+      "method_signature": "testNullObjectFactoryWaitMax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.pool407.AbstractPool407Factory",
+          "focal_method_names": [
+            "makeObject()",
+            "create()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testBrokenFactoryShouldNotBlockPool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setValid(boolean)",
+            "setMaxTotal(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testMakeConcurrentWithReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setValid(boolean)",
+            "setValidateLatency(long)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestEvictionTimer",
+      "method_signature": "testStartStopEvictionTimer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.GenericObjectPool",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.EvictionTimer",
+          "focal_method_names": [
+            "getNumTasks()",
+            "schedule(org.apache.commons.pool3.impl.BaseGenericObjectPool.Evictor, java.time.Duration, java.time.Duration)",
+            "cancel(org.apache.commons.pool3.impl.BaseGenericObjectPool.Evictor, java.time.Duration, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testMaxActivePerKeyExceeded()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestCallStackUtils",
+      "method_signature": "testNewCallStack3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.CallStack",
+          "focal_method_names": [
+            "printStackTrace(java.io.PrintWriter)",
+            "fillInStackTrace()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.TestPoolUtils",
+      "method_signature": "testErodingPoolObjectPool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "erodingPool(org.apache.commons.pool3.ObjectPool, float)",
+            "erodingPool(org.apache.commons.pool3.ObjectPool)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.TestPoolUtils.MethodCallLogger",
+          "focal_method_names": [
+            "invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testExceptionOnDestroyDuringReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnDestroy(boolean)",
+            "setValid(boolean)",
+            "setValidationEnabled(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testExceptionOnActivateDuringBorrow()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setEvenValid(boolean)",
+            "setThrowExceptionOnActivate(boolean)",
+            "setValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testClearUnblocksWaiters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
+          "focal_method_names": [
+            "borrowObject(java.lang.Object)",
+            "returnObject(java.lang.Object, java.lang.Object)",
+            "clear(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testEvictAddObjects()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setMakeLatency(long)",
+            "setMaxTotal(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testEvictFIFO()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnPassivate(boolean)",
+            "setEvenValid(boolean)",
+            "setThrowExceptionOnActivate(boolean)",
+            "setOddValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testMaxTotalUnderLoad()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setMaxTotal(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testEvictLIFO()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setThrowExceptionOnPassivate(boolean)",
+            "setEvenValid(boolean)",
+            "setThrowExceptionOnActivate(boolean)",
+            "setOddValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestDefaultPooledObject",
+      "method_signature": "testGetIdleTimeMillis()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.DefaultPooledObject",
+          "focal_method_names": [
+            "deallocate()",
+            "allocate()",
+            "getIdleDuration()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testExceptionOnActivateDuringBorrow()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setEvenValid(boolean)",
+            "setThrowExceptionOnActivate(boolean)",
+            "setValid(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestDefaultPooledObject",
+      "method_signature": "testInitialStateCreateInstant()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PooledObject",
+          "focal_method_names": [
+            "getLastBorrowInstant()",
+            "getCreateInstant()",
+            "getLastReturnInstant()",
+            "getLastUsedInstant()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.AbstractTestKeyedObjectPool",
+      "method_signature": "testKPOFReturnObjectUsages()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.AbstractTestKeyedObjectPool.FailingKeyedPooledObjectFactory",
+          "focal_method_names": [
+            "setPassivateObjectFail(boolean)",
+            "reset()",
+            "setDestroyObjectFail(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testThreaded1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.TestPoolUtils",
+      "method_signature": "testErodingPoolKeyedObjectPool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PoolUtils",
+          "focal_method_names": [
+            "erodingPool(org.apache.commons.pool3.KeyedObjectPool)",
+            "erodingPool(org.apache.commons.pool3.KeyedObjectPool, float, boolean)",
+            "erodingPool(org.apache.commons.pool3.KeyedObjectPool, float)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.TestPoolUtils.MethodCallLogger",
+          "focal_method_names": [
+            "invoke(java.lang.Object, java.lang.reflect.Method, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.CallStackTest",
+      "method_signature": "testPrintClearedStackTraceIsNoOp(org.apache.commons.pool3.impl.CallStack)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.CallStack",
+          "focal_method_names": [
+            "printStackTrace(java.io.PrintWriter)",
+            "fillInStackTrace()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.AbstractTestKeyedObjectPool",
+      "method_signature": "testKPOFAddObjectUsage()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.AbstractTestKeyedObjectPool.FailingKeyedPooledObjectFactory",
+          "focal_method_names": [
+            "setPassivateObjectFail(boolean)",
+            "reset()",
+            "setMakeObjectFail(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.TestBaseKeyedPooledObjectFactory",
+      "method_signature": "testDefaultMethods()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.KeyedPooledObjectFactory",
+          "focal_method_names": [
+            "activateObject(java.lang.Object, org.apache.commons.pool3.PooledObject)",
+            "destroyObject(java.lang.Object, org.apache.commons.pool3.PooledObject)",
+            "passivateObject(java.lang.Object, org.apache.commons.pool3.PooledObject)",
+            "validateObject(java.lang.Object, org.apache.commons.pool3.PooledObject)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testEvictionSoftMinIdle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.GenericObjectPool",
+          "focal_method_names": [
+            "setMinIdle(int)",
+            "getNumIdle()",
+            "setMaxIdle(int)",
+            "evict()",
+            "returnObject(java.lang.Object)",
+            "borrowObject()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testBorrowTimings()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.PooledObject",
+          "focal_method_names": [
+            "getLastBorrowInstant()",
+            "getCreateInstant()",
+            "getLastUsedInstant()",
+            "getLastReturnInstant()",
+            "getActiveDuration()",
+            "getIdleDuration()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory",
+      "method_signature": "testConstructorWithDefaults()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.ResilientPooledObjectFactory",
+          "focal_method_names": [
+            "getDefaultTimeBetweenChecks()",
+            "setLogSize(int)",
+            "setTimeBetweenChecks(java.time.Duration)",
+            "getDefaultDelay()",
+            "getDefaultLogSize()",
+            "isAdderRunning()",
+            "getDefaultLookBack()",
+            "isMonitorRunning()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPoolClassLoaders",
+      "method_signature": "testContextClassLoader()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.GenericObjectPool",
+          "focal_method_names": [
+            "setMinIdle(int)",
+            "getNumIdle()",
+            "addObject()",
+            "clear()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.GenericObjectPool",
+          "focal_method_names": [
+            "setMinIdle(int)",
+            "getNumIdle()",
+            "addObject()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testMaxTotalInvariant()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setDestroyLatency(long)",
+            "setMaxTotalPerKey(int)",
+            "setEvenValid(boolean)",
+            "setValidationEnabled(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericObjectPool",
+      "method_signature": "testMaxTotalInvariant()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.TestThread",
+          "focal_method_names": [
+            "failed()",
+            "complete()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+          "focal_method_names": [
+            "setDestroyLatency(long)",
+            "setEvenValid(boolean)",
+            "setValidationEnabled(boolean)",
+            "setMaxTotal(int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestDefaultPooledObjectInfo",
+      "method_signature": "testTiming()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.pool3.TestException",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.DefaultPooledObjectInfo",
+          "focal_method_names": [
+            "getCreateTimeFormatted()",
+            "getLastBorrowTimeFormatted()",
+            "getCreateTime()",
+            "getLastReturnTimeFormatted()",
+            "getLastBorrowTime()",
+            "getLastReturnTime()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.pool3.impl.DefaultPooledObjectInfo",
+          "focal_method_names": [
+            "getCreateTimeFormatted()",
+            "getLastBorrowTimeFormatted()",
+            "getCreateTime()",
+            "getLastReturnTimeFormatted()",
+            "getLastBorrowTime()",
+            "getLastReturnTime()"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1829 @@
+{
+  "dataset_name": "commons-dbcp",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingPreparedStatement",
+      "method_signature": "testSetAsciiStreamIntegerInputStream()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingPreparedStatement",
+          "focal_method_names": [
+            "setAsciiStream(int, java.io.InputStream)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestLocalXaResource",
+      "method_signature": "testIsSame()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.LocalXAConnectionFactory.LocalXAResource",
+          "focal_method_names": [
+            "isSameRM(javax.transaction.xa.XAResource)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingCallableStatement",
+      "method_signature": "testSetCharacterStreamStringReaderInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingCallableStatement",
+          "focal_method_names": [
+            "setCharacterStream(java.lang.String, java.io.Reader, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingCallableStatement",
+      "method_signature": "testGetTimestampInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingCallableStatement",
+          "focal_method_names": [
+            "getTimestamp(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingPreparedStatement",
+      "method_signature": "testSetNCharacterStreamIntegerReaderLong()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingPreparedStatement",
+          "focal_method_names": [
+            "setNCharacterStream(int, java.io.Reader, long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingDatabaseMetaData",
+      "method_signature": "testInsertsAreDetectedInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingDatabaseMetaData",
+          "focal_method_names": [
+            "insertsAreDetected(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingCallableStatement",
+      "method_signature": "testSetLongStringLong()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingCallableStatement",
+          "focal_method_names": [
+            "setLong(java.lang.String, long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestUtils",
+      "method_signature": "testIsDisconnectionSqlCode()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.Utils",
+          "focal_method_names": [
+            "isDisconnectionSqlCode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingPreparedStatement",
+      "method_signature": "testSetNStringIntegerString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingPreparedStatement",
+          "focal_method_names": [
+            "setNString(int, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingDatabaseMetaData",
+      "method_signature": "testSupportsAlterTableWithAddColumn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingDatabaseMetaData",
+          "focal_method_names": [
+            "supportsAlterTableWithAddColumn()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingStatement",
+      "method_signature": "testExecuteStringStringArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingStatement",
+          "focal_method_names": [
+            "execute(java.lang.String, java.lang.String[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterResultSet",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestLocalXaResource",
+      "method_signature": "testStartNoFlagButAlreadyEnlisted()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.LocalXAConnectionFactory.LocalXAResource",
+          "focal_method_names": [
+            "start(javax.transaction.xa.Xid, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingStatement",
+      "method_signature": "testClose()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingStatement",
+          "focal_method_names": [
+            "close()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterResultSet",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestUserPassKey",
+      "method_signature": "testHashcode()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.UserPassKey",
+          "focal_method_names": [
+            "hashCode()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingPreparedStatement",
+      "method_signature": "testExecuteQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingPreparedStatement",
+          "focal_method_names": [
+            "executeQuery()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingPreparedStatement",
+      "method_signature": "testSetTimeIntegerTimeCalendar()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingPreparedStatement",
+          "focal_method_names": [
+            "setTime(int, java.sql.Time, java.util.Calendar)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingCallableStatement",
+      "method_signature": "testSetClobStringClob()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingCallableStatement",
+          "focal_method_names": [
+            "setClob(java.lang.String, java.sql.Clob)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingCallableStatement",
+      "method_signature": "testGetURLString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingCallableStatement",
+          "focal_method_names": [
+            "getURL(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingDatabaseMetaData",
+      "method_signature": "testGetMaxCatalogNameLength()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingDatabaseMetaData",
+          "focal_method_names": [
+            "getMaxCatalogNameLength()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingStatement",
+      "method_signature": "testExecuteBatch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingStatement",
+          "focal_method_names": [
+            "executeBatch()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterResultSet",
+          "focal_method_names": []
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateClobStringReader()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateClob(java.lang.String, java.io.Reader)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testGetFetchDirection()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "getFetchDirection()",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateNCharacterStreamStringReader()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateNCharacterStream(java.lang.String, java.io.Reader)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateRow()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateRow()",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateClobIntegerClob()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateClob(int, java.sql.Clob)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateObjectIntegerObjectSQLTypeInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateObject(int, java.lang.Object, java.sql.SQLType, int)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateBlobIntegerInputStream()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateBlob(int, java.io.InputStream)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testRowDeleted()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "rowDeleted()",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testGetBinaryStreamInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "getBinaryStream(int)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateFloatIntegerFloat()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateFloat(int, float)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestLocalXaResource",
+      "method_signature": "testStartExceptionOnGetAutoCommit()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.LocalXAConnectionFactory.LocalXAResource",
+          "focal_method_names": [
+            "start(javax.transaction.xa.Xid, int)",
+            "prepare(javax.transaction.xa.Xid)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testGetBigDecimalIntegerInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "getBigDecimal(int, int)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testGetBigDecimalInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "getBigDecimal(int)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateObjectStringObjectSQLType()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateObject(java.lang.String, java.lang.Object, java.sql.SQLType)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testGetObjectInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "getObject(int)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateNStringStringString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateNString(java.lang.String, java.lang.String)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestInstanceKeyDataSource",
+      "method_signature": "testJndiPropertiesNotInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setJndiEnvironment(java.lang.String, java.lang.String)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateShortIntegerShort()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateShort(int, short)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testUpdateNClobStringReader()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "updateNClob(java.lang.String, java.io.Reader)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingConnection",
+      "method_signature": "testReadOnlyCaching()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterResultSet",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingConnection",
+          "focal_method_names": [
+            "isReadOnly()",
+            "setReadOnly(boolean)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestLocalXaResource",
+      "method_signature": "testConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.LocalXAConnectionFactory.LocalXAResource",
+          "focal_method_names": [
+            "setTransactionTimeout(int)",
+            "getTransactionTimeout()",
+            "recover(int)",
+            "getXid()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSourceFactory",
+      "method_signature": "testValidateProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSourceFactory",
+          "focal_method_names": [
+            "getObjectInstance(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.StackMessageLog",
+          "focal_method_names": [
+            "lock()",
+            "unLock()",
+            "getAll()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestSynchronizationOrder",
+      "method_signature": "testSessionSynchronization()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.BasicManagedDataSource",
+          "focal_method_names": [
+            "setXADataSource(java.lang.String)",
+            "setXaDataSourceInstance(javax.sql.XADataSource)",
+            "setTransactionManager(javax.transaction.TransactionManager)",
+            "setTransactionSynchronizationRegistry(javax.transaction.TransactionSynchronizationRegistry)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestInstanceKeyDataSource",
+      "method_signature": "testDefaultSoftMinEvictableIdleTimeMillis()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "getDefaultSoftMinEvictableIdleTimeMillis()",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setDefaultSoftMinEvictableIdleTimeMillis(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestLocalXaResource",
+      "method_signature": "testForget()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.LocalXAConnectionFactory.LocalXAResource",
+          "focal_method_names": [
+            "forget(javax.transaction.xa.Xid)",
+            "start(javax.transaction.xa.Xid, int)",
+            "getXid()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testSimple2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSourceFactory",
+      "method_signature": "testAllProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSourceFactory",
+          "focal_method_names": [
+            "getObjectInstance(java.lang.Object, javax.naming.Name, javax.naming.Context, java.util.Hashtable)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.StackMessageLog",
+          "focal_method_names": [
+            "lock()",
+            "unLock()",
+            "getAll()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestBasicManagedDataSource",
+      "method_signature": "testCreateXaDataSourceNewInstance()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.BasicManagedDataSource",
+          "focal_method_names": [
+            "setXADataSource(java.lang.String)",
+            "setDriverClassName(java.lang.String)",
+            "createConnectionFactory()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testMultipleThreads1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestInstanceKeyDataSource",
+      "method_signature": "testLoginTimeout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setLoginTimeout(int)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "getLoginTimeout()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestManagedDataSourceInTx",
+      "method_signature": "testSharedTransactionConversion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingConnection",
+          "focal_method_names": [
+            "innermostDelegateEquals(java.sql.Connection)",
+            "getInnermostDelegate()",
+            "getAutoCommit()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestPoolableConnection",
+      "method_signature": "testFastFailValidationCustomCodes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.PoolableConnectionFactory",
+          "focal_method_names": [
+            "setDisconnectionSqlCodes(java.util.Collection)",
+            "setFastFailValidation(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.PoolableConnection",
+          "focal_method_names": [
+            "close()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterConnection",
+          "focal_method_names": [
+            "setFailure(java.lang.Exception)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestInstanceKeyDataSource",
+      "method_signature": "testJndiPropertiesCleared()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setJndiEnvironment(java.lang.String, java.lang.String)",
+            "setJndiEnvironment(java.util.Properties)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestDelegatingResultSet",
+      "method_signature": "testWrap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingResultSet",
+          "focal_method_names": [
+            "unwrap(java.lang.Class)",
+            "isWrapperFor(java.lang.Class)",
+            "wrapResultSet(java.sql.Connection, java.sql.ResultSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testIncorrectPassword()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testTransactionIsolationBehavior()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestInstanceKeyDataSource",
+      "method_signature": "testValidationQueryTimeout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "getValidationQueryTimeout()",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setValidationQueryTimeout(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testClosingWithUserName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestPStmtPooling",
+      "method_signature": "testClosePool()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.PoolingDataSource",
+          "focal_method_names": [
+            "setAccessToUnderlyingConnectionAllowed(boolean)",
+            "close()",
+            "getConnection()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testSimple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserTestWhileIdleMapNotInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserTestWhileIdle(java.util.Map)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.cpdsadapter.TestDriverAdapterCPDS",
+      "method_signature": "testSetUserNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
+          "focal_method_names": [
+            "setPassword(java.lang.String)",
+            "setPoolPreparedStatements(boolean)",
+            "getUser()",
+            "setDriver(java.lang.String)",
+            "setUser(java.lang.String)",
+            "setUrl(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserTestOnBorrowWithUserMapNotInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserTestOnBorrow(java.lang.String, java.lang.Boolean)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserNumTestsPerEvictionRunMapInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserNumTestsPerEvictionRun(java.util.Map)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserNumTestsPerEvictionRunWithUserMapNotInitializedMissingKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setPerUserNumTestsPerEvictionRun(java.lang.String, java.lang.Integer)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testMaxTotal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.cpdsadapter.TestDriverAdapterCPDS",
+      "method_signature": "testCloseWithUserName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
+          "focal_method_names": [
+            "setPassword(java.lang.String)",
+            "setPoolPreparedStatements(boolean)",
+            "setDriver(java.lang.String)",
+            "setUser(java.lang.String)",
+            "setUrl(java.lang.String)",
+            "getPooledConnection(java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.ConnectionImpl",
+          "focal_method_names": [
+            "getInnermostDelegate()",
+            "getPooledConnectionImpl()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.PooledConnectionImpl",
+          "focal_method_names": [
+            "destroyObject(org.apache.commons.dbcp2.PStmtKey, org.apache.commons.pool2.PooledObject)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserMaxWaitMillisWithUserMapNotInitializedMissingKeyDeprecated()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "getDefaultMaxWaitMillis()",
+            "getPerUserMaxWaitMillis(java.lang.String)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserMaxWaitMillis(java.lang.String, java.lang.Long)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserTestWhileIdleWithUserMapNotInitializedMissingKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserTestWhileIdle(java.lang.String, java.lang.Boolean)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+      "method_signature": "testSetPasswordCharArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
+          "focal_method_names": [
+            "setUrl(java.lang.String)",
+            "setDriver(java.lang.String)",
+            "setUser(java.lang.String)",
+            "setPassword(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory",
+          "focal_method_names": [
+            "getPasswordCharArray()",
+            "setPassword(char[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserMaxTotalMapNotInitializedMissingKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserMaxTotal(java.util.Map)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testSimple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testClosing()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserBlockWhenExhaustedWithUserMapNotInitializedMissingKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserBlockWhenExhausted(java.lang.String, java.lang.Boolean)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserMaxIdleMapNotInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserMaxIdle(java.util.Map)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserTestOnReturnMapInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setPerUserTestOnReturn(java.util.Map)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.cpdsadapter.TestDriverAdapterCPDS",
+      "method_signature": "testToStringWithoutConnectionProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
+          "focal_method_names": [
+            "setPassword(java.lang.String)",
+            "setPoolPreparedStatements(boolean)",
+            "setDriver(java.lang.String)",
+            "setUser(java.lang.String)",
+            "toString()",
+            "setUrl(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestBasicManagedDataSource",
+      "method_signature": "testSetNullXaDataSourceInstance()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.BasicManagedDataSource",
+          "focal_method_names": [
+            "setXaDataSourceInstance(javax.sql.XADataSource)",
+            "setPassword(java.lang.String)",
+            "setUsername(java.lang.String)",
+            "setMaxIdle(int)",
+            "setUrl(java.lang.String)",
+            "setDriverClassName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+      "method_signature": "testPerUserMaxTotalWithUserMapInitialized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxTotal(int)",
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testChangePassword()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "getNumIdle()",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestAbandonedBasicDataSource",
+      "method_signature": "testAbandoned()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setMaxTotal(int)",
+            "setJmxName(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setRemoveAbandonedOnBorrow(boolean)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setRemoveAbandonedOnMaintenance(boolean)",
+            "setDefaultTransactionIsolation(int)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setRemoveAbandonedTimeout(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setAbandonedLogWriter(java.io.PrintWriter)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setLogAbandoned(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testPoolCloseCheckedException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setAccessToUnderlyingConnectionAllowed(boolean)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "close()",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterConnection",
+          "focal_method_names": [
+            "setFailure(java.lang.Exception)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.StackMessageLog",
+          "focal_method_names": [
+            "lock()",
+            "popMessage()",
+            "unLock()",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testPropertyTestOnReturn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setTestOnReturn(boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setTestOnBorrow(boolean)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setTestWhileIdle(boolean)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testInstanceNotFoundExceptionLogSuppressed()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "close()",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "getRegisteredJmxName()",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestAbandonedBasicDataSource",
+      "method_signature": "testLastUsed()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setMaxTotal(int)",
+            "setJmxName(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setRemoveAbandonedOnBorrow(boolean)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setRemoveAbandonedOnMaintenance(boolean)",
+            "setDefaultTransactionIsolation(int)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setRemoveAbandonedTimeout(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setAbandonedLogWriter(java.io.PrintWriter)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setLogAbandoned(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.managed.TestDataSourceXAConnectionFactory",
+      "method_signature": "testPhysicalClose()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.managed.BasicManagedDataSource",
+          "focal_method_names": [
+            "setXaDataSourceInstance(javax.sql.XADataSource)",
+            "getConnection()",
+            "close()",
+            "setMaxIdle(int)",
+            "setXADataSource(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testIsWrapperFor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "isWrapperFor(java.lang.Class)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testInitialSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setMaxTotal(int)",
+            "setJmxName(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setMaxIdle(int)",
+            "getNumIdle()",
+            "setDriverClassName(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setDefaultTransactionIsolation(int)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setUrl(java.lang.String)",
+            "getNumActive()",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setInitialSize(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testTransactionIsolationBehavior()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestAbandonedBasicDataSource",
+      "method_signature": "testAbandonedStackTraces()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setMaxTotal(int)",
+            "setJmxName(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setRemoveAbandonedOnBorrow(boolean)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setRemoveAbandonedOnMaintenance(boolean)",
+            "setDefaultTransactionIsolation(int)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setAccessToUnderlyingConnectionAllowed(boolean)",
+            "setRemoveAbandonedTimeout(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "getNumActive()",
+            "setAbandonedLogWriter(java.io.PrintWriter)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setAbandonedUsageTracking(boolean)",
+            "setLogAbandoned(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.TesterConnection",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testInvalidValidationQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testInvalidConnectionInitSqlList()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testUnwrap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "unwrap(java.lang.Class)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testSetProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setConnectionProperties(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testStartInitializes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setInitialSize(int)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "getRegisteredJmxName()",
+            "getNumIdle()",
+            "setUrl(java.lang.String)",
+            "start()",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testInvalidConnectionInitSqlCollection()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionInitSqls(java.util.Collection)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testStart()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "close()",
+            "setMaxTotal(int)",
+            "setJmxName(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "getNumIdle()",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setDefaultTransactionIsolation(int)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setAccessToUnderlyingConnectionAllowed(boolean)",
+            "setUrl(java.lang.String)",
+            "start()",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.DelegatingConnection",
+          "focal_method_names": [
+            "close()",
+            "getInnermostDelegate()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource",
+      "method_signature": "testPoolPreparedCalls()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.SharedPoolDataSource",
+          "focal_method_names": [
+            "setDefaultMaxWait(java.time.Duration)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.datasources.TestSharedPoolDataSource.AbstractPrepareCallCallback",
+          "focal_method_names": [
+            "setConnection(java.sql.Connection)",
+            "getCallableStatement()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
+          "focal_method_names": [
+            "setPassword(java.lang.String)",
+            "setPoolPreparedStatements(boolean)",
+            "setDriver(java.lang.String)",
+            "setUser(java.lang.String)",
+            "setMaxPreparedStatements(int)",
+            "setUrl(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestPStmtPoolingBasicDataSource",
+      "method_signature": "testLRUBehavior()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setMaxOpenPreparedStatements(int)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setPoolPreparedStatements(boolean)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.dbcp2.TestBasicDataSource",
+      "method_signature": "testCreateConnectionFactoryWithoutConnectionFactoryClassName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.dbcp2.BasicDataSource",
+          "focal_method_names": [
+            "setJmxName(java.lang.String)",
+            "setDefaultCatalog(java.lang.String)",
+            "setConnectionInitSqls(java.util.List)",
+            "setDefaultReadOnly(java.lang.Boolean)",
+            "getConnection()",
+            "setPassword(java.lang.String)",
+            "setValidationQuery(java.lang.String)",
+            "setDriverClassLoader(java.lang.ClassLoader)",
+            "setUsername(java.lang.String)",
+            "setMaxWait(java.time.Duration)",
+            "setUrl(java.lang.String)",
+            "setDefaultAutoCommit(java.lang.Boolean)",
+            "setDriverClassName(java.lang.String)",
+            "setMaxTotal(int)",
+            "setDefaultTransactionIsolation(int)"
+          ]
+        }
+      ]
+    }
+  ]
+}

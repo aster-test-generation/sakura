@@ -1,18 +1,15 @@
 from pathlib import Path
-from typing import List, Set, Tuple, Dict, Any, Optional, Iterable, overload
+from typing import Set, Tuple, Dict, Any, Optional, Iterable, overload
 from functools import singledispatchmethod
 
 from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
-from hamster.code_analysis.model.models import TestingFramework
 
 from nltest.nl2test.models import (
     NL2TestInput,
     AtomicBlock,
-    CandidateMethod,
     AtomicBlockList,
     LocalizedScenario,
-    LocalizedStep,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.utils.analysis import CommonAnalysis
@@ -95,8 +92,16 @@ class LocalizationGrader:
             len(optimal_coverage) / len(focal_methods) if focal_methods else 0.0
         )
 
-        # Print basic results
-        self._print_evaluation_results(focal_methods, optimal_coverage, coverage_score)
+        # Compute identified methods and TP/FP/FN
+        identified_methods = self._collect_identified_methods(atomic_blocks)
+        extra_metrics = self._compute_confusion_counts(
+            focal_methods, optimal_coverage, identified_methods
+        )
+
+        # Print basic results including TP/FP/FN
+        self._print_evaluation_results(
+            focal_methods, optimal_coverage, coverage_score, extra_metrics
+        )
 
         # Return detailed results if requested
         detailed_results = None
@@ -154,8 +159,16 @@ class LocalizationGrader:
             len(optimal_coverage) / len(focal_methods) if focal_methods else 0.0
         )
 
-        # Print basic results
-        self._print_evaluation_results(focal_methods, optimal_coverage, coverage_score)
+        # Compute identified methods and TP/FP/FN
+        identified_methods = self._collect_identified_methods(scenario)
+        extra_metrics = self._compute_confusion_counts(
+            focal_methods, optimal_coverage, identified_methods
+        )
+
+        # Print basic results including TP/FP/FN
+        self._print_evaluation_results(
+            focal_methods, optimal_coverage, coverage_score, extra_metrics
+        )
 
         detailed_results = None
         if detailed_output:
@@ -204,6 +217,7 @@ class LocalizationGrader:
         focal_methods: Set[Tuple[str, str]],
         covered_focal_methods: Set[Tuple[str, str]],
         coverage_score: float,
+        extra: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         focal_methods_str = [
             f"{class_name}.{method_sig}" for class_name, method_sig in focal_methods
@@ -217,7 +231,7 @@ class LocalizationGrader:
             for class_name, method_sig in (focal_methods - covered_focal_methods)
         ]
 
-        return {
+        base: Dict[str, Any] = {
             "test_class": self.nl2_input.qualified_class_name,
             "test_method": self.nl2_input.method_signature,
             "total_focal_methods": len(focal_methods),
@@ -229,6 +243,9 @@ class LocalizationGrader:
             "uncovered_methods": uncovered_methods_str,
             "evaluation_algorithm": "optimal_coverage_one_to_one",
         }
+        if extra:
+            base.update(extra)
+        return base
 
     def _create_detailed_results_atomic(
         self,
@@ -237,45 +254,15 @@ class LocalizationGrader:
         coverage_score: float,
         atomic_blocks: AtomicBlockList,
     ) -> Dict[str, Any]:
-        """Create detailed output for AtomicBlockList and include original blocks."""
-        result = self._build_common_results(
-            focal_methods, covered_focal_methods, coverage_score
+        """Detailed output: common metrics + provided atomic blocks only."""
+        # Include TP/FP/FN if present in atomic_blocks evaluation context
+        identified = self._collect_identified_methods(atomic_blocks)
+        extra = self._compute_confusion_counts(
+            focal_methods, covered_focal_methods, identified
         )
-
-        block_analysis = []
-        for i, block in enumerate(atomic_blocks.atomic_blocks):
-            block_candidates = []
-            for candidate in block.candidate_methods:
-                method_key = (
-                    candidate.containing_class_name,
-                    candidate.method_signature,
-                )
-                is_covered = method_key in covered_focal_methods
-                block_candidates.append(
-                    {
-                        "containing_class": candidate.containing_class_name,
-                        "method_signature": candidate.method_signature,
-                        "is_focal_method": method_key in focal_methods,
-                        "is_covered": is_covered,
-                    }
-                )
-
-            block_analysis.append(
-                {
-                    "block_index": i,
-                    "simplified": block.simplified,
-                    "candidate_methods": block_candidates,
-                    "notes": block.notes,
-                }
-            )
-
-        result.update(
-            {
-                "atomic_blocks_analysis": block_analysis,
-                "atomic_blocks": atomic_blocks,
-            }
+        return self._build_common_results(
+            focal_methods, covered_focal_methods, coverage_score, extra
         )
-        return result
 
     def _create_detailed_results_scenario(
         self,
@@ -288,52 +275,13 @@ class LocalizationGrader:
 
         Does not flatten the scenario in the output.
         """
-        result = self._build_common_results(
-            focal_methods, covered_focal_methods, coverage_score
+        identified = self._collect_identified_methods(scenario)
+        extra = self._compute_confusion_counts(
+            focal_methods, covered_focal_methods, identified
         )
-
-        def analyze_block(block: LocalizedStep) -> Dict[str, Any]:
-            cm_list = []
-            for candidate in block.candidate_methods:
-                method_key = (
-                    candidate.containing_class_name,
-                    candidate.method_signature,
-                )
-                cm_list.append(
-                    {
-                        "containing_class": candidate.containing_class_name,
-                        "method_signature": candidate.method_signature,
-                        "is_focal_method": method_key in focal_methods,
-                        "is_covered": method_key in covered_focal_methods,
-                    }
-                )
-            return {
-                "task": getattr(block, "task", ""),
-                "candidate_methods": cm_list,
-                "comments": getattr(block, "comments", ""),
-            }
-
-        scenario_analysis = {
-            "setup": [analyze_block(b) for b in (scenario.setup or [])],
-            "steps": [
-                {
-                    "given": [analyze_block(b) for b in (gblock.given or [])],
-                    "when": [analyze_block(b) for b in (gblock.when or [])],
-                    "then": [analyze_block(b) for b in (gblock.then or [])],
-                }
-                for gblock in (scenario.steps or [])
-            ],
-            "teardown": [analyze_block(b) for b in (scenario.teardown or [])],
-        }
-
-        result.update(
-            {
-                "atomic_blocks_analysis": [],
-                "scenario_analysis": scenario_analysis,
-                "localized_scenario": scenario,
-            }
+        return self._build_common_results(
+            focal_methods, covered_focal_methods, coverage_score, extra
         )
-        return result
 
     def _iter_candidate_blocks(
         self, obj: AtomicBlockList | LocalizedScenario
@@ -364,6 +312,43 @@ class LocalizationGrader:
             return
         # Should never reach here due to typing/dispatch
         raise TypeError("Unsupported object type for iteration")
+
+    def _collect_identified_methods(
+        self, obj: AtomicBlockList | LocalizedScenario
+    ) -> Set[Tuple[str, str]]:
+        """Collect all methods identified across blocks (candidates and best).
+
+        Returns a set of (class_name, method_signature) tuples.
+        """
+        identified: Set[Tuple[str, str]] = set()
+        for block in self._iter_candidate_blocks(obj):
+            for cm in getattr(block, "candidate_methods", []) or []:
+                identified.add((cm.containing_class_name, cm.method_signature))
+
+            best = getattr(block, "best_candidate", None)
+            if best is not None:
+                if getattr(best, "containing_class_name", "") and getattr(
+                    best, "method_signature", ""
+                ):
+                    identified.add((best.containing_class_name, best.method_signature))
+        return identified
+
+    def _compute_confusion_counts(
+        self,
+        focal_methods: Set[Tuple[str, str]],
+        covered_focal_methods: Set[Tuple[str, str]],
+        identified_methods: Set[Tuple[str, str]],
+    ) -> Dict[str, int]:
+        """Compute TP/FP/FN counts based on identified methods and coverage.
+
+        - TP: number of focal methods covered (i.e., correct identifications used).
+        - FP: number of identified methods that are not focal methods.
+        - FN: number of focal methods that were not identified anywhere.
+        """
+        tp = len(covered_focal_methods)
+        fp = len(identified_methods - focal_methods)
+        fn = len(focal_methods - identified_methods)
+        return {"tp": tp, "fp": fp, "fn": fn}
 
     def _get_focal_methods(self) -> Set[Tuple[str, str]]:
         """Use Hamster to get the focal methods for the test method."""
@@ -407,6 +392,7 @@ class LocalizationGrader:
         focal_methods: Set[Tuple[str, str]],
         covered_focal_methods: Set[Tuple[str, str]],
         coverage_score: float,
+        extra: Optional[Dict[str, Any]] = None,
     ):
         """Print basic evaluation results."""
         focal_methods_str = [
@@ -431,5 +417,7 @@ class LocalizationGrader:
             "covered_methods": covered_methods_str,
             "uncovered_methods": uncovered_methods_str,
         }
+        if extra:
+            results.update(extra)
 
         pretty_print("Localization Evaluation Results", results)

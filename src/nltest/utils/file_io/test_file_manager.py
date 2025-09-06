@@ -23,7 +23,7 @@ class TestFileInfo(BaseModel):
     method_signature: Annotated[
         str, "The method signature of the developer-written test"
     ]
-    description: Annotated[str, "The description of the developer-written test"]
+    description: Annotated[str, "The description of the developer-written test"] = ""
     test_code: Annotated[str, "The test code of the autonomously generated test"] = ""
     abstraction_level: Annotated[
         Optional[AbstractionLevel],
@@ -77,92 +77,6 @@ class TestFileManager:
         self.test_base_dir = project_root / Path(test_base_dir)
 
     @staticmethod
-    def _sanitize_method_signature(method_signature: str) -> str:
-        m = re.search(r"(?:\b|\s)([A-Za-z_][A-Za-z0-9_]*)\s*\(", method_signature)
-        method_name = m.group(1) if m else method_signature
-
-        # Count parameters between parentheses ignoring generics and varargs
-        params_match = re.search(r"\((.*?)\)", method_signature, flags=re.S)
-        if params_match:
-            raw = params_match.group(1)
-            # Handle empty args
-            param_count = (
-                0
-                if raw.strip() == ""
-                else len([p for p in raw.split(",") if p.strip() != ""])
-            )
-        else:
-            param_count = 0
-
-        compact = f"{method_name}_{param_count}p"
-        # Replace anything not allowed for Java identifiers with underscore
-        compact = re.sub(r"[^A-Za-z0-9_]", "_", compact)
-        # Ensure starts with a letter
-        if not re.match(r"^[A-Za-z_]", compact):
-            compact = "M_" + compact
-        return compact
-
-    @staticmethod
-    def _sanitize_method_signature_with_types(method_signature: str) -> str:
-        """
-        Sanitize method signature while preserving parameter types for unique identification.
-        """
-        m = re.search(r"(?:\b|\s)([A-Za-z_][A-Za-z0-9_]*)\s*\(", method_signature)
-        method_name = m.group(1) if m else method_signature
-
-        # Extract parameters between parentheses
-        params_match = re.search(r"\((.*?)\)", method_signature, flags=re.S)
-        if params_match:
-            raw_params = params_match.group(1).strip()
-            if raw_params == "":
-                param_types = []
-            else:
-                # Split by comma and extract type names
-                param_types = []
-                for param in raw_params.split(","):
-                    param = param.strip()
-                    # Extract type name (before parameter name)
-                    type_match = re.match(
-                        r"([A-Za-z_][A-Za-z0-9_.<>[\]]*)\s+[A-Za-z_][A-Za-z0-9_]*",
-                        param,
-                    )
-                    if type_match:
-                        param_types.append(type_match.group(1))
-                    else:
-                        # Use parameter as is if no type isolation possible
-                        param_types.append(param)
-        else:
-            param_types = []
-
-        # Create compact representation with types
-        if param_types:
-            type_suffix = "_" + "_".join(param_types)
-        else:
-            type_suffix = ""
-
-        compact = f"{method_name}{type_suffix}"
-        # Replace anything not allowed for Java identifiers with underscore
-        compact = re.sub(r"[^A-Za-z0-9_]", "_", compact)
-        # Ensure starts with a letter
-        if not re.match(r"^[A-Za-z_]", compact):
-            compact = "M_" + compact
-        return compact
-
-    @staticmethod
-    def _abs_abbrev(level: Optional[AbstractionLevel]) -> str:
-        if level is None:
-            return "U"  # Unknown
-        try:
-            mapping = {
-                AbstractionLevel.HIGH: "H",
-                AbstractionLevel.MEDIUM: "M",
-                AbstractionLevel.LOW: "L",
-            }
-            return mapping[level]
-        except Exception:
-            return "U"
-
-    @staticmethod
     def _package_dir_from_qualified(qualified_class_name: str) -> Path:
         package = qualified_class_name.rsplit(".", 1)[0]
         return Path(*package.split(".")) if package else Path()
@@ -205,13 +119,27 @@ class TestFileManager:
         class_name = file_name.split("/")[-1]
         return TestFileManager.decode_class_name(class_name)
 
-    def target_path(self, test_info: TestFileInfo) -> Path:
-        class_name = self.encode_class_name(test_info.id)
-        return (
-            self.test_base_dir
-            / self._package_dir_from_qualified(test_info.qualified_class_name)
-            / f"{class_name}.java"
-        )
+    def target_path(self, test_info: TestFileInfo, *, encode_class_name: bool = True) -> Path:
+        """
+        Compute the target file path for a test file.
+
+        - If encode_class_name is True, use the encoded class name (e.g., NL2T_001.java)
+          under the package path derived from qualified_class_name.
+        - If encode_class_name is False, place the file directly under
+          `self.test_base_dir` mirroring the fully qualified class name
+          as a path, with `.java` appended at the end.
+        """
+        if encode_class_name:
+            class_name = self.encode_class_name(test_info.id)
+            return (
+                self.test_base_dir
+                / self._package_dir_from_qualified(test_info.qualified_class_name)
+                / f"{class_name}.java"
+            )
+
+        # Non-encoded: Use the fully qualified class name as path components
+        qcn_path = Path(*test_info.qualified_class_name.split("."))
+        return self.test_base_dir / (qcn_path.with_suffix(".java"))
 
     def _rewrite_java_header(self, test_info: TestFileInfo, code: str) -> str:
         """
@@ -249,12 +177,37 @@ class TestFileManager:
 
         return code
 
-    def save_single(self, test_info: TestFileInfo, *, sync_names: bool = False) -> Path:
-        file_path = self.target_path(test_info)
+    def save_single(
+        self,
+        test_info: TestFileInfo,
+        *,
+        sync_names: bool = False,
+        encode_class_name: bool = False,
+    ) -> Path:
+        """
+        Save a single test file. Optionally encode the class name for the filename.
+
+        - If `encode_class_name` is True, the file will be saved using the
+          encoded class name at the package directory derived from the
+          qualified class name.
+        - If `encode_class_name` is False, the file will be saved mirroring the
+          qualified class name as a path rooted at `self.test_base_dir`.
+
+        TODO: Handle conflicts more gracefully (e.g., versioning or merging).
+        """
+        file_path = self.target_path(test_info, encode_class_name=encode_class_name)
         file_path.parent.mkdir(parents=True, exist_ok=True)
 
+        # Conflict detection: avoid overwriting existing files for now
+        if file_path.exists():
+            # TODO: Decide on conflict resolution strategy beyond raising an exception.
+            raise Exception(
+                f"Conflicting test file already exists at {file_path}."
+            )
+
         content = test_info.test_code
-        if sync_names:
+        if sync_names and encode_class_name:
+            # Only rewrite headers when using encoded class names
             content = self._rewrite_java_header(test_info, content)
 
         with open(file_path, "w", encoding="utf-8") as f:
@@ -264,7 +217,8 @@ class TestFileManager:
     def save_batch(self, tests: List[TestFileInfo]) -> List[Path]:
         saved = []
         for t in tests:
-            saved.append(self.save_single(t))
+            # Preserve legacy behavior for batch saves: use encoded class names
+            saved.append(self.save_single(t, encode_class_name=True))
         return saved
 
     def load(self, test_info: TestFileInfo) -> str:
@@ -278,3 +232,18 @@ class TestFileManager:
         class_name = self.encode_class_name(test_info.id)
         package = test_info.qualified_class_name.rsplit(".", 1)[0]
         return f"{package}.{class_name}" if package else class_name
+
+    def delete_single(
+        self, test_info: TestFileInfo, *, encode_class_name: bool = False
+    ) -> Path:
+        """
+        Delete the test file at the location where it would have been saved.
+
+        - If `encode_class_name` is True, uses the encoded class name path.
+        - If `encode_class_name` is False, deletes the file at the fully
+          qualified class name path.
+        """
+        file_path = self.target_path(test_info, encode_class_name=encode_class_name)
+        if file_path.exists():
+            file_path.unlink()
+        return file_path

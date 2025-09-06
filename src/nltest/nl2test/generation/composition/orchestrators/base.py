@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import List
 
 from cldk.analysis.java import JavaAnalysis
@@ -73,6 +74,7 @@ class BaseCompositionOrchestrator:
             llm=decision_llm,
             tools=tools,
             system_message=system_message,
+            project_root=Path(base_project_dir or ".") / nl2_input.project_name,
             max_iters=max_iters,
             decomposition_mode=decomposition_mode,
         )

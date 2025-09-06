@@ -179,29 +179,32 @@ class TestLocalizationGrader(BaseNL2Test):
             project_name="spring-petclinic",
         )
 
-        atomic_blocks = [
-            AtomicBlock(
-                order=0,
-                subjects=["form"],
-                verbs=["process"],
-                past_participles=[],
-                direct_objs=["creation"],
-                indirect_objs=[],
-                prep_phrases=[],
-                polarity="positive",
-                conditions=[],
-                simplified="form processes creation",
-                candidate_methods=[
-                    CandidateMethod(
-                        implementing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
-                        containing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
-                        method_signature="processCreationForm(Owner, BindingResult, ModelMap)",
-                        return_type="void",
-                    )
-                ],
-                notes="",
-            )
-        ]
+        candidate = CandidateMethod(
+            implementing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
+            containing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
+            method_signature="processCreationForm(Owner, BindingResult, ModelMap)",
+            return_type="void",
+        )
+
+        atomic_blocks = AtomicBlockList(
+            atomic_blocks=[
+                AtomicBlock(
+                    order=0,
+                    subjects=["form"],
+                    verbs=["process"],
+                    past_participles=[],
+                    direct_objs=["creation"],
+                    indirect_objs=[],
+                    prep_phrases=[],
+                    polarity="positive",
+                    conditions=[],
+                    simplified="form processes creation",
+                    candidate_methods=[candidate],
+                    best_candidate=candidate,
+                    notes="",
+                )
+            ]
+        )
 
         grader = LocalizationGrader(
             nl2_input, self.analysis, self.config.get("project", "base_project_dir")
@@ -236,8 +239,11 @@ class TestLocalizationGrader(BaseNL2Test):
             "focal_methods",
             "covered_methods",
             "uncovered_methods",
-            "atomic_blocks_analysis",
             "evaluation_algorithm",
+            # New metrics
+            "tp",
+            "fp",
+            "fn",
         ]
         for key in expected_keys:
             self.assertIn(key, detailed_results)
@@ -246,13 +252,10 @@ class TestLocalizationGrader(BaseNL2Test):
             detailed_results["evaluation_algorithm"], "optimal_coverage_one_to_one"
         )
 
-        self.assertIsInstance(detailed_results["atomic_blocks_analysis"], list)
-        if detailed_results["atomic_blocks_analysis"]:
-            block_analysis = detailed_results["atomic_blocks_analysis"][0]
-            self.assertIn("block_index", block_analysis)
-            self.assertIn("simplified", block_analysis)
-            self.assertIn("candidate_methods", block_analysis)
-            self.assertIn("notes", block_analysis)
+        # Basic sanity checks on new metrics
+        self.assertIsInstance(detailed_results["tp"], int)
+        self.assertIsInstance(detailed_results["fp"], int)
+        self.assertIsInstance(detailed_results["fn"], int)
 
 
 class TestLocalizationTools(BaseNL2Test):

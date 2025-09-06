@@ -109,6 +109,9 @@ class TestCodeArgs(BaseModel):
     """Arguments for providing raw test code directly to the generate tool."""
 
     test_code: Annotated[str, Field(description="")]
+    qualified_class_name: Annotated[
+        str, Field(description="The fully qualified class name for the test class.")
+    ]
 
 
 class FinalizeAtomicBlockArgs(BaseModel):

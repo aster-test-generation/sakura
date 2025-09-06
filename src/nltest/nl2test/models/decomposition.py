@@ -142,7 +142,14 @@ class GrammaticalBlock(BaseModel):
 
 class AtomicBlock(GrammaticalBlock):
     candidate_methods: List[CandidateMethod]
-    best_candidate: CandidateMethod
+    best_candidate: CandidateMethod = Field(
+        default_factory=lambda: CandidateMethod(
+            implementing_class_name="",
+            containing_class_name="",
+            method_signature="",
+            return_type="",
+        )
+    )
     notes: str
 
     @classmethod
@@ -151,10 +158,23 @@ class AtomicBlock(GrammaticalBlock):
         gb: GrammaticalBlock,
         *,
         candidate_methods: List[CandidateMethod] | None = None,
+        best_candidate: CandidateMethod | None = None,
         notes: str = "",
     ) -> "AtomicBlock":
         cm = list(candidate_methods) if candidate_methods is not None else []
-        return cls(**gb.model_dump(), candidate_methods=cm, notes=notes)
+        bc = (
+            best_candidate
+            if best_candidate is not None
+            else CandidateMethod(
+                implementing_class_name="",
+                containing_class_name="",
+                method_signature="",
+                return_type="",
+            )
+        )
+        return cls(
+            **gb.model_dump(), candidate_methods=cm, best_candidate=bc, notes=notes
+        )
 
 
 class LocalizationEvaluationResults(BaseModel):
@@ -169,12 +189,11 @@ class LocalizationEvaluationResults(BaseModel):
     focal_methods: List[str]
     covered_methods: List[str]
     uncovered_methods: List[str]
-    atomic_blocks_analysis: List[Dict[str, Any]]
     evaluation_algorithm: str
-    # Include original structures for analysis without flattening
-    atomic_blocks: Optional[AtomicBlockList] = None
-    localized_scenario: Optional[LocalizedScenario] = None
-    scenario_analysis: Optional[Dict[str, Any]] = None
+    # Confusion-style metrics
+    tp: int
+    fp: int
+    fn: int
 
 
 # ---- Aggregations ----

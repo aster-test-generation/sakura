@@ -10,11 +10,11 @@ OUTPUT_DIR = "../tests/output"
 CSV_FILE = "../tests/output/resources/test2nl/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 0  # Note: 0 = unlimited
+MAX_ENTRIES = 1  # Note: 0 = unlimited
 LLM_MODEL = "google/gemini-2.5-flash"
 
 # Localization settings
-LOCALIZATION_MAX_ITERS = 50
+LOCALIZATION_MAX_ITERS = 5
 
 # Decomposition mode (must match DecompositionMode enum values)
 _ALLOWED_DECOMP_MODES = {"grammatical", "gherkin"}

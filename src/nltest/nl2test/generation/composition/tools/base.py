@@ -318,14 +318,15 @@ class BaseCompositionTools:
         )
 
     def _make_generate_test_tool(self) -> StructuredTool:
-        def _generate_test_code(test_code: str) -> str:
-            # Save provided test code directly to the appropriate test file.
-            test_file_info = TestFileInfo.from_nl2test_input(
-                self.nl2_input,
-                test_code=test_code,
-            )
-            _ = TestFileManager(self.project_root).save_single(test_file_info)
-            return "Successfully wrote provided test code."
+        def _generate_test_code(test_code: str, qualified_class_name: str) -> dict:
+            """
+            Accept raw test code and a fully qualified class name, and return both
+            without modification. The agent is responsible for any saving/deleting.
+            """
+            return {
+                "test_code": test_code,
+                "qualified_class_name": qualified_class_name,
+            }
 
         # DEPRECATED: Previous version generated code from instructions via LLM.
         # def _generate_test_code(instructions: str) -> str:

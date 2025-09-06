@@ -153,5 +153,4 @@ class Pipeline:
             nl2_input=nl2_input,
             localized_blocks=result,
             evaluation_results=evaluation_results,
-            coverage_score=coverage_score,
         )

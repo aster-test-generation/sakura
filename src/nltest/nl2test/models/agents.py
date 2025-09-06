@@ -114,6 +114,17 @@ class TestCodeArgs(BaseModel):
     ]
 
 
+class FinalizeCommentsArgs(BaseModel):
+    """Arguments for finalizing the composition process with comments only."""
+
+    comments: Annotated[
+        str,
+        Field(
+            description="Comments about any problems with the procedure or concerns."
+        ),
+    ]
+
+
 class FinalizeAtomicBlockArgs(BaseModel):
     current_blocks: Annotated[
         AtomicBlockList, Field(description="The current state of the AtomicBlocks.")

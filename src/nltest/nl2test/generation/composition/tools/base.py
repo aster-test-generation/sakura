@@ -14,6 +14,7 @@ from nltest.nl2test.models import (
     QueryMethodArgs,
     TestCodeArgs,
     AtomicBlockList,
+    FinalizeCommentsArgs,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
@@ -31,6 +32,15 @@ from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
     EXTRACT_CODE_DESC,
     METHOD_DETAILS_DESC,
+    CALL_SITE_DETAILS_DESC,
+    GET_CLASS_FIELDS_DESC,
+    GET_CLASS_IMPORTS_DESC,
+    GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
+    GET_GETTERS_AND_SETTERS_DESC,
+    VIEW_TEST_CODE_DESC,
+    GENERATE_TEST_CODE_DESC,
+    COMPILE_AND_EXECUTE_TESTS_DESC,
+    FINALIZE_DESC,
 )
 
 
@@ -62,6 +72,7 @@ class BaseCompositionTools:
             self._make_view_test_code_tool(),
             self._make_generate_test_tool(),
             self._make_compile_and_execute_tests_tool(),
+            self._make_finalize_tool(),
             # self._make_compile_test_tool(),  # DEPRECATED
             # self._make_execution_test_tool(),  # DEPRECATED
         ]
@@ -179,7 +190,7 @@ class BaseCompositionTools:
         return StructuredTool.from_function(
             func=_get_call_site_details,
             name="get_call_site_details",
-            description="",
+            description=CALL_SITE_DETAILS_DESC,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
@@ -210,7 +221,7 @@ class BaseCompositionTools:
         return StructuredTool.from_function(
             func=_get_class_fields,
             name="get_class_fields",
-            description="",
+            description=GET_CLASS_FIELDS_DESC,
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -225,7 +236,7 @@ class BaseCompositionTools:
         return StructuredTool.from_function(
             func=_get_class_imports,
             name="get_class_imports",
-            description="",
+            description=GET_CLASS_IMPORTS_DESC,
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -275,7 +286,7 @@ class BaseCompositionTools:
         return StructuredTool.from_function(
             func=_get_class_constructors_and_factories,
             name="get_class_constructors_and_factories",
-            description="",
+            description=GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -298,68 +309,40 @@ class BaseCompositionTools:
         return StructuredTool.from_function(
             func=_get_getters_and_setters,
             name="get_getters_and_setters",
-            description="",
+            description=GET_GETTERS_AND_SETTERS_DESC,
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_view_test_code_tool(self) -> StructuredTool:
-        def _view_test_code() -> str:
-            info = TestFileInfo.from_nl2test_input(self.nl2_input)
-            raw_code = TestFileManager(self.project_root).load(info)
-            return raw_code
+        def _view_test_code() -> dict:
+            # NOTE: Work is done by the agent hook for state injection
+            return {}
 
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
-            description="",
-            args_schema=QueryMethodArgs,
+            description=VIEW_TEST_CODE_DESC,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_generate_test_tool(self) -> StructuredTool:
         def _generate_test_code(test_code: str, qualified_class_name: str) -> dict:
-            """
-            Accept raw test code and a fully qualified class name, and return both
-            without modification. The agent is responsible for any saving/deleting.
-            """
+            # NOTE: Work is done by the agent hook for state injection
             return {
                 "test_code": test_code,
                 "qualified_class_name": qualified_class_name,
             }
 
-        # DEPRECATED: Previous version generated code from instructions via LLM.
-        # def _generate_test_code(instructions: str) -> str:
-        #     generation_prompt = LoadPrompt.load_prompt(
-        #         "generate_tests.jinja2", PromptFormat.JINJA2
-        #     )
-        #     generation_prompt = generation_prompt.format(instructions=instructions)
-        #     try:
-        #         java_raw = self.structured_llm.generate(
-        #             generation_prompt, sanitize=True
-        #         )
-        #         java_code = FormatValidator.strip_java_block(java_raw)
-        #
-        #         test_file_info = TestFileInfo.from_nl2test_input(
-        #             self.nl2_input,
-        #             test_code=java_code,
-        #         )
-        #
-        #         _ = TestFileManager(self.project_root).save_single(test_file_info)
-        #         return "Successfully generated test code."
-        #     except HTTPError:
-        #         return "Failed to generate test code due to HTTP error."
-        #     except JSONDecodeError:
-        #         return "Failed to generate test code due to JSON decode error."
-
         return StructuredTool.from_function(
             func=_generate_test_code,
             name="generate_test_code",
-            description="",  # Note: Ensure package and imports are included in code
+            description=GENERATE_TEST_CODE_DESC,
             args_schema=TestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
+    # DEPRECATED
     def _make_compile_test_tool(self) -> StructuredTool:
         def _compile_test_code() -> Dict[str, Any]:
             erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
@@ -385,6 +368,7 @@ class BaseCompositionTools:
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
+    # DEPRECATED
     def _make_execution_test_tool(self) -> StructuredTool:
         def _execute_test() -> Dict[str, Any]:
             info = TestFileInfo.from_nl2test_input(self.nl2_input)
@@ -400,45 +384,29 @@ class BaseCompositionTools:
         )
 
     def _make_compile_and_execute_tests_tool(self) -> StructuredTool:
-        def _compile_and_execute_tests() -> Dict[str, Any]:
-            # First, compile and collect compile feedback
-            erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
-
-            class_key = TestFileManager(self.project_root).encode_class_name(
-                self.nl2_input.id
-            )
-            file_key = f"{class_key}.java"
-            has_error = any(
-                ec.endswith(file_key) or ec == file_key for ec in erroneous_classes
-            )
-
-            result: Dict[str, Any] = {
-                "erroneous_classes": erroneous_classes,
-                "target_class_file": file_key,
-                "has_errors_for_target": has_error,
-            }
-
-            # If no compile errors for the target file, run the test
-            if not has_error:
-                info = TestFileInfo.from_nl2test_input(self.nl2_input)
-                test_fqn = TestFileManager(self.project_root).make_test_fqn(info)
-                execution_feedback = JavaExecution.execute(
-                    str(self.project_root), test_fqn
-                )
-                result["execution_feedback"] = execution_feedback
-            else:
-                result["execution_feedback"] = None
-
-            return result
+        def _compile_and_execute_tests() -> dict:
+            # NOTE: Work is done by the agent for state injection
+            return {}
 
         return StructuredTool.from_function(
             func=_compile_and_execute_tests,
             name="compile_and_execute_tests",
-            description="",
+            description=COMPILE_AND_EXECUTE_TESTS_DESC,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    # _make_modify_atomic_block_notes_tool has been removed as requested.
+    def _make_finalize_tool(self) -> StructuredTool:
+        def _finalize(comments: str) -> str:
+            # Return comments; agent will set final state and end.
+            return str(comments)
+
+        return StructuredTool.from_function(
+            func=_finalize,
+            name="finalize",
+            description=FINALIZE_DESC,
+            args_schema=FinalizeCommentsArgs,
+            handle_tool_error=ToolExceptionHandler.handle_error,
+        )
 
     def _parse_and_validate(self, content: str, expected_type: type) -> Any:
         for _ in range(3):

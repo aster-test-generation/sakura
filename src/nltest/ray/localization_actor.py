@@ -80,7 +80,7 @@ class LocalizationActor:
             nl2_input = NL2TestInput(**input_payload)
             output = self.pipeline.run_localization_evaluation_pipeline(nl2_input)
             return {"success": True, "output": output.model_dump(mode="json")}
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             return {
                 "success": False,
                 "error": str(e),

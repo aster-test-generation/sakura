@@ -16,7 +16,9 @@ class StructuredDataManager:
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
-    def _as_list_of_dicts(data: Union[Sequence[BaseModel], Sequence[dict], BaseModel, dict]) -> List[dict]:
+    def _as_list_of_dicts(
+        data: Union[Sequence[BaseModel], Sequence[dict], BaseModel, dict],
+    ) -> List[dict]:
         """Normalize input data to a list of dictionaries"""
         if data is None:
             return []
@@ -44,12 +46,12 @@ class StructuredDataManager:
         tmp.replace(path)
 
     def save(
-            self,
-            file_name: str,
-            data: Union[Sequence[BaseModel], Sequence[dict], BaseModel, dict],
-            *,
-            format: Literal["json", "csv"] = "json",
-            mode: Literal["write", "append"] = "write",
+        self,
+        file_name: str,
+        data: Union[Sequence[BaseModel], Sequence[dict], BaseModel, dict],
+        *,
+        format: Literal["json", "csv"] = "json",
+        mode: Literal["write", "append"] = "write",
     ) -> None:
         path = self.base_dir / file_name
         rows = self._as_list_of_dicts(data)
@@ -64,13 +66,20 @@ class StructuredDataManager:
                 if not isinstance(existing, list):
                     existing = [existing]
                 existing.extend(rows)
-                self._atomic_write_text(path, json.dumps(existing, indent=4, ensure_ascii=True))
+                self._atomic_write_text(
+                    path, json.dumps(existing, indent=4, ensure_ascii=True)
+                )
             else:
-                self._atomic_write_text(path, json.dumps(rows, indent=4, ensure_ascii=True))
+                self._atomic_write_text(
+                    path, json.dumps(rows, indent=4, ensure_ascii=True)
+                )
 
         elif format == "csv":
             file_exists = path.exists()
-            append_mode = (mode == "append" and file_exists)
+            append_mode = mode == "append" and file_exists
+
+            if not rows:
+                return
 
             # If appending, attempt to reuse existing header
             existing_fieldnames = None
@@ -78,16 +87,24 @@ class StructuredDataManager:
                 try:
                     with path.open("r", encoding="utf-8", newline="") as rf:
                         reader = csv.DictReader(rf)
-                        existing_fieldnames = list(reader.fieldnames) if reader.fieldnames else None
+                        existing_fieldnames = (
+                            list(reader.fieldnames) if reader.fieldnames else None
+                        )
                 except Exception:
                     existing_fieldnames = None
 
-            # Read unique fieldnames from rows if no existing header
-            fieldnames = existing_fieldnames or sorted({k for row in rows for k in row.keys()})
+                if existing_fieldnames is None:
+                    append_mode = False
 
-            with path.open("a" if append_mode else "w", encoding="utf-8", newline="") as f:
+            fieldnames = existing_fieldnames or sorted(
+                {k for row in rows for k in row.keys()}
+            )
+
+            with path.open(
+                "a" if append_mode else "w", encoding="utf-8", newline=""
+            ) as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
-                if not append_mode:
+                if not append_mode and fieldnames:
                     writer.writeheader()
                 for row in rows:
                     writer.writerow({k: row.get(k, "") for k in fieldnames})
@@ -95,7 +112,9 @@ class StructuredDataManager:
         else:
             raise ValueError(f"Unsupported format: {format}")
 
-    def load(self, file_name: str, model_cls: Type[SubModel], *, format: str = "json") -> List[SubModel]:
+    def load(
+        self, file_name: str, model_cls: Type[SubModel], *, format: str = "json"
+    ) -> List[SubModel]:
         path = self.base_dir / file_name
         if not path.exists():
             raise FileNotFoundError(f"File not found: {path}")

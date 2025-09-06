@@ -41,7 +41,7 @@ TEARDOWN_ANNOTATIONS = {  # Also check `tearDown()` method for JUnit 3
     "@AfterGroups",
 }
 
-# Somewhat naive mapping - Proprietary is True and open-source is False
+# Experimentally found through OpenRouter
 PARALLEL_TOOL_CALLABLE: Dict[bool, set[str]] = {
     False: {
         # Mistral models

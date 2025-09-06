@@ -26,7 +26,7 @@ from tests._base_test2nl import BaseTest2NL
 class TestPipelineDescriptions(BaseTest2NL):
     def test_all_low_abs(self):
         self.pipeline.reset_dataset()
-        self.pipeline.run_descriptions(AbstractionLevel.LOW)
+        self.pipeline.run_descriptions_of_project(AbstractionLevel.LOW)
 
 
 class TestPipelineLocalization(BaseNL2Test):

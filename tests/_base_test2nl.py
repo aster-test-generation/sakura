@@ -23,8 +23,10 @@ class BaseTest2NL(TestCase):
         # === User-Defined ===
         self.project_name = "spring-petclinic"
 
-        llm_model = "qwen/qwen3-235b-a22b-thinking-2507"
+        llm_model = "qwen/qwen3-30b-a3b-instruct-2507"
         emb_model = "NOMIC-AI-EMB-7B"
+
+        self.llm_model = llm_model
 
         # Make paths relative to the tests directory
         test_dir = Path(__file__).resolve().parent
@@ -63,4 +65,3 @@ class BaseTest2NL(TestCase):
         self.data_manager = StructuredDataManager(output_dir)
         self.test2nl_prompt = Test2NLPrompt(self.analysis)
         self.roundtrip_prompt = RoundTripPrompt(self.analysis)
-

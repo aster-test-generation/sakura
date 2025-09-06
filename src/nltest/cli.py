@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from collections import deque
 from dotenv import load_dotenv
 
 import typer
@@ -14,16 +15,17 @@ from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
-from nltest.nl2test import Pipeline as NL2TestPipeline
 from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.dataset_creation.model import NL2TestDataset, Test as DatasetTest
 from nltest.utils.models import Method
+from nltest.ray.localization_actor import LocalizationActor
+from nltest.ray.test2nl_actor import Test2NLActor
 
 app = typer.Typer(
-    help="ASTER-Test2NL: [A]utomated Te[s][t] Cas[e] Generato[r] from Natural Language",
+    help="ASTER-NLTest: [A]utomated Te[s][t] Cas[e] Generato[r] from Natural Language",
     pretty_exceptions_enable=False,
     pretty_exceptions_show_locals=False,
     add_completion=False,
@@ -32,52 +34,13 @@ app = typer.Typer(
 load_dotenv()
 
 
-def _resolve_output_dir(output_dir: str | None) -> Path:
-    return Path(output_dir or "./output")
-
-
-def _log_section(title: str) -> None:
-    sep = "=" * 60
-    RichLog.info(f"\n{sep}")
-    RichLog.info(title)
-    RichLog.info(sep)
-
-
-def _init_project_config(
-    *,
-    project_name: str,
-    base_project_dir: Path,
-    output_dir: Path,
-    llm_model: str,
-    emb_model: str | None = None,
-    localization_max_iters: int | None = None,
-) -> None:
-    """
-    Initialize Config singleton for a project.
-    """
-    init_config(
-        project_name=project_name,
-        base_project_dir=str(base_project_dir),
-        output_dir=str(output_dir),
-        llm_provider=Provider.OPENROUTER,
-        llm_model=llm_model,
-        emb_provider=Provider.OLLAMA if emb_model else None,
-        emb_model=emb_model,
-        llm_api_key=os.getenv("OPENROUTER_API_KEY"),
-        emb_api_key=None,
-        localization_max_iters=(localization_max_iters or 20),
-    )
-
-
-def _run_analysis(*, project_root: Path, analysis_dir: Path, eager: bool = True):
-    """Run or load CLDK analysis for a project."""
-    return CLDK(language="java").analysis(
-        project_path=project_root,
-        analysis_backend_path=None,
-        analysis_level=AnalysisLevel.symbol_table,
-        analysis_json_path=analysis_dir,
-        eager=eager,
-    )
+# Common directories to ignore when scanning for projects
+IGNORED_DIRS = {
+    "__pycache__",
+    ".git",
+    ".idea",
+    ".vscode",
+}
 
 
 @app.callback()
@@ -87,14 +50,83 @@ def main() -> None:
 
 @app.command()
 def generate_descriptions(
-    analysis_dir: str,
-    organized_methods_dir: str,
-    llm_model: str,
-    clear_dataset: bool = True,
-    max_entries: int = 0,
+    analysis_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the directory containing all project analysis directories (each with an analysis.json).",
+            show_default=False,
+        ),
+    ],
+    output_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the output directory where test2nl.csv and descriptions.json are saved.",
+            show_default=False,
+        ),
+    ],
+    organized_methods_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the directory containing per-project folders of filtered methods (each with nl2test.json).",
+            show_default=False,
+        ),
+    ],
+    llm_model: Annotated[
+        str,
+        typer.Option(
+            help="LLM model ID to use for generating Test2NL descriptions.",
+            show_default=False,
+        ),
+    ],
+    clear_dataset: Annotated[
+        bool,
+        typer.Option(
+            help="Whether to clear existing Test2NL data at the output directory before appending.",
+            show_default=False,
+        ),
+    ] = True,
+    max_methods: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of test methods to process across all projects (0 for unlimited). Note: generates 3x entries due to three abstraction levels per method.",
+            show_default=False,
+        ),
+    ] = 0,
+    num_proj_parallel: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of projects to process concurrently.",
+            show_default=True,
+        ),
+    ] = 2,
+    per_proj_concurrency: Annotated[
+        int,
+        typer.Option(
+            help="Maximum concurrent generate_descriptions_one calls per project.",
+            show_default=True,
+        ),
+    ] = 2,
+    max_inflight: Annotated[
+        int,
+        typer.Option(
+            help="Global cap on in-flight tasks across all projects (0 uses 2 * num_proj_parallel * per_proj_concurrency).",
+            show_default=True,
+        ),
+    ] = 0,
+    exclude_groups: Annotated[
+        list[str],
+        typer.Option(
+            help="Dataset group names to exclude (repeat the option to exclude multiple).",
+            show_default=True,
+        ),
+    ] = [],
 ):
-    output_dir = _resolve_output_dir(None)
+    if clear_dataset is False:
+        raise NotImplementedError(
+            "Behavior for retrieving the max ID for continuing dataset appends is not implemented."
+        )
 
+    output_dir = Path(output_dir)
     analysis_root = Path(analysis_dir)
     methods_root = Path(organized_methods_dir)
 
@@ -112,7 +144,10 @@ def generate_descriptions(
     project_dirs = [
         p
         for p in sorted(methods_root.iterdir())
-        if p.is_dir() and (p / organized_methods_file_name).exists()
+        if p.is_dir()
+        and p.name not in IGNORED_DIRS
+        and not p.name.startswith(".")
+        and (p / organized_methods_file_name).exists()
     ]
 
     if not project_dirs:
@@ -131,8 +166,9 @@ def generate_descriptions(
         f"Found {len(project_dirs)} project(s) with nl2test.json: {[p.name for p in project_dirs]}"
     )
 
-    start_id = 0
-
+    # Build per-project payloads from organized dataset and incorporate max_methods cap
+    payloads_by_project: dict[str, list[dict]] = {}
+    total_methods_planned = 0
     for project_dir in project_dirs:
         project_name = project_dir.name
 
@@ -151,25 +187,6 @@ def generate_descriptions(
                 f"Skipping {project_name}: missing analysis.json at {analysis_json_path}"
             )
             continue
-
-        _log_section(f"Preparing project: {project_name}")
-
-        analysis = CLDK(language="java").analysis(
-            project_path="",
-            analysis_backend_path=None,
-            analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=analysis_project_dir,
-            eager=False,
-        )
-
-        _init_project_config(
-            project_name=project_name,
-            base_project_dir=project_dir,
-            output_dir=output_dir,
-            llm_model=llm_model,
-        )
-
-        pipeline = Pipeline(analysis, project_name, output_dir)
 
         dataset_path = project_dir / organized_methods_file_name
         try:
@@ -190,37 +207,225 @@ def generate_descriptions(
             "tests_with_more_than_ten_focal_methods",
         ]
 
-        tests_to_process: list[Method] = []
+        # Filter out any groups requested for exclusion
+        if exclude_groups:
+            valid_group_set = set(groups)
+            unknown = [g for g in exclude_groups if g not in valid_group_set]
+            if unknown:
+                RichLog.warn(
+                    f"Unknown group(s) in exclude_groups: {unknown}. Valid groups: {sorted(valid_group_set)}"
+                )
+            groups = [g for g in groups if g not in set(exclude_groups)]
+
+        if not groups:
+            RichLog.warn(
+                f"All dataset groups were excluded for project {project_name}; skipping."
+            )
+            payloads_by_project[project_name] = []
+            continue
+
+        methods: list[dict] = []
         for group_name in groups:
             tests: list[DatasetTest] = getattr(dataset, group_name, []) or []
             for t in tests:
-                tests_to_process.append(
-                    Method(
-                        qualified_class_name=t.qualified_class_name,
-                        method_signature=t.method_signature,
-                    )
+                methods.append(
+                    {
+                        "qualified_class_name": t.qualified_class_name,
+                        "method_signature": t.method_signature,
+                        "id": 0,  # PLACEHOLDER - real ID assigned when saving
+                    }
                 )
 
-        RichLog.info(
-            f"Prepared {len(tests_to_process)} test methods from {dataset_path} for {project_name}"
-        )
+        if max_methods > 0:
+            remaining = max_methods - total_methods_planned
+            if remaining <= 0:
+                RichLog.info(
+                    f"Reached global max_methods limit ({max_methods}). Skipping remaining projects."
+                )
+                break
+            if len(methods) > remaining:
+                RichLog.info(
+                    f"Limiting tests for {project_name} to first {remaining} out of {len(methods)} due to max_methods={max_methods}"
+                )
+                methods = methods[:remaining]
 
-        test2nl_entries, test_descriptions, start_id = (
-            pipeline.run_descriptions_on_select(
-                test_methods=tests_to_process, start_id=start_id
+        payloads_by_project[project_name] = methods
+        total_methods_planned += len(methods)
+
+    if not payloads_by_project:
+        RichLog.warn("No valid project payloads to process. Exiting.")
+        return
+
+    # Initialize Ray
+    try:
+        if not ray.is_initialized():
+            ray.init()
+    except Exception as exc:
+        raise RuntimeError(f"Failed to initialize Ray: {exc}") from exc
+
+    # Project scheduling using bounded in-flight tasks
+    start_id = 0
+    pending_projects = deque(payloads_by_project.keys())
+
+    active_projects: dict[str, dict] = {}
+    future_to_project: dict[ray.ObjectRef, str] = {}
+    inflight_futures: set[ray.ObjectRef] = set()
+
+    # Effective in-flight budget across all projects
+    effective_max_inflight = (
+        max_inflight
+        if max_inflight and max_inflight > 0
+        else 2 * max(1, int(num_proj_parallel)) * max(1, int(per_proj_concurrency))
+    )
+
+    def launch_projects_up_to_limit() -> None:
+        while (
+            len(active_projects) < max(1, int(num_proj_parallel)) and pending_projects
+        ):
+            project_name = pending_projects.popleft()
+            sep = "=" * 60
+            RichLog.info(f"\n{sep}")
+            RichLog.info(f"Starting Test2NL actor for project: {project_name}")
+            RichLog.info(sep)
+
+            actor = Test2NLActor.options(
+                max_concurrency=max(1, int(per_proj_concurrency))
+            ).remote(
+                project_name=project_name,
+                analysis_root_dir=str(analysis_root),
+                output_dir=str(output_dir),
+                llm_model=llm_model,
+                base_project_dir=str(methods_root / project_name),
             )
-        )
 
-        pipeline.data_manager.save(
-            "descriptions.json", test_descriptions, format="json", mode="append"
+            base_payloads = list(payloads_by_project.get(project_name, []))
+            payloads: list[dict] = []
+            for p in base_payloads:
+                for abs_level in AbstractionLevel:
+                    expanded = dict(p)
+                    expanded["abstraction_level"] = abs_level.value
+                    payloads.append(expanded)
+
+            active_projects[project_name] = {
+                "actor": actor,
+                "pending": deque(payloads),
+                "inflight": set(),
+                "total": len(payloads),
+                "produced": 0,
+            }
+            if len(payloads) == 0:
+                RichLog.warn(
+                    f"No inputs for project {project_name}; will finalize immediately."
+                )
+
+    def schedule_tasks() -> None:
+        nonlocal inflight_futures
+        if len(inflight_futures) >= effective_max_inflight:
+            return
+        allowed = effective_max_inflight - len(inflight_futures)
+        if allowed <= 0:
+            return
+        per_proj_cap = max(1, int(per_proj_concurrency))
+        for pname, state in list(active_projects.items()):
+            if allowed <= 0:
+                break
+            while (
+                allowed > 0
+                and len(state["inflight"]) < per_proj_cap
+                and state["pending"]
+            ):
+                payload = state["pending"].popleft()
+                fut = state["actor"].generate_descriptions_one.remote(payload)
+                state["inflight"].add(fut)
+                inflight_futures.add(fut)
+                future_to_project[fut] = pname
+                allowed -= 1
+
+    def finalize_project_if_done(pname: str) -> None:
+        state = active_projects.get(pname)
+        if state is None:
+            return
+        if state["pending"] or state["inflight"]:
+            return
+        RichLog.info(
+            f"Project {pname} completed: total_methods={state['total']}, produced={state['produced']}"
         )
-        pipeline.data_manager.save(
-            "test2nl.csv", test2nl_entries, format="csv", mode="append"
-        )
+        active_projects.pop(pname, None)
+
+    # Launch initial projects and schedule tasks
+    launch_projects_up_to_limit()
+    schedule_tasks()
+
+    # Main scheduling loop
+    while active_projects or pending_projects or inflight_futures:
+        launch_projects_up_to_limit()
+        schedule_tasks()
+
+        if not inflight_futures:
+            # No in-flight work. Finalize completed projects, then continue
+            for pname in list(active_projects.keys()):
+                finalize_project_if_done(pname)
+            launch_projects_up_to_limit()
+            if not inflight_futures and not active_projects and not pending_projects:
+                break
+            continue
+
+        ready_refs, _ = ray.wait(list(inflight_futures), num_returns=1)
+        for ref in ready_refs:
+            project_name = future_to_project.pop(ref, None)
+            inflight_futures.discard(ref)
+            if project_name is None:
+                continue
+
+            state = active_projects.get(project_name)
+            if state is None:
+                continue
+
+            state["inflight"].discard(ref)
+
+            try:
+                result = ray.get(ref)
+            except Exception as exc:
+                RichLog.error(f"[{project_name}] Ray task failed: {exc}")
+                finalize_project_if_done(project_name)
+                continue
+
+            if result.get("success"):
+                entry_dict = result.get("entry")
+                desc_dict = result.get("description")
+                if entry_dict and desc_dict:
+                    entry_dict["id"] = start_id
+                    desc_dict["id"] = start_id
+
+                    data_manager.save(
+                        "descriptions.json", [desc_dict], format="json", mode="append"
+                    )
+                    data_manager.save(
+                        "test2nl.csv", [entry_dict], format="csv", mode="append"
+                    )
+
+                    start_id += 1
+                    state["produced"] += 1
+                else:
+                    RichLog.warn(
+                        f"[{project_name}] Received success but missing payloads; skipping."
+                    )
+            else:
+                err = result.get("error", "Unknown error")
+                RichLog.error(f"[{project_name}] Failed to generate description: {err}")
+
+            finalize_project_if_done(project_name)
+
+    # Shutdown Ray
+    try:
+        if ray.is_initialized():
+            ray.shutdown()
+    except Exception:
+        pass
 
 
 @app.command()
-def generate_descriptions_old(
+def generate_descriptions_for_entire_projects(
     base_project_dir: Annotated[
         str,
         typer.Option(
@@ -242,13 +447,6 @@ def generate_descriptions_old(
             show_default=False,
         ),
     ] = "mistralai/devstral-small",
-    evaluate: Annotated[
-        bool,
-        typer.Option(
-            help="Whether to evaluation the description for each test case.",
-            show_default=False,
-        ),
-    ] = False,
     clear_dataset: Annotated[
         bool,
         typer.Option(
@@ -275,10 +473,16 @@ def generate_descriptions_old(
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
-    output_dir = _resolve_output_dir(output_dir)
+    output_dir = Path(output_dir)
 
-    # Get all project directories in base_project_dir
-    all_projects = sorted([p for p in base_project_dir.iterdir() if p.is_dir()])
+    # Get all project directories in base_project_dir (ignore cache/hidden folders)
+    all_projects = sorted(
+        [
+            p
+            for p in base_project_dir.iterdir()
+            if p.is_dir() and p.name not in IGNORED_DIRS and not p.name.startswith(".")
+        ]
+    )
 
     if not all_projects:
         RichLog.error(f"No project directories found in {base_project_dir}")
@@ -291,23 +495,35 @@ def generate_descriptions_old(
     # Process each project separately
     for project_root in all_projects:
         project_name = project_root.name
-        _log_section(f"Processing project: {project_name}")
+        sep = "=" * 60
+        RichLog.info(f"\n{sep}")
+        RichLog.info(f"Processing project: {project_name}")
+        RichLog.info(sep)
 
         # Create project-specific output directory
         project_output_dir = output_dir / project_name
         project_output_dir.mkdir(parents=True, exist_ok=True)
 
-        _init_project_config(
+        init_config(
             project_name=project_name,
-            base_project_dir=project_root,
-            output_dir=project_output_dir,
+            base_project_dir=str(project_root),
+            output_dir=str(project_output_dir),
+            llm_provider=Provider.OPENROUTER,
             llm_model=llm_model,
+            emb_provider=None,
+            emb_model=None,
+            llm_api_key=os.getenv("OPENROUTER_API_KEY"),
+            emb_api_key=None,
+            localization_max_iters=20,
         )
 
         # Generate analysis of the current project
-        RichLog.info(f"Gathering static analysis results for {project_name}")
-        analysis = _run_analysis(
-            project_root=project_root, analysis_dir=project_output_dir, eager=True
+        analysis = CLDK(language="java").analysis(
+            project_path=project_root,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=project_output_dir,
+            eager=True,
         )
         RichLog.info(
             f"Successfully finished gathering static analysis results for {project_name}"
@@ -331,69 +547,25 @@ def generate_descriptions_old(
                 max_entries - total_entries_generated if max_entries > 0 else 0
             )
 
-            # Break early if we've reached the limit
-            if max_entries > 0 and total_entries_generated >= max_entries:
+            # Single check: stop early if no remaining entries are allowed
+            if max_entries > 0 and remaining_entries <= 0:
                 RichLog.info(
                     f"Reached maximum entries limit ({max_entries}) for {project_name}. Stopping early."
                 )
                 break
 
-            if evaluate:
-                pipeline.run_all(
-                    abs_level,
-                    regen_classes=True,
-                    max_entries=remaining_entries,
-                    only_interesting_tests=only_interesting_tests,
-                )
-                # Get the number of descriptions generated
-                try:
-                    descriptions = pipeline.data_manager.load(
-                        "descriptions.json", TestDescriptionInfo
-                    )
-                    # Count descriptions for this abstraction level and project
-                    entries_generated = len(
-                        [d for d in descriptions if d.abstraction_level == abs_level]
-                    )
-                    total_entries_generated += entries_generated
+            # Generate descriptions (non-evaluation path)
+            descriptions = pipeline.run_descriptions_of_project(
+                abs_level,
+                max_entries=remaining_entries,
+                only_interesting_tests=only_interesting_tests,
+            )
+            entries_generated = len(descriptions)
+            total_entries_generated += entries_generated
 
-                    RichLog.info(
-                        f"Generated {entries_generated} entries for {abs_level.value} abstraction level"
-                    )
-                    RichLog.info(
-                        f"Total entries generated for {project_name}: {total_entries_generated}"
-                    )
-
-                    # Break early if we've reached the limit
-                    if max_entries > 0 and total_entries_generated >= max_entries:
-                        RichLog.info(
-                            f"Reached maximum entries limit ({max_entries}) for {project_name}."
-                        )
-                        break
-                except FileNotFoundError:
-                    pass
-            else:
-                # Pass the remaining entries limit to run_descriptions
-                descriptions = pipeline.run_descriptions(
-                    abs_level,
-                    max_entries=remaining_entries,
-                    only_interesting_tests=only_interesting_tests,
-                )
-                entries_generated = len(descriptions)
-                total_entries_generated += entries_generated
-
-                RichLog.info(
-                    f"Generated {entries_generated} entries for {abs_level.value} abstraction level"
-                )
-                RichLog.info(
-                    f"Total entries generated for {project_name}: {total_entries_generated}"
-                )
-
-                # Break early if we've reached the limit
-                if max_entries > 0 and total_entries_generated >= max_entries:
-                    RichLog.info(
-                        f"Reached maximum entries limit ({max_entries}) for {project_name}."
-                    )
-                    break
+            RichLog.info(
+                f"Generated {entries_generated} at {abs_level.value}; total for {project_name}: {total_entries_generated}"
+            )
 
         final_message = f"Completed processing project: {project_name}"
         if max_entries > 0:
@@ -402,11 +574,7 @@ def generate_descriptions_old(
             )
         RichLog.info(final_message)
 
-    RichLog.info(f"\n{'='*60}")
-    RichLog.info(
-        f"Completed description generation for all {len(all_projects)} projects"
-    )
-    RichLog.info(f"{'='*60}")
+    RichLog.info(f"Completed description generation for {len(all_projects)} projects")
 
 
 @app.command()
@@ -421,17 +589,17 @@ def evaluate_localization(
     output_dir: Annotated[
         str,
         typer.Option(
-            help="Path to the output directory containing the test2nl.csv file.",
+            help="Path to the output directory for saving localization results.",
             show_default=False,
         ),
     ] = None,
-    csv_file: Annotated[
+    test2nl_file: Annotated[
         str,
         typer.Option(
-            help="Name of the CSV file containing Test2NL entries (default: test2nl.csv).",
+            help="Path to the Test2NL CSV file to evaluate (e.g., /path/to/test2nl.csv).",
             show_default=False,
         ),
-    ] = "test2nl.csv",
+    ] = None,
     llm_model: Annotated[
         str,
         typer.Option(
@@ -467,20 +635,20 @@ def evaluate_localization(
             show_default=False,
         ),
     ] = 0,
-    parallelize: Annotated[
-        bool,
-        typer.Option(
-            help="Whether to parallelize per-entry localization with Ray.",
-            show_default=False,
-        ),
-    ] = False,
-    num_workers: Annotated[
+    num_proj_parallel: Annotated[
         int,
         typer.Option(
-            help="Number of Ray workers when parallelization is enabled.",
+            help="Maximum number of projects to process concurrently.",
             show_default=True,
         ),
-    ] = 4,
+    ] = 2,
+    per_proj_concurrency: Annotated[
+        int,
+        typer.Option(
+            help="Maximum concurrent localize_one calls per project.",
+            show_default=True,
+        ),
+    ] = 2,
     localization_max_iters: Annotated[
         int,
         typer.Option(
@@ -488,25 +656,34 @@ def evaluate_localization(
             show_default=True,
         ),
     ] = 20,
+    max_inflight: Annotated[
+        int,
+        typer.Option(
+            help="Global cap on in-flight tasks across all projects (0 uses 2 * num_proj_parallel * per_proj_concurrency).",
+            show_default=True,
+        ),
+    ] = 0,
 ):
     base_project_dir = Path(base_project_dir)
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
-    output_dir = _resolve_output_dir(output_dir)
+    output_dir = Path(output_dir)
 
     if not output_dir.exists():
         raise Exception(f"Output directory {output_dir} does not exist.")
 
-    # Load Test2NL entries from CSV
-    data_manager = StructuredDataManager(output_dir)
-    csv_path = output_dir / csv_file
+    # Load Test2NL entries from the provided file path (no dependency on output_dir)
+    if test2nl_file is None:
+        raise Exception("Parameter --test2nl-file is required and was not provided.")
 
+    csv_path = Path(test2nl_file)
     if not csv_path.exists():
         raise Exception(f"CSV file {csv_path} does not exist.")
 
     RichLog.info(f"Loading Test2NL entries from {csv_path}")
-    test2nl_entries = data_manager.load(csv_file, Test2NLEntry, format="csv")
+    data_manager = StructuredDataManager(csv_path.parent)
+    test2nl_entries = data_manager.load(csv_path.name, Test2NLEntry, format="csv")
 
     # Sort entries by qualified_class_name and method_signature to group related entries together
     test2nl_entries.sort(
@@ -544,205 +721,185 @@ def evaluate_localization(
         f"Organized inputs by {len(nl2test_inputs_by_project)} projects: {list(nl2test_inputs_by_project.keys())}"
     )
 
-    # Only init ray if parallelize is enabled
-    ray_available = False
-    if parallelize:
-        try:
-            if not ray.is_initialized():
-                # Limit Ray to the requested number of workers on this node
-                ray.init(ignore_reinit_error=True, num_cpus=max(1, int(num_workers)))
-            ray_available = True
-        except Exception as exc:
-            RichLog.warn(
-                f"Ray is not available or failed to initialize ({exc}). Falling back to sequential."
-            )
-            parallelize = False
+    # Initialize Ray
+    try:
+        if not ray.is_initialized():
+            ray.init()
+    except Exception as exc:
+        raise RuntimeError(f"Failed to initialize Ray: {exc}") from exc
 
-    # Process each project separately
+    # Project scheduling using bounded in-flight tasks
     total_successful_evaluations = 0
     total_failed_evaluations = 0
-    all_localization_outputs = []
+    all_localization_outputs: list[dict] = []
 
-    for project_name, nl2test_inputs in nl2test_inputs_by_project.items():
-        _log_section(f"Processing project: {project_name}")
-
-        # Create project-specific paths
+    # Build pending projects deque
+    pending_projects = deque()
+    for project_name in nl2test_inputs_by_project.keys():
         project_root = base_project_dir / project_name
         if not (project_root.exists() and project_root.is_dir()):
             RichLog.error(
                 f"Project directory {project_root} does not exist. Skipping project {project_name}."
             )
             continue
+        pending_projects.append(project_name)
 
-        project_output_dir = output_dir / project_name
+    if not pending_projects:
+        RichLog.error("No valid projects to process. Exiting.")
+        return
 
-        # Initialize configuration for this project
-        _init_project_config(
-            project_name=project_name,
-            base_project_dir=project_root,
-            output_dir=project_output_dir,
-            llm_model=llm_model,
-            emb_model=emb_model,
-            localization_max_iters=localization_max_iters,
-        )
+    # Global scheduler state
+    active_projects: dict[str, dict] = {}
+    future_to_project: dict[ray.ObjectRef, str] = {}
+    inflight_futures: set[ray.ObjectRef] = set()
 
-        # Generate analysis for this specific project
-        RichLog.info(f"Gathering static analysis results for {project_name}")
-        analysis = _run_analysis(
-            project_root=project_root, analysis_dir=project_output_dir, eager=True
-        )
-        RichLog.info(
-            f"Successfully finished gathering static analysis results for {project_name}"
-        )
+    # Effective in-flight budget across all projects
+    effective_max_inflight = (
+        max_inflight
+        if max_inflight and max_inflight > 0
+        else 2 * max(1, int(num_proj_parallel)) * max(1, int(per_proj_concurrency))
+    )
 
-        # Process inputs for this project
-        total_inputs = len(nl2test_inputs)
-        successful_evaluations = 0
-        failed_evaluations = 0
+    def launch_projects_up_to_limit() -> None:
+        while (
+            len(active_projects) < max(1, int(num_proj_parallel)) and pending_projects
+        ):
+            project_name = pending_projects.popleft()
+            sep = "=" * 60
+            RichLog.info(f"\n{sep}")
+            RichLog.info(f"Starting actor for project: {project_name}")
+            RichLog.info(sep)
 
-        RichLog.info(
-            f"Starting localization evaluation for {total_inputs} inputs in {project_name}"
-        )
-
-        if parallelize and ray_available:
-            decomposition_mode_value = decomposition_mode.value
-
-            @ray.remote
-            def _process_one(
-                input_payload: dict,
-                project_name: str,
-                base_project_dir_str: str,
-                output_dir_str: str,
-                llm_model_str: str,
-                emb_model_str: str,
-                decomposition_mode_val: str,
-                localization_max_iters_val: int,
-            ) -> dict:
-                try:
-                    project_root_local = Path(base_project_dir_str) / project_name
-                    project_output_dir_local = Path(output_dir_str) / project_name
-
-                    # Each worker initializes its own config and loads analysis from JSON
-                    _init_project_config(
-                        project_name=project_name,
-                        base_project_dir=Path(base_project_dir_str),
-                        output_dir=project_output_dir_local,
-                        llm_model=llm_model_str,
-                        emb_model=emb_model_str,
-                        localization_max_iters=localization_max_iters_val,
-                    )
-
-                    analysis_local = _run_analysis(
-                        project_root=project_root_local,
-                        analysis_dir=project_output_dir_local,
-                        eager=False,  # Load from JSON produced earlier
-                    )
-
-                    pipeline_local = NL2TestPipeline(
-                        analysis_local,
-                        project_root_local,
-                        decomposition_mode=DecompositionMode(decomposition_mode_val),
-                    )
-
-                    nl2_input_local = NL2TestInput(**input_payload)
-                    output = pipeline_local.run_localization_evaluation_pipeline(
-                        nl2_input_local
-                    )
-                    return {"success": True, "output": output.model_dump(mode="json")}
-                except Exception as e:  # pragma: no cover - executed in Ray worker
-                    return {
-                        "success": False,
-                        "error": str(e),
-                        "input": input_payload,
-                    }
-
-            input_payloads = [x.model_dump(mode="json") for x in nl2test_inputs]
-            futures = [
-                _process_one.remote(
-                    payload,
-                    project_name,
-                    str(base_project_dir),
-                    str(output_dir),
-                    llm_model,
-                    emb_model,
-                    decomposition_mode_value,
-                    localization_max_iters,
-                )
-                for payload in input_payloads
-            ]
-
-            # Gather results
-            results = ray.get(futures)
-            for idx, result in enumerate(results, 1):
-                if result.get("success"):
-                    try:
-                        loc_output_dict = result["output"]
-                        localization_output = NL2LocalizationOutput(**loc_output_dict)
-                        all_localization_outputs.append(loc_output_dict)
-                        pretty_print(
-                            "Localized Blocks:", localization_output.localized_blocks
-                        )
-                        RichLog.info(
-                            f"Coverage score: {localization_output.coverage_score:.3f}"
-                        )
-                        successful_evaluations += 1
-                    except Exception as parse_exc:
-                        RichLog.error(
-                            f"Failed to parse output {idx}/{total_inputs}: {parse_exc}"
-                        )
-                        failed_evaluations += 1
-                else:
-                    err = result.get("error", "Unknown error")
-                    RichLog.error(f"Failed to process input {idx}: {err}")
-                    failed_evaluations += 1
-        else:
-            # Create NL2Test pipeline for this project
-            RichLog.info(f"Initializing NL2Test pipeline for {project_name}")
-            pipeline = NL2TestPipeline(
-                analysis, project_root, decomposition_mode=decomposition_mode
+            actor = LocalizationActor.options(
+                max_concurrency=max(1, int(per_proj_concurrency))
+            ).remote(
+                project_name=project_name,
+                base_project_dir=str(base_project_dir),
+                output_dir=str(output_dir),
+                llm_model=llm_model,
+                emb_model=emb_model,
+                decomposition_mode=decomposition_mode.value,
+                localization_max_iters=localization_max_iters,
             )
 
-            for i, nl2test_input in enumerate(nl2test_inputs, 1):
+            payloads = [
+                x.model_dump(mode="json")
+                for x in nl2test_inputs_by_project.get(project_name, [])
+            ]
+            active_projects[project_name] = {
+                "actor": actor,
+                "pending": deque(payloads),
+                "inflight": set(),
+                "total": len(payloads),
+                "success": 0,
+                "failed": 0,
+            }
+            if len(payloads) == 0:
+                RichLog.warn(
+                    f"No inputs for project {project_name}; will finalize immediately."
+                )
+
+    def schedule_tasks() -> None:
+        # Fill global in-flight capacity while respecting per-project caps
+        nonlocal inflight_futures
+        if len(inflight_futures) >= effective_max_inflight:
+            return
+        allowed = effective_max_inflight - len(inflight_futures)
+        if allowed <= 0:
+            return
+        per_proj_cap = max(1, int(per_proj_concurrency))
+        for pname, state in list(active_projects.items()):
+            if allowed <= 0:
+                break
+            while (
+                allowed > 0
+                and len(state["inflight"]) < per_proj_cap
+                and state["pending"]
+            ):
+                payload = state["pending"].popleft()
+                fut = state["actor"].localize_one.remote(payload)
+                state["inflight"].add(fut)
+                inflight_futures.add(fut)
+                future_to_project[fut] = pname
+                allowed -= 1
+
+    def finalize_project_if_done(pname: str) -> None:
+        nonlocal total_successful_evaluations, total_failed_evaluations
+        state = active_projects.get(pname)
+        if state is None:
+            return
+        if state["pending"] or state["inflight"]:
+            return
+        total_inputs = state["total"]
+        successful_evaluations = state["success"]
+        failed_evaluations = state["failed"]
+        RichLog.info(
+            f"Project {pname} completed: total={total_inputs}, success={successful_evaluations}, failed={failed_evaluations}"
+        )
+        total_successful_evaluations += successful_evaluations
+        total_failed_evaluations += failed_evaluations
+        active_projects.pop(pname, None)
+
+    # Launch initial projects and schedule tasks
+    launch_projects_up_to_limit()
+    schedule_tasks()
+
+    # Main scheduling loop
+    while active_projects or pending_projects or inflight_futures:
+        launch_projects_up_to_limit()
+        schedule_tasks()
+
+        if not inflight_futures:
+            # No in-flight work; finalize completed projects, then continue
+            for pname in list(active_projects.keys()):
+                finalize_project_if_done(pname)
+            launch_projects_up_to_limit()
+            if not inflight_futures and not active_projects and not pending_projects:
+                break
+            continue
+
+        ready_refs, _ = ray.wait(list(inflight_futures), num_returns=1)
+        for ref in ready_refs:
+            project_name = future_to_project.pop(ref, None)
+            inflight_futures.discard(ref)
+            if project_name is None:
+                continue
+            state = active_projects.get(project_name)
+            if state is None:
+                continue
+            state["inflight"].discard(ref)
+            try:
+                result = ray.get(ref)
+            except Exception as exc:
+                RichLog.error(f"[{project_name}] Ray task failed: {exc}")
+                state["failed"] += 1
+                finalize_project_if_done(project_name)
+                continue
+
+            if result.get("success"):
                 try:
-                    RichLog.info(
-                        f"Processing input {i}/{total_inputs}: {nl2test_input.qualified_class_name}.{nl2test_input.method_signature} ({nl2test_input.abstraction_level})"
-                    )
-
-                    # Run localization evaluation pipeline
-                    localization_output = pipeline.run_localization_evaluation_pipeline(
-                        nl2test_input
-                    )
-                    all_localization_outputs.append(
-                        localization_output.model_dump(mode="json")
-                    )
-
+                    loc_output_dict = result["output"]
+                    localization_output = NL2LocalizationOutput(**loc_output_dict)
+                    all_localization_outputs.append(loc_output_dict)
                     pretty_print(
                         "Localized Blocks:", localization_output.localized_blocks
                     )
-                    RichLog.info(
-                        f"Coverage score: {localization_output.coverage_score:.3f}"
+                    state["success"] += 1
+                except Exception as parse_exc:
+                    RichLog.error(
+                        f"[{project_name}] Failed to parse output: {parse_exc}"
                     )
-                    successful_evaluations += 1
+                    state["failed"] += 1
+            else:
+                err = result.get("error", "Unknown error")
+                RichLog.error(f"[{project_name}] Failed to process input: {err}")
+                state["failed"] += 1
 
-                except Exception as e:
-                    RichLog.error(f"Failed to process input {i}: {str(e)}")
-                    failed_evaluations += 1
-                    continue
+            finalize_project_if_done(project_name)
 
-        RichLog.info(f"Project {project_name} evaluation completed:")
-        RichLog.info(f"  - Total inputs: {total_inputs}")
-        RichLog.info(f"  - Successful evaluations: {successful_evaluations}")
-        RichLog.info(f"  - Failed evaluations: {failed_evaluations}")
-
-        total_successful_evaluations += successful_evaluations
-        total_failed_evaluations += failed_evaluations
-
-    RichLog.info(f"\n{'='*60}")
-    RichLog.info(f"Overall localization evaluation completed:")
-    RichLog.info(f"  - Total projects processed: {len(nl2test_inputs_by_project)}")
-    RichLog.info(f"  - Total successful evaluations: {total_successful_evaluations}")
-    RichLog.info(f"  - Total failed evaluations: {total_failed_evaluations}")
-    RichLog.info(f"{'='*60}")
+    RichLog.info(
+        f"Overall localization: projects={len(nl2test_inputs_by_project)}, success={total_successful_evaluations}, failed={total_failed_evaluations}"
+    )
 
     if save_results and all_localization_outputs:
         # Save all localization outputs to a single file
@@ -755,13 +912,12 @@ def evaluate_localization(
     elif save_results:
         RichLog.info(f"No successful evaluations to save")
 
-    # Shutdown Ray if we started it
-    if parallelize and ray_available:
-        try:
-            if ray.is_initialized():
-                ray.shutdown()
-        except Exception:
-            pass
+    # Shutdown Ray
+    try:
+        if ray.is_initialized():
+            ray.shutdown()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

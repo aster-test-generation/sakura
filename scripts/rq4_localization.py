@@ -1,4 +1,3 @@
-import os
 import sys
 import subprocess
 from pathlib import Path
@@ -8,25 +7,27 @@ from pathlib import Path
 SRC_DIR = "../src"
 BASE_PROJECT_DIR = "../tests/resources"
 OUTPUT_DIR = "../tests/output"
+CSV_FILE = "../tests/output/resources/test2nl/test2nl.csv"
 
 # CLI arguments
-CSV_FILE = "spring-petclinic/test2nl.csv"
-MAX_ENTRIES = 90  # Note: 0 = unlimited
+MAX_ENTRIES = 0  # Note: 0 = unlimited
 LLM_MODEL = "google/gemini-2.5-flash"
 
 # Localization settings
-LOCALIZATION_MAX_ITERS = 30
+LOCALIZATION_MAX_ITERS = 50
 
-# Parallelization controls
-PARALLELIZE = True
-NUM_WORKERS = 10
-
+# Decomposition mode (must match DecompositionMode enum values)
 _ALLOWED_DECOMP_MODES = {"grammatical", "gherkin"}
 DECOMPOSITION_MODE = "gherkin"
 if DECOMPOSITION_MODE not in _ALLOWED_DECOMP_MODES:
     raise ValueError(
         f"Invalid DECOMPOSITION_MODE='{DECOMPOSITION_MODE}'. Choose one of {_ALLOWED_DECOMP_MODES}."
     )
+
+# Parallelization defaults
+NUM_PROJ_PARALLEL = 2
+PER_PROJ_CONCURRENCY = 10
+MAX_INFLIGHT = 0  # 0 => unbounded (uses num_proj_parallel * per_proj_concurrency)
 
 
 def main() -> None:
@@ -36,7 +37,7 @@ def main() -> None:
     src_dir = (script_dir / SRC_DIR).resolve()
     base_project_dir = (script_dir / BASE_PROJECT_DIR).resolve()
     output_dir = (script_dir / OUTPUT_DIR).resolve()
-    csv_file = CSV_FILE
+    test2nl_file = (script_dir / CSV_FILE).resolve()
 
     # Verify paths exist
     if not src_dir.is_dir():
@@ -65,38 +66,38 @@ def main() -> None:
         str(base_project_dir),
         "--output-dir",
         str(output_dir),
-        "--csv-file",
-        csv_file,
+        "--test2nl-file",
+        str(test2nl_file),
         "--llm-model",
         LLM_MODEL,
+        "--decomposition-mode",
+        DECOMPOSITION_MODE,
         "--localization-max-iters",
         str(LOCALIZATION_MAX_ITERS),
+        "--num-proj-parallel",
+        str(NUM_PROJ_PARALLEL),
+        "--per-proj-concurrency",
+        str(PER_PROJ_CONCURRENCY),
+        "--max-inflight",
+        str(MAX_INFLIGHT),
     ]
 
     if MAX_ENTRIES > 0:
         cmd.extend(["--max-entries", str(MAX_ENTRIES)])
 
-    # Always pass decomposition mode (enum accepted by Typer via its string value)
-    cmd.extend(["--decomposition-mode", DECOMPOSITION_MODE])
-
-    # Append parallelization flags
-    if PARALLELIZE:
-        cmd.append("--parallelize")
-        cmd.extend(["--num-workers", str(NUM_WORKERS)])
-
-    print(f"Running RQ4 localization evaluation...", flush=True)
+    print("Running RQ4 localization evaluation...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)
     print(f"Command: {' '.join(cmd)}", flush=True)
 
     try:
-        result = subprocess.run(
+        subprocess.run(
             cmd,
             check=True,
             cwd=src_dir,
         )
         print("RQ4 localization evaluation completed successfully!", flush=True)
     except subprocess.CalledProcessError as e:
-        print(f"RQ4 localization evaluation failed!", flush=True)
+        print("RQ4 localization evaluation failed!", flush=True)
         print(f"Return code: {e.returncode}")
         sys.exit(1)
 

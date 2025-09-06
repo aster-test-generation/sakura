@@ -49,7 +49,7 @@ class Pipeline:
                 continue
         return max_id + 1
 
-    def run_descriptions(
+    def run_descriptions_of_project(
         self,
         abs_level: AbstractionLevel,
         num_trials: int = 1,
@@ -146,3 +146,21 @@ class Pipeline:
 
         # Do not save; return the generated data and the next available ID
         return test2nl_entries, test_descriptions, next_id
+
+    def run_description_of_method(
+        self, select_method: Method, id: int, abstraction: AbstractionLevel
+    ) -> tuple[Test2NLEntry | None, TestDescriptionInfo | None]:
+        test_description = self.desc_generator.generate_for_method(
+            select_method.method_signature,
+            select_method.qualified_class_name,
+            abstraction,
+        )
+        if not test_description:
+            return None, None
+
+        test_description.id = id
+
+        entry = Test2NLEntry.from_test_description_info(
+            test_description, self.project_name
+        )
+        return entry, test_description

@@ -1,0 +1,468 @@
+{
+  "dataset_name": "commons-bsf",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetSafeString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getSafeString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetCommaListFromVector()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getCommaListFromVector(java.util.Vector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetClassName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getClassName(java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.EngineUtilsTest",
+      "method_signature": "testGetTypeSignatureString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.EngineUtils",
+          "focal_method_names": [
+            "getTypeSignatureString(java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetContentAsReader()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getContentAsReader(java.net.URL)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetContentAsString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getContentAsString(java.net.URL)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testClassNameToVarName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "classNameToVarName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetValidIdentifierName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getValidIdentifierName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testGetChars()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getChars(int, char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testIsValidPackageName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "isValidPackageName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.EngineUtilsTest",
+      "method_signature": "testCallBeanMethod()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.EngineUtils",
+          "focal_method_names": [
+            "callBeanMethod(java.lang.Object, java.lang.String, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.EngineUtilsTest",
+      "method_signature": "testCreateBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.EngineUtils",
+          "focal_method_names": [
+            "createBean(java.lang.String, java.lang.Object[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testCleanString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "cleanString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.IOUtilsTest",
+      "method_signature": "testGetStringFromReader()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.IOUtils",
+          "focal_method_names": [
+            "getStringFromReader(java.io.Reader)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testRegisterEngine()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "isLanguageRegistered(java.lang.String)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.util.StringUtilsTest",
+      "method_signature": "testIsValidIdentifierName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.util.StringUtils",
+          "focal_method_names": [
+            "getValidIdentifierName(java.lang.String)",
+            "isValidIdentifierName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testEval()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "eval(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testGetLangFromFileName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "getLangFromFilename(java.lang.String)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testIexec()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "iexec(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testEval()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "eval(java.lang.String, java.lang.String, int, int, java.lang.Object)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testExec()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "exec(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testBSFManagerEval()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)",
+            "eval(java.lang.String, java.lang.String, int, int, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testExec()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "exec(java.lang.String, java.lang.String, int, int, java.lang.Object)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testIexec()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "iexec(java.lang.String, java.lang.String, int, int, java.lang.Object)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testUndeclareBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)",
+            "declareBean(java.lang.String, java.lang.Object, java.lang.Class)",
+            "undeclareBean(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "eval(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testDeclareBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)",
+            "declareBean(java.lang.String, java.lang.Object, java.lang.Class)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "eval(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testRegisterBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)",
+            "registerBean(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "eval(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testUndeclareBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "undeclareBean(java.lang.String)",
+            "lookupBean(java.lang.String)",
+            "declareBean(java.lang.String, java.lang.Object, java.lang.Class)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testDeclareBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "lookupBean(java.lang.String)",
+            "declareBean(java.lang.String, java.lang.Object, java.lang.Class)",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testUnregisterBean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)",
+            "registerBean(java.lang.String, java.lang.Object)",
+            "unregisterBean(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "eval(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.BSFTest",
+      "method_signature": "testTerminate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)",
+            "terminate()",
+            "registerScriptingEngine(java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bsf.engines.JaclTest",
+      "method_signature": "testCall()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bsf.BSFManager",
+          "focal_method_names": [
+            "loadScriptingEngine(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bsf.BSFEngine",
+          "focal_method_names": [
+            "call(java.lang.Object, java.lang.String, java.lang.Object[])",
+            "exec(java.lang.String, int, int, java.lang.Object)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [],
+  "tests_with_more_than_ten_focal_methods": []
+}

@@ -1,0 +1,1710 @@
+{
+  "dataset_name": "commons-imaging",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PngImageParserTest",
+      "method_signature": "testPalette()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.ImageInfo",
+          "focal_method_names": [
+            "usesPalette()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.gif.GifReadTest",
+      "method_signature": "testBufferedImagesForAnimatedImageGif(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getAllBufferedImages(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorHsvTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorHsv",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffBigTiffTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+      "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.ImageFormats",
+          "focal_method_names": [
+            "getName()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.psd.dataparsers.DataParserGrayscaleTest",
+      "method_signature": "testGetBasicChannelsCount()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.psd.dataparsers.DataParserGrayscale",
+          "focal_method_names": [
+            "getBasicChannelsCount()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.ImageInfoTest",
+      "method_signature": "testImageInfo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.ImageInfo",
+          "focal_method_names": [
+            "usesPalette()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.dcx.DcxReadTest",
+      "method_signature": "testImageMetadata(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getMetadata(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.gif.GifReadTest",
+      "method_signature": "testConvertInvalidDisposalMethodValues()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.gif.GifImageParser",
+          "focal_method_names": [
+            "createDisposalMethodFromIntValue(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.ImageInfoTest",
+      "method_signature": "testToStringWithComments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.ImageInfo",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffImageParserTest",
+      "method_signature": "testOssFuzzIssue53669()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.ImageInfoTest",
+      "method_signature": "testToStringErrorWhenCommentsIsNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.ImageInfo",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.JpegReadTest",
+      "method_signature": "testUncaughtExceptionOssFuzz33458()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageParser",
+          "focal_method_names": [
+            "getBufferedImage(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.jpeg.JpegImagingParameters)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorXyzTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorXyz",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeRationalTest",
+      "method_signature": "testWriteDataWithNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.fieldtypes.FieldTypeRational",
+          "focal_method_names": [
+            "writeData(java.lang.Object, java.nio.ByteOrder)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest",
+      "method_signature": "testFullyTransparent32bitRGBA()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest.GeneratorFor32BitBitmaps",
+          "focal_method_names": [
+            "generate32bitRGBABitmap(int, int, int, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest",
+      "method_signature": "testBitfieldCompression()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest.GeneratorFor32BitBitmaps",
+          "focal_method_names": [
+            "generate32bitRGBABitmap(int, int, int, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.ico.IcoReadTest",
+      "method_signature": "testImageInfo(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getImageInfo(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffSubImageTest",
+      "method_signature": "testSubImage()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageParser",
+          "focal_method_names": [
+            "writeImage(java.awt.image.BufferedImage, java.io.OutputStream, org.apache.commons.imaging.formats.tiff.TiffImagingParameters)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorCieLuvTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorCieLuv",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.exif.AbstractSpecificExifTagTest",
+      "method_signature": "testAllImages(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getMetadata(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.ImageMetadata",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageMetadata",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+          "focal_method_names": [
+            "getAllFields()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.decoder.JpegDecoderTest",
+      "method_signature": "testDecodeBadFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.test.TestResources",
+          "focal_method_names": [
+            "resourceToFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PhotometricInterpreterFloatTest",
+      "method_signature": "testGetMaxXY()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PhotometricInterpreterFloat",
+          "focal_method_names": [
+            "interpretPixel(org.apache.commons.imaging.common.ImageBuilder, int[], int, int)",
+            "getMaxXY()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PngCrcTest",
+      "method_signature": "testCrc()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.png.PngCrc",
+          "focal_method_names": [
+            "crc(byte[], int)",
+            "startPartialCrc(byte[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.specific.JpegImageParserTest",
+      "method_signature": "testGetBufferedImage10()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageParser",
+          "focal_method_names": [
+            "getBufferedImage(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.jpeg.JpegImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffRasterDataTest",
+      "method_signature": "testGetValue2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "getValue(int, int, int)",
+            "getIntValue(int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffReadTest",
+      "method_signature": "testReadDirectories()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.FormatCompliance",
+          "focal_method_names": [
+            "getDefault()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest",
+      "method_signature": "testBadICONDIRENTRYIcons()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest.BitmapGenerator",
+          "focal_method_names": [
+            "generateBitmap(int, int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest.BitmapGenerator",
+          "focal_method_names": [
+            "generateBitmap(int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.webp.WebPMetadataTest",
+      "method_signature": "testReadXmp()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.webp.WebPImageParser",
+          "focal_method_names": [
+            "getDefaultParameters()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.bmp.BmpRoundtripTest",
+      "method_signature": "testSmallBlackPixels()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(byte[])",
+            "writeImageToBytes(java.awt.image.BufferedImage, org.apache.commons.imaging.ImageFormat)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.common.RationalNumberTest",
+      "method_signature": "testRationalNumber(double)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.common.RationalNumber",
+          "focal_method_names": [
+            "doubleValue()",
+            "valueOf(double)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PhotometricInterpreterFloatTest",
+      "method_signature": "testInterpretPixel()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PhotometricInterpreterFloat",
+          "focal_method_names": [
+            "interpretPixel(org.apache.commons.imaging.common.ImageBuilder, int[], int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.ImageBuilder",
+          "focal_method_names": [
+            "getRgb(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcTypeLookupTest",
+      "method_signature": "testGetIptcTypeWithPositive()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.iptc.IptcType",
+          "focal_method_names": [
+            "getType()",
+            "getName()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PngWriteReadTest",
+      "method_signature": "testTransparency()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "writeImageToBytes(java.awt.image.BufferedImage, org.apache.commons.imaging.ImageFormat)",
+            "getImageInfo(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.bmp.BmpRoundtripTest",
+      "method_signature": "testSmallRedPixels()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(byte[])",
+            "writeImageToBytes(java.awt.image.BufferedImage, org.apache.commons.imaging.ImageFormat)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PngWriteReadTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(byte[])",
+            "writeImageToBytes(java.awt.image.BufferedImage, org.apache.commons.imaging.ImageFormat)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest",
+      "method_signature": "testColorsUsed()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest.BitmapGenerator",
+          "focal_method_names": [
+            "generateBitmap(int, int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.ico.IcoRoundtripTest.BitmapGenerator",
+          "focal_method_names": [
+            "generateBitmap(int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffLzwTest",
+      "method_signature": "testTiffImageData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.mylzw.MyLzwDecompressor",
+          "focal_method_names": [
+            "decompress(java.io.InputStream, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.mylzw.MyLzwCompressor",
+          "focal_method_names": [
+            "compress(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.webp.WebPReadTest",
+      "method_signature": "testBufferedImageNotSupported()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.webp.WebPImageParser",
+          "focal_method_names": [
+            "getBufferedImage(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.webp.WebPImagingParameters)",
+            "getDefaultParameters()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.webp.WebPReadTest",
+      "method_signature": "testParser()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.webp.WebPImageParser",
+          "focal_method_names": [
+            "getDefaultExtension()",
+            "getName()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PngMultipleRoundtripTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.internal.Debug",
+          "focal_method_names": [
+            "debug()",
+            "debug(java.lang.String, java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)",
+            "writeImage(java.awt.image.BufferedImage, java.io.File, org.apache.commons.imaging.ImageFormat)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PhysicalScaleTest",
+      "method_signature": "testCreateFromMeters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.png.PhysicalScale",
+          "focal_method_names": [
+            "createFromMeters(double, double)",
+            "isInMeters()",
+            "isInRadians()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.icns.IcnsRoundTripTest",
+      "method_signature": "test8BPPIconNoMask()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.InputStream, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.AbstractBinaryOutputStream",
+          "focal_method_names": [
+            "write4Bytes(int)",
+            "bigEndian(java.io.OutputStream)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorConversionsTest",
+      "method_signature": "testRgbToHsl()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorConversions",
+          "focal_method_names": [
+            "convertHslToRgb(org.apache.commons.imaging.color.ColorHsl)",
+            "convertRgbToHsl(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.internal.Debug",
+          "focal_method_names": [
+            "debug(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.JpegReadTest",
+      "method_signature": "test(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageParser",
+          "focal_method_names": [
+            "getExifMetadata(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.tiff.TiffImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)",
+            "getImageInfo(java.io.File)",
+            "getIccProfile(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffReadTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)",
+            "getImageInfo(java.io.File)",
+            "getMetadata(java.io.File)",
+            "getIccProfile(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffRasterDataIntTest",
+      "method_signature": "testSetValue2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "setIntValue(int, int, int, int)",
+            "getValue(int, int, int)",
+            "getIntValue(int, int, int)",
+            "setValue(int, int, int, float)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PngWriteReadTest",
+      "method_signature": "testPhysicalScaleMeters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.png.PngImageParser",
+          "focal_method_names": [
+            "writeImage(java.awt.image.BufferedImage, java.io.OutputStream, org.apache.commons.imaging.formats.png.PngImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.png.PngImageInfo",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.png.PhysicalScale",
+          "focal_method_names": [
+            "createFromMeters(double, double)",
+            "isInMeters()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.webp.WebPMetadataTest",
+      "method_signature": "testReadMetadata()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.webp.WebPImageParser",
+          "focal_method_names": [
+            "getMetadata(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.webp.WebPImagingParameters)",
+            "getDefaultParameters()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.webp.WebPImageMetadata",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+          "focal_method_names": [
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.psd.PsdReadTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)",
+            "getImageInfo(java.io.File)",
+            "getMetadata(java.io.File)",
+            "getIccProfile(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.wbmp.WbmpReadTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)",
+            "getImageInfo(java.io.File)",
+            "getMetadata(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.png.PhysicalScaleTest",
+      "method_signature": "testCreateFromRadians()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.png.PhysicalScale",
+          "focal_method_names": [
+            "createFromRadians(double, double)",
+            "isInMeters()",
+            "isInRadians()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.exif.MicrosoftTagTest",
+      "method_signature": "testRewrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+          "focal_method_names": [
+            "getOutputSet()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoXpString, boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter",
+          "focal_method_names": [
+            "updateExifMetadataLossy(byte[], java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "removeField(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoXpString, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.bmp.BmpWriterRgbTest",
+      "method_signature": "testGetImageData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.bmp.BmpWriterRgb",
+          "focal_method_names": [
+            "getPaletteSize()",
+            "getImageData(java.awt.image.BufferedImage)",
+            "getBitsPerPixel()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.icns.IcnsRoundTripTest",
+      "method_signature": "test1BPPIconMaskVersus8BPPMask()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.InputStream, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.AbstractBinaryOutputStream",
+          "focal_method_names": [
+            "write4Bytes(int)",
+            "bigEndian(java.io.OutputStream)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffRasterDataTest",
+      "method_signature": "testSetValue2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "setIntValue(int, int, int, int)",
+            "getValue(int, int, int)",
+            "getIntValue(int, int, int)",
+            "setValue(int, int, int, float)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.pam.PamReadTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)",
+            "getImageInfo(java.io.File)",
+            "getMetadata(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.common.RationalNumberTest",
+      "method_signature": "testSpecialRationalNumber()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.common.RationalNumber",
+          "focal_method_names": [
+            "negate()",
+            "longValue()",
+            "intValue()",
+            "floatValue()",
+            "doubleValue()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.icns.IcnsRoundTripTest",
+      "method_signature": "test8BPPIcon8BPPMaskVersus1BPPMask()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.InputStream, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.AbstractBinaryOutputStream",
+          "focal_method_names": [
+            "write4Bytes(int)",
+            "bigEndian(java.io.OutputStream)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffRasterDataTest",
+      "method_signature": "testSetValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "setIntValue(int, int, int)",
+            "getValue(int, int)",
+            "setValue(int, int, float)",
+            "getIntValue(int, int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.webp.WebPDumpTest",
+      "method_signature": "testDump(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.webp.WebPImageParser",
+          "focal_method_names": [
+            "dumpImageFile(java.io.PrintWriter, org.apache.commons.imaging.bytesource.ByteSource)",
+            "getMetadata(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.webp.WebPImagingParameters)",
+            "getDefaultParameters()",
+            "getImageSize(org.apache.commons.imaging.bytesource.ByteSource, org.apache.commons.imaging.formats.webp.WebPImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getXmpXml(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffCcittTest",
+      "method_signature": "testAll5x2Compressions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.itu_t4.T4AndT6Compression",
+          "focal_method_names": [
+            "compressT4_1D(byte[], int, int, boolean)",
+            "compressT4_2D(byte[], int, int, boolean, int)",
+            "decompressT4_2D(byte[], int, int, boolean)",
+            "decompressT6(byte[], int, int)",
+            "compressModifiedHuffman(byte[], int, int)",
+            "decompressT4_1D(byte[], int, int, boolean)",
+            "decompressModifiedHuffman(byte[], int, int)",
+            "compressT6(byte[], int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.roundtrip.NullParametersRoundtripTest",
+      "method_signature": "testNullParametersRoundtrip(org.apache.commons.imaging.roundtrip.FormatInfo)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.roundtrip.FormatInfo",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getIccProfile(java.io.InputStream, java.lang.String)",
+            "getMetadata(java.io.InputStream, java.lang.String)",
+            "writeImage(java.awt.image.BufferedImage, java.io.OutputStream, org.apache.commons.imaging.ImageFormat)",
+            "getImageSize(java.io.InputStream, java.lang.String)",
+            "getBufferedImage(java.io.InputStream, java.lang.String)",
+            "getImageInfo(java.io.InputStream, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.bytesource.ByteSourceImageTest",
+      "method_signature": "test(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.ImageFormat",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getImageSize(java.io.File)",
+            "getBufferedImage(byte[])",
+            "getImageSize(byte[])",
+            "getIccProfileBytes(java.io.File)",
+            "getBufferedImage(java.io.File)",
+            "getIccProfileBytes(byte[])",
+            "guessFormat(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.AbstractImageParser",
+          "focal_method_names": [
+            "getImageInfo(byte[], org.apache.commons.imaging.ImagingParameters<T>)",
+            "getImageInfo(java.io.File, org.apache.commons.imaging.ImagingParameters<T>)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorConversionsTest",
+      "method_signature": "testRgbToDin99o()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorConversions",
+          "focal_method_names": [
+            "convertDin99oLabToCieLab(org.apache.commons.imaging.color.ColorDin99Lab)",
+            "convertCieLabToDin99oLab(org.apache.commons.imaging.color.ColorCieLab)",
+            "convertXyzToCieLab(org.apache.commons.imaging.color.ColorXyz)",
+            "convertXyzToRgb(org.apache.commons.imaging.color.ColorXyz)",
+            "convertCieLabToXyz(org.apache.commons.imaging.color.ColorCieLab)",
+            "convertRgbToXyz(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffFloatingPointRoundTripTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort, short)",
+            "setTiffImageData(org.apache.commons.imaging.formats.tiff.AbstractTiffImageData)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffImageWriterLossy",
+          "focal_method_names": [
+            "write(java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.FormatCompliance",
+          "focal_method_names": [
+            "getDefault()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getTiffImage(java.nio.ByteOrder, org.apache.commons.imaging.formats.tiff.TiffImagingParameters)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffFloatingPointReadTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.FormatCompliance",
+          "focal_method_names": [
+            "getDefault()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getRasterData(org.apache.commons.imaging.formats.tiff.TiffImagingParameters)",
+            "getTiffImage(java.nio.ByteOrder, org.apache.commons.imaging.formats.tiff.TiffImagingParameters)",
+            "hasTiffFloatingPointRasterData()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "getValue(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.photometricinterpreters.floatingpoint.PhotometricInterpreterFloat",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffAlphaRoundTripTest",
+      "method_signature": "testExtraSamples()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort, short)",
+            "setTiffImageData(org.apache.commons.imaging.formats.tiff.AbstractTiffImageData)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffImageWriterLossy",
+          "focal_method_names": [
+            "write(java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.Imaging",
+          "focal_method_names": [
+            "getBufferedImage(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffFloatingPointMultivariableTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort, short)",
+            "setTiffImageData(org.apache.commons.imaging.formats.tiff.AbstractTiffImageData)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffImageWriterLossy",
+          "focal_method_names": [
+            "write(java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.constants.TiffPlanarConfiguration",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.FormatCompliance",
+          "focal_method_names": [
+            "getDefault()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getRasterData(org.apache.commons.imaging.formats.tiff.TiffImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "getValue(int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorConversionsTest",
+      "method_signature": "testRgbToDin99b()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorConversions",
+          "focal_method_names": [
+            "convertXyzToCieLab(org.apache.commons.imaging.color.ColorXyz)",
+            "convertXyzToRgb(org.apache.commons.imaging.color.ColorXyz)",
+            "convertCieLabToXyz(org.apache.commons.imaging.color.ColorCieLab)",
+            "convertCieLabToDin99bLab(org.apache.commons.imaging.color.ColorCieLab)",
+            "convertRgbToXyz(int)",
+            "convertDin99bLabToCieLab(org.apache.commons.imaging.color.ColorDin99Lab)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.exif.ExifRewriteTest",
+      "method_signature": "testInsert()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.TiffMetadataItem",
+          "focal_method_names": [
+            "getTiffField()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageMetadata",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.exif.ExifRewriteTest",
+      "method_signature": "testRewriteLossy()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageMetadata",
+          "focal_method_names": [
+            "dump()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+          "focal_method_names": [
+            "getDirectories()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.TiffMetadataItem",
+          "focal_method_names": [
+            "getTiffField()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffRoundTripInt32Test",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort, short)",
+            "setTiffImageData(org.apache.commons.imaging.formats.tiff.AbstractTiffImageData)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffImageWriterLossy",
+          "focal_method_names": [
+            "write(java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.FormatCompliance",
+          "focal_method_names": [
+            "getDefault()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getRasterData(org.apache.commons.imaging.formats.tiff.TiffImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "getIntData()",
+            "getIntValue(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.exif.ExifRewriteTest",
+      "method_signature": "testRewriteLossless()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageMetadata",
+          "focal_method_names": [
+            "dump()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+          "focal_method_names": [
+            "getDirectories()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.ImageMetadata.ImageMetadataItem",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffField",
+          "focal_method_names": [
+            "getFieldType()",
+            "getByteArrayValue()",
+            "isLocalValue()",
+            "getBytesLength()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.TiffMetadataItem",
+          "focal_method_names": [
+            "getTiffField()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffShortIntRoundTripTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort, short)",
+            "setTiffImageData(org.apache.commons.imaging.formats.tiff.AbstractTiffImageData)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffImageWriterLossy",
+          "focal_method_names": [
+            "write(java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "file(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.FormatCompliance",
+          "focal_method_names": [
+            "getDefault()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getRasterData(org.apache.commons.imaging.formats.tiff.TiffImagingParameters)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.AbstractTiffRasterData",
+          "focal_method_names": [
+            "getIntData()",
+            "getIntValue(int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.exif.ExifRewriterRoundtripTest",
+      "method_signature": "updateExifMetadataLossless_copyWithoutChanges_TiffOutputSetsAreIdentical(java.io.File)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageMetadata",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+          "focal_method_names": [
+            "getOutputSet()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputSet",
+          "focal_method_names": [
+            "addDirectory(org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "findField(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "findField(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "findField(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "findField(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputField",
+          "focal_method_names": [
+            "getData()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputField",
+          "focal_method_names": [
+            "getData()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputField",
+          "focal_method_names": [
+            "getData()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputField",
+          "focal_method_names": [
+            "getData()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputField",
+          "focal_method_names": [
+            "getData()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter",
+          "focal_method_names": [
+            "updateExifMetadataLossless(java.io.File, java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.color.ColorConversionsTest",
+      "method_signature": "testXyz()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.color.ColorConversions",
+          "focal_method_names": [
+            "convertCieLabToCieLch(org.apache.commons.imaging.color.ColorCieLab)",
+            "convertHunterLabToXyz(org.apache.commons.imaging.color.ColorHunterLab)",
+            "convertXyzToCieLab(org.apache.commons.imaging.color.ColorXyz)",
+            "convertXyzToCieLuv(org.apache.commons.imaging.color.ColorXyz)",
+            "convertXyzToRgb(org.apache.commons.imaging.color.ColorXyz)",
+            "convertCieLabToXyz(org.apache.commons.imaging.color.ColorCieLab)",
+            "convertCieLchToCieLab(org.apache.commons.imaging.color.ColorCieLch)",
+            "convertRgbToXyz(int)",
+            "convertXyzToHunterLab(org.apache.commons.imaging.color.ColorXyz)",
+            "convertCieLuvToXyz(org.apache.commons.imaging.color.ColorCieLuv)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.internal.Debug",
+          "focal_method_names": [
+            "debug(java.lang.String)",
+            "debug(java.lang.String, java.lang.Object)",
+            "debug()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.imaging.formats.tiff.TiffReadWriteTagsTest",
+      "method_signature": "testReadWriteTags()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory",
+          "focal_method_names": [
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii, java.lang.String[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational, org.apache.commons.imaging.common.RationalNumber)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoGpsText, java.lang.String)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat, float)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRationals, org.apache.commons.imaging.common.RationalNumber[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational, org.apache.commons.imaging.common.RationalNumber)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong, int)",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, short[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDoubles, double[])",
+            "add(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong, int[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.write.TiffImageWriterLossy",
+          "focal_method_names": [
+            "write(java.io.OutputStream, org.apache.commons.imaging.formats.tiff.write.TiffOutputSet)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffReader",
+          "focal_method_names": [
+            "readDirectories(org.apache.commons.imaging.bytesource.ByteSource, boolean, org.apache.commons.imaging.FormatCompliance)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.bytesource.ByteSource",
+          "focal_method_names": [
+            "array(byte[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+          "focal_method_names": [
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDoubles, boolean)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational)",
+            "getSingleFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShorts, boolean)",
+            "getSingleFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRationals, boolean)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoGpsText, boolean)",
+            "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.imaging.common.RationalNumber",
+          "focal_method_names": [
+            "doubleValue()"
+          ]
+        }
+      ]
+    }
+  ]
+}

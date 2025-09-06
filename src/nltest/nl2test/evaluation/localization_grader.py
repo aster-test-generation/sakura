@@ -92,16 +92,7 @@ class LocalizationGrader:
             len(optimal_coverage) / len(focal_methods) if focal_methods else 0.0
         )
 
-        # Compute identified methods and TP/FP/FN
-        identified_methods = self._collect_identified_methods(atomic_blocks)
-        extra_metrics = self._compute_confusion_counts(
-            focal_methods, optimal_coverage, identified_methods
-        )
-
-        # Print basic results including TP/FP/FN
-        self._print_evaluation_results(
-            focal_methods, optimal_coverage, coverage_score, extra_metrics
-        )
+        # No early printing; detailed metrics are computed only for detailed output
 
         # Return detailed results if requested
         detailed_results = None
@@ -159,16 +150,7 @@ class LocalizationGrader:
             len(optimal_coverage) / len(focal_methods) if focal_methods else 0.0
         )
 
-        # Compute identified methods and TP/FP/FN
-        identified_methods = self._collect_identified_methods(scenario)
-        extra_metrics = self._compute_confusion_counts(
-            focal_methods, optimal_coverage, identified_methods
-        )
-
-        # Print basic results including TP/FP/FN
-        self._print_evaluation_results(
-            focal_methods, optimal_coverage, coverage_score, extra_metrics
-        )
+        # No early printing; detailed metrics are computed only for detailed output
 
         detailed_results = None
         if detailed_output:
@@ -255,10 +237,9 @@ class LocalizationGrader:
         atomic_blocks: AtomicBlockList,
     ) -> Dict[str, Any]:
         """Detailed output: common metrics + provided atomic blocks only."""
-        # Include TP/FP/FN if present in atomic_blocks evaluation context
-        identified = self._collect_identified_methods(atomic_blocks)
+        # Include TP/FP/FN with block-level FP definition for these blocks
         extra = self._compute_confusion_counts(
-            focal_methods, covered_focal_methods, identified
+            focal_methods, covered_focal_methods, atomic_blocks
         )
         return self._build_common_results(
             focal_methods, covered_focal_methods, coverage_score, extra
@@ -275,9 +256,8 @@ class LocalizationGrader:
 
         Does not flatten the scenario in the output.
         """
-        identified = self._collect_identified_methods(scenario)
         extra = self._compute_confusion_counts(
-            focal_methods, covered_focal_methods, identified
+            focal_methods, covered_focal_methods, scenario
         )
         return self._build_common_results(
             focal_methods, covered_focal_methods, coverage_score, extra
@@ -337,18 +317,43 @@ class LocalizationGrader:
         self,
         focal_methods: Set[Tuple[str, str]],
         covered_focal_methods: Set[Tuple[str, str]],
-        identified_methods: Set[Tuple[str, str]],
+        obj: AtomicBlockList | LocalizedScenario,
     ) -> Dict[str, int]:
-        """Compute TP/FP/FN counts based on identified methods and coverage.
+        """Compute TP/FP/FN counts with block-level false positives.
 
-        - TP: number of focal methods covered (i.e., correct identifications used).
-        - FP: number of identified methods that are not focal methods.
-        - FN: number of focal methods that were not identified anywhere.
+        - TP: number of focal methods covered (i.e., matched in optimal coverage).
+        - FP: number of blocks that have at least one candidate (candidate_methods and/or
+              best_candidate) but none of those candidates is a focal method.
+        - FN: number of focal methods that were not identified in any block.
         """
+        # True positives are based on coverage
         tp = len(covered_focal_methods)
-        fp = len(identified_methods - focal_methods)
+
+        # False positives are counted per block: non-empty candidates but none are focal
+        fp_blocks = 0
+        for block in self._iter_candidate_blocks(obj):
+            block_candidates: Set[Tuple[str, str]] = set()
+
+            for cm in getattr(block, "candidate_methods", []) or []:
+                block_candidates.add((cm.containing_class_name, cm.method_signature))
+
+            best = getattr(block, "best_candidate", None)
+            if best is not None:
+                if getattr(best, "containing_class_name", "") and getattr(
+                    best, "method_signature", ""
+                ):
+                    block_candidates.add(
+                        (best.containing_class_name, best.method_signature)
+                    )
+
+            if block_candidates and not any(c in focal_methods for c in block_candidates):
+                fp_blocks += 1
+
+        # False negatives relative to all identified methods across blocks
+        identified_methods = self._collect_identified_methods(obj)
         fn = len(focal_methods - identified_methods)
-        return {"tp": tp, "fp": fp, "fn": fn}
+
+        return {"tp": tp, "fp": fp_blocks, "fn": fn}
 
     def _get_focal_methods(self) -> Set[Tuple[str, str]]:
         """Use Hamster to get the focal methods for the test method."""
@@ -387,37 +392,5 @@ class LocalizationGrader:
             pretty_print("Error getting focal methods", {"error": str(e)})
             return set()
 
-    def _print_evaluation_results(
-        self,
-        focal_methods: Set[Tuple[str, str]],
-        covered_focal_methods: Set[Tuple[str, str]],
-        coverage_score: float,
-        extra: Optional[Dict[str, Any]] = None,
-    ):
-        """Print basic evaluation results."""
-        focal_methods_str = [
-            f"{class_name}.{method_sig}" for class_name, method_sig in focal_methods
-        ]
-        covered_methods_str = [
-            f"{class_name}.{method_sig}"
-            for class_name, method_sig in covered_focal_methods
-        ]
-        uncovered_methods_str = [
-            f"{class_name}.{method_sig}"
-            for class_name, method_sig in (focal_methods - covered_focal_methods)
-        ]
-
-        results = {
-            "test_class": self.nl2_input.qualified_class_name,
-            "test_method": self.nl2_input.method_signature,
-            "total_focal_methods": len(focal_methods),
-            "covered_focal_methods": len(covered_focal_methods),
-            "coverage_score": coverage_score,
-            "focal_methods": focal_methods_str,
-            "covered_methods": covered_methods_str,
-            "uncovered_methods": uncovered_methods_str,
-        }
-        if extra:
-            results.update(extra)
-
-        pretty_print("Localization Evaluation Results", results)
+    # Removed printing method to avoid side effects during evaluation
+    # def _print_evaluation_results(...): pass

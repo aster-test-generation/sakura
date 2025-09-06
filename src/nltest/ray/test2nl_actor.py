@@ -108,7 +108,7 @@ class Test2NLActor:
                 "entry": entry.model_dump(mode="json"),
                 "description": desc.model_dump(mode="json"),
             }
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             return {
                 "success": False,
                 "error": str(e),

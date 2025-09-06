@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from nltest.nl2test.models import NL2TestInput
-    from nltest.test2nl.model.models import RoundTripTest, AbstractionLevel
+    from nltest.test2nl.model.models import RoundTripTest
 
 
 class TestFileInfo(BaseModel):
@@ -20,18 +20,7 @@ class TestFileInfo(BaseModel):
     qualified_class_name: Annotated[
         str, "The qualified class name of the developer-written test"
     ]
-    method_signature: Annotated[
-        str, "The method signature of the developer-written test"
-    ]
-    description: Annotated[str, "The description of the developer-written test"] = ""
     test_code: Annotated[str, "The test code of the autonomously generated test"] = ""
-    abstraction_level: Annotated[
-        Optional[AbstractionLevel],
-        "The abstraction level (from Test2NL) of the natural language description of the developer-written test",
-    ] = None
-    trial_number: Annotated[
-        Optional[int], "The current trial number (for evaluation)"
-    ] = 1
     id: Annotated[Optional[int], "The ID from NL2TestInput"] = -1
 
     @classmethod
@@ -40,15 +29,10 @@ class TestFileInfo(BaseModel):
         nl2test_input: NL2TestInput,
         *,
         test_code: str = "",
-        trial_number: int = -1,
     ) -> "TestFileInfo":
         return cls(
             qualified_class_name=nl2test_input.qualified_class_name,
-            method_signature=nl2test_input.method_signature,
-            description=nl2test_input.description,
             test_code=test_code,
-            abstraction_level=nl2test_input.abstraction_level,
-            trial_number=trial_number,
             id=nl2test_input.id,
         )
 
@@ -59,11 +43,7 @@ class TestFileInfo(BaseModel):
     ) -> "TestFileInfo":
         return cls(
             qualified_class_name=rt_test.qualified_class_name,
-            method_signature=rt_test.method_signature,
-            description=rt_test.generated_description.description,
             test_code=rt_test.generated_test,
-            abstraction_level=rt_test.generated_description.abstraction_level,
-            trial_number=rt_test.generated_description.trial_number,
             id=-1,  # Default value for roundtrip test
         )
 
@@ -111,7 +91,7 @@ class TestFileManager:
         return int(encoded_class_name)
 
     @staticmethod
-    def decode_file_name(file_name: str) -> Tuple[str, Optional[AbstractionLevel], int]:
+    def decode_file_name(file_name: str) -> int:
         # Remove .java extension if present
         if file_name.endswith(".java"):
             file_name = file_name[:-5]
@@ -119,10 +99,11 @@ class TestFileManager:
         class_name = file_name.split("/")[-1]
         return TestFileManager.decode_class_name(class_name)
 
-    def target_path(self, test_info: TestFileInfo, *, encode_class_name: bool = True) -> Path:
+    def target_path(
+        self, test_info: TestFileInfo, *, encode_class_name: bool = True
+    ) -> Path:
         """
         Compute the target file path for a test file.
-
         - If encode_class_name is True, use the encoded class name (e.g., NL2T_001.java)
           under the package path derived from qualified_class_name.
         - If encode_class_name is False, place the file directly under
@@ -136,20 +117,19 @@ class TestFileManager:
                 / self._package_dir_from_qualified(test_info.qualified_class_name)
                 / f"{class_name}.java"
             )
+        else:
+            # Non-encoded: Use the fully qualified class name as path components
+            qcn_path = Path(*test_info.qualified_class_name.split("."))
+            return self.test_base_dir / (qcn_path.with_suffix(".java"))
 
-        # Non-encoded: Use the fully qualified class name as path components
-        qcn_path = Path(*test_info.qualified_class_name.split("."))
-        return self.test_base_dir / (qcn_path.with_suffix(".java"))
-
-    def _rewrite_java_header(self, test_info: TestFileInfo, code: str) -> str:
+    def _rewrite_java_header(self, package: str, new_class_name: str, code: str) -> str:
         """
-        Ensures the Java package declaration and the class name are correctly assigned.
-        """
-        package = test_info.qualified_class_name.rsplit(".", 1)[0]
-        encoded_name = self.encode_class_name(
-            test_info.id,
-        )
+        Ensure the Java package declaration and top-level type name match the target.
 
+        - Adds or replaces the package declaration with `package` (if non-empty),
+          or removes it if package is empty.
+        - Rewrites the first top-level class/interface/enum/record name to `new_class_name`.
+        """
         if package:
             pkg_decl = f"package {package};"
             pkg_regex = r"(?m)^\s*package\s+[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*;"
@@ -158,6 +138,7 @@ class TestFileManager:
             else:
                 code = pkg_decl + "\n\n" + code.lstrip()
         else:
+            # Remove any existing package declaration
             code = re.sub(
                 r"(?m)^\s*package\s+[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*;\s*\n?",
                 "",
@@ -173,7 +154,7 @@ class TestFileManager:
             r"(?:class|interface|enum|record)\s+)"
             r"(?P<name>[A-Za-z_]\w*)"
         )
-        code = re.sub(top_level_decl, rf"\g<prefix>{encoded_name}", code, count=1)
+        code = re.sub(top_level_decl, rf"\g<prefix>{new_class_name}", code, count=1)
 
         return code
 
@@ -183,46 +164,57 @@ class TestFileManager:
         *,
         sync_names: bool = False,
         encode_class_name: bool = False,
-    ) -> Path:
+    ) -> Tuple[str, Path]:
         """
-        Save a single test file. Optionally encode the class name for the filename.
-
-        - If `encode_class_name` is True, the file will be saved using the
-          encoded class name at the package directory derived from the
-          qualified class name.
-        - If `encode_class_name` is False, the file will be saved mirroring the
-          qualified class name as a path rooted at `self.test_base_dir`.
-
-        TODO: Handle conflicts more gracefully (e.g., versioning or merging).
+        Save a single test file. If a conflict occurs, append a numeric suffix
+        to the class name (starting at 1) until a free filename is found.
         """
-        file_path = self.target_path(test_info, encode_class_name=encode_class_name)
-        file_path.parent.mkdir(parents=True, exist_ok=True)
+        # Determine package and base class name
+        if encode_class_name:
+            base_class_name = self.encode_class_name(test_info.id)
+            package = test_info.qualified_class_name.rsplit(".", 1)[0]
+        else:
+            if "." in test_info.qualified_class_name:
+                package, base_class_name = test_info.qualified_class_name.rsplit(".", 1)
+            else:
+                package, base_class_name = "", test_info.qualified_class_name
 
-        # Conflict detection: avoid overwriting existing files for now
-        if file_path.exists():
-            # TODO: Decide on conflict resolution strategy beyond raising an exception.
-            raise Exception(
-                f"Conflicting test file already exists at {file_path}."
-            )
+        # Compute parent directory and initial file path
+        parent_dir = self.test_base_dir / (
+            self._package_dir_from_qualified(package + ".Dummy" if package else "")
+        )
+        parent_dir.mkdir(parents=True, exist_ok=True)
 
-        content = test_info.test_code
-        if sync_names and encode_class_name:
-            # Only rewrite headers when using encoded class names
-            content = self._rewrite_java_header(test_info, content)
+        # Add number to the end until a nonconflict
+        class_name = base_class_name
+        file_path = parent_dir / f"{class_name}.java"
+        counter = 1
+        while file_path.exists():
+            class_name = f"{base_class_name}{counter}"
+            file_path = parent_dir / f"{class_name}.java"
+            counter += 1
 
+        # Rewrite package and class name in code content
+        content = self._rewrite_java_header(package, class_name, test_info.test_code)
+
+        # Write file
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
-        return file_path
+
+        # Return the final qualified class name and path
+        qualified_name = f"{package}.{class_name}" if package else class_name
+        return qualified_name, file_path
 
     def save_batch(self, tests: List[TestFileInfo]) -> List[Path]:
-        saved = []
+        saved_paths: List[Path] = []
         for t in tests:
             # Preserve legacy behavior for batch saves: use encoded class names
-            saved.append(self.save_single(t, encode_class_name=True))
-        return saved
+            _, p = self.save_single(t, encode_class_name=True)
+            saved_paths.append(p)
+        return saved_paths
 
-    def load(self, test_info: TestFileInfo) -> str:
-        file_path = self.target_path(test_info)
+    def load(self, test_info: TestFileInfo, *, encode_class_name: bool = False) -> str:
+        file_path = self.target_path(test_info, encode_class_name=encode_class_name)
         if not file_path.exists():
             raise FileNotFoundError(f"Test file not found at {file_path}")
         with open(file_path, "r", encoding="utf-8") as f:
@@ -235,15 +227,21 @@ class TestFileManager:
 
     def delete_single(
         self, test_info: TestFileInfo, *, encode_class_name: bool = False
-    ) -> Path:
+    ) -> bool:
         """
         Delete the test file at the location where it would have been saved.
 
         - If `encode_class_name` is True, uses the encoded class name path.
         - If `encode_class_name` is False, deletes the file at the fully
           qualified class name path.
+
+        Returns True if the file existed and was successfully deleted, False otherwise.
         """
         file_path = self.target_path(test_info, encode_class_name=encode_class_name)
-        if file_path.exists():
+        if not file_path.exists():
+            return False
+        try:
             file_path.unlink()
-        return file_path
+            return True
+        except Exception:
+            return False

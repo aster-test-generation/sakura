@@ -54,7 +54,6 @@ class TestCompositionAgent(BaseNL2Test):
             base_project_dir=str(project_root),
         )
 
-        # Create LocalizedScenario from provided JSON-like payload
         localized_scenario_data = {
             "testing_framework": "junit",
             "setup": [
@@ -240,4 +239,10 @@ class TestCompositionAgent(BaseNL2Test):
 
         localized_scenario = LocalizedScenario(**localized_scenario_data)
 
-        self.assertIsInstance(localized_scenario, LocalizedScenario)
+        instructions = "Compose the Java test for this scenario and finalize."
+        updated_scenario, final_comments = composition_agent.assign_task(
+            localized_scenario, instructions=instructions
+        )
+
+        self.assertIsInstance(updated_scenario, LocalizedScenario)
+        self.assertIsInstance(final_comments, str)

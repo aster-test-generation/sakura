@@ -51,3 +51,8 @@ class CompilationUnitNotFound(BaseToolException):
 class BlockNotFoundError(BaseToolException):
     """Raised when a block cannot be found."""
     pass
+
+
+class FileDeletionError(BaseToolException):
+    """Raised when a file deletion operation fails."""
+    pass

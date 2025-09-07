@@ -6,6 +6,7 @@ from nltest.nl2test.generation.composition.orchestrators import (
 from nltest.nl2test.models import NL2TestInput, LocalizedScenario, AbstractionLevel
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 
+from nltest.utils.pretty.prints import pretty_print
 from tests._base_nl2test import BaseNL2Test
 
 
@@ -54,7 +55,6 @@ class TestCompositionAgent(BaseNL2Test):
             base_project_dir=str(project_root),
         )
 
-        # Create LocalizedScenario from provided JSON-like payload
         localized_scenario_data = {
             "testing_framework": "junit",
             "setup": [
@@ -240,4 +240,21 @@ class TestCompositionAgent(BaseNL2Test):
 
         localized_scenario = LocalizedScenario(**localized_scenario_data)
 
-        self.assertIsInstance(localized_scenario, LocalizedScenario)
+        instructions = "Compose the Java test for this scenario and finalize."
+        updated_scenario, final_comments, package, class_name = composition_agent.assign_task(
+            localized_scenario, instructions=instructions
+        )
+
+        self.assertIsInstance(updated_scenario, LocalizedScenario)
+        self.assertIsInstance(final_comments, str)
+
+        # Pretty print selected package and class name before assertions
+        pretty_print("Selected package", package)
+        pretty_print("Selected test class", class_name)
+
+        # Ensure package and class name were selected
+        self.assertIsNotNone(package)
+        self.assertIsNotNone(class_name)
+
+        pretty_print("Updated scenario", updated_scenario)
+        pretty_print("Final comments", final_comments)

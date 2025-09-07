@@ -31,8 +31,6 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm.llm_client import LLMClient, ClientType
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.utils.config import Config
 from nltest.utils.pretty.prints import pretty_print
 
 
@@ -48,11 +46,6 @@ class Pipeline:
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
 
-        # Get output directory from config
-        config = Config()
-        output_dir = Path(config.get("project", "output_dir"))
-        self.data_manager = StructuredDataManager(output_dir)
-
         self.nl_decomposer = NLDecomposer(mode=self.decomposition_mode)
         self.method_indexer = MethodIndexer(analysis)
         self.class_indexer = ClassIndexer(analysis)
@@ -65,8 +58,7 @@ class Pipeline:
         self.class_searcher: ClassSearcher = None
 
         # Initialized during respective methods
-        # Orchestrator depends on decomposition mode
-        self.localization_orchestrator = None
+        # TODO: Remove all orchestrators from self
         self.composition_orchestrator: CompositionOrchestrator = None
         self.supervisor_agent: SupervisorReActAgent = None
 
@@ -99,7 +91,7 @@ class Pipeline:
         instructions = "Localize to relevant code with candidate methods and comments for each block."
 
         if self.decomposition_mode == DecompositionMode.GHERKIN:
-            self.localization_orchestrator = GherkinLocalizationOrchestrator(
+            localization_orchestrator = GherkinLocalizationOrchestrator(
                 analysis=self.analysis,
                 method_searcher=self.method_searcher,
                 class_searcher=self.class_searcher,
@@ -110,7 +102,7 @@ class Pipeline:
                 blocks = LocalizedScenario.from_scenario(blocks)
             # If already LocalizedScenario, pass through
         else:
-            self.localization_orchestrator = GrammaticalLocalizationOrchestrator(
+            localization_orchestrator = GrammaticalLocalizationOrchestrator(
                 analysis=self.analysis,
                 method_searcher=self.method_searcher,
                 class_searcher=self.class_searcher,
@@ -125,15 +117,16 @@ class Pipeline:
                     ]
                 )
 
-        return self.localization_orchestrator.assign_task(
-            blocks, instructions=instructions
-        )
+        return localization_orchestrator.assign_task(blocks, instructions=instructions)
 
     def run_localization_evaluation_pipeline(
         self, nl2_input: NL2TestInput
     ) -> NL2LocalizationOutput:
-        # Run preprocessing
-        self.run_preprocessing()
+        # Ensure preprocessing was run
+        if not self.method_searcher or not self.class_searcher:
+            raise RuntimeError(
+                "Preprocessing has not been run. Call run_preprocessing() before evaluating."
+            )
 
         # Decompose natural language (type depends on mode)
         blocks = self.decompose_natural_language(nl2_input.description)
@@ -160,5 +153,4 @@ class Pipeline:
             nl2_input=nl2_input,
             localized_blocks=result,
             evaluation_results=evaluation_results,
-            coverage_score=coverage_score,
         )

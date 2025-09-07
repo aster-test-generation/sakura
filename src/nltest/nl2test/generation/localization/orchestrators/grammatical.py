@@ -5,16 +5,32 @@ from typing import Tuple
 from nltest.nl2test.generation.localization.orchestrators.base import (
     BaseLocalizationOrchestrator,
 )
+from cldk.analysis.java import JavaAnalysis
+from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
 from nltest.nl2test.models import (
     AgentState,
     AtomicBlockList,
+    NL2TestInput,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
 
 
 class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(decomposition_mode=DecompositionMode.GRAMMATICAL, **kwargs)
+    def __init__(
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+    ) -> None:
+        super().__init__(
+            analysis=analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+            nl2_input=nl2_input,
+            decomposition_mode=DecompositionMode.GRAMMATICAL,
+        )
 
     def assign_task(self, blocks, *, instructions: str):
         if self.decomposition_mode != DecompositionMode.GRAMMATICAL:

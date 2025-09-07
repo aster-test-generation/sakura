@@ -23,16 +23,28 @@ class AgentState(BaseModel):
         Dict[str, Dict[str, int]],
         "Mapping: tool name -> encoded argument -> count of calls",
     ] = Field(default_factory=dict)
+
+    # Inputs
     grammatical_blocks: Annotated[
         Optional[GrammaticalBlockList],
         "Input grammatical blocks when using grammatical mode",
     ] = None
-    atomic_blocks: Annotated[
-        Optional[AtomicBlockList], "The current state of the AtomicBlocks"
-    ] = None
     scenario: Annotated[
         Optional[Scenario],
         "Input Scenario when using Gherkin mode",
+    ] = None
+
+    # For test packaging
+    package: Annotated[
+        Optional[str], "The package selected by the agent for the test code."
+    ] = None
+    class_name: Annotated[
+        Optional[str], "The test class name selected by the agent."
+    ] = None
+
+    # Outputs
+    atomic_blocks: Annotated[
+        Optional[AtomicBlockList], "The current state of the AtomicBlocks"
     ] = None
     localized_scenario: Annotated[
         Optional[LocalizedScenario],
@@ -97,6 +109,20 @@ class TestCodeArgs(BaseModel):
     """Arguments for providing raw test code directly to the generate tool."""
 
     test_code: Annotated[str, Field(description="")]
+    qualified_class_name: Annotated[
+        str, Field(description="The fully qualified class name for the test class.")
+    ]
+
+
+class FinalizeCommentsArgs(BaseModel):
+    """Arguments for finalizing the composition process with comments only."""
+
+    comments: Annotated[
+        str,
+        Field(
+            description="Comments about any problems with the procedure or concerns."
+        ),
+    ]
 
 
 class FinalizeAtomicBlockArgs(BaseModel):

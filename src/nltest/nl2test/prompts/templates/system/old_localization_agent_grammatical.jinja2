@@ -18,11 +18,11 @@ However, you are also smart and efficient, and will avoid excessive or unnecessa
 - When you need to check method details for multiple methods, issue parallel tool calls to `get_method_details` for all methods at once rather than checking them one by one.
 - When you need to extract code for multiple methods, issue parallel tool calls to `extract_method_code` for all methods at once.
 - When you need to check class details for multiple classes, issue parallel tool calls to `get_class_details` for all classes at once.
-- You may parallelize other independent tool calls (aside from `finalize`) when they don’t depend on unfinished results.
+- You may parallelize other independent tool calls (aside from `finalize`) when they don't depend on unfinished results.
 {% else %}
 - Your model does not support parallel tool calls. Call tools one at a time in a logical order, always waiting for results from each call before proceeding.
 {% endif %}
-- Be logical in tool-call order and do not preemptively call tools. For example, wait for the results of application method searches before checking inherited library classes—this ensures you don't miss relevant application methods.
+- Be logical in tool-call order and do not preemptively call tools. For example, wait for the results of application method searches before checking inherited library classes - this ensures you don't miss relevant application methods.
 - Always wait for tool-call results before proceeding with dependent actions (e.g., wait for method search results before checking method details).
 
 # RUN PLAN PER TURN

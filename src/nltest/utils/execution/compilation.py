@@ -1,4 +1,6 @@
 import os
+import sys
+import shutil
 import subprocess
 from typing import List
 
@@ -15,10 +17,32 @@ class JavaCompilation:
         error_classes = set()
         pom = os.path.join(project_root, "pom.xml")
 
+        def _resolve_maven_cmd_parts(project_root: str) -> List[str]:
+            """
+            - If `<project_root>/mvnw[.cmd]` exists, use it (or `sh mvnw` if not executable on *nix).
+            - Else, if `mvn` is on PATH, use that.
+            - Else, raise FileNotFoundError with a helpful message.
+            """
+            wrapper = "mvnw.cmd" if sys.platform == "win32" else "mvnw"
+            wrapper_path = os.path.join(project_root, wrapper)
+            if os.path.isfile(wrapper_path):
+                if sys.platform != "win32" and not os.access(wrapper_path, os.X_OK):
+                    return ["sh", wrapper_path]
+                return [wrapper_path]
+            mvn_path = shutil.which(MAVEN_CMD)
+            if mvn_path:
+                return [mvn_path]
+            # Not found anywhere
+            raise FileNotFoundError(
+                f"Maven not found. Neither '{MAVEN_CMD}' on PATH nor wrapper '{wrapper}' at {project_root}."
+            )
+
+        cmd_base = _resolve_maven_cmd_parts(project_root)
+
         def _run_compile(pom_path):
             return subprocess.run(
-                [
-                    MAVEN_CMD,
+                cmd_base
+                + [
                     "-f",
                     pom_path,
                     "-Drat.skip=true",
@@ -45,7 +69,9 @@ class JavaCompilation:
 
         def _apply_format(pom_path) -> bool:
             try:
-                subprocess.check_call([MAVEN_CMD, "-f", pom_path, "spring-javaformat:apply"])  # type: ignore[arg-type]
+                subprocess.check_call(
+                    cmd_base + ["-f", pom_path, "spring-javaformat:apply"]
+                )  # type: ignore[arg-type]
                 return True
             except Exception:
                 return False

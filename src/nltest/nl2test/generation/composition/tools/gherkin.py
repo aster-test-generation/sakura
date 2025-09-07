@@ -1,11 +1,14 @@
 from __future__ import annotations
 
-from .base import BaseCompositionTools
 from langchain_core.tools import StructuredTool
 
-from nltest.nl2test.models import LocalizedScenario
-from nltest.nl2test.models.agents import ModifyScenarioCommentArgs
+from nltest.nl2test.models import LocalizedScenario, ModifyScenarioCommentArgs
 from nltest.utils.exceptions import ToolExceptionHandler
+
+from .base import BaseCompositionTools
+from nltest.nl2test.generation.composition.tool_descriptions import (
+    MODIFY_SCENARIO_COMMENT_DESC,
+)
 
 
 class GherkinCompositionTools(BaseCompositionTools):
@@ -20,7 +23,7 @@ class GherkinCompositionTools(BaseCompositionTools):
         return StructuredTool.from_function(
             func=_modify_scenario_comment,
             name="modify_scenario_comment",
-            description="",
+            description=MODIFY_SCENARIO_COMMENT_DESC,
             args_schema=ModifyScenarioCommentArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

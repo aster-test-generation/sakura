@@ -1,0 +1,93 @@
+### ROLE
+You are a meticulous test engineer producing an implementation-level narrative so a novice teammate can rebuild the test.
+
+### CODE CONTEXT
+[Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
+
+#### Setup Methods
+{%- if setup_methods %}
+{%- for setup_method in setup_methods %}
+- Setup Method #{{ loop.index }} -
+{{ setup_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Teardown Methods
+{%- if teardown_methods %}
+{%- for teardown_method in teardown_methods %}
+- Teardown Method #{{ loop.index }} -
+{{ teardown_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Method Annotations
+{%- if method_annotations %}
+{{ method_annotations }}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Method Code
+```
+{{ method_code }}
+```
+
+#### Helper Methods
+{%- if helper_methods %}
+{%- for helper_method in helper_methods %}
+- Helper Method #{{ loop.index }} -
+{{ helper_method }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Class Annotations
+{%- if class_annotations %}
+{{ class_annotations }}
+{%- else %}
+None
+{%- endif %}
+
+#### Test Class Fields
+{%- if field_declarations %}
+{%- for field_declaration in field_declarations %}
+- Field Declaration #{{ loop.index }} -
+{{ field_declaration }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+#### Application Classes & Methods Used
+{%- if custom_classes %}
+{%- for custom_class in custom_classes %}
+- Class #{{ loop.index }} -
+{{ custom_class }}
+{%- endfor %}
+{%- else %}
+None
+{%- endif %}
+
+### TASK
+Write exactly one paragraph that fully specifies how to implement the test.
+
+### INCLUDE
+- A step-by-step narrative of the test's sequence: setup, invocation, interactions, assertions.
+- All classes, methods, and types involved (as named in the input), with each item's role (under test, mocked, helper, assertion target).
+- How dependencies are provided (e.g., injected vs. mocked/spied) and any configured behaviors/stubs.
+- How the method(s) under test are invoked, including what inputs/state are prepared (describe by purpose, not literal values).
+- The nature of interactions (internal logic, external API, database lookup, other services) at a high level, with how they're supported.
+- The expected outcome and the verification technique(s) (e.g., equality checks, truthiness, interaction verification).
+- The Java testing frameworks/tools used (e.g., JUnit 5, Mockito, AssertJ, Hamcrest), naming only those evidenced in the context.
+
+### EXCLUDE
+- The specific test method name.
+- Variable identifiers and literal values.
+
+### OUTPUT REQUIREMENTS
+- One paragraph only. Begin with a directive phrase. No lists, headings, or code.

@@ -24,14 +24,17 @@ class ReActAgent:
         *,
         llm: LLMClient,
         tools: List[BaseTool],
+        allow_duplicate_tools: Optional[List[BaseTool]] = None,
         system_message: Optional[str] = None,
         max_iters: int = 20,
     ) -> None:
         self.llm = llm
         self.tools = tools
+        self.allow_duplicate_tools = allow_duplicate_tools or []
         self.max_iters = max_iters
         self.system_message = system_message or "You are a helpful AI assistant."
 
+        self._allow_duplicate_tool_names = {t.name for t in self.allow_duplicate_tools}
         self.tool_map: Dict[str, BaseTool] = {t.name: t for t in tools}
 
         # Internal flag for tool-driven termination
@@ -89,12 +92,6 @@ class ReActAgent:
                     "You MUST execute the `finalize` tool call now to produce your final output based on all gathered information."
                 )
                 state.messages.append(HumanMessage(content=warning_message))
-            # elif remaining_iterations <= 3 and remaining_iterations > 0:
-            #    warning_message = (
-            #        f"WARNING: You have only {remaining_iterations} more iteration(s) allowed in this sequence. "
-            #        "Prioritize consolidating findings and move toward calling the `finalize` tool soon."
-            #    )
-            #    state.messages.append(HumanMessage(content=warning_message))
 
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,
@@ -153,7 +150,7 @@ class ReActAgent:
                 prev_count = tool_history.get(encoding, 0)
                 tool_history[encoding] = prev_count + 1
 
-                if prev_count > 0:
+                if prev_count > 0 and name not in self._allow_duplicate_tool_names:
                     # Already executed with identical args; skip and inform the model
                     try:
                         content = json.dumps(

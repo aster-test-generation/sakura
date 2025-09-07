@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Tuple
 
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java.models import JMethodDetail, JCallable
@@ -62,8 +62,13 @@ class BaseLocalizationTools:
             self._make_get_inherited_library_classes_tool(),
         ]
 
-    def all(self) -> List[BaseTool]:
-        return self.tools
+        # Tools that are allowed to be invoked repeatedly with identical args
+        # without being treated as duplicates. Empty by default.
+        self.allow_duplicate_tools: List[BaseTool] = []
+
+    def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
+        # Return tool list and the subset allowed to duplicate
+        return self.tools, self.allow_duplicate_tools
 
     # Get relevant methods from the database by similarity search, within a range
     def _make_query_method_tool(self) -> StructuredTool:

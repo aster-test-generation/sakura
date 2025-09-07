@@ -1,11 +1,20 @@
 from __future__ import annotations
 
-from .base import BaseCompositionTools
+
 from langchain_core.tools import StructuredTool
 
-from nltest.nl2test.models import AtomicBlockList, ModifyAtomicBlocksArgs
-from nltest.nl2test.models.agents import ModifyAtomicBlockNoteArgs
+from nltest.nl2test.models import (
+    AtomicBlockList,
+    ModifyAtomicBlocksArgs,
+    ModifyAtomicBlockNoteArgs,
+)
 from nltest.utils.exceptions import ToolExceptionHandler
+
+from .base import BaseCompositionTools
+from nltest.nl2test.generation.composition.tool_descriptions import (
+    MODIFY_ATOMIC_BLOCKS_DESC,
+    MODIFY_ATOMIC_BLOCK_NOTE_DESC,
+)
 
 
 class GrammaticalCompositionTools(BaseCompositionTools):
@@ -23,7 +32,7 @@ class GrammaticalCompositionTools(BaseCompositionTools):
         return StructuredTool.from_function(
             func=_modify_atomic_blocks,
             name="modify_atomic_blocks",
-            description="",
+            description=MODIFY_ATOMIC_BLOCKS_DESC,
             args_schema=ModifyAtomicBlocksArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -36,7 +45,7 @@ class GrammaticalCompositionTools(BaseCompositionTools):
         return StructuredTool.from_function(
             func=_modify_scenario_comment,
             name="modify_scenario_comment",
-            description="",
+            description=MODIFY_ATOMIC_BLOCK_NOTE_DESC,
             args_schema=ModifyAtomicBlockNoteArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

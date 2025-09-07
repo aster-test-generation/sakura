@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import List, Any, Dict, Union
+from typing import List, Any, Dict, Union, Tuple
 
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java.models import JMethodDetail, JCallable
@@ -77,8 +77,13 @@ class BaseCompositionTools:
             # self._make_execution_test_tool(),  # DEPRECATED
         ]
 
-    def all(self) -> List[BaseTool]:
-        return self.tools
+        # Tools that are allowed to be invoked repeatedly with identical args
+        # without being treated as duplicates. Empty by default.
+        self.allow_duplicate_tools: List[BaseTool] = []
+
+    def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
+        # Return tool list and the subset allowed to duplicate
+        return self.tools, self.allow_duplicate_tools
 
     # Understand conditional branches and code structure
     def _make_extract_code_tool(self) -> StructuredTool:

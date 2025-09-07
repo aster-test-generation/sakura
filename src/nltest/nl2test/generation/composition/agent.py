@@ -23,6 +23,7 @@ class CompositionReActAgent(ReActAgent):
         *,
         llm: LLMClient,
         tools: List[BaseTool],
+        allow_duplicate_tools: List[BaseTool] | None = None,
         system_message: str,
         project_root: Path,
         max_iters: int = 8,
@@ -31,7 +32,11 @@ class CompositionReActAgent(ReActAgent):
         # Allow caller to inject system_message for parity with localization
 
         super().__init__(
-            llm=llm, tools=tools, system_message=system_message, max_iters=max_iters
+            llm=llm,
+            tools=tools,
+            allow_duplicate_tools=allow_duplicate_tools,
+            system_message=system_message,
+            max_iters=max_iters,
         )
         self.project_root = Path(project_root)
 

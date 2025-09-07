@@ -54,7 +54,7 @@ class BaseCompositionOrchestrator:
             )
         )
 
-        tools: List[BaseTool] = tool_builder.all()
+        tools, allow_duplicate_tools = tool_builder.all()
 
         self.nl2_input = nl2_input
         self.decomposition_mode = decomposition_mode
@@ -73,8 +73,9 @@ class BaseCompositionOrchestrator:
         self.agent = CompositionReActAgent(
             llm=decision_llm,
             tools=tools,
+            allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            project_root=Path(base_project_dir or ".") / nl2_input.project_name,
+            project_root=Path(base_project_dir or "."),
             max_iters=max_iters,
             decomposition_mode=decomposition_mode,
         )

@@ -23,12 +23,17 @@ class LocalizationReActAgent(ReActAgent):
         *,
         llm: LLMClient,
         tools: List[BaseTool],
+        allow_duplicate_tools: List[BaseTool] | None = None,
         system_message: str,
         max_iters: int = 8,
         decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
     ):
         super().__init__(
-            llm=llm, tools=tools, system_message=system_message, max_iters=max_iters
+            llm=llm,
+            tools=tools,
+            allow_duplicate_tools=allow_duplicate_tools,
+            system_message=system_message,
+            max_iters=max_iters,
         )
         self.decomposition_mode = decomposition_mode
 

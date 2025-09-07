@@ -39,4 +39,3 @@ class NL2LocalizationOutput(BaseModel):
     nl2_input: NL2TestInput
     localized_blocks: Union[AtomicBlockList, LocalizedScenario]
     evaluation_results: Optional[LocalizationEvaluationResults] = None
-    coverage_score: float

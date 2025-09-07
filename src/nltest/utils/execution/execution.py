@@ -1,6 +1,8 @@
 import os
+import sys
+import shutil
 import subprocess
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 from nltest.utils.constants import MAVEN_CMD
 
@@ -16,8 +18,22 @@ class JavaExecution:
     ) -> Dict[str, object]:
         pom = os.path.join(project_root, "pom.xml")
 
+        def _resolve_maven_cmd_parts(project_root: str) -> List[str]:
+            wrapper = "mvnw.cmd" if sys.platform == "win32" else "mvnw"
+            wrapper_path = os.path.join(project_root, wrapper)
+            if os.path.isfile(wrapper_path):
+                if sys.platform != "win32" and not os.access(wrapper_path, os.X_OK):
+                    return ["sh", wrapper_path]
+                return [wrapper_path]
+            mvn_path = shutil.which(MAVEN_CMD)
+            if mvn_path:
+                return [mvn_path]
+            raise FileNotFoundError(
+                f"Maven not found. Neither '{MAVEN_CMD}' on PATH nor wrapper '{wrapper}' at {project_root}."
+            )
+
         # Build the Maven command
-        cmd = [MAVEN_CMD, "-f", pom]
+        cmd = _resolve_maven_cmd_parts(project_root) + ["-f", pom]
         cmd += ["-DfailIfNoTests=false"]
 
         if test_class_name:
@@ -27,11 +43,19 @@ class JavaExecution:
             # Run full test phase
             cmd += ["test"]
 
-        p = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
+        try:
+            p = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+        except FileNotFoundError as e:
+            return {
+                "returncode": -1,
+                "stdout": "",
+                "stderr": str(e),
+                "command": " ".join(cmd),
+            }
         try:
             out, err = p.communicate(timeout=timeout)
         except subprocess.TimeoutExpired:

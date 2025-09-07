@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from langchain_core.tools import BaseTool
 
@@ -25,7 +25,7 @@ class LocalizationTools:
         else:
             self._delegate = GrammaticalLocalizationTools(**kwargs)
 
-    def all(self) -> List[BaseTool]:
+    def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
         return self._delegate.all()
 
     def __getattr__(self, item):

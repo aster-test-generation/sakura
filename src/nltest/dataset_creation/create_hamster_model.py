@@ -19,41 +19,70 @@ class CreateHamsterModel:
 
     @staticmethod
     @ray.remote
-    def create_hamster_model(project_path):
+    def create_hamster_model(project_path, analysis_dir, hamster_dir):
         try:
+            # Just in case check
+            proj_name = Path(project_path).name
+            if proj_name == "__pycache__" or proj_name.startswith("."):
+                return
+
             cldk = CLDK(language="java").analysis(
                 project_path=project_path,
                 analysis_backend_path=None,
                 analysis_level=AnalysisLevel.symbol_table,
-                analysis_json_path=BASE_PATH.joinpath(constants.DEFAULT_ANALYSIS_DIR, Path(project_path).name),
+                analysis_json_path=BASE_PATH.joinpath(
+                    analysis_dir, Path(project_path).name
+                ),
             )
-            project_analysis = (ProjectAnalysisInfo(analysis=cldk,
-                                                    dataset_name=Path(project_path).name)
-                                .gather_project_analysis_info())
+            project_analysis = ProjectAnalysisInfo(
+                analysis=cldk, dataset_name=Path(project_path).name
+            ).gather_project_analysis_info()
             project_analysis_str = project_analysis.model_dump_json()
 
-            output_dir = BASE_PATH.joinpath(constants.HAMSTER_MODEL_DIR) / Path(project_path).name
+            output_dir = BASE_PATH.joinpath(hamster_dir) / Path(project_path).name
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            with open(output_dir / "hamster.json", 'w') as f:
+            with open(output_dir / "hamster.json", "w") as f:
                 f.write(project_analysis_str)
         except Exception as e:
-            print(f'Error processing dataset {project_path}')
+            print(f"Error processing dataset {project_path}")
 
     @staticmethod
     def get_subfolders(base_folder):
         """Get all immediate subfolders in the base folder."""
-        return [os.path.join(base_folder, f) for f in os.listdir(base_folder)
-                if os.path.isdir(os.path.join(base_folder, f))]
+        return [
+            os.path.join(base_folder, f)
+            for f in os.listdir(base_folder)
+            if os.path.isdir(os.path.join(base_folder, f))
+            and f != "__pycache__"
+            and not f.startswith(".")
+        ]
 
 
 if __name__ == "__main__":
-    # Change this to your specific folder path
+    # Define the directory paths
+    resource_dir = "tests/resources"
+    # resource_dir = constants.RESOURCE_DIR
 
-    subfolders = CreateHamsterModel.get_subfolders(BASE_PATH.joinpath(constants.RESOURCE_DIR))
+    # hamster_dir = constants.HAMSTER_MODEL_DIR
+    hamster_dir = "tests/output/" + constants.HAMSTER_MODEL_DIR
+
+    # analysis_dir = constants.DEFAULT_ANALYSIS_DIR
+    analysis_dir = "tests/output/" + constants.DEFAULT_ANALYSIS_DIR
+
+    # Ensure directories exist
+    BASE_PATH.joinpath(resource_dir).mkdir(parents=True, exist_ok=True)
+    BASE_PATH.joinpath(hamster_dir).mkdir(parents=True, exist_ok=True)
+    BASE_PATH.joinpath(analysis_dir).mkdir(parents=True, exist_ok=True)
+
+    # Change this to your specific folder path
+    subfolders = CreateHamsterModel.get_subfolders(BASE_PATH.joinpath(resource_dir))
 
     # Launch tasks
-    futures = [CreateHamsterModel.create_hamster_model.remote(sf) for sf in subfolders]
+    futures = [
+        CreateHamsterModel.create_hamster_model.remote(sf, analysis_dir, hamster_dir)
+        for sf in subfolders
+    ]
 
     results = []
     with tqdm(total=len(futures), desc="Processing folders") as pbar:

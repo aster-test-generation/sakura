@@ -1,10 +1,10 @@
-# TASK
-Generate one concise paragraph at a low level of detail that follows the system instructions.
+### ROLE
+You are an expert writer distilling the essence of a Java test into a high-level, conceptual description for a senior developer.
 
-# CODE CONTEXT
+### CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
 
-## Setup Methods
+#### Setup Methods
 {%- if setup_methods %}
 {%- for setup_method in setup_methods %}
 - Setup Method #{{ loop.index }} -
@@ -14,7 +14,7 @@ Generate one concise paragraph at a low level of detail that follows the system 
 None
 {%- endif %}
 
-## Teardown Methods
+#### Teardown Methods
 {%- if teardown_methods %}
 {%- for teardown_method in teardown_methods %}
 - Teardown Method #{{ loop.index }} -
@@ -24,19 +24,19 @@ None
 None
 {%- endif %}
 
-## Test Method Annotations
+#### Test Method Annotations
 {%- if method_annotations %}
 {{ method_annotations }}
 {%- else %}
 None
 {%- endif %}
 
-## Test Method Code
+#### Test Method Code
 ```
 {{ method_code }}
 ```
 
-## Helper Methods
+#### Helper Methods
 {%- if helper_methods %}
 {%- for helper_method in helper_methods %}
 - Helper Method #{{ loop.index }} -
@@ -46,14 +46,14 @@ None
 None
 {%- endif %}
 
-## Test Class Annotations
+#### Test Class Annotations
 {%- if class_annotations %}
 {{ class_annotations }}
 {%- else %}
 None
 {%- endif %}
 
-## Test Class Fields
+#### Test Class Fields
 {%- if field_declarations %}
 {%- for field_declaration in field_declarations %}
 - Field Declaration #{{ loop.index }} -
@@ -63,7 +63,7 @@ None
 None
 {%- endif %}
 
-## Application Classes & Methods Used
+#### Application Classes & Methods Used
 {%- if custom_classes %}
 {%- for custom_class in custom_classes %}
 - Class #{{ loop.index }} -
@@ -73,5 +73,17 @@ None
 None
 {%- endif %}
 
-# OUTPUT
-Produce a one paragraph instruction on how to reproduce the test method, using its code context. Follow the system instructions for the level of detail, and what to include in the natural language output.
+### TASK
+Write exactly one instructional paragraph that abstracts what the test validates and why it matters, and name the frameworks used.
+
+### INCLUDE
+- General behaviors under test and their intent.
+- Conceptual expected outcomes.
+- The Java testing frameworks actually used.
+
+### EXCLUDE
+- Any class names, method names, or variable names.
+- Specific types or data structures; control flow; interaction mechanics; testing framework syntax; literal values.
+
+### OUTPUT REQUIREMENTS
+- One paragraph only. Begin with a directive phrase. No lists, headings, or code.

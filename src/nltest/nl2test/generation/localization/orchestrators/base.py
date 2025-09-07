@@ -47,7 +47,7 @@ class BaseLocalizationOrchestrator:
                 structured_llm=structured_llm,
             )
 
-        tools: List[BaseTool] = tool_builder.all()
+        tools, allow_duplicate_tools = tool_builder.all()
 
         self.nl2_input = nl2_input
         self.decomposition_mode = decomposition_mode
@@ -66,6 +66,7 @@ class BaseLocalizationOrchestrator:
         self.agent = LocalizationReActAgent(
             llm=decision_llm,
             tools=tools,
+            allow_duplicate_tools=allow_duplicate_tools,
             max_iters=max_iters,
             system_message=system_message,
             decomposition_mode=decomposition_mode,

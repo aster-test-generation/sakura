@@ -47,5 +47,8 @@ class CompositionOrchestrator:
             )
 
     # Backwards-compatible signature (grammatical blocks)
-    def assign_task(self, instructions: str, atomic_blocks: AtomicBlockList) -> Tuple[AtomicBlockList, str]:
+    # Updated to also return package and class_name from the agent state.
+    def assign_task(
+        self, instructions: str, atomic_blocks: AtomicBlockList
+    ) -> Tuple[AtomicBlockList, str, str | None, str | None]:
         return self._delegate.assign_task(atomic_blocks, instructions=instructions)

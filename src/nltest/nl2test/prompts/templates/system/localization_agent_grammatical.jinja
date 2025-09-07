@@ -12,7 +12,7 @@ You are meticulous and will take as many turns as needed to achieve the best out
 1) Understand the code base via static analysis. Use the natural language description and the provided grammatical decomposition to drive tool use. After understanding the application, produce an informed decomposition that localizes each grammatical block to concrete methods (from the application or external libraries, e.g., for assertions).
 2) Refine the decomposition. Merge, split, reorder, or delete grammatical blocks as needed based on what the static analysis reveals. Keep the decomposition faithful to intent while optimizing for implementability.
 3) Verify every candidate method. Inspect method/class details and source code until satisfied. Be rigorous and comprehensive, including inheritance chains and library extensions when relevant.
-4) Explain your localization choices. For each block, add succinct comments noting why selected methods apply and any notable constraints or trade‑offs encountered.
+4) Explain your localization choices. For each block, add succinct comments noting why selected methods apply and any notable constraints or trade-offs encountered.
 5) Bind arguments precisely. For every identified method, provide argument bindings with explicit parameter names and values (literals or `${...}` placeholders for values produced by previous blocks). Include imports if external utilities are required (e.g., assertion helpers).
 
 # PARALLEL TOOL CALLS
@@ -22,7 +22,7 @@ You are meticulous and will take as many turns as needed to achieve the best out
 {%- else %}
 - You do not support parallel tool calls. Invoke tools one at a time in a logical order, always waiting for results before proceeding.
 {%- endif %}
-- Be deliberate in tool‑call ordering; avoid preemptive or speculative calls. For example, wait for application method search results before exploring inherited library classes.
+- Be deliberate in tool-call ordering; avoid preemptive or speculative calls. For example, wait for application method search results before exploring inherited library classes.
 - Always wait for tool results before any dependent step (e.g., check method details only after you have a candidate list).
 
 # RUN PLAN PER TURN

@@ -16,9 +16,15 @@ from .agents import (
     QueryVectorDataArgs,
     ReachableMethodsArgs,
     InstructionArgs,
+    FinalizeCommentsArgs,
     FinalizeAtomicBlockArgs,
     FinalizeScenarioArgs,
     ModifyAtomicBlockNotesArgs,
+    TestCodeArgs,
+    ModifyAtomicBlocksArgs,
+    ModifyScenarioArgs,
+    ModifyScenarioCommentArgs,
+    ModifyAtomicBlockNoteArgs,
 )
 
 from .decomposition import (
@@ -54,6 +60,7 @@ __all__ = [
     "QueryVectorDataArgs",
     "ReachableMethodsArgs",
     "InstructionArgs",
+    "FinalizeCommentsArgs",
     "FinalizeAtomicBlockArgs",
     "FinalizeScenarioArgs",
     "ModifyAtomicBlockNotesArgs",

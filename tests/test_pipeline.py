@@ -26,7 +26,7 @@ from tests._base_test2nl import BaseTest2NL
 class TestPipelineDescriptions(BaseTest2NL):
     def test_all_low_abs(self):
         self.pipeline.reset_dataset()
-        self.pipeline.run_descriptions(AbstractionLevel.LOW)
+        self.pipeline.run_descriptions_of_project(AbstractionLevel.LOW)
 
 
 class TestPipelineLocalization(BaseNL2Test):
@@ -103,17 +103,18 @@ class TestPipelineLocalization(BaseNL2Test):
 
         # Verify output container and fields
         self.assertIsInstance(output, NL2LocalizationOutput)
-        self.assertIsInstance(output.coverage_score, float)
-        self.assertGreaterEqual(output.coverage_score, 0.0)
-        self.assertLessEqual(output.coverage_score, 1.0)
         self.assertIsInstance(output.localized_blocks, LocalizedScenario)
-        if output.evaluation_results is not None:
-            self.assertIsInstance(
-                output.evaluation_results, LocalizationEvaluationResults
-            )
+        self.assertIsNotNone(output.evaluation_results)
+        self.assertIsInstance(
+            output.evaluation_results, LocalizationEvaluationResults
+        )
+        # coverage_score now lives inside evaluation_results
+        self.assertIsInstance(output.evaluation_results.coverage_score, float)
+        self.assertGreaterEqual(output.evaluation_results.coverage_score, 0.0)
+        self.assertLessEqual(output.evaluation_results.coverage_score, 1.0)
 
         pretty_print(
             "Localized blocks from evaluation pipeline", output.localized_blocks
         )
-        pretty_print("Coverage score", output.coverage_score)
+        pretty_print("Coverage score", output.evaluation_results.coverage_score)
         pretty_print("Token usage", prices)

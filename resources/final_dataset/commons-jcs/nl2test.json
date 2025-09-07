@@ -1,0 +1,1147 @@
+{
+  "dataset_name": "commons-jcs",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheNoWaitUnitTest",
+      "method_signature": "testGet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheNoWait",
+          "focal_method_names": [
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.server.RemoteCacheServerUnitTest",
+      "method_signature": "testGetMultiple_simple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteUtils",
+          "focal_method_names": [
+            "loadProps(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testRecyleBinSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.DiskTestObjectUtil",
+          "focal_method_names": [
+            "createCacheElementsWithTestObjects(int, int, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.jcache.openjpa.OpenJPAJCacheDataCacheTest",
+      "method_signature": "testEntity()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.jcache.openjpa.OpenJPAJCacheDataCacheTest.MyEntity",
+          "focal_method_names": [
+            "setName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.server.RemoteCacheServerUnitTest",
+      "method_signature": "testAddListener_ToAllThenRemove()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteUtils",
+          "focal_method_names": [
+            "loadProps(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.discovery.UDPDiscoverySenderUnitTest",
+      "method_signature": "testRequestBroadcast()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.discovery.UDPDiscoverySender",
+          "focal_method_names": [
+            "requestBroadcast(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.server.RemoteCacheServerFactoryUnitTest",
+      "method_signature": "testConfigureObjectSpecificCustomFactory_withProperty_TimeoutConfigurableRMIScoketFactory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.server.RemoteCacheServerFactory",
+          "focal_method_names": [
+            "configureObjectSpecificCustomFactory(java.util.Properties)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.mysql.util.ScheduleParserUtilUnitTest",
+      "method_signature": "testGetsDatesSingle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.jdbc.mysql.util.ScheduleParser",
+          "focal_method_names": [
+            "createDatesForSchedule(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.config.PropertySetterUnitTest",
+      "method_signature": "testConvertArg()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.config.PropertySetter",
+          "focal_method_names": [
+            "convertArg(java.lang.String, java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testUpdate_EventLogging_simple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processRemoveAll()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testGetMultiple_EventLogging_simple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processRemoveAll()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCacheConcurrentNoDeadLockUnitTest",
+      "method_signature": "testIndexedDiskCache4()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCacheRandomConcurrentTestUtil",
+          "focal_method_names": [
+            "runTestForRegion(java.lang.String, int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.mysql.util.ScheduleParserUtilUnitTest",
+      "method_signature": "testGetDatesWithNullInput()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.jdbc.mysql.util.ScheduleParser",
+          "focal_method_names": [
+            "createDatesForSchedule(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs.auxiliary.disk.file.FileDiskCacheUnitTest",
+      "method_signature": "testPutGet_BigString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICacheElement",
+          "focal_method_names": [
+            "getVal()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testRemoveAll_EventLogging_simple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processRemoveAll()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.server.BasicRemoteCacheClientServerUnitTest",
+      "method_signature": "test1SinglePut()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheFactory",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheManager",
+          "focal_method_names": [
+            "getCache(org.apache.commons.jcs3.auxiliary.remote.behavior.IRemoteCacheAttributes)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.AuxiliaryCache",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICacheElement",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.admin.AdminBeanUnitTest",
+      "method_signature": "testGetRegionInfo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.admin.JCSAdminBean",
+          "focal_method_names": [
+            "buildCacheInfo()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.admin.CacheRegionInfo",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.struct.JCSvsCommonsLRUMapPerformanceTest",
+      "method_signature": "testSimpleLoad()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.log.Log",
+          "focal_method_names": [
+            "getLog(java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskUnitTest",
+      "method_signature": "testCalculateBlocksNeededDouble()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDisk",
+          "focal_method_names": [
+            "calculateTheNumberOfBlocksNeeded(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.util.RemoteCacheRequestFactoryUnitTest",
+      "method_signature": "testCreateGetMatchingRequest_Normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.util.RemoteCacheRequestFactory",
+          "focal_method_names": [
+            "createGetMatchingRequest(java.lang.String, java.lang.String, long)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheNoWaitFacadeUnitTest",
+      "method_signature": "testFailover()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.TestRemoteCacheFactory",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.AuxiliaryCache",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheNoWaitFacade",
+          "focal_method_names": [
+            "connectAndRestore()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.RemoteCacheNoWait",
+          "focal_method_names": [
+            "getStatus()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.hsql.HSQLDiskCacheUnitTest",
+      "method_signature": "testRemoveAllProhibition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClientUnitTest",
+      "method_signature": "testGet_normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClient",
+          "focal_method_names": [
+            "get(java.lang.String, java.lang.Object)",
+            "setRemoteDispatcher(org.apache.commons.jcs3.auxiliary.remote.behavior.IRemoteCacheDispatcher)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskCacheKeyStoreUnitTest",
+      "method_signature": "testObjectLargerThanMaxSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskKeyStore",
+          "focal_method_names": [
+            "put(java.lang.Object, int[])",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClientUnitTest",
+      "method_signature": "testRemoveAll_normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClient",
+          "focal_method_names": [
+            "removeAll(java.lang.String)",
+            "setRemoteDispatcher(org.apache.commons.jcs3.auxiliary.remote.behavior.IRemoteCacheDispatcher)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.access.CacheAccessUnitTest",
+      "method_signature": "testRegionDefinitonWithAttributes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICompositeCacheAttributes",
+          "focal_method_names": [
+            "getMaxMemoryIdleTimeSeconds()",
+            "setMaxMemoryIdleTimeSeconds(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.engine.control.event.SimpleEventHandlingUnitTest",
+      "method_signature": "testExceededIdletimeOnrequestEvent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.control.event.SimpleEventHandlingUnitTest.MyEventHandler",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexDiskCacheCountUnitTest",
+      "method_signature": "testRecycleBin()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCacheAttributes",
+          "focal_method_names": [
+            "setDiskLimitType(org.apache.commons.jcs3.auxiliary.disk.behavior.IDiskCacheAttributes.DiskLimitType)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processUpdate(org.apache.commons.jcs3.engine.behavior.ICacheElement)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.serialization.StandardSerializerUnitTest",
+      "method_signature": "testNullInput()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.serialization.StandardSerializer",
+          "focal_method_names": [
+            "serialize(java.lang.Object)",
+            "deSerialize(byte[], java.lang.ClassLoader)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs.engine.memory.arc.ARCMemoryCacheUnitTest",
+      "method_signature": "testGetKeyArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.control.CompositeCacheManager",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs.engine.memory.arc.ARCMemoryCache",
+          "focal_method_names": [
+            "getKeyArray()",
+            "getStats()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.access.CacheAccessUnitTest",
+      "method_signature": "testSetDefaultElementAttributes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "getCacheElement(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICacheElement",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.engine.logging.CacheEventLoggerDebugLoggerUnitTest",
+      "method_signature": "testLogError_normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.logging.CacheEventLoggerDebugLogger",
+          "focal_method_names": [
+            "setLogCategoryName(java.lang.String)",
+            "logError(java.lang.String, java.lang.String, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.TestTCPLateralUnitTest",
+      "method_signature": "testSimpleEncryptedSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.LateralTCPListener",
+          "focal_method_names": [
+            "getInstance(org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.behavior.ITCPLateralCacheAttributes, org.apache.commons.jcs3.engine.behavior.ICompositeCacheManager, org.apache.commons.jcs3.engine.behavior.IElementSerializer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.LateralTCPSender",
+          "focal_method_names": [
+            "send(org.apache.commons.jcs3.auxiliary.lateral.LateralElementDescriptor)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.engine.control.event.SimpleEventHandlingUnitTest",
+      "method_signature": "testElementAttributesCreationTime()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.control.event.SimpleEventHandlingUnitTest.MyEventHandler",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.ElementAttributes",
+          "focal_method_names": [
+            "clone()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.IElementAttributes",
+          "focal_method_names": [
+            "getCreateTime()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskUnitTest",
+      "method_signature": "testWriteAndRead_BigString2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDisk",
+          "focal_method_names": [
+            "read(int[])",
+            "write(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClientUnitTest",
+      "method_signature": "testDispose_normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClient",
+          "focal_method_names": [
+            "dispose(java.lang.String)",
+            "setRemoteDispatcher(org.apache.commons.jcs3.auxiliary.remote.behavior.IRemoteCacheDispatcher)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.TestTCPLateralUnitTest",
+      "method_signature": "testSimpleSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.LateralTCPListener",
+          "focal_method_names": [
+            "getInstance(org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.behavior.ITCPLateralCacheAttributes, org.apache.commons.jcs3.engine.behavior.ICompositeCacheManager, org.apache.commons.jcs3.engine.behavior.IElementSerializer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.LateralTCPSender",
+          "focal_method_names": [
+            "send(org.apache.commons.jcs3.auxiliary.lateral.LateralElementDescriptor)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClientUnitTest",
+      "method_signature": "testUpdate_normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClient",
+          "focal_method_names": [
+            "setRemoteDispatcher(org.apache.commons.jcs3.auxiliary.remote.behavior.IRemoteCacheDispatcher)",
+            "update(org.apache.commons.jcs3.engine.behavior.ICacheElement)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskUnitTest",
+      "method_signature": "testWriteAndReadMultipleMultiBlockElement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDisk",
+          "focal_method_names": [
+            "read(int[])",
+            "write(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.serialization.SerializationConversionUtilUnitTest",
+      "method_signature": "testSimpleConversion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.serialization.SerializationConversionUtil",
+          "focal_method_names": [
+            "getDeSerializedCacheElement(org.apache.commons.jcs3.engine.behavior.ICacheElementSerialized, org.apache.commons.jcs3.engine.behavior.IElementSerializer)",
+            "getSerializedCacheElement(org.apache.commons.jcs3.engine.behavior.ICacheElement, org.apache.commons.jcs3.engine.behavior.IElementSerializer)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskCacheSameRegionConcurrentUnitTest",
+      "method_signature": "testBlockDiskCache1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.engine.memory.mru.LRUvsMRUPerformanceTest",
+      "method_signature": "testSimpleLoad()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.log.Log",
+          "focal_method_names": [
+            "isDebugEnabled()",
+            "getLog(java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClientUnitTest",
+      "method_signature": "testGetMultiple_normal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.http.client.RemoteHttpCacheClient",
+          "focal_method_names": [
+            "setRemoteDispatcher(org.apache.commons.jcs3.auxiliary.remote.behavior.IRemoteCacheDispatcher)",
+            "getMultiple(java.lang.String, java.util.Set)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.remote.value.RemoteCacheResponse",
+          "focal_method_names": [
+            "setPayload(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.JDBCDiskCacheUnitTest",
+      "method_signature": "testSimpleJDBCPutGetWithHSQL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "remove(java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.JCSThrashTest",
+      "method_signature": "testForMemoryLeaks()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.log.Log",
+          "focal_method_names": [
+            "info(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.JCSThrashTest.Executable",
+          "focal_method_names": [
+            "execute()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.JCSThrashTest.Executable",
+          "focal_method_names": [
+            "execute()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.access.GroupCacheAccessUnitTest",
+      "method_signature": "testGroupCache()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.GroupCacheAccess",
+          "focal_method_names": [
+            "getGroupNames()",
+            "getGroupKeys(java.lang.String)",
+            "putInGroup(java.lang.Object, java.lang.String, java.lang.Object)",
+            "getFromGroup(java.lang.Object, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCacheSameRegionConcurrentUnitTest",
+      "method_signature": "testIndexedDiskCache1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.discovery.UDPDiscoveryServiceUnitTest",
+      "method_signature": "testAddOrUpdateService_InList_NamesDoNotChange()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.discovery.UDPDiscoveryService",
+          "focal_method_names": [
+            "addParticipatingCacheName(java.lang.String)",
+            "addOrUpdateService(org.apache.commons.jcs3.utils.discovery.DiscoveredService)",
+            "addDiscoveryListener(org.apache.commons.jcs3.utils.discovery.behavior.IDiscoveryListener)",
+            "startup()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.LateralTCPFilterRemoveHashCodeUnitTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.lateral.socket.tcp.LateralTCPService",
+          "focal_method_names": [
+            "setListenerId(long)",
+            "update(org.apache.commons.jcs3.engine.behavior.ICacheElement)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.mysql.MySQLDiskCacheHsqlBackedUnitTest",
+      "method_signature": "testPutGetMatchingWithHSQL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.jdbc.HsqlSetupUtil",
+          "focal_method_names": [
+            "getTestDatabaseConnection(java.util.Properties, java.lang.String)",
+            "setupTable(java.sql.Connection, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "getMatchingCacheElements(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskCacheSameRegionConcurrentUnitTest",
+      "method_signature": "testBlockDiskCache3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs.yajcache.core.CacheManagerTest",
+      "method_signature": "testRemoveCache()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICache",
+          "focal_method_names": [
+            "get(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICache",
+          "focal_method_names": [
+            "get(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICache",
+          "focal_method_names": [
+            "get(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testRemoveItems()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processUpdate(org.apache.commons.jcs3.engine.behavior.ICacheElement)",
+            "processRemoveAll()",
+            "processGet(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.discovery.UDPDiscoveryServiceUnitTest",
+      "method_signature": "testAddOrUpdateService_NotInList()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.discovery.UDPDiscoveryService",
+          "focal_method_names": [
+            "addParticipatingCacheName(java.lang.String)",
+            "addOrUpdateService(org.apache.commons.jcs3.utils.discovery.DiscoveredService)",
+            "addDiscoveryListener(org.apache.commons.jcs3.utils.discovery.behavior.IDiscoveryListener)",
+            "startup()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.JDBCDiskCacheRemovalUnitTest",
+      "method_signature": "testPartialKeyRemoval_Good()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.jdbc.HsqlSetupUtil",
+          "focal_method_names": [
+            "getTestDatabaseConnection(java.util.Properties, java.lang.String)",
+            "setupTable(java.sql.Connection, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "remove(java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.discovery.UDPDiscoveryServiceUnitTest",
+      "method_signature": "testRemoveDiscoveredService()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.utils.discovery.UDPDiscoveryService",
+          "focal_method_names": [
+            "startup()",
+            "addParticipatingCacheName(java.lang.String)",
+            "removeDiscoveredService(org.apache.commons.jcs3.utils.discovery.DiscoveredService)",
+            "addOrUpdateService(org.apache.commons.jcs3.utils.discovery.DiscoveredService)",
+            "addDiscoveryListener(org.apache.commons.jcs3.utils.discovery.behavior.IDiscoveryListener)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.hsql.HSQLDiskCacheUnitTest",
+      "method_signature": "testBasicPutRemove()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "remove(java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testSimplePutAndGet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processUpdate(org.apache.commons.jcs3.engine.behavior.ICacheElement)",
+            "processRemoveAll()",
+            "processGet(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.AbstractIndexDiskCacheUnitTest",
+      "method_signature": "testProcessUpdate_SameKeyBiggerSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processGet(java.lang.Object)",
+            "getRecyleBinSize()",
+            "processUpdate(org.apache.commons.jcs3.engine.behavior.ICacheElement)",
+            "getDataFileSize()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICacheElement",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.access.GroupCacheAccessUnitTest",
+      "method_signature": "testInvalidate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.GroupCacheAccess",
+          "focal_method_names": [
+            "putInGroup(java.lang.Object, java.lang.String, java.lang.Object)",
+            "invalidateGroup(java.lang.String)",
+            "getFromGroup(java.lang.Object, java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskCacheKeyStoreUnitTest",
+      "method_signature": "testSaveLoadKeysSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskKeyStore",
+          "focal_method_names": [
+            "saveKeys()",
+            "size()",
+            "put(java.lang.Object, int[])",
+            "clearMemoryMap()",
+            "get(java.lang.Object)",
+            "loadKeys()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.mysql.MySQLDiskCacheHsqlBackedUnitTest",
+      "method_signature": "testSimpleJDBCPutGetWithHSQL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.jdbc.HsqlSetupUtil",
+          "focal_method_names": [
+            "getTestDatabaseConnection(java.util.Properties, java.lang.String)",
+            "setupTable(java.sql.Connection, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "remove(java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.utils.serialization.SerializerUnitTest",
+      "method_signature": "testReadWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs.yajcache.core.CacheManagerTest",
+      "method_signature": "testGetCache()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICache",
+          "focal_method_names": [
+            "get(java.lang.String)",
+            "getValueType()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICache",
+          "focal_method_names": [
+            "get(java.lang.String)",
+            "getValueType()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICache",
+          "focal_method_names": [
+            "get(java.lang.String)",
+            "getValueType()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.access.CacheAccessUnitTest",
+      "method_signature": "testGetCacheElements()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "get(java.lang.Object, java.util.function.Supplier)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICacheElement",
+          "focal_method_names": [
+            "getKey()",
+            "getVal()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCacheKeyStoreUnitTest",
+      "method_signature": "testOptiimize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "processUpdate(org.apache.commons.jcs3.engine.behavior.ICacheElement)",
+            "processRemoveAll()",
+            "getDataFileSize()",
+            "optimizeFile()",
+            "processGet(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.engine.behavior.ICacheElement",
+          "focal_method_names": [
+            "setElementAttributes(org.apache.commons.jcs3.engine.behavior.IElementAttributes)",
+            "getVal()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskCacheKeyStoreUnitTest",
+      "method_signature": "testSaveLoadKeys()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.block.BlockDiskKeyStore",
+          "focal_method_names": [
+            "saveKeys()",
+            "size()",
+            "put(java.lang.Object, int[])",
+            "clearMemoryMap()",
+            "get(java.lang.Object)",
+            "loadKeys()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.jdbc.JDBCDiskCacheSharedPoolUnitTest",
+      "method_signature": "testSimpleJDBCPutGetWithHSQL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.jdbc.HsqlSetupUtil",
+          "focal_method_names": [
+            "getTestDatabaseConnection(java.util.Properties, java.lang.String)",
+            "setupTable(java.sql.Connection, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs3.access.CacheAccess",
+          "focal_method_names": [
+            "put(java.lang.Object, java.lang.Object)",
+            "remove(java.lang.Object)",
+            "getCacheElements(java.util.Set)",
+            "get(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCacheKeyStoreUnitTest",
+      "method_signature": "testStoreKeys()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs3.auxiliary.disk.indexed.IndexedDiskCache",
+          "focal_method_names": [
+            "saveKeys()",
+            "processUpdate(org.apache.commons.jcs3.engine.behavior.ICacheElement)",
+            "processRemoveAll()",
+            "dump()",
+            "processGet(java.lang.Object)",
+            "getSize()",
+            "loadKeys()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.jcs.yajcache.core.SafeCacheManagerTest",
+      "method_signature": "testGetSafeCache()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICacheSafe",
+          "focal_method_names": [
+            "getBeanClone(java.lang.String)",
+            "putCopy(java.lang.String, java.lang.Object)",
+            "putBeanClone(java.lang.String, java.lang.Object)",
+            "putBeanCopy(java.lang.String, java.lang.Object)",
+            "getBeanCopy(java.lang.String)",
+            "getCopy(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.jcs.yajcache.core.ICacheSafe",
+          "focal_method_names": [
+            "getBeanClone(java.lang.String)",
+            "putCopy(java.lang.String, java.lang.Object)",
+            "putBeanClone(java.lang.String, java.lang.Object)",
+            "putBeanCopy(java.lang.String, java.lang.Object)",
+            "getBeanCopy(java.lang.String)",
+            "getCopy(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ]
+}

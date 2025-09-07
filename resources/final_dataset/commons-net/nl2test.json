@@ -1,0 +1,1445 @@
+{
+  "dataset_name": "commons-net",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.net.imap.IMAPTest",
+      "method_signature": "testQuoteMailboxNoQuotingIfNoSpacePresent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.imap.IMAP",
+          "focal_method_names": [
+            "quoteMailboxName(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsNet728Test",
+      "method_signature": "testCidr1InRange2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsNet728Test",
+      "method_signature": "testCidr2NotInRange3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.imap.IMAPReplyTest",
+      "method_signature": "testGetUntaggedReplyCodeNoLine()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.imap.IMAPReply",
+          "focal_method_names": [
+            "getUntaggedReplyCode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testEncodeBase64StringByteArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "encodeBase64String(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.CompositeFTPParseTestFramework",
+      "method_signature": "testInconsistentListing()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFileEntryParser",
+          "focal_method_names": [
+            "parseFTPEntry(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testEncodeBase64ByteArrayBooleanBoolean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "encodeBase64(byte[], boolean, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testIsArrayByteBase64()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "isArrayByteBase64(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsNet728Test",
+      "method_signature": "testCidr2InRange3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testIsBase64()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "isBase64(byte)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testDecodeInteger()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "decodeInteger(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testEncodeBase64Chunked()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "encodeBase64Chunked(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.TrustManagerUtilsTest",
+      "method_signature": "testGetDefaultTrustManager()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.TrustManagerUtils",
+          "focal_method_names": [
+            "getDefaultTrustManager(java.security.KeyStore)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.imap.IMAPReplyTest",
+      "method_signature": "testGetReplyCodeBadLine()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.imap.IMAPReply",
+          "focal_method_names": [
+            "getReplyCode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.io.DotTerminatedMessageReaderTest",
+      "method_signature": "testEmbeddedNewlines()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.io.DotTerminatedMessageReader",
+          "focal_method_names": [
+            "read(char[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ntp.TimeStampTest",
+      "method_signature": "testUTCString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ntp.TimeStamp",
+          "focal_method_names": [
+            "toUTCString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.nntp.TestThreader",
+      "method_signature": "testNullArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.nntp.Threader",
+          "focal_method_names": [
+            "thread(org.apache.commons.net.nntp.Threadable[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.imap.IMAPReplyTest",
+      "method_signature": "testGetUntaggedReplyCodeContinuationLine()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.imap.IMAPReply",
+          "focal_method_names": [
+            "getUntaggedReplyCode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.io.DotTerminatedMessageReaderTest",
+      "method_signature": "testReadLine1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.io.DotTerminatedMessageReader",
+          "focal_method_names": [
+            "readLine()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.nntp.TestThreader",
+      "method_signature": "testEmptyList()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.nntp.Threader",
+          "focal_method_names": [
+            "thread(java.util.List)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.net.telnet.AbstractTelnetOptionHandlerTest",
+      "method_signature": "testWill()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.telnet.TelnetOptionHandler",
+          "focal_method_names": [
+            "getWill()",
+            "setWill(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testSubnetAddressIterableCount(org.apache.commons.lang3.tuple.ImmutablePair)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()",
+            "setInclusiveHostCount(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.io.ToNetASCIIInputStreamTest",
+      "method_signature": "testToNetASCIIInputStream1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.io.ToNetASCIIInputStream",
+          "focal_method_names": [
+            "read()",
+            "read(byte[], int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.FTPTimestampParserImplTest",
+      "method_signature": "testParseJan01Lenient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+          "focal_method_names": [
+            "parseTimestamp(java.lang.String, java.util.Calendar)",
+            "setLenientFutureDates(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.echo.EchoUDPClientTest",
+      "method_signature": "testSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.echo.EchoUDPClient",
+          "focal_method_names": [
+            "send(byte[], int, java.net.InetAddress)",
+            "send(byte[], java.net.InetAddress)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPServerPathTest",
+      "method_signature": "testWriteOutsideHome()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.tftp.TFTPServer",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.net.tftp.TFTPClient",
+          "focal_method_names": [
+            "open()",
+            "sendFile(java.lang.String, int, java.io.InputStream, java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.telnet.SimpleOptionHandlerTest",
+      "method_signature": "testConstructors()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.telnet.TelnetOptionHandler",
+          "focal_method_names": [
+            "getInitLocal()",
+            "getInitRemote()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testPrevious()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getPrevious()",
+            "getInfo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.FTPTimestampParserImplTest",
+      "method_signature": "testParseShortFutureDates2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+          "focal_method_names": [
+            "parseTimestamp(java.lang.String, java.util.Calendar)",
+            "setLenientFutureDates(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.time.TimeUDPClientTest",
+      "method_signature": "testGetDate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.time.TimeUDPClient",
+          "focal_method_names": [
+            "getDate(java.net.InetAddress)",
+            "getDate(java.net.InetAddress, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.imap.IMAPTest",
+      "method_signature": "testConstructDefaultIMAP()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.imap.IMAP",
+          "focal_method_names": [
+            "getReplyStrings()",
+            "getDefaultPort()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.FTPTimestampParserImplTest",
+      "method_signature": "testFeb29LeapYear4()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+          "focal_method_names": [
+            "parseTimestamp(java.lang.String, java.util.Calendar)",
+            "setLenientFutureDates(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.ListenerListTest",
+      "method_signature": "testAdd()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.ListenerList",
+          "focal_method_names": [
+            "addListener(java.util.EventListener)",
+            "getListenerCount()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ntp.TestTimeInfo",
+      "method_signature": "testEquals()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ntp.TimeInfo",
+          "focal_method_names": [
+            "addComment(java.lang.String)",
+            "hashCode()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.FTPTimestampParserImplTest",
+      "method_signature": "testParser()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+          "focal_method_names": [
+            "configure(org.apache.commons.net.ftp.FTPClientConfig)",
+            "parseTimestamp(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.FTPTimestampParserImplTest",
+      "method_signature": "testParseShortPastDates2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+          "focal_method_names": [
+            "parseTimestamp(java.lang.String, java.util.Calendar)",
+            "setLenientFutureDates(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.finger.FingerClientTest",
+      "method_signature": "testQuery()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.finger.FingerClient",
+          "focal_method_names": [
+            "query(boolean)",
+            "query(boolean, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPFileTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "toString()",
+            "setRawListing(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.ListenerListTest",
+      "method_signature": "testIterator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.ListenerList",
+          "focal_method_names": [
+            "addListener(java.util.EventListener)",
+            "iterator()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.Base64Test",
+      "method_signature": "testDecodeBase64ByteArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.Base64",
+          "focal_method_names": [
+            "decode(byte[])",
+            "decodeBase64(byte[])"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testNET675()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()",
+            "setInclusiveHostCount(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils.SubnetInfo",
+          "focal_method_names": [
+            "isInRange(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.discard.DiscardUDPClientTest",
+      "method_signature": "testSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.discard.DiscardUDPClient",
+          "focal_method_names": [
+            "send(byte[], int, java.net.InetAddress, int)",
+            "send(byte[], int, java.net.InetAddress)",
+            "send(byte[], java.net.InetAddress)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.daytime.DaytimeTCPClientTest",
+      "method_signature": "getTime(java.lang.String, java.time.ZoneId, java.time.LocalDateTime)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.daytime.MockDaytimeTCPServer",
+          "focal_method_names": [
+            "enqueue(java.time.Clock)",
+            "start()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.daytime.DaytimeTCPClient",
+          "focal_method_names": [
+            "connect(java.net.InetAddress, int)",
+            "getTime()",
+            "setDefaultTimeout(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "toString()",
+            "getInfo()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils.SubnetInfo",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ntp.TestTimeInfo",
+      "method_signature": "testZeroTime()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ntp.TimeInfo",
+          "focal_method_names": [
+            "getOffset()",
+            "getReturnTime()",
+            "computeDetails()",
+            "getDelay()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.FTPTimestampParserImplTest",
+      "method_signature": "testParseTimestampWithSlop()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.FTPTimestampParserImpl",
+          "focal_method_names": [
+            "parseTimestamp(java.lang.String)",
+            "getRecentDateFormatString()",
+            "setLenientFutureDates(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ntp.TestNtpPacket",
+      "method_signature": "testCreateNtpV4()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ntp.NtpV3Packet",
+          "focal_method_names": [
+            "setVersion(int)",
+            "setReferenceId(int)",
+            "getReferenceIdString()",
+            "setStratum(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+      "method_signature": "testParsePassiveModeReplyForLocalAddressWithSimpleNatWorkaroundStrategy()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "setIpAddressFromPasvResponse(boolean)",
+            "setPassiveNatWorkaroundStrategy(org.apache.commons.net.ftp.FTPClient.HostnameResolver)",
+            "_parsePassiveModeReply(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPSClientTest",
+      "method_signature": "testMdtmFile(boolean)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPSClient",
+          "focal_method_names": [
+            "disconnect()",
+            "mdtmFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testTFTPBinaryUploads()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.tftp.TFTPClient",
+          "focal_method_names": [
+            "open()",
+            "setSoTimeout(int)",
+            "sendFile(java.lang.String, int, java.io.InputStream, java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.SocketClientFunctionalTest",
+      "method_signature": "testProxySettings()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.SocketClient",
+          "focal_method_names": [
+            "connect(java.lang.String, int)",
+            "disconnect()",
+            "setProxy(java.net.Proxy)",
+            "isConnected()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testTFTPBinaryDownloads()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.tftp.TFTPClient",
+          "focal_method_names": [
+            "open()",
+            "setSoTimeout(int)",
+            "receiveFile(java.lang.String, int, java.io.OutputStream, java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testASCIIUploads()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.tftp.TFTPClient",
+          "focal_method_names": [
+            "open()",
+            "setSoTimeout(int)",
+            "sendFile(java.lang.String, int, java.io.InputStream, java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testNET521()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()",
+            "setInclusiveHostCount(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils.SubnetInfo",
+          "focal_method_names": [
+            "getAddressCount()",
+            "getNetmask()",
+            "getAddressCountLong()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.parser.MVSFTPEntryParserTest",
+      "method_signature": "testMemberListing()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.parser.MVSFTPEntryParser",
+          "focal_method_names": [
+            "setType(int)",
+            "setRegex(java.lang.String)",
+            "parseFTPEntry(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+      "method_signature": "testParsePassiveModeReplyForLocalAddressWithoutNatWorkaroundStrategy()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "setIpAddressFromPasvResponse(boolean)",
+            "setPassiveNatWorkaroundStrategy(org.apache.commons.net.ftp.FTPClient.HostnameResolver)",
+            "_parsePassiveModeReply(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientTest",
+      "method_signature": "testInvalidLoginWithBadName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+      "method_signature": "testParsePassiveModeReplyForNonLocalAddressWithoutNatWorkaroundStrategy()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "setIpAddressFromPasvResponse(boolean)",
+            "setPassiveNatWorkaroundStrategy(org.apache.commons.net.ftp.FTPClient.HostnameResolver)",
+            "_parsePassiveModeReply(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.tftp.TFTP",
+          "focal_method_names": [
+            "open()",
+            "getLocalPort()",
+            "send(org.apache.commons.net.tftp.TFTPPacket)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testCidrAddresses()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()",
+            "setInclusiveHostCount(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils.SubnetInfo",
+          "focal_method_names": [
+            "getNetmask()",
+            "getAddressCount()",
+            "getAddressCountLong()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testListMessagesOnFullMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "setState(int)",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "listMessages()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testListUniqueIDsOnFullMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "listUniqueIdentifiers()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "setState(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.ListingFunctionalTest",
+      "method_signature": "testInitiateListParsingWithPath(org.apache.commons.net.ftp.ListingFunctionalTest.TestCase)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "enterLocalPassiveMode()",
+            "connect(java.lang.String)",
+            "login(java.lang.String, java.lang.String)",
+            "setAutodetectUTF8(boolean)",
+            "opts(java.lang.String, java.lang.String)",
+            "addProtocolCommandListener(org.apache.commons.net.ProtocolCommandListener)",
+            "initiateListParsing(java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "toString()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.ListingFunctionalTest.TestCase",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPListParseEngine",
+          "focal_method_names": [
+            "getNext(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.ListingFunctionalTest",
+      "method_signature": "testListNamesWithPath(org.apache.commons.net.ftp.ListingFunctionalTest.TestCase)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "listNames(java.lang.String)",
+            "enterLocalPassiveMode()",
+            "connect(java.lang.String)",
+            "login(java.lang.String, java.lang.String)",
+            "setAutodetectUTF8(boolean)",
+            "opts(java.lang.String, java.lang.String)",
+            "addProtocolCommandListener(org.apache.commons.net.ProtocolCommandListener)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.ListingFunctionalTest.TestCase",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testDeleteWithReset()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "deleteMessage(int)",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "reset()",
+            "logout()",
+            "listMessages()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testNoopCommand()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "noop()",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "setState(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testListMessagesOnEmptyMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "setState(int)",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "listMessages()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.time.TimeTCPClientTest",
+      "method_signature": "testCompareTimes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.time.TimeTestSimpleServer",
+          "focal_method_names": [
+            "stop()",
+            "connect()",
+            "start()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.time.TimeTCPClient",
+          "focal_method_names": [
+            "getDate()",
+            "connect(java.net.InetAddress, int)",
+            "setDefaultTimeout(int)",
+            "disconnect()",
+            "isConnected()",
+            "getTime()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTransferModeTest",
+      "method_signature": "testStoringFiles(int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClientTransferModeTest.Runner",
+          "focal_method_names": [
+            "run(int, java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClientTransferModeTest.FtpServerAndPort",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "connect(java.lang.String, int)",
+            "setFileTransferMode(int)",
+            "listFiles()",
+            "login(java.lang.String, java.lang.String)",
+            "logout()",
+            "storeFile(java.lang.String, java.io.InputStream)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.ListingFunctionalTest",
+      "method_signature": "testInitiateListParsing(org.apache.commons.net.ftp.ListingFunctionalTest.TestCase)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "enterLocalPassiveMode()",
+            "connect(java.lang.String)",
+            "login(java.lang.String, java.lang.String)",
+            "setAutodetectUTF8(boolean)",
+            "opts(java.lang.String, java.lang.String)",
+            "addProtocolCommandListener(org.apache.commons.net.ProtocolCommandListener)",
+            "initiateListParsing()",
+            "changeWorkingDirectory(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "toString()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.ListingFunctionalTest.TestCase",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPListParseEngine",
+          "focal_method_names": [
+            "getNext(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.ListingFunctionalTest",
+      "method_signature": "testPrintWorkingDirectory(org.apache.commons.net.ftp.ListingFunctionalTest.TestCase)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "enterLocalPassiveMode()",
+            "connect(java.lang.String)",
+            "login(java.lang.String, java.lang.String)",
+            "setAutodetectUTF8(boolean)",
+            "opts(java.lang.String, java.lang.String)",
+            "addProtocolCommandListener(org.apache.commons.net.ProtocolCommandListener)",
+            "printWorkingDirectory()",
+            "changeWorkingDirectory(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.ListingFunctionalTest.TestCase",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testRetrieveMessageTopOnFullMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "retrieveMessageTop(int, int)",
+            "listMessages()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testListUniqueIDOnFullMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "listUniqueIdentifier(int)",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "setState(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3MessageInfo",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testParseSimpleNetmaskInclusive()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()",
+            "setInclusiveHostCount(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils.SubnetInfo",
+          "focal_method_names": [
+            "getBroadcastAddress()",
+            "getNetworkAddress()",
+            "getLowAddress()",
+            "getAddressCount()",
+            "getCidrSignature()",
+            "getHighAddress()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testRetrieveMessageOnEmptyMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "retrieveMessage(int)",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTransferModeTest",
+      "method_signature": "testRetrievingFiles(int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClientTransferModeTest.Runner",
+          "focal_method_names": [
+            "run(int, java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClientTransferModeTest.FtpServerAndPort",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "connect(java.lang.String, int)",
+            "retrieveFile(java.lang.String, java.io.OutputStream)",
+            "setFileTransferMode(int)",
+            "listFiles()",
+            "login(java.lang.String, java.lang.String)",
+            "logout()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientCommandsTest",
+      "method_signature": "testRetrieveOverSizedMessageTopOnFullMailbox()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "listMessage(int)",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "retrieveMessageTop(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3MessageInfo",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ClientTest",
+      "method_signature": "testLoginFromWrongState()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "getState()",
+            "connect(java.net.InetAddress)",
+            "disconnect()",
+            "login(java.lang.String, java.lang.String)",
+            "isConnected()",
+            "setState(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.util.SubnetUtilsTest",
+      "method_signature": "testParseSimpleNetmaskExclusive()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils",
+          "focal_method_names": [
+            "getInfo()",
+            "setInclusiveHostCount(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.util.SubnetUtils.SubnetInfo",
+          "focal_method_names": [
+            "getBroadcastAddress()",
+            "getNetworkAddress()",
+            "getLowAddress()",
+            "getAddressCount()",
+            "getCidrSignature()",
+            "getHighAddress()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.ListingFunctionalTest",
+      "method_signature": "testListFiles(org.apache.commons.net.ftp.ListingFunctionalTest.TestCase)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "enterLocalPassiveMode()",
+            "connect(java.lang.String)",
+            "listFiles(java.lang.String)",
+            "login(java.lang.String, java.lang.String)",
+            "configure(org.apache.commons.net.ftp.FTPClientConfig)",
+            "setAutodetectUTF8(boolean)",
+            "opts(java.lang.String, java.lang.String)",
+            "addProtocolCommandListener(org.apache.commons.net.ProtocolCommandListener)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "toString()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.ListingFunctionalTest.TestCase",
+          "focal_method_names": []
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.net.ntp.TestNtpPacket",
+      "method_signature": "testCreate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ntp.NtpV3Packet",
+          "focal_method_names": [
+            "getRootDelay()",
+            "getRootDispersion()",
+            "getRootDispersionInMillis()",
+            "setRootDispersion(int)",
+            "getPrecision()",
+            "setLeapIndicator(int)",
+            "setVersion(int)",
+            "getType()",
+            "setOriginateTimeStamp(org.apache.commons.net.ntp.TimeStamp)",
+            "getReferenceIdString()",
+            "setReferenceId(int)",
+            "setPoll(int)",
+            "getPoll()",
+            "getModeName()",
+            "getReferenceTimeStamp()",
+            "setReceiveTimeStamp(org.apache.commons.net.ntp.TimeStamp)",
+            "setPrecision(int)",
+            "getReferenceId()",
+            "getDatagramPacket()",
+            "setMode(int)",
+            "toString()",
+            "setReferenceTime(org.apache.commons.net.ntp.TimeStamp)",
+            "setTransmitTime(org.apache.commons.net.ntp.TimeStamp)",
+            "getRootDelayInMillisDouble()",
+            "setStratum(int)",
+            "setRootDelay(int)",
+            "setDatagramPacket(java.net.DatagramPacket)",
+            "hashCode()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientConfigFunctionalTest",
+      "method_signature": "testTimeZoneFunctionality()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPClient",
+          "focal_method_names": [
+            "enterLocalPassiveMode()",
+            "connect(java.lang.String)",
+            "listFiles()",
+            "login(java.lang.String, java.lang.String)",
+            "configure(org.apache.commons.net.ftp.FTPClientConfig)",
+            "changeWorkingDirectory(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "getTimestampInstant()",
+            "getTimestamp()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "getTimestampInstant()",
+            "getTimestamp()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "getTimestampInstant()",
+            "getTimestamp()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "getTimestampInstant()",
+            "getTimestamp()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPFile",
+          "focal_method_names": [
+            "getTimestampInstant()",
+            "getTimestamp()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPSClientGettersTest",
+      "method_signature": "testGetters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.ftp.FTPSClient",
+          "focal_method_names": [
+            "setEnabledProtocols(java.lang.String[])",
+            "isImplicit()",
+            "setAuthValue(java.lang.String)",
+            "isClientMode()",
+            "setNeedClientAuth(boolean)",
+            "setEnabledCipherSuites(java.lang.String[])",
+            "setEnabledSessionCreation(boolean)",
+            "setWantClientAuth(boolean)",
+            "isWantClientAuth()",
+            "setUseClientMode(boolean)",
+            "isCreation()",
+            "getAuthValue()",
+            "isNeedClientAuth()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.net.pop3.POP3ConstructorTest",
+      "method_signature": "testPOP3ClientStateTransition()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.net.pop3.POP3Client",
+          "focal_method_names": [
+            "status()",
+            "getState()",
+            "listMessage(int)",
+            "listUniqueIdentifiers()",
+            "connect(java.lang.String)",
+            "noop()",
+            "retrieveMessage(int)",
+            "listUniqueIdentifier(int)",
+            "deleteMessage(int)",
+            "login(java.lang.String, java.lang.String)",
+            "reset()",
+            "logout()",
+            "getDefaultPort()",
+            "retrieveMessageTop(int, int)",
+            "listMessages()"
+          ]
+        }
+      ]
+    }
+  ]
+}

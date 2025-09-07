@@ -1,0 +1,699 @@
+{
+  "dataset_name": "commons-crypto",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.CryptoCipherFactoryTest",
+      "method_signature": "testInvalidTransformation()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipherFactory",
+          "focal_method_names": [
+            "getCryptoCipher(java.lang.String, java.util.Properties)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testInvalidTransform()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "close()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testInvalidIV()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.random.CryptoRandomFactoryTest",
+      "method_signature": "testFailingRandom()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.random.CryptoRandomFactory",
+          "focal_method_names": [
+            "getCryptoRandom(java.util.Properties)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.utils.UtilsTest",
+      "method_signature": "testGetProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.utils.Utils",
+          "focal_method_names": [
+            "getProperties(java.util.Properties)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.CryptoCipherFactoryTest",
+      "method_signature": "testInvalidCipher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipherFactory",
+          "focal_method_names": [
+            "getCryptoCipher(java.lang.String, java.util.Properties)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.CryptoTest",
+      "method_signature": "testLoadingError()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.Crypto",
+          "focal_method_names": [
+            "getLoadingError()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.NativeCodeLoaderTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.NativeCodeLoader",
+          "focal_method_names": [
+            "isNativeCodeLoaded()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.CryptoTest",
+      "method_signature": "testGetComponentName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.Crypto",
+          "focal_method_names": [
+            "getComponentName()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testInvalidKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testCloseTestAfterInit()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.input.ChannelInputTest",
+      "method_signature": "testSkipWithSkipBuffer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.stream.input.ChannelInput",
+          "focal_method_names": [
+            "skip(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.random.CryptoRandomFactoryTest",
+      "method_signature": "testNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.random.CryptoRandomFactory",
+          "focal_method_names": [
+            "getCryptoRandom(java.util.Properties)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.jna.AbstractCipherJnaStreamTest",
+      "method_signature": "testReadWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.jna.OpenSslJna",
+          "focal_method_names": [
+            "isEnabled()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.AbstractCipherStreamTest",
+      "method_signature": "testSkip()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.utils.AES",
+          "focal_method_names": [
+            "newSecretKeySpec(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testInvalidMode()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSsl",
+          "focal_method_names": [
+            "getInstance(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.jna.PositionedCryptoInputStreamJnaTest",
+      "method_signature": "testCipher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.jna.OpenSslJna",
+          "focal_method_names": [
+            "isEnabled()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.jna.OpenSslNativeJnaTest",
+      "method_signature": "test(org.junit.jupiter.api.TestReporter)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.jna.OpenSslJna",
+          "focal_method_names": [
+            "isEnabled()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testNullTransform()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "close()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.CryptoTest",
+      "method_signature": "testGetComponentVersion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.Crypto",
+          "focal_method_names": [
+            "getComponentVersion()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testInvalidKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSsl",
+          "focal_method_names": [
+            "init(int, byte[], java.security.spec.AlgorithmParameterSpec)",
+            "getInstance(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testReInitAfterClose()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)",
+            "close()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.NativeCodeLoaderTest",
+      "method_signature": "testNativeNotPresent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.NativeCodeLoader",
+          "focal_method_names": [
+            "isNativeCodeLoaded()",
+            "getLoadingError()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.NativeCodeLoaderTest",
+      "method_signature": "testNativePresent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.NativeCodeLoader",
+          "focal_method_names": [
+            "isNativeCodeLoaded()",
+            "getLoadingError()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.AbstractCipherStreamTest",
+      "method_signature": "testExceptions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.utils.AES",
+          "focal_method_names": [
+            "newSecretKeySpec(byte[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.stream.CryptoInputStream",
+          "focal_method_names": [
+            "checkStreamCipher(org.apache.commons.crypto.cipher.CryptoCipher)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testInvalidIV()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSsl",
+          "focal_method_names": [
+            "init(int, byte[], java.security.spec.AlgorithmParameterSpec)",
+            "getInstance(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testInvalidIVClass()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSsl",
+          "focal_method_names": [
+            "init(int, byte[], java.security.spec.AlgorithmParameterSpec)",
+            "getInstance(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.jna.OpenSslJnaTest",
+      "method_signature": "testMain()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.jna.OpenSslJna",
+          "focal_method_names": [
+            "main(java.lang.String[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.jna.OpenSslNativeJna",
+          "focal_method_names": [
+            "OpenSSL_version_num()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.NativeCodeLoaderTest",
+      "method_signature": "testCanLoadIfPresent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.NativeCodeLoader",
+          "focal_method_names": [
+            "isNativeCodeLoaded()",
+            "loadLibrary()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.CtrCryptoStreamTest",
+      "method_signature": "testDecrypt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.stream.CtrCryptoInputStream",
+          "focal_method_names": [
+            "decrypt(java.nio.ByteBuffer, int, int)",
+            "decryptBuffer(java.nio.ByteBuffer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.OsInfoTest",
+      "method_signature": "testMain()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.OsInfo",
+          "focal_method_names": [
+            "main(java.lang.String[])",
+            "getNativeLibFolderPathForCurrentOS()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGMac()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "updateAAD(byte[])",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)",
+            "doFinal(byte[], int, int, byte[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testCipherLifecycle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSslCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "update(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)",
+            "close()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.CryptoTest",
+      "method_signature": "testMain()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.Crypto",
+          "focal_method_names": [
+            "isNativeCodeLoaded()",
+            "main(java.lang.String[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.OpenSslInfoNative",
+          "focal_method_names": [
+            "OpenSSL()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testUpdateArguments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSsl",
+          "focal_method_names": [
+            "init(int, byte[], java.security.spec.AlgorithmParameterSpec)",
+            "getInstance(java.lang.String)",
+            "update(java.nio.ByteBuffer, java.nio.ByteBuffer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.AbstractCipherStreamTest",
+      "method_signature": "testReadWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.stream.CryptoOutputStream",
+          "focal_method_names": [
+            "write(byte[], int, int)",
+            "flush()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.stream.CryptoInputStream",
+          "focal_method_names": [
+            "read()",
+            "read(byte[], int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.OpenSslCipherTest",
+      "method_signature": "testDoFinalArguments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.OpenSsl",
+          "focal_method_names": [
+            "init(int, byte[], java.security.spec.AlgorithmParameterSpec)",
+            "getInstance(java.lang.String)",
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.AbstractCipherStreamTest",
+      "method_signature": "testByteBufferWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.utils.AES",
+          "focal_method_names": [
+            "newSecretKeySpec(byte[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.stream.CryptoOutputStream",
+          "focal_method_names": [
+            "write(java.nio.ByteBuffer)",
+            "write(byte[], int, int)",
+            "flush()",
+            "write(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.AbstractCipherTest",
+      "method_signature": "testCryptoTest()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "doFinal(byte[], int, int, byte[], int)",
+            "update(byte[], int, int, byte[], int)",
+            "getBlockSize()",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGcmTamperedData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "updateAAD(byte[])",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)",
+            "doFinal(byte[], int, int, byte[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGMacTamperedData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "updateAAD(byte[])",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)",
+            "doFinal(byte[], int, int, byte[], int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.PositionedCryptoInputStreamTest",
+      "method_signature": "testJNI()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.utils.AES",
+          "focal_method_names": [
+            "newSecretKeySpec(byte[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.stream.PositionedCryptoInputStream",
+          "focal_method_names": [
+            "read(long, byte[], int, int)",
+            "readFully(long, byte[])",
+            "readFully(long, byte[], int, int)",
+            "read(java.nio.ByteBuffer)",
+            "close()",
+            "available()",
+            "seek(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGcmNistCase4()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "doFinal(byte[], int, int, byte[], int)",
+            "updateAAD(byte[])",
+            "update(byte[], int, int, byte[], int)",
+            "updateAAD(java.nio.ByteBuffer)",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGcmNistCase2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "doFinal(byte[], int, int, byte[], int)",
+            "updateAAD(byte[])",
+            "update(byte[], int, int, byte[], int)",
+            "updateAAD(java.nio.ByteBuffer)",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGcmNistCase6()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "doFinal(byte[], int, int, byte[], int)",
+            "updateAAD(byte[])",
+            "update(byte[], int, int, byte[], int)",
+            "updateAAD(java.nio.ByteBuffer)",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGcmNistCase5()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "doFinal(byte[], int, int, byte[], int)",
+            "updateAAD(byte[])",
+            "update(byte[], int, int, byte[], int)",
+            "updateAAD(java.nio.ByteBuffer)",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.cipher.GcmCipherTest",
+      "method_signature": "testGcmNistCases()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.cipher.CryptoCipher",
+          "focal_method_names": [
+            "doFinal(java.nio.ByteBuffer, java.nio.ByteBuffer)",
+            "doFinal(byte[], int, int, byte[], int)",
+            "updateAAD(byte[])",
+            "update(byte[], int, int, byte[], int)",
+            "updateAAD(java.nio.ByteBuffer)",
+            "init(int, java.security.Key, java.security.spec.AlgorithmParameterSpec)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.crypto.stream.PositionedCryptoInputStreamTest",
+      "method_signature": "testJCE()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.crypto.utils.AES",
+          "focal_method_names": [
+            "newSecretKeySpec(byte[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.crypto.stream.PositionedCryptoInputStream",
+          "focal_method_names": [
+            "read(long, byte[], int, int)",
+            "readFully(long, byte[])",
+            "readFully(long, byte[], int, int)",
+            "read(java.nio.ByteBuffer)",
+            "close()",
+            "available()",
+            "seek(long)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": []
+}

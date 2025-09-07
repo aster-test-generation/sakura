@@ -1,0 +1,1720 @@
+{
+  "dataset_name": "commons-text",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceInTakingStringBufferWithNonNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuffer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testEnsureCapacityOutOfMemoryError()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "ensureCapacity(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.AlphabetConverterTest",
+      "method_signature": "testMissingDoNotEncodeLettersFromOriginalTest()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.AlphabetConverter",
+          "focal_method_names": [
+            "createConverterFromChars(java.lang.Character[], java.lang.Character[], java.lang.Character[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringEscapeUtilsTest",
+      "method_signature": "testUnescapeXmlSupplementaryCharacters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringEscapeUtils",
+          "focal_method_names": [
+            "unescapeXml(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.WordUtilsTest",
+      "method_signature": "testCapitalizeFully_Text88()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.WordUtils",
+          "focal_method_names": [
+            "capitalizeFully(java.lang.String, char[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringSubstitutorTest",
+      "method_signature": "testReplaceEmptyString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringSubstitutor",
+          "focal_method_names": [
+            "replace(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringEscapeUtilsTest",
+      "method_signature": "testEscapeHtml3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringEscapeUtils",
+          "focal_method_names": [
+            "escapeHtml4(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringEscapeUtilsTest",
+      "method_signature": "testUnescapeHexCharsHtml()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringEscapeUtils",
+          "focal_method_names": [
+            "unescapeHtml4(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringSubstitutorTest",
+      "method_signature": "testResolveVariable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringSubstitutor",
+          "focal_method_names": [
+            "replaceIn(org.apache.commons.text.TextStringBuilder)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.WordUtilsTest",
+      "method_signature": "testLANG1292()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.WordUtils",
+          "focal_method_names": [
+            "wrap(java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.similarity.LongestCommonSubsequenceTest",
+      "method_signature": "testGettingLogestCommonSubsequenceNullString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.similarity.LongestCommonSubsequence",
+          "focal_method_names": [
+            "logestCommonSubsequence(java.lang.CharSequence, java.lang.CharSequence)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.similarity.JaroWinklerDistanceTest",
+      "method_signature": "testGetJaroWinklerDistance_NullNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.similarity.JaroWinklerDistance",
+          "focal_method_names": [
+            "apply(java.lang.CharSequence, java.lang.CharSequence)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testGetSetSuffix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "commaMatcher()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringEscapeUtilsTest",
+      "method_signature": "testDeleteCharacter()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringEscapeUtils",
+          "focal_method_names": [
+            "escapeJson(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.similarity.LongestCommonSubsequenceDistanceTest",
+      "method_signature": "testGettingLongestCommonSubsequenceDistanceStringNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.similarity.LongestCommonSubsequenceDistance",
+          "focal_method_names": [
+            "apply(java.lang.CharSequence, java.lang.CharSequence)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringSubstitutorTest",
+      "method_signature": "testStaticReplace()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringSubstitutor",
+          "focal_method_names": [
+            "replace(java.lang.Object, java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.matcher.StringMatcherFactoryTest",
+      "method_signature": "test_commaMatcher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.matcher.StringMatcher",
+          "focal_method_names": [
+            "size()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testIndexOf_String_int()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "indexOf(java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.RandomStringGeneratorTest",
+      "method_signature": "testRemoveFilters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.RandomStringGenerator.Builder",
+          "focal_method_names": [
+            "filteredBy(org.apache.commons.text.CharacterPredicate[])"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testReadFromReaderAppendsToEnd()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "readFrom(java.io.Reader)",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrMatcherTest",
+      "method_signature": "testSingleQuoteMatcher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "singleQuoteMatcher()",
+            "isMatch(char[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testStartsWith()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "append(java.lang.String)",
+            "startsWith(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "size()",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testToStringBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toStringBuilder()",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testIndexOf_StrMatcher_int()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "indexOf(org.apache.commons.text.StrMatcher, int)",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.AlphabetConverterTest",
+      "method_signature": "testCreateConverterFromCharsAndEquals()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.AlphabetConverter",
+          "focal_method_names": [
+            "createConverterFromChars(java.lang.Character[], java.lang.Character[], java.lang.Character[])",
+            "equals(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testLang412Right()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "appendFixedWidthPadRight(java.lang.Object, int, char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringTokenizerTest",
+      "method_signature": "testBasic4()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "next()",
+            "hasNext()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testToCharArrayIntInt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "toCharArray(int, int)",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.ParsedDecimalTest",
+      "method_signature": "testStringMethodAccuracy_random()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimalTest.FormatOptionsImpl",
+          "focal_method_names": [
+            "setExponentSeparator(java.lang.String)",
+            "setIncludeFractionPlaceholder(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testReplaceFirst_char_char()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "toString()",
+            "replaceFirst(char, char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testToStringBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "toStringBuilder()",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testAppendln()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "appendln(char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.AlphabetConverterTest",
+      "method_signature": "testEqualsWithSameObject()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.AlphabetConverter",
+          "focal_method_names": [
+            "createConverterFromChars(java.lang.Character[], java.lang.Character[], java.lang.Character[])",
+            "equals(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringSubstitutorTest",
+      "method_signature": "testLANG1055()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringSubstitutor",
+          "focal_method_names": [
+            "replace(java.lang.Object, java.util.Properties)",
+            "replaceSystemProperties(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringTokenizerTest",
+      "method_signature": "testTokenizeSubclassInputChange()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "next()",
+            "tokenize(char[], int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrMatcherTest",
+      "method_signature": "testTabMatcher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "tabMatcher()",
+            "isMatch(char[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrMatcherTest",
+      "method_signature": "testDoubleQuoteMatcher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "doubleQuoteMatcher()",
+            "isMatch(char[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.matcher.StringMatcherOnCharSequenceStringTest",
+      "method_signature": "testMatcherIndices()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.matcher.StringMatcher",
+          "focal_method_names": [
+            "isMatch(java.lang.CharSequence, int, int, int)",
+            "size()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testConstructors()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "capacity()",
+            "size()",
+            "length()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testMinimizeCapacity()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "capacity()",
+            "minimizeCapacity()",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringTokenizerTest",
+      "method_signature": "test3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "setDelimiterChar(char)",
+            "setQuoteChar(char)",
+            "setIgnoreEmptyTokens(boolean)",
+            "getTokenArray()",
+            "setIgnoredMatcher(org.apache.commons.text.matcher.StringMatcher)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testAppendStringBuilderNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "append(java.lang.StringBuilder)",
+            "append(java.lang.StringBuilder, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testClear()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "length()",
+            "append(java.lang.String)",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppendSeparator_String_int()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "append(java.lang.String)",
+            "appendSeparator(java.lang.String, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppendln_StringBuffer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "appendln(java.lang.StringBuffer)",
+            "appendNewLine()",
+            "append(java.lang.StringBuffer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppend_StringBuilder_int_int()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "setNullText(java.lang.String)",
+            "append(java.lang.String, int, int)",
+            "append(java.lang.StringBuilder, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderAppendInsertTest",
+      "method_signature": "testAppendFixedWidthPadLeft_int()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "clear()",
+            "toString()",
+            "length()",
+            "appendFixedWidthPadLeft(int, int, char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.AlphabetConverterTest",
+      "method_signature": "testCreateConverterFromMapAndEquals()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.AlphabetConverter",
+          "focal_method_names": [
+            "equals(java.lang.Object)",
+            "getEncodedCharLength()",
+            "createConverterFromMap(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppendSeparator_char()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "appendSeparator(char)",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testSetLength()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "toString()",
+            "setLength(int)",
+            "append(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.DoubleFormatTest",
+      "method_signature": "testPlain_localeFormatComparison()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.DoubleFormat.Builder",
+          "focal_method_names": [
+            "groupThousands(boolean)",
+            "formatSymbols(java.text.DecimalFormatSymbols)",
+            "minDecimalExponent(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.similarity.LevenshteinDetailedDistanceTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.similarity.LevenshteinDetailedDistance",
+          "focal_method_names": [
+            "apply(java.lang.CharSequence, java.lang.CharSequence)",
+            "getDefaultInstance()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.similarity.LevenshteinResults",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppendFixedWidthPadLeft_int()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "clear()",
+            "toString()",
+            "length()",
+            "appendFixedWidthPadLeft(int, int, char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringTokenizerTest",
+      "method_signature": "testReset_charArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "next()",
+            "reset(char[])",
+            "hasNext()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.ParsedDecimalTest",
+      "method_signature": "testToEngineeringString_defaults()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimal",
+          "focal_method_names": [
+            "from(double)",
+            "toEngineeringString(org.apache.commons.text.numbers.ParsedDecimal.FormatOptions)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimal.FormatOptions",
+          "focal_method_names": [
+            "getMinusSign()",
+            "getExponentSeparatorChars()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testBasicQuotedTrimmed1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "setEmptyTokenAsNull(boolean)",
+            "hasNext()",
+            "setIgnoreEmptyTokens(boolean)",
+            "setTrimmerMatcher(org.apache.commons.text.StrMatcher)",
+            "next()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.ParsedDecimalTest",
+      "method_signature": "testMaxPrecision()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimal",
+          "focal_method_names": [
+            "maxPrecision(int)",
+            "from(double)",
+            "getScientificExponent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testReset_charArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "next()",
+            "reset(char[])",
+            "hasNext()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testWrap_CharArray_Int_1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "ensureCapacity(int)",
+            "wrap(char[], int)",
+            "size()",
+            "length()",
+            "capacity()",
+            "isReallocated()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testBasicIgnoreTrimmed2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "setEmptyTokenAsNull(boolean)",
+            "hasNext()",
+            "setIgnoreEmptyTokens(boolean)",
+            "setIgnoredMatcher(org.apache.commons.text.StrMatcher)",
+            "setTrimmerMatcher(org.apache.commons.text.StrMatcher)",
+            "next()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.AlphabetConverterTest",
+      "method_signature": "testHebrewTest()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.AlphabetConverter",
+          "focal_method_names": [
+            "createConverterFromChars(java.lang.Character[], java.lang.Character[], java.lang.Character[])",
+            "decode(java.lang.String)",
+            "encode(java.lang.String)",
+            "createConverterFromMap(java.util.Map)",
+            "hashCode()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderTest",
+      "method_signature": "testAsTokenizer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "asTokenizer()",
+            "append(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "reset()",
+            "size()",
+            "getTokenArray()",
+            "next()",
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrMatcherTest",
+      "method_signature": "testCharSetMatcher_charArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "charSetMatcher(char[])",
+            "isMatch(char[], int)",
+            "noneMatcher()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "charSetMatcher(char[])",
+            "isMatch(char[], int)",
+            "noneMatcher()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.DoubleFormatTest",
+      "method_signature": "testEngineering_custom()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.DoubleFormat.Builder",
+          "focal_method_names": [
+            "exponentSeparator(java.lang.String)",
+            "decimalSeparator(char)",
+            "minusSign(char)",
+            "minDecimalExponent(int)",
+            "includeFractionPlaceholder(boolean)",
+            "infinity(java.lang.String)",
+            "maxPrecision(int)",
+            "allowSignedZero(boolean)",
+            "nan(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringTokenizerTest",
+      "method_signature": "test6()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "hasPrevious()",
+            "previous()",
+            "setDelimiterChar(char)",
+            "hasNext()",
+            "setQuoteChar(char)",
+            "setIgnoreEmptyTokens(boolean)",
+            "next()",
+            "getTokenArray()",
+            "setIgnoredMatcher(org.apache.commons.text.matcher.StringMatcher)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.ParsedDecimalTest",
+      "method_signature": "testToScientificString_altFormats()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimalTest.FormatOptionsImpl",
+          "focal_method_names": [
+            "setExponentSeparator(java.lang.String)",
+            "setAlwaysIncludeExponent(boolean)",
+            "setDecimalSeparator(char)",
+            "setSignedZero(boolean)",
+            "setIncludeFractionPlaceholder(boolean)",
+            "setMinusSign(char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testCSVSimple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "getTSVInstance()",
+            "previousToken()",
+            "previousIndex()",
+            "getCSVInstance(java.lang.String)",
+            "getCSVInstance()",
+            "nextToken()",
+            "size()",
+            "nextIndex()",
+            "getCSVInstance(char[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "test5()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "setDelimiterChar(char)",
+            "setEmptyTokenAsNull(boolean)",
+            "setQuoteChar(char)",
+            "setIgnoreEmptyTokens(boolean)",
+            "setIgnoredMatcher(org.apache.commons.text.StrMatcher)",
+            "getTokenArray()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppendWithNullText()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "append(java.lang.String)",
+            "appendNull()",
+            "append(java.lang.Object)",
+            "setNullText(java.lang.String)",
+            "append(java.lang.StringBuffer)",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testBasicIgnoreTrimmed4()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "setEmptyTokenAsNull(boolean)",
+            "hasNext()",
+            "setIgnoreEmptyTokens(boolean)",
+            "setIgnoredMatcher(org.apache.commons.text.StrMatcher)",
+            "setTrimmerMatcher(org.apache.commons.text.StrMatcher)",
+            "next()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testCSVSimpleNeedsTrim()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "getTSVInstance()",
+            "previousToken()",
+            "previousIndex()",
+            "getCSVInstance(java.lang.String)",
+            "getCSVInstance()",
+            "nextToken()",
+            "size()",
+            "nextIndex()",
+            "getCSVInstance(char[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrMatcherTest",
+      "method_signature": "testCharSetMatcher_String()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "isMatch(char[], int)",
+            "charSetMatcher(java.lang.String)",
+            "noneMatcher()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.StrMatcher",
+          "focal_method_names": [
+            "isMatch(char[], int)",
+            "charSetMatcher(java.lang.String)",
+            "noneMatcher()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.AlphabetConverterTest",
+      "method_signature": "testBinaryTest()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.AlphabetConverter",
+          "focal_method_names": [
+            "createConverterFromChars(java.lang.Character[], java.lang.Character[], java.lang.Character[])",
+            "decode(java.lang.String)",
+            "encode(java.lang.String)",
+            "createConverterFromMap(java.util.Map)",
+            "hashCode()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.ParsedDecimalTest",
+      "method_signature": "testToEngineeringString_altFormat()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimal",
+          "focal_method_names": [
+            "from(double)",
+            "toEngineeringString(org.apache.commons.text.numbers.ParsedDecimal.FormatOptions)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimal.FormatOptions",
+          "focal_method_names": [
+            "getMinusSign()",
+            "getExponentSeparatorChars()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.numbers.ParsedDecimalTest.FormatOptionsImpl",
+          "focal_method_names": [
+            "setExponentSeparator(java.lang.String)",
+            "setAlwaysIncludeExponent(boolean)",
+            "setDecimalSeparator(char)",
+            "setSignedZero(boolean)",
+            "setIncludeFractionPlaceholder(boolean)",
+            "setMinusSign(char)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testAsTokenizer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "asTokenizer()",
+            "append(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "reset()",
+            "size()",
+            "getTokenArray()",
+            "next()",
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testAppendln_PrimitiveNumber()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "appendln(long)",
+            "appendln(float)",
+            "appendln(int)",
+            "toString()",
+            "appendln(double)",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testWrap_CharArray_Int_2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "ensureCapacity(int)",
+            "wrap(char[], int)",
+            "size()",
+            "length()",
+            "capacity()",
+            "isReallocated()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
+      "method_signature": "testWrap_CharArray_Int_3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "ensureCapacity(int)",
+            "wrap(char[], int)",
+            "size()",
+            "length()",
+            "capacity()",
+            "isReallocated()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceNoPrefixNoSuffix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceSolo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceEmptyKeys()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrBuilderAppendInsertTest",
+      "method_signature": "testInsert()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrBuilder",
+          "focal_method_names": [
+            "toString()",
+            "insert(int, char)",
+            "append(java.lang.String)",
+            "insert(int, char[], int, int)",
+            "insert(int, java.lang.String)",
+            "insert(int, int)",
+            "insert(int, char[])",
+            "insert(int, float)",
+            "insert(int, boolean)",
+            "insert(int, long)",
+            "insert(int, double)",
+            "insert(int, java.lang.Object)",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceToIdentical()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceEmpty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceIncompletePrefix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceNoPrefixSuffix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceEscaping()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrTokenizerTest",
+      "method_signature": "testChaining()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrTokenizer",
+          "focal_method_names": [
+            "setDelimiterMatcher(org.apache.commons.text.StrMatcher)",
+            "setDelimiterChar(char)",
+            "reset()",
+            "setEmptyTokenAsNull(boolean)",
+            "reset(char[])",
+            "setQuoteMatcher(org.apache.commons.text.StrMatcher)",
+            "setQuoteChar(char)",
+            "setIgnoreEmptyTokens(boolean)",
+            "setIgnoredMatcher(org.apache.commons.text.StrMatcher)",
+            "setIgnoredChar(char)",
+            "setTrimmerMatcher(org.apache.commons.text.StrMatcher)",
+            "setDelimiterString(java.lang.String)",
+            "reset(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringTokenizerTest",
+      "method_signature": "testChaining()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringTokenizer",
+          "focal_method_names": [
+            "setDelimiterMatcher(org.apache.commons.text.matcher.StringMatcher)",
+            "setTrimmerMatcher(org.apache.commons.text.matcher.StringMatcher)",
+            "setQuoteMatcher(org.apache.commons.text.matcher.StringMatcher)",
+            "setDelimiterChar(char)",
+            "reset()",
+            "setEmptyTokenAsNull(boolean)",
+            "reset(char[])",
+            "setQuoteChar(char)",
+            "setIgnoreEmptyTokens(boolean)",
+            "setIgnoredChar(char)",
+            "setIgnoredMatcher(org.apache.commons.text.matcher.StringMatcher)",
+            "setDelimiterString(java.lang.String)",
+            "reset(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceSimple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.TextStringBuilderAppendInsertTest",
+      "method_signature": "testInsert()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.TextStringBuilder",
+          "focal_method_names": [
+            "toString()",
+            "insert(int, char)",
+            "append(java.lang.String)",
+            "insert(int, char[], int, int)",
+            "insert(int, java.lang.String)",
+            "insert(int, int)",
+            "insert(int, char[])",
+            "insert(int, float)",
+            "insert(int, boolean)",
+            "insert(int, long)",
+            "insert(int, double)",
+            "insert(int, java.lang.Object)",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StringSubstitutorTest",
+      "method_signature": "testConstructorStringSubstitutor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StringSubstitutor",
+          "focal_method_names": [
+            "setDisableSubstitutionInValues(boolean)",
+            "setEscapeChar(char)",
+            "getVariableSuffixMatcher()",
+            "setVariableSuffix(char)",
+            "getVariablePrefixMatcher()",
+            "setValueDelimiter(char)",
+            "isEnableUndefinedVariableException()",
+            "setVariablePrefix(char)",
+            "setEnableUndefinedVariableException(boolean)",
+            "setEnableSubstitutionInVariables(boolean)",
+            "setVariableResolver(org.apache.commons.text.lookup.StringLookup)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceWeirdPattens()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplacePrefixNoSuffix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceSoloEscaping()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.StrSubstitutorTest",
+      "method_signature": "testReplaceComplexEscaping()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.StrSubstitutor",
+          "focal_method_names": [
+            "replaceIn(java.lang.StringBuilder, int, int)",
+            "replaceIn(java.lang.StringBuilder)",
+            "replaceIn(java.lang.StringBuffer)",
+            "replace(char[], int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.CharSequence, int, int)",
+            "replace(java.lang.Object)",
+            "replace(org.apache.commons.text.StrBuilder)",
+            "replace(java.lang.StringBuffer)",
+            "replace(char[])",
+            "replace(java.lang.String)",
+            "replace(org.apache.commons.text.StrBuilder, int, int)",
+            "replaceIn(org.apache.commons.text.StrBuilder, int, int)",
+            "replace(java.lang.String, int, int)",
+            "replace(java.lang.StringBuffer, int, int)",
+            "replace(java.lang.CharSequence)",
+            "replaceIn(java.lang.StringBuffer, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.text.numbers.DoubleFormatTest",
+      "method_signature": "testMixed_custom()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.text.numbers.DoubleFormat.Builder",
+          "focal_method_names": [
+            "exponentSeparator(java.lang.String)",
+            "decimalSeparator(char)",
+            "minusSign(char)",
+            "plainFormatMaxDecimalExponent(int)",
+            "minDecimalExponent(int)",
+            "includeFractionPlaceholder(boolean)",
+            "infinity(java.lang.String)",
+            "plainFormatMinDecimalExponent(int)",
+            "maxPrecision(int)",
+            "allowSignedZero(boolean)",
+            "nan(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ]
+}

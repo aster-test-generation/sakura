@@ -1,0 +1,1725 @@
+{
+  "dataset_name": "commons-bcel",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bcel.util.ClassPathRepositoryTest",
+      "method_signature": "testNullInput()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.ClassPathRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.FieldTest",
+      "method_signature": "testBCELComparator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.Field",
+          "focal_method_names": [
+            "getComparator()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.ClassGenTest",
+      "method_signature": "testBCELComparator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getComparator()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.ClassPathRepositoryTest",
+      "method_signature": "testEmptyInput()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.ClassPathRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.verifier.JiraBcel369Test",
+      "method_signature": "testCompiledClass()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.verifier.Verifier",
+          "focal_method_names": [
+            "verifyType(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.ArrayTypeTest",
+      "method_signature": "testGetElementType()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.BasicType",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ArrayType",
+          "focal_method_names": [
+            "getElementType()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.OssFuzzTest",
+      "method_signature": "testIssue53676()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.ClassParser",
+          "focal_method_names": [
+            "parse()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.verifier.JiraBcel370Test",
+      "method_signature": "testVerify(java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.verifier.Verifier",
+          "focal_method_names": [
+            "verifyType(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.InstructionFinderTest",
+      "method_signature": "testSearch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.InstructionFinder",
+          "focal_method_names": [
+            "search(java.lang.String, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.util.InstructionFinder.CodeConstraint)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.FieldGenTest",
+      "method_signature": "testBCELComparator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.FieldGen",
+          "focal_method_names": [
+            "getComparator()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.ConstantTest",
+      "method_signature": "testBCELComparator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.Constant",
+          "focal_method_names": [
+            "getComparator()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.TypeTest",
+      "method_signature": "testInternalTypeNametoSignature()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.Type",
+          "focal_method_names": [
+            "internalTypeNameToSignature(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.RecordTest",
+      "method_signature": "recordsCanBeVisited()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.DescendingVisitor",
+          "focal_method_names": [
+            "visit()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.ClassPathRepositoryTest",
+      "method_signature": "testNoClassNotFound()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.ClassPathRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.BranchHandleTest",
+      "method_signature": "testGetBHnull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.BranchHandle",
+          "focal_method_names": [
+            "getBranchHandle(org.apache.bcel.generic.BranchInstruction)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.BCELifierTest",
+      "method_signature": "testHelloWorld()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.HelloWorldCreator",
+          "focal_method_names": [
+            "main(java.lang.String[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.ConstantPoolTest",
+      "method_signature": "testTooManyConstants()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ConstantPoolGen",
+          "focal_method_names": [
+            "addLong(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.ModularRuntimeImageTest",
+      "method_signature": "testListJrePackages(org.apache.bcel.util.ModularRuntimeImage)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.ModularRuntimeImage",
+          "focal_method_names": [
+            "list(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testClose()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.ClassPath",
+          "focal_method_names": [
+            "getClassPath()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.ConstantPoolModuleToStringTest",
+      "method_signature": "testClass(java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.ConstantPoolModuleToStringTest.ToStringVisitor",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bcel.generic.BranchHandleTest",
+      "method_signature": "testsetInstructionNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.BranchHandle",
+          "focal_method_names": [
+            "getBranchHandle(org.apache.bcel.generic.BranchInstruction)",
+            "setInstruction(org.apache.bcel.generic.Instruction)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.BranchHandleTest",
+      "method_signature": "testsetInstructionnotBI()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.BranchHandle",
+          "focal_method_names": [
+            "getBranchHandle(org.apache.bcel.generic.BranchInstruction)",
+            "setInstruction(org.apache.bcel.generic.Instruction)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.ConstantPoolTest",
+      "method_signature": "testConstantToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getInstructionList()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": [
+            "getPosition()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.RecordTest",
+      "method_signature": "recordsCanBeCopied()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": [
+            "copy()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.SignatureTest",
+      "method_signature": "testMap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.Signature",
+          "focal_method_names": [
+            "translate(java.lang.String)",
+            "getSignature()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.LruCacheClassPathRepositoryTest",
+      "method_signature": "testCacheEviction()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.LruCacheClassPathRepository",
+          "focal_method_names": [
+            "findClass(java.lang.String)",
+            "loadClass(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.verifier.structurals.InstConstraintVisitorTest",
+      "method_signature": "rejectLdcConstantModule(org.apache.bcel.classfile.Constant)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.verifier.structurals.InstConstraintVisitor",
+          "focal_method_names": [
+            "setConstantPoolGen(org.apache.bcel.generic.ConstantPoolGen)",
+            "visitLDC(org.apache.bcel.generic.LDC)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.JdkGenericDumpTest",
+      "method_signature": "testJreModules(org.apache.bcel.generic.JavaHome)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.JavaHome",
+          "focal_method_names": [
+            "getModularRuntimeImage()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.util.ModularRuntimeImage",
+          "focal_method_names": [
+            "modules()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.InstructionHandleTest",
+      "method_signature": "testsetInstructionNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": [
+            "setInstruction(org.apache.bcel.generic.Instruction)",
+            "getInstructionHandle(org.apache.bcel.generic.Instruction)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.EnclosingMethodAttributeTest",
+      "method_signature": "testCheckMethodLevelNamedInnerClass()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.EnclosingMethod",
+          "focal_method_names": [
+            "getEnclosingMethod()",
+            "getEnclosingClass()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.MethodGenTest",
+      "method_signature": "testRemoveLocalVariables()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getLocalVariables()",
+            "removeLocalVariables()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.AnonymousClassTest",
+      "method_signature": "testRegularClassIsNotAnonymous()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": [
+            "isAnonymous()",
+            "isNested()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.ConstantPoolModuleToStringTest",
+      "method_signature": "test()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.ClassParser",
+          "focal_method_names": [
+            "parse()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.ConstantPoolModuleToStringTest.ToStringVisitor",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.EnclosingMethodAttributeTest",
+      "method_signature": "testCheckClassLevelNamedInnerClass()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.EnclosingMethod",
+          "focal_method_names": [
+            "getEnclosingMethodIndex()",
+            "getEnclosingClass()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.IMPDEP2Test",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.IMPDEP2",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setImpdep2(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.PLSETest",
+      "method_signature": "testBCEL361()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": [
+            "getCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Code",
+          "focal_method_names": [
+            "getLineNumberTable()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.LineNumberTable",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.GeneratingAnnotatedClassesTest",
+      "method_signature": "testTransformComplexClassToClassGen()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getAnnotationEntries()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ElementValuePairGen",
+          "focal_method_names": [
+            "getNameString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.AnnotationDefaultAttributeTest",
+      "method_signature": "testMethodAnnotations()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.AnnotationDefault",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.SimpleElementValue",
+          "focal_method_names": [
+            "getValueString()",
+            "getElementValueType()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.InstructionHandleTest",
+      "method_signature": "testsetInstructionnotI()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": [
+            "setInstruction(org.apache.bcel.generic.Instruction)",
+            "getInstructionHandle(org.apache.bcel.generic.Instruction)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.BREAKPOINTTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.BREAKPOINT",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setBreakpoint(int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bcel.ElementValueGenTest",
+      "method_signature": "testCreateCharElementValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ElementValueGen",
+          "focal_method_names": [
+            "dump(java.io.DataOutputStream)",
+            "stringifyValue()",
+            "readElementValue(java.io.DataInput, org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.ElementValueGenTest",
+      "method_signature": "testCreateEnumElementValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ElementValueGen",
+          "focal_method_names": [
+            "dump(java.io.DataOutputStream)",
+            "stringifyValue()",
+            "readElementValue(java.io.DataInput, org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.classfile.RecordTest",
+      "method_signature": "testRecordToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.Record",
+          "focal_method_names": [
+            "getConstantPool()",
+            "toString()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.RecordComponentInfo",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.MethodGenTest",
+      "method_signature": "testAnnotationsAreUnpacked()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "getMethodAt(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getAnnotationsOnParameter(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.AnnotationGenTest",
+      "method_signature": "testVisibleInvisibleAnnotationGen()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.AnnotationEntryGen",
+          "focal_method_names": [
+            "getAnnotationAttributes(org.apache.bcel.generic.ConstantPoolGen, org.apache.bcel.generic.AnnotationEntryGen[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Attribute",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.AnnotationEntryGen",
+          "focal_method_names": [
+            "getAnnotationAttributes(org.apache.bcel.generic.ConstantPoolGen, org.apache.bcel.generic.AnnotationEntryGen[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.AnnotationEntryGen",
+          "focal_method_names": [
+            "getAnnotationAttributes(org.apache.bcel.generic.ConstantPoolGen, org.apache.bcel.generic.AnnotationEntryGen[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.AnnotationEntryGen",
+          "focal_method_names": [
+            "getAnnotationAttributes(org.apache.bcel.generic.ConstantPoolGen, org.apache.bcel.generic.AnnotationEntryGen[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.ElementValueGenTest",
+      "method_signature": "testCreateDoubleElementValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ElementValueGen",
+          "focal_method_names": [
+            "dump(java.io.DataOutputStream)",
+            "stringifyValue()",
+            "readElementValue(java.io.DataInput, org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LCMPTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LCMP",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setTypedInstruction(int)",
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setLcmp(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.verifier.JiraBcel370Test",
+      "method_signature": "testLdcGetType(java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.ClassParser",
+          "focal_method_names": [
+            "parse()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getInstructionList()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.Instruction",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.ElementValueGenTest",
+      "method_signature": "testCreateLongElementValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ElementValueGen",
+          "focal_method_names": [
+            "dump(java.io.DataOutputStream)",
+            "stringifyValue()",
+            "readElementValue(java.io.DataInput, org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.verifier.VerifierMainTest",
+      "method_signature": "testSWAP()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.ClassParser",
+          "focal_method_names": [
+            "parse()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": [
+            "getMethod(java.lang.reflect.Method)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": [
+            "getCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionList",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.PLSETest",
+      "method_signature": "testBCEL295()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "getMethodAt(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.LocalVariableTable",
+          "focal_method_names": [
+            "getLocalVariable(int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.LocalVariable",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "getLocalVariableTable(org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.ElementValueGenTest",
+      "method_signature": "testCreateFloatElementValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ElementValueGen",
+          "focal_method_names": [
+            "dump(java.io.DataOutputStream)",
+            "stringifyValue()",
+            "readElementValue(java.io.DataInput, org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.PLSETest",
+      "method_signature": "testBCEL262()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "getMethodAt(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getInstructionList()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionList",
+          "focal_method_names": [
+            "findHandle(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InvokeInstruction",
+          "focal_method_names": [
+            "getClassName(org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.PLSETest",
+      "method_signature": "testBCEL208()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "getMethodAt(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "setInstructionList(org.apache.bcel.generic.InstructionList)",
+            "addLocalVariable(java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle)",
+            "getLocalVariableTable(org.apache.bcel.generic.ConstantPoolGen)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.InstructionFactoryTest",
+      "method_signature": "testExceptions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionFactory",
+          "focal_method_names": [
+            "createFieldAccess(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, short)",
+            "createInvoke(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.Type[], short)",
+            "createCast(org.apache.bcel.generic.Type, org.apache.bcel.generic.Type)",
+            "createAppend(org.apache.bcel.generic.Type)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.EnclosingMethodAttributeTest",
+      "method_signature": "testAttributeSerializtion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.SyntheticRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": [
+            "dump(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.EnclosingMethod",
+          "focal_method_names": [
+            "getEnclosingMethodIndex()",
+            "getEnclosingClass()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.LocalVariableTypeTableTest",
+      "method_signature": "testGetLocalVariableTypeTable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": [
+            "getMethod(java.lang.reflect.Method)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": [
+            "getName()",
+            "getLocalVariableTypeTable()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.LocalVariableTypeTable",
+          "focal_method_names": [
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.JdkGenericDumpTest",
+      "method_signature": "testJdkJars(java.nio.file.Path)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.ClassParser",
+          "focal_method_names": [
+            "parse()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": [
+            "toString()",
+            "getCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Code",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionList",
+          "focal_method_names": [
+            "getByteCode()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": [
+            "toString(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.InstructionFinderTest",
+      "method_signature": "testSearchAll()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": [
+            "getName()",
+            "getCode()",
+            "getArgumentTypes()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.util.InstructionFinder",
+          "focal_method_names": [
+            "search(java.lang.String, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.util.InstructionFinder.CodeConstraint)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionHandle",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.util.ClassPathRepositoryTest",
+      "method_signature": "testClassPathRepository()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.util.AbstractClassPathRepository",
+          "focal_method_names": [
+            "clear()",
+            "removeClass(org.apache.bcel.classfile.JavaClass)",
+            "findClass(java.lang.String)",
+            "loadClass(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LSUBTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LSUB",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setTypedInstruction(int)",
+            "setLsub(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.FieldAnnotationsTest",
+      "method_signature": "testFieldAnnotationEntrysReadWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.Field",
+          "focal_method_names": [
+            "getName()",
+            "getAttribute(byte)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.AnnotationEntry",
+          "focal_method_names": [
+            "getAnnotationType()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.ElementValuePair",
+          "focal_method_names": [
+            "getValue()",
+            "getNameString()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.util.SyntheticRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.FREMTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.FREM",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setFrem(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LANDTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LAND",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setLand(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.I2STest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.I2S",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setI2S(int)",
+            "setConversionInstruction(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LORTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LOR",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setTypedInstruction(int)",
+            "setLor(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LSHRTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LSHR",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setLshr(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.LocalVariableTypeTableTest",
+      "method_signature": "testWithGenericArguement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionList",
+          "focal_method_names": [
+            "insert(org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionList)",
+            "dispose()",
+            "append(org.apache.bcel.generic.Instruction)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "getLocalVariables()",
+            "getConstantPool()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.LocalVariableGen",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ConstantPoolGen",
+          "focal_method_names": [
+            "addFieldref(java.lang.String, java.lang.String, java.lang.String)",
+            "addMethodref(java.lang.String, java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": [
+            "isStatic()",
+            "getArgumentTypes()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.LocalVariableTypeTableTest.TestClassLoader",
+          "focal_method_names": [
+            "findClass(java.lang.String, byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.I2DTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.I2D",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setConversionInstruction(int)",
+            "setI2D(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LDIVTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LDIV",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setLdiv(int)",
+            "setTypedInstruction(int)",
+            "setExceptionThrower(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.FNEGTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.FNEG",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setFneg(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.L2FTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.L2F",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setConversionInstruction(int)",
+            "setTypedInstruction(int)",
+            "setL2F(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.PUTFIELDTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.PUTFIELD",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setCpInstruction(int)",
+            "setTypedInstruction(int)",
+            "setLoadClass(int)",
+            "setFieldInstruction(int)",
+            "setPopInstruction(int)",
+            "setFieldOrMethod(int)",
+            "setExceptionThrower(int)",
+            "setPutfield(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.D2LTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.D2L",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setConversionInstruction(int)",
+            "setD2L(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.LADDTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.LADD",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setLadd(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.DSUBTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.DSUB",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setDsub(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.FSUBTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.FSUB",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setArithmeticInstruction(int)",
+            "setFsub(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.verifier.VerifierTest",
+      "method_signature": "testCollection()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.verifier.Verifier",
+          "focal_method_names": [
+            "doPass2()",
+            "doPass3b(int)",
+            "doPass1()",
+            "doPass3a(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.verifier.VerificationResult",
+          "focal_method_names": [
+            "getMessage()",
+            "getStatus()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.D2ITest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.D2I",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setConversionInstruction(int)",
+            "setTypedInstruction(int)",
+            "setD2I(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.I2LTest",
+      "method_signature": "testAccept()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.I2L",
+          "focal_method_names": [
+            "accept(org.apache.bcel.generic.Visitor)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.CountingVisitor",
+          "focal_method_names": [
+            "setStackConsumer(int)",
+            "setStackProducer(int)",
+            "setConversionInstruction(int)",
+            "setI2L(int)",
+            "setTypedInstruction(int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.bcel.generic.GeneratingAnnotatedClassesTest",
+      "method_signature": "testGenerateClassLevelAnnotations()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "setMaxStack()",
+            "setMaxLocals()",
+            "addExceptionHandler(org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.ObjectType)",
+            "addLocalVariable(java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle)",
+            "getMethod()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionFactory",
+          "focal_method_names": [
+            "createFieldAccess(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, short)",
+            "createInvoke(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.Type[], short)",
+            "createNew(java.lang.String)",
+            "createNew(org.apache.bcel.generic.ObjectType)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.LocalVariableGen",
+          "focal_method_names": [
+            "setStart(org.apache.bcel.generic.InstructionHandle)",
+            "setEnd(org.apache.bcel.generic.InstructionHandle)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.util.SyntheticRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.JavaClass",
+          "focal_method_names": [
+            "getAnnotationEntries()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.ElementValuePair",
+          "focal_method_names": [
+            "getValue()",
+            "getNameString()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.ElementValue",
+          "focal_method_names": [
+            "stringifyValue()",
+            "getElementValueType()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.GeneratingAnnotatedClassesTest",
+      "method_signature": "testGenerateMethodLevelAnnotations2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.MethodGen",
+          "focal_method_names": [
+            "setMaxStack()",
+            "getConstantPool()",
+            "removeAnnotationEntry(org.apache.bcel.generic.AnnotationEntryGen)",
+            "getMethod()",
+            "setMaxLocals()",
+            "addExceptionHandler(org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.ObjectType)",
+            "removeAnnotationEntries()",
+            "getAnnotationEntries()",
+            "addLocalVariable(java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.InstructionHandle, org.apache.bcel.generic.InstructionHandle)",
+            "addAnnotationEntry(org.apache.bcel.generic.AnnotationEntryGen)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionFactory",
+          "focal_method_names": [
+            "createFieldAccess(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, short)",
+            "createInvoke(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.Type[], short)",
+            "createNew(java.lang.String)",
+            "createNew(org.apache.bcel.generic.ObjectType)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.LocalVariableGen",
+          "focal_method_names": [
+            "setStart(org.apache.bcel.generic.InstructionHandle)",
+            "setEnd(org.apache.bcel.generic.InstructionHandle)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.util.SyntheticRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "removeMethod(org.apache.bcel.classfile.Method)",
+            "addMethod(org.apache.bcel.classfile.Method)",
+            "getJavaClass()",
+            "getMethods()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.classfile.Method",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.bcel.generic.GeneratingAnnotatedClassesTest",
+      "method_signature": "testGenerateMethodLevelAnnotations1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.bcel.generic.FieldGenOrMethodGen",
+          "focal_method_names": [
+            "getAnnotationEntries()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.InstructionFactory",
+          "focal_method_names": [
+            "createFieldAccess(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, short)",
+            "createInvoke(java.lang.String, java.lang.String, org.apache.bcel.generic.Type, org.apache.bcel.generic.Type[], short)",
+            "createNew(java.lang.String)",
+            "createNew(org.apache.bcel.generic.ObjectType)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.LocalVariableGen",
+          "focal_method_names": [
+            "setStart(org.apache.bcel.generic.InstructionHandle)",
+            "setEnd(org.apache.bcel.generic.InstructionHandle)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.util.SyntheticRepository",
+          "focal_method_names": [
+            "loadClass(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.bcel.generic.ClassGen",
+          "focal_method_names": [
+            "getConstantPool()",
+            "getJavaClass()",
+            "getMethods()"
+          ]
+        }
+      ]
+    }
+  ]
+}

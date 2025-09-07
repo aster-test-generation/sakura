@@ -1,0 +1,1868 @@
+{
+  "dataset_name": "commons-configuration",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.interpol.TestConfigurationInterpolator",
+      "method_signature": "testResolveNoDefault()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.interpol.ConfigurationInterpolator",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.convert.TestDefaultConversionHandler",
+      "method_signature": "testToPrimitive()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.convert.DefaultConversionHandler",
+          "focal_method_names": [
+            "to(java.lang.Object, java.lang.Class, org.apache.commons.configuration2.interpol.ConfigurationInterpolator)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.TestFileBasedBuilderParameters",
+      "method_signature": "testFromMapNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl",
+          "focal_method_names": [
+            "fromMap(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.beanutils.TestCombinedBeanDeclaration",
+      "method_signature": "testGetBeanProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.beanutils.CombinedBeanDeclaration",
+          "focal_method_names": [
+            "getBeanProperties()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestFileHandler",
+      "method_signature": "testSaveToWriterIOException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "save(java.io.Writer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestConfigurationUtils",
+      "method_signature": "testAsEventSourceSupported()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.ConfigurationUtils",
+          "focal_method_names": [
+            "asEventSource(java.lang.Object, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.TestPropertiesBuilderParametersImpl",
+      "method_signature": "testSetIncludeListenerProperty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.PropertiesBuilderParametersImpl",
+          "focal_method_names": [
+            "setIncludeListener(org.apache.commons.configuration2.ConfigurationConsumer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.TestFileBasedBuilderParameters",
+      "method_signature": "testSetLocationStrategy()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl",
+          "focal_method_names": [
+            "setLocationStrategy(org.apache.commons.configuration2.io.FileLocationStrategy)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.convert.TestDefaultConversionHandler",
+      "method_signature": "testToArrayPrimitiveWrapperType()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.convert.DefaultConversionHandler",
+          "focal_method_names": [
+            "toArray(java.lang.Object, java.lang.Class, org.apache.commons.configuration2.interpol.ConfigurationInterpolator)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.beanutils.TestBeanHelper",
+      "method_signature": "testInitBeanWithInvalidProperty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.beanutils.BeanHelper",
+          "focal_method_names": [
+            "initBean(java.lang.Object, org.apache.commons.configuration2.beanutils.BeanDeclaration)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.xpath.TestConfigurationIteratorAttributes",
+      "method_signature": "testIterateNamespaceAttribute()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "setAttribute(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.beanutils.TestBeanHelper",
+      "method_signature": "testCopyProperties()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.beanutils.BeanHelper",
+          "focal_method_names": [
+            "copyProperties(java.lang.Object, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestINIConfiguration",
+      "method_signature": "testGetSectionDuplicate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration",
+          "focal_method_names": [
+            "getSection(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestAbstractConfigurationBasicFeatures",
+      "method_signature": "testInstallInterpolatorNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.AbstractConfiguration",
+          "focal_method_names": [
+            "installInterpolator(java.util.Map, java.util.Collection)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.reloading.TestCombinedReloadingController",
+      "method_signature": "testCheckForReloadingTrue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.reloading.CombinedReloadingController",
+          "focal_method_names": [
+            "checkForReloading(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestFileHandler",
+      "method_signature": "testSaveToWriterNoContent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "save(java.io.Writer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.BaseNonStringProperties",
+      "method_signature": "testShortDefaultValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.NonStringTestHolder",
+          "focal_method_names": [
+            "testShortDefaultValue()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+      "method_signature": "testGetPropertyNestedWithList()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.YAMLConfiguration",
+          "focal_method_names": [
+            "read(java.io.Reader)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.web.TestServletRequestConfiguration",
+      "method_signature": "testListWithEscapedElements()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.Configuration",
+          "focal_method_names": [
+            "getList(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.fluent.TestConfigurations",
+      "method_signature": "testPropertiesFromFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Configurations",
+          "focal_method_names": [
+            "properties(java.io.File)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.combined.TestCombinedConfigurationBuilder",
+      "method_signature": "testLoadOptionalWithException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Parameters",
+          "focal_method_names": [
+            "fileBased()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.combined.CombinedConfigurationBuilder",
+          "focal_method_names": [
+            "configure(org.apache.commons.configuration2.builder.BuilderParameters[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.beanutils.TestConfigurationDynaBean",
+      "method_signature": "testGetIndexedNonExisting()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.beanutils.ConfigurationDynaBean",
+          "focal_method_names": [
+            "get(java.lang.String, int)",
+            "set(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.xpath.TestXPathExpressionEngine",
+      "method_signature": "testDefaultContextFactory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.xpath.XPathExpressionEngine",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.combined.TestCombinedConfigurationBuilder",
+      "method_signature": "testConfigureResult()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Parameters",
+          "focal_method_names": [
+            "fileBased()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.combined.CombinedConfigurationBuilder",
+          "focal_method_names": [
+            "configure(org.apache.commons.configuration2.builder.BuilderParameters[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.event.TestEventListenerList",
+      "method_signature": "testGetEventListenersIteratorNextNoElement()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.event.EventListenerList",
+          "focal_method_names": [
+            "getEventListeners(org.apache.commons.configuration2.event.EventType)",
+            "addEventListener(org.apache.commons.configuration2.event.EventType, org.apache.commons.configuration2.event.EventListener)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestXMLConfiguration",
+      "method_signature": "testAddObjectAttribute()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestXMLConfiguration",
+      "method_signature": "testClearPropertyCData()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestAbsoluteNameLocationStrategy",
+      "method_signature": "testNoFileName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.AbsoluteNameLocationStrategy",
+          "focal_method_names": [
+            "locate(org.apache.commons.configuration2.io.FileSystem, org.apache.commons.configuration2.io.FileLocator)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileLocator.FileLocatorBuilder",
+          "focal_method_names": [
+            "create()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.interpol.TestConfigurationInterpolator",
+      "method_signature": "testInterpolationSingleVariableDefaultValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.interpol.ConfigurationInterpolator",
+          "focal_method_names": [
+            "addDefaultLookup(org.apache.commons.configuration2.interpol.Lookup)",
+            "interpolate(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.interpol.Lookup",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.TestDatabaseBuilderParametersImpl",
+      "method_signature": "testSetConfigurationNameColumn()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.DatabaseBuilderParametersImpl",
+          "focal_method_names": [
+            "getParameters()",
+            "setConfigurationNameColumn(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestXMLConfiguration",
+      "method_signature": "testSetAttribute()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.TestBasicBuilderParameters",
+      "method_signature": "testSetListDelimiter()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.BasicBuilderParameters",
+          "focal_method_names": [
+            "getParameters()",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.event.TestEventSource",
+      "method_signature": "testCopyEventListeners()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.event.TestEventSource.CountingEventSource",
+          "focal_method_names": [
+            "copyEventListeners(org.apache.commons.configuration2.event.BaseEventSource)",
+            "addEventListener(org.apache.commons.configuration2.event.EventType, org.apache.commons.configuration2.event.EventListener)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.beanutils.TestConstructorArg",
+      "method_signature": "testMatchesNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.beanutils.ConstructorArg",
+          "focal_method_names": [
+            "forValue(java.lang.Object)",
+            "matches(java.lang.Class)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.xpath.TestConfigurationNodeIteratorChildren",
+      "method_signature": "testIterateWithWildcardTestPrefix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.interpol.TestInterpolatorSpecification",
+      "method_signature": "testGetPrefixLookupsModify()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.interpol.InterpolatorSpecification.Builder",
+          "focal_method_names": [
+            "create()",
+            "withPrefixLookup(java.lang.String, org.apache.commons.configuration2.interpol.Lookup)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.interpol.InterpolatorSpecification",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestAbstractHierarchicalConfiguration",
+      "method_signature": "testInterpolationLocalhost()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.combined.TestCombinedConfigurationBuilder",
+      "method_signature": "testCombinedConfigurationAttributes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Parameters",
+          "focal_method_names": [
+            "fileBased()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.combined.CombinedConfigurationBuilder",
+          "focal_method_names": [
+            "configure(org.apache.commons.configuration2.builder.BuilderParameters[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.convert.ListDelimiterHandler",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestXMLListHandling",
+      "method_signature": "testAddListItem()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "load(java.io.Reader)",
+            "save(java.io.Writer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.TestFileBasedBuilderParameters",
+      "method_signature": "testInheritFromNoParametersObject()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.FileBasedBuilderParametersImpl",
+          "focal_method_names": [
+            "setReloadingRefreshDelay(java.lang.Long)",
+            "inheritFrom(java.util.Map)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestXMLConfiguration",
+      "method_signature": "testSaveWithEncoding()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "save(java.io.Writer)",
+            "load()",
+            "setEncoding(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestCombinedConfiguration",
+      "method_signature": "testGetNumberOfConfigurationsSynchronized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.CombinedConfiguration",
+          "focal_method_names": [
+            "addConfiguration(org.apache.commons.configuration2.Configuration, java.lang.String)",
+            "getNumberOfConfigurations()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.SynchronizerTestImpl",
+          "focal_method_names": [
+            "verify(org.apache.commons.configuration2.SynchronizerTestImpl.Methods[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.fluent.TestConfigurations",
+      "method_signature": "testXMLBuilderFromURL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.Configuration",
+          "focal_method_names": [
+            "getProperty(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Configurations",
+          "focal_method_names": [
+            "xmlBuilder(java.net.URL)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.ConfigurationAssert",
+          "focal_method_names": [
+            "getTestURL(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestHomeDirectoryLocationStrategy",
+      "method_signature": "testLocateFailedWithBasePath()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy",
+          "focal_method_names": [
+            "locate(org.apache.commons.configuration2.io.FileSystem, org.apache.commons.configuration2.io.FileLocator)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileLocator.FileLocatorBuilder",
+          "focal_method_names": [
+            "create()",
+            "fileName(java.lang.String)",
+            "basePath(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.xpath.TestConfigurationAttributePointer",
+      "method_signature": "testGetBaseValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addAttribute(java.lang.String, java.lang.Object)",
+            "name(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfiguration",
+      "method_signature": "testIncludeIncludeLoadAllOnNotFound()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "setBasePath(java.lang.String)",
+            "load()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "setIncludeListener(org.apache.commons.configuration2.ConfigurationConsumer)",
+            "getString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestHomeDirectoryLocationStrategy",
+      "method_signature": "testLocateSuccessIgnoreBasePath()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy",
+          "focal_method_names": [
+            "locate(org.apache.commons.configuration2.io.FileSystem, org.apache.commons.configuration2.io.FileLocator)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileLocator.FileLocatorBuilder",
+          "focal_method_names": [
+            "create()",
+            "fileName(java.lang.String)",
+            "basePath(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfiguration",
+      "method_signature": "testPropertyLoaded()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "propertyLoaded(java.lang.String, java.lang.String, java.util.Deque)",
+            "getString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestAbstractConfigurationSynchronization",
+      "method_signature": "testSizeSynchronized()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.ConfigurationAssert",
+          "focal_method_names": [
+            "getTestFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.AbstractConfiguration",
+          "focal_method_names": [
+            "isEmpty()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.SynchronizerTestImpl",
+          "focal_method_names": [
+            "verify(org.apache.commons.configuration2.SynchronizerTestImpl.Methods[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestDataConfiguration",
+      "method_signature": "testNullConfiguration()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.DataConfiguration",
+          "focal_method_names": [
+            "setProperty(java.lang.String, java.lang.Object)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "addPropertyDirect(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestDataConfiguration",
+      "method_signature": "testGetBigDecimalArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.DataConfiguration",
+          "focal_method_names": [
+            "setProperty(java.lang.String, java.lang.Object)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "addPropertyDirect(java.lang.String, java.lang.Object)",
+            "getBigDecimalArray(java.lang.String, java.math.BigDecimal[])",
+            "getBigDecimalArray(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestInMemoryNodeModelTrackedNodes",
+      "method_signature": "testGetTrackedNodeNonExisting()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.InMemoryNodeModel",
+          "focal_method_names": [
+            "getTrackedNode(org.apache.commons.configuration2.tree.NodeSelector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestAbstractHierarchicalConfiguration",
+      "method_signature": "testCloneInterpolation()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.Configuration",
+          "focal_method_names": [
+            "setProperty(java.lang.String, java.lang.Object)",
+            "getString(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestFileHandler",
+      "method_signature": "testSetFileName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "getBasePath()",
+            "setURL(java.net.URL)",
+            "getFileName()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestBaseNullConfiguration",
+      "method_signature": "testGetBooleanIncompatibleType()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.BaseConfiguration",
+          "focal_method_names": [
+            "setThrowExceptionOnMissing(boolean)",
+            "getBoolean(java.lang.String)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)",
+            "setProperty(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.io.TestHomeDirectoryLocationStrategy",
+      "method_signature": "testLocateSuccessInSubFolder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.HomeDirectoryLocationStrategy",
+          "focal_method_names": [
+            "locate(org.apache.commons.configuration2.io.FileSystem, org.apache.commons.configuration2.io.FileLocator)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileLocator.FileLocatorBuilder",
+          "focal_method_names": [
+            "create()",
+            "fileName(java.lang.String)",
+            "basePath(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.builder.fluent.TestConfigurations",
+      "method_signature": "testCombinedBuilderFromFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.Configuration",
+          "focal_method_names": [
+            "getString(java.lang.String)",
+            "getProperty(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Configurations",
+          "focal_method_names": [
+            "combinedBuilder(java.io.File)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestHierarchicalConfiguration",
+      "method_signature": "testImmutableConfigurationAt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.BaseHierarchicalConfiguration",
+          "focal_method_names": [
+            "getNodeModel()",
+            "immutableConfigurationAt(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestDataConfiguration",
+      "method_signature": "testGetColor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.DataConfiguration",
+          "focal_method_names": [
+            "setProperty(java.lang.String, java.lang.Object)",
+            "addPropertyDirect(java.lang.String, java.lang.Object)",
+            "getColor(java.lang.String)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "getColor(java.lang.String, java.awt.Color)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestINIConfiguration",
+      "method_signature": "testPropertyWithDelimiter()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration",
+          "focal_method_names": [
+            "read(java.io.Reader)",
+            "write(java.io.Writer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration",
+          "focal_method_names": [
+            "read(java.io.Reader)",
+            "write(java.io.Writer)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestNullCompositeConfiguration",
+      "method_signature": "testAddRemoveConfigurations()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()",
+            "load(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.CompositeConfiguration",
+          "focal_method_names": [
+            "getNumberOfConfigurations()",
+            "removeConfiguration(org.apache.commons.configuration2.Configuration)",
+            "setThrowExceptionOnMissing(boolean)",
+            "addConfiguration(org.apache.commons.configuration2.Configuration)",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestJNDIConfiguration",
+      "method_signature": "testGetKeysError()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.NonStringTestHolder",
+          "focal_method_names": [
+            "setConfiguration(org.apache.commons.configuration2.Configuration)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestJNDIConfiguration.PotentialErrorJNDIConfiguration",
+          "focal_method_names": [
+            "installException()",
+            "removeEventListener(org.apache.commons.configuration2.event.EventType, org.apache.commons.configuration2.event.EventListener)",
+            "addEventListener(org.apache.commons.configuration2.event.EventType, org.apache.commons.configuration2.event.EventListener)",
+            "getKeys()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.event.ErrorListenerTestImpl",
+          "focal_method_names": [
+            "checkEvent(org.apache.commons.configuration2.event.EventType, org.apache.commons.configuration2.event.EventType, java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestImmutableNode",
+      "method_signature": "testRemoveAttributeExisting()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "removeAttribute(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testQueryKeyWithAlternativeMatcher()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "query(java.lang.Object, java.lang.String, org.apache.commons.configuration2.tree.NodeHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestInMemoryNodeModelTrackedNodes",
+      "method_signature": "testIsDetachedAfterSetRoot()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.InMemoryNodeModel",
+          "focal_method_names": [
+            "isTrackedNodeDetached(org.apache.commons.configuration2.tree.NodeSelector)",
+            "setRootNode(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "trackNode(org.apache.commons.configuration2.tree.NodeSelector, org.apache.commons.configuration2.tree.NodeKeyResolver)",
+            "clearProperty(java.lang.String, org.apache.commons.configuration2.tree.NodeKeyResolver)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestImmutableNode",
+      "method_signature": "testSetAttributesNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "setAttributes(java.util.Map)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestInMemoryNodeModelTrackedNodes",
+      "method_signature": "testTrackedNodeClearedInOperation()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.InMemoryNodeModel",
+          "focal_method_names": [
+            "getNodeHandler()",
+            "isTrackedNodeDetached(org.apache.commons.configuration2.tree.NodeSelector)",
+            "clearTree(java.lang.String, org.apache.commons.configuration2.tree.NodeSelector, org.apache.commons.configuration2.tree.NodeKeyResolver)",
+            "trackNode(org.apache.commons.configuration2.tree.NodeSelector, org.apache.commons.configuration2.tree.NodeKeyResolver)",
+            "getTrackedNode(org.apache.commons.configuration2.tree.NodeSelector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfiguration",
+      "method_signature": "testCompress840ArrayListCycle(int)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.convert.ListDelimiterHandler",
+          "focal_method_names": [
+            "flatten(java.lang.Object, int)",
+            "parse(java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestDataConfiguration",
+      "method_signature": "testGetDateNoFormatPropertyConversionHandler()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.DataConfiguration",
+          "focal_method_names": [
+            "setProperty(java.lang.String, java.lang.Object)",
+            "clearProperty(java.lang.String)",
+            "addPropertyDirect(java.lang.String, java.lang.Object)",
+            "setConversionHandler(org.apache.commons.configuration2.convert.ConversionHandler)",
+            "getDate(java.lang.String)",
+            "addProperty(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout",
+      "method_signature": "testSetGlobalSeparator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.PropertiesBuilder",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.LayoutTestConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfigurationLayout",
+          "focal_method_names": [
+            "setGlobalSeparator(java.lang.String)",
+            "setSeparator(java.lang.String, java.lang.String)",
+            "save(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Writer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testPrepareAddInvalidKeyAttribute()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "prepareAdd(java.lang.Object, java.lang.String, org.apache.commons.configuration2.tree.NodeHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout",
+      "method_signature": "testReadAndWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.PropertiesBuilder",
+          "focal_method_names": [
+            "toString()",
+            "addProperty(java.lang.String, java.lang.String)",
+            "addComment(java.lang.String)",
+            "getReader()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.LayoutTestConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfigurationLayout",
+          "focal_method_names": [
+            "load(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Reader)",
+            "save(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Writer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestCompositeConfiguration",
+      "method_signature": "testGetSourceSingle()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()",
+            "load(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.CompositeConfiguration",
+          "focal_method_names": [
+            "setThrowExceptionOnMissing(boolean)",
+            "addConfiguration(org.apache.commons.configuration2.Configuration)",
+            "getSource(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout",
+      "method_signature": "testSave()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.PropertiesBuilder",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.LayoutTestConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfigurationLayout",
+          "focal_method_names": [
+            "setComment(java.lang.String, java.lang.String)",
+            "save(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Writer)",
+            "setSingleLine(java.lang.String, boolean)",
+            "setBlankLinesBefore(java.lang.String, int)",
+            "setHeaderComment(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestNullCompositeConfiguration",
+      "method_signature": "testPropertyExistsInOnlyOneConfig()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()",
+            "load(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.CompositeConfiguration",
+          "focal_method_names": [
+            "setThrowExceptionOnMissing(boolean)",
+            "getString(java.lang.String)",
+            "addConfiguration(org.apache.commons.configuration2.Configuration)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesSequence",
+      "method_signature": "testConfigurationValuesInSameOrderWithManualAdd()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.combined.CombinedConfigurationBuilder",
+          "focal_method_names": [
+            "configure(org.apache.commons.configuration2.builder.BuilderParameters[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.Configuration",
+          "focal_method_names": [
+            "subset(java.lang.String)",
+            "setProperty(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.ConfigurationAssert",
+          "focal_method_names": [
+            "keysToList(org.apache.commons.configuration2.ImmutableConfiguration)",
+            "getTestFile(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestCompositeConfiguration",
+      "method_signature": "testSettingMissingProperty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()",
+            "load(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.CompositeConfiguration",
+          "focal_method_names": [
+            "setThrowExceptionOnMissing(boolean)",
+            "getString(java.lang.String)",
+            "addConfiguration(org.apache.commons.configuration2.Configuration)",
+            "setProperty(java.lang.String, java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testPrepareAddInvalidKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "prepareAdd(java.lang.Object, java.lang.String, org.apache.commons.configuration2.tree.NodeHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestImmutableNode",
+      "method_signature": "testReplaceChildrenNullCollection()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "replaceChildren(java.util.Collection)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout",
+      "method_signature": "testSetLineSeparator()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.PropertiesBuilder",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.LayoutTestConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfigurationLayout",
+          "focal_method_names": [
+            "setComment(java.lang.String, java.lang.String)",
+            "save(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Writer)",
+            "setLineSeparator(java.lang.String)",
+            "setBlankLinesBefore(java.lang.String, int)",
+            "setHeaderComment(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testNodeKeyWithAlternativeSyntaxAttributePropertyDelimiter()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "attributeKey(java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngineSymbols.Builder",
+          "focal_method_names": [
+            "create()",
+            "setEscapedDelimiter(java.lang.String)",
+            "setIndexStart(java.lang.String)",
+            "setAttributeStart(java.lang.String)",
+            "setPropertyDelimiter(java.lang.String)",
+            "setIndexEnd(java.lang.String)",
+            "setAttributeEnd(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout",
+      "method_signature": "testInitCopyModify()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.PropertiesBuilder",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.String)",
+            "addComment(java.lang.String)",
+            "getReader()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.LayoutTestConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfigurationLayout",
+          "focal_method_names": [
+            "setComment(java.lang.String, java.lang.String)",
+            "load(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Reader)",
+            "getComment(java.lang.String)",
+            "getBlankLinesBefore(java.lang.String)",
+            "setBlankLinesBefore(java.lang.String, int)",
+            "getCanonicalComment(java.lang.String, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testNodeKeyWithAlternativeSyntax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "nodeKey(java.lang.Object, java.lang.String, org.apache.commons.configuration2.tree.NodeHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngineSymbols.Builder",
+          "focal_method_names": [
+            "create()",
+            "setEscapedDelimiter(java.lang.String)",
+            "setIndexStart(java.lang.String)",
+            "setAttributeStart(java.lang.String)",
+            "setPropertyDelimiter(java.lang.String)",
+            "setIndexEnd(java.lang.String)",
+            "setAttributeEnd(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfiguration",
+      "method_signature": "testLoadIncludeFileViaFileSystem()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.io.FileHandler",
+          "focal_method_names": [
+            "setFileName(java.lang.String)",
+            "load()",
+            "save(java.io.File)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.builder.fluent.Parameters",
+          "focal_method_names": [
+            "fileBased()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.Object)",
+            "getString(java.lang.String)",
+            "clear()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.Object)",
+            "getString(java.lang.String)",
+            "clear()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfiguration",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.Object)",
+            "getString(java.lang.String)",
+            "clear()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testAttributeKeyWithAlternativeSyntax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "attributeKey(java.lang.String, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngineSymbols.Builder",
+          "focal_method_names": [
+            "create()",
+            "setEscapedDelimiter(java.lang.String)",
+            "setIndexStart(java.lang.String)",
+            "setAttributeStart(java.lang.String)",
+            "setPropertyDelimiter(java.lang.String)",
+            "setIndexEnd(java.lang.String)",
+            "setAttributeEnd(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestBaseConfiguration",
+      "method_signature": "testNumberConversions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.BaseConfiguration",
+          "focal_method_names": [
+            "setProperty(java.lang.String, java.lang.Object)",
+            "getDouble(java.lang.String)",
+            "getFloat(java.lang.String)",
+            "getLong(java.lang.String, java.lang.Long)",
+            "getInt(java.lang.String)",
+            "getBigInteger(java.lang.String)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)",
+            "getLong(java.lang.String)",
+            "setThrowExceptionOnMissing(boolean)",
+            "getBigDecimal(java.lang.String)",
+            "getByte(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestDataConfiguration",
+      "method_signature": "testConversionException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.DataConfiguration",
+          "focal_method_names": [
+            "get(java.lang.Class, java.lang.String)",
+            "setProperty(java.lang.String, java.lang.Object)",
+            "getDoubleArray(java.lang.String)",
+            "getDateList(java.lang.String)",
+            "getColorList(java.lang.String)",
+            "getFloatList(java.lang.String)",
+            "getBigDecimalList(java.lang.String)",
+            "getDateArray(java.lang.String)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "getLocaleArray(java.lang.String)",
+            "getCalendar(java.lang.String, java.lang.String)",
+            "getDate(java.lang.String, java.lang.String)",
+            "getCalendarArray(java.lang.String)",
+            "getURLList(java.lang.String)",
+            "getBigIntegerList(java.lang.String)",
+            "getIntArray(java.lang.String)",
+            "getFloatArray(java.lang.String)",
+            "getCalendarList(java.lang.String)",
+            "getLongArray(java.lang.String)",
+            "getBigIntegerArray(java.lang.String)",
+            "getShortList(java.lang.String)",
+            "addPropertyDirect(java.lang.String, java.lang.Object)",
+            "getLongList(java.lang.String)",
+            "getLocaleList(java.lang.String)",
+            "getColorArray(java.lang.String)",
+            "getBooleanList(java.lang.String)",
+            "getBigDecimalArray(java.lang.String)",
+            "getShortArray(java.lang.String)",
+            "getBooleanArray(java.lang.String)",
+            "getByteArray(java.lang.String)",
+            "getDoubleList(java.lang.String)",
+            "getByteList(java.lang.String)",
+            "getURLArray(java.lang.String)",
+            "getIntegerList(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testPrepareAddWithAlternativeSyntax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "prepareAdd(java.lang.Object, java.lang.String, org.apache.commons.configuration2.tree.NodeHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngineSymbols.Builder",
+          "focal_method_names": [
+            "create()",
+            "setEscapedDelimiter(java.lang.String)",
+            "setIndexStart(java.lang.String)",
+            "setAttributeStart(java.lang.String)",
+            "setPropertyDelimiter(java.lang.String)",
+            "setIndexEnd(java.lang.String)",
+            "setAttributeEnd(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestImmutableNode",
+      "method_signature": "testReplaceChildExisting()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "replaceChild(org.apache.commons.configuration2.tree.ImmutableNode, org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "replaceChild(org.apache.commons.configuration2.tree.ImmutableNode, org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode",
+          "focal_method_names": [
+            "replaceChild(org.apache.commons.configuration2.tree.ImmutableNode, org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestBaseConfiguration",
+      "method_signature": "testGetInterpolatedPrimitives()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.BaseConfiguration",
+          "focal_method_names": [
+            "getInteger(java.lang.String, java.lang.Integer)",
+            "getDouble(java.lang.String, java.lang.Double)",
+            "getBigInteger(java.lang.String, java.math.BigInteger)",
+            "addProperty(java.lang.String, java.lang.Object)",
+            "getBoolean(java.lang.String, java.lang.Boolean)",
+            "getDouble(java.lang.String)",
+            "getFloat(java.lang.String)",
+            "getBoolean(java.lang.String)",
+            "getShort(java.lang.String, java.lang.Short)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)",
+            "getLong(java.lang.String)",
+            "getInt(java.lang.String)",
+            "setThrowExceptionOnMissing(boolean)",
+            "getByte(java.lang.String, java.lang.Byte)",
+            "getLong(java.lang.String, java.lang.Long)",
+            "getShort(java.lang.String)",
+            "getBigDecimal(java.lang.String, java.math.BigDecimal)",
+            "getFloat(java.lang.String, java.lang.Float)",
+            "getByte(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout",
+      "method_signature": "testReadSimple()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.PropertiesBuilder",
+          "focal_method_names": [
+            "addProperty(java.lang.String, java.lang.String)",
+            "addComment(java.lang.String)",
+            "getReader()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.TestPropertiesConfigurationLayout.LayoutTestConfiguration",
+          "focal_method_names": [
+            "setLayout(org.apache.commons.configuration2.PropertiesConfigurationLayout)",
+            "getString(java.lang.String)",
+            "setListDelimiterHandler(org.apache.commons.configuration2.convert.ListDelimiterHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.PropertiesConfigurationLayout",
+          "focal_method_names": [
+            "getKeys()",
+            "load(org.apache.commons.configuration2.PropertiesConfiguration, java.io.Reader)",
+            "getBlankLinesBefore(java.lang.String)",
+            "isSingleLine(java.lang.String)",
+            "getCanonicalComment(java.lang.String, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.TestINIConfiguration",
+      "method_signature": "testGetSectionNonExistingManipulate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration.Builder",
+          "focal_method_names": [
+            "build()",
+            "setSectionInLineCommentsAllowed(boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration",
+          "focal_method_names": [
+            "getSection(java.lang.String)",
+            "read(java.io.Reader)",
+            "write(java.io.Writer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration",
+          "focal_method_names": [
+            "getSection(java.lang.String)",
+            "read(java.io.Reader)",
+            "write(java.io.Writer)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.INIConfiguration",
+          "focal_method_names": [
+            "getSection(java.lang.String)",
+            "read(java.io.Reader)",
+            "write(java.io.Writer)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.configuration2.tree.TestDefaultExpressionEngine",
+      "method_signature": "testQueryAlternativeSyntax()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.ImmutableNode.Builder",
+          "focal_method_names": [
+            "create()",
+            "name(java.lang.String)",
+            "value(java.lang.Object)",
+            "addChild(org.apache.commons.configuration2.tree.ImmutableNode)",
+            "addAttribute(java.lang.String, java.lang.Object)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngine",
+          "focal_method_names": [
+            "query(java.lang.Object, java.lang.String, org.apache.commons.configuration2.tree.NodeHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.configuration2.tree.DefaultExpressionEngineSymbols.Builder",
+          "focal_method_names": [
+            "create()",
+            "setEscapedDelimiter(java.lang.String)",
+            "setIndexStart(java.lang.String)",
+            "setAttributeStart(java.lang.String)",
+            "setPropertyDelimiter(java.lang.String)",
+            "setIndexEnd(java.lang.String)",
+            "setAttributeEnd(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ]
+}

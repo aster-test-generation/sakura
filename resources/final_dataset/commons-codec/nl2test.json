@@ -1,0 +1,990 @@
+{
+  "dataset_name": "commons-codec",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha512HMacFail()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha512(byte[], byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.Sha512CryptTest",
+      "method_signature": "testSha512CryptStrings()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.Crypt",
+          "focal_method_names": [
+            "crypt(java.lang.String, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testDecodePadMarkerIndex2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "decodeBase64(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testNullKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "getHmacMd5(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.Md5CryptTest",
+      "method_signature": "testMd5CryptWithEmptySalt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.Md5Crypt",
+          "focal_method_names": [
+            "md5Crypt(byte[], java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha256HMacFail()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha256(byte[], byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base32Test",
+      "method_signature": "testBase32HexSamplesReverseLowercase()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base32",
+          "focal_method_names": [
+            "decode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha1HMacFail()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha1(byte[], byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.BinaryCodecTest",
+      "method_signature": "testDecodeObjectException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.BinaryCodec",
+          "focal_method_names": [
+            "decode(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.AbstractStringEncoderTest",
+      "method_signature": "testEncodeNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.StringEncoder",
+          "focal_method_names": [
+            "encode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base32InputStreamTest",
+      "method_signature": "testBase32InputStreamByteByByte()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.BaseNTestData",
+          "focal_method_names": [
+            "randomData(org.apache.commons.codec.binary.BaseNCodec, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.QuotedPrintableCodecTest",
+      "method_signature": "testEncodeStringWithNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.QuotedPrintableCodec",
+          "focal_method_names": [
+            "encode(java.lang.String, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.BeiderMorseEncoderTest",
+      "method_signature": "testSetRuleTypeToRulesIllegalArgumentException()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.BeiderMorseEncoder",
+          "focal_method_names": [
+            "setRuleType(org.apache.commons.codec.language.bm.RuleType)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MurmurHash3Test",
+      "method_signature": "testHash64WithOffsetAndLength()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash3",
+          "focal_method_names": [
+            "hash64(byte[], int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testCodec265()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "encodeBase64(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testCustomEncodingAlphabet_illegal()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.UnixCryptTest",
+      "method_signature": "testUnixCryptWithEmptySalt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.UnixCrypt",
+          "focal_method_names": [
+            "crypt(java.lang.String, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MurmurHash2Test",
+      "method_signature": "testHash64ByteArrayInt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash2",
+          "focal_method_names": [
+            "hash64(byte[], int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MurmurHash2Test",
+      "method_signature": "testHash32ByteArrayIntInt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash2",
+          "focal_method_names": [
+            "hash32(byte[], int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MurmurHash2Test",
+      "method_signature": "testHash64StringIntInt()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash2",
+          "focal_method_names": [
+            "hash64(java.lang.String, int, int)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.PercentCodecTest",
+      "method_signature": "testBasicEncodeDecode()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.PercentCodec",
+          "focal_method_names": [
+            "decode(byte[])",
+            "encode(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
+      "method_signature": "testSha3_512HexInputStream()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.DigestUtils",
+          "focal_method_names": [
+            "sha3_512Hex(java.io.InputStream)",
+            "sha3_512Hex(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testCodec112()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "encodeBase64(byte[], boolean, boolean, int)",
+            "encodeBase64(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.BaseNCodecTest",
+      "method_signature": "testEnsureBufferSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.BaseNCodec",
+          "focal_method_names": [
+            "getDefaultBufferSize()",
+            "ensureBufferSize(int, org.apache.commons.codec.binary.BaseNCodec.Context)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64InputStreamTest",
+      "method_signature": "testSkipBig()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64InputStream",
+          "focal_method_names": [
+            "read()",
+            "skip(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.QuotedPrintableCodecTest",
+      "method_signature": "testUnsafeEncodeDecode()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.QuotedPrintableCodec",
+          "focal_method_names": [
+            "decode(java.lang.String)",
+            "encode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacAlgorithmsTest",
+      "method_signature": "testHmacFailString(org.apache.commons.codec.digest.HmacAlgorithms, byte[], java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmac(java.lang.String)",
+            "isAvailable(org.apache.commons.codec.digest.HmacAlgorithms)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.BCodecTest",
+      "method_signature": "testBase64ImpossibleSamplesDefault()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.BCodec",
+          "focal_method_names": [
+            "isStrictDecoding()",
+            "decode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.QuotedPrintableCodecTest",
+      "method_signature": "testEncodeUrlWithNullBitSet()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.QuotedPrintableCodec",
+          "focal_method_names": [
+            "encodeQuotedPrintable(java.util.BitSet, byte[])",
+            "decode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacAlgorithmsTest",
+      "method_signature": "testGetHmacEmptyKey(org.apache.commons.codec.digest.HmacAlgorithms, byte[], java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "isAvailable(org.apache.commons.codec.digest.HmacAlgorithms)",
+            "getInitializedMac(org.apache.commons.codec.digest.HmacAlgorithms, byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MessageDigestAlgorithmsTest",
+      "method_signature": "testDigestByteBuffer(java.lang.String)",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MessageDigestAlgorithms",
+          "focal_method_names": [
+            "values()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.digest.MessageDigestAlgorithms",
+          "focal_method_names": [
+            "values()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testObjectEncodeWithValidParameter()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "decodeBase64(byte[])",
+            "encode(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.QuotedPrintableCodecTest",
+      "method_signature": "testSkipNotEncodedCRLF()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.QuotedPrintableCodec",
+          "focal_method_names": [
+            "decode(java.lang.String)",
+            "encode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base16Test",
+      "method_signature": "testBase16AtBufferStart()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.StringUtils",
+          "focal_method_names": [
+            "newStringUtf8(byte[])",
+            "getBytesUtf8(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.HexTest",
+      "method_signature": "testEncodeHexByteBufferHelloWorldUpperCaseHex()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Hex",
+          "focal_method_names": [
+            "encodeHex(java.nio.ByteBuffer)",
+            "encodeHex(java.nio.ByteBuffer, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testBuilderUrlSafe()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64.Builder",
+          "focal_method_names": [
+            "get()",
+            "setUrlSafe(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.BinaryCodecTest",
+      "method_signature": "testDecodeObject()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.BinaryCodec",
+          "focal_method_names": [
+            "decode(byte[])",
+            "decode(java.lang.Object)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.CryptTest",
+      "method_signature": "testDefaultCryptVariant()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.Crypt",
+          "focal_method_names": [
+            "crypt(java.lang.String)",
+            "crypt(java.lang.String, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MurmurHash3Test",
+      "method_signature": "testHash128String()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash3",
+          "focal_method_names": [
+            "hash128(java.lang.String)",
+            "hash128(byte[], int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.HexTest",
+      "method_signature": "testEncodeHexByteBufferEmpty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Hex",
+          "focal_method_names": [
+            "encodeHex(java.nio.ByteBuffer)",
+            "encode(java.nio.ByteBuffer)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.BeiderMorseEncoderTest",
+      "method_signature": "testSpeedCheck2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.BeiderMorseEncoder",
+          "focal_method_names": [
+            "setNameType(org.apache.commons.codec.language.bm.NameType)",
+            "encode(java.lang.Object)",
+            "setRuleType(org.apache.commons.codec.language.bm.RuleType)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.BeiderMorseEncoderTest",
+      "method_signature": "testSpeedCheck3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.BeiderMorseEncoder",
+          "focal_method_names": [
+            "setNameType(org.apache.commons.codec.language.bm.NameType)",
+            "encode(java.lang.Object)",
+            "setRuleType(org.apache.commons.codec.language.bm.RuleType)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testByteToStringVariations()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "encodeToString(byte[])",
+            "encodeBase64URLSafeString(byte[])",
+            "encodeBase64String(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testEncodeDecodeSmall()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "encodeBase64(byte[])",
+            "decodeBase64(byte[])",
+            "isBase64(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.PhoneticEngineRegressionTest",
+      "method_signature": "testSolrASHKENAZI()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.PhoneticEngine",
+          "focal_method_names": [
+            "encode(java.lang.String, org.apache.commons.codec.language.bm.Languages.LanguageSet)",
+            "encode(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.Languages.LanguageSet",
+          "focal_method_names": [
+            "from(java.util.Set)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.HexTest",
+      "method_signature": "testEncodeHexByteArrayHelloWorldUpperCaseHex()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.StringUtils",
+          "focal_method_names": [
+            "getBytesUtf8(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.binary.Hex",
+          "focal_method_names": [
+            "encodeHex(byte[], boolean)",
+            "encodeHex(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.BeiderMorseEncoderTest",
+      "method_signature": "testLongestEnglishSurname()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.BeiderMorseEncoder",
+          "focal_method_names": [
+            "setNameType(org.apache.commons.codec.language.bm.NameType)",
+            "encode(java.lang.String)",
+            "setRuleType(org.apache.commons.codec.language.bm.RuleType)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.net.QCodecTest",
+      "method_signature": "testEncodeDecodeBlanks()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.net.QCodec",
+          "focal_method_names": [
+            "decode(java.lang.String)",
+            "setEncodeBlanks(boolean)",
+            "encode(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+      "method_signature": "testBase64DecodingOfTrailing12Bits()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base64",
+          "focal_method_names": [
+            "decode(byte[])",
+            "encode(byte[])",
+            "isStrictDecoding()",
+            "getCodecPolicy()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base32Test",
+      "method_signature": "testBase32HexImpossibleSamples()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base32",
+          "focal_method_names": [
+            "decode(java.lang.String)",
+            "builder()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base32.Builder",
+          "focal_method_names": [
+            "get()",
+            "setHexDecodeTable(boolean)",
+            "setHexEncodeTable(boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base32OutputStreamTest",
+      "method_signature": "testStrictDecoding()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base32OutputStream",
+          "focal_method_names": [
+            "isStrictDecoding()",
+            "close()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base32OutputStream",
+          "focal_method_names": [
+            "isStrictDecoding()",
+            "close()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base16InputStreamTest",
+      "method_signature": "testAvailable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base16InputStream",
+          "focal_method_names": [
+            "read()",
+            "available()",
+            "skip(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
+      "method_signature": "testMd2Hex()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.DigestUtils",
+          "focal_method_names": [
+            "md2Hex(byte[])",
+            "md2Hex(java.io.InputStream)",
+            "md2Hex(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
+      "method_signature": "testSha1Hex()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.DigestUtils",
+          "focal_method_names": [
+            "sha1Hex(byte[])",
+            "sha1Hex(java.io.InputStream)",
+            "sha1Hex(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base32Test",
+      "method_signature": "testBase32DecodingOfTrailing20Bits()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base32",
+          "focal_method_names": [
+            "decode(byte[])",
+            "encode(byte[])",
+            "isStrictDecoding()",
+            "getCodecPolicy()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.PhoneticEngineRegressionTest",
+      "method_signature": "testSolrSEPHARDIC()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.PhoneticEngine",
+          "focal_method_names": [
+            "encode(java.lang.String, org.apache.commons.codec.language.bm.Languages.LanguageSet)",
+            "encode(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.Languages.LanguageSet",
+          "focal_method_names": [
+            "from(java.util.Set)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testHmacSha1UpdateWithString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "getHmacSha1(byte[])",
+            "updateHmac(javax.crypto.Mac, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.binary.Hex",
+          "focal_method_names": [
+            "encodeHexString(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.Base16Test",
+      "method_signature": "testDecodeSingleBytes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Base16",
+          "focal_method_names": [
+            "decode(byte[], int, int, org.apache.commons.codec.binary.BaseNCodec.Context)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.binary.StringUtils",
+          "focal_method_names": [
+            "newStringUtf8(byte[])",
+            "getBytesUtf8(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
+      "method_signature": "testSha256()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.DigestUtils",
+          "focal_method_names": [
+            "sha256Hex(byte[])",
+            "sha256Hex(java.io.InputStream)",
+            "sha256Hex(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.language.bm.PhoneticEngineRegressionTest",
+      "method_signature": "testCompatibilityWithOriginalVersion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.PhoneticEngine",
+          "focal_method_names": [
+            "encode(java.lang.String, org.apache.commons.codec.language.bm.Languages.LanguageSet)",
+            "encode(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.language.bm.Languages.LanguageSet",
+          "focal_method_names": [
+            "from(java.util.Set)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha512HMac()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha512(byte[], byte[])",
+            "hmacSha512(byte[], java.io.InputStream)",
+            "hmacSha512(java.lang.String, java.lang.String)",
+            "hmacSha512Hex(java.lang.String, java.lang.String)",
+            "hmacSha512Hex(byte[], java.io.InputStream)",
+            "hmacSha512Hex(byte[], byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testMd5HMac()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacMd5(java.lang.String, java.lang.String)",
+            "hmacMd5Hex(byte[], java.io.InputStream)",
+            "hmacMd5Hex(byte[], byte[])",
+            "hmacMd5(byte[], byte[])",
+            "hmacMd5(byte[], java.io.InputStream)",
+            "hmacMd5Hex(java.lang.String, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.StringUtilsTest",
+      "method_signature": "testNewStringNullInput_CODEC229()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.StringUtils",
+          "focal_method_names": [
+            "newStringUsAscii(byte[])",
+            "newStringUtf16Le(byte[])",
+            "newStringUtf16Be(byte[])",
+            "newStringUtf16(byte[])",
+            "newStringUtf8(byte[])",
+            "newStringIso8859_1(byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.binary.HexTest",
+      "method_signature": "testEncodeDecodeHexCharArrayRandom()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.binary.Hex",
+          "focal_method_names": [
+            "encode(byte[])",
+            "decode(java.lang.Object)",
+            "encodeHex(byte[])",
+            "decode(byte[])",
+            "encode(java.lang.Object)",
+            "decodeHex(char[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha1HMac()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha1Hex(byte[], java.io.InputStream)",
+            "hmacSha1(java.lang.String, java.lang.String)",
+            "hmacSha1(byte[], byte[])",
+            "hmacSha1Hex(java.lang.String, java.lang.String)",
+            "hmacSha1(byte[], java.io.InputStream)",
+            "hmacSha1Hex(byte[], byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha256HMac()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha256(java.lang.String, java.lang.String)",
+            "hmacSha256Hex(byte[], java.io.InputStream)",
+            "hmacSha256(byte[], java.io.InputStream)",
+            "hmacSha256(byte[], byte[])",
+            "hmacSha256Hex(java.lang.String, java.lang.String)",
+            "hmacSha256Hex(byte[], byte[])"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.MurmurHash3Test",
+      "method_signature": "testIncrementalHash32()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash3.IncrementalHash32x86",
+          "focal_method_names": [
+            "end()",
+            "start(int)",
+            "add(byte[], int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash3.IncrementalHash32",
+          "focal_method_names": [
+            "end()",
+            "start(int)",
+            "add(byte[], int, int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.codec.digest.MurmurHash3",
+          "focal_method_names": [
+            "hash32x86(byte[], int, int, int)",
+            "hash32(byte[], int, int, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.codec.digest.HmacUtilsTest",
+      "method_signature": "testSha384HMac()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.codec.digest.HmacUtils",
+          "focal_method_names": [
+            "hmacSha384Hex(byte[], java.io.InputStream)",
+            "hmacSha384(byte[], byte[])",
+            "hmacSha384Hex(java.lang.String, java.lang.String)",
+            "hmacSha384(java.lang.String, java.lang.String)",
+            "hmacSha384(byte[], java.io.InputStream)",
+            "hmacSha384Hex(byte[], byte[])"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": []
+}

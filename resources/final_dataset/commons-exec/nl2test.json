@@ -1,0 +1,1392 @@
+{
+  "dataset_name": "commons-exec",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testParseCommandLineWithOnlyWhitespace()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testParseCommandLineWithNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.environment.EnvironmentUtilsTest",
+      "method_signature": "testToStringWithNullKey()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.environment.EnvironmentUtils",
+          "focal_method_names": [
+            "toStrings(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.OSTest",
+      "method_signature": "testIsArch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.OS",
+          "focal_method_names": [
+            "isArch(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testParseCommandLineWithUnevenQuotes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.TimeoutObserverTest",
+      "method_signature": "testTimeoutOccurred()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TimeoutObserverTest.TimeoutObserverFixture",
+          "focal_method_names": [
+            "timeoutOccured(org.apache.commons.exec.Watchdog)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.MapUtilTest",
+      "method_signature": "testMergeMap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.MapUtils",
+          "focal_method_names": [
+            "merge(java.util.Map, java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.environment.EnvironmentUtilsTest",
+      "method_signature": "testToStrings()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.environment.EnvironmentUtils",
+          "focal_method_names": [
+            "toStrings(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.environment.EnvironmentUtilsTest",
+      "method_signature": "testToStringWithNullValue()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.environment.EnvironmentUtils",
+          "focal_method_names": [
+            "toStrings(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.OSTest",
+      "method_signature": "testIsVersion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.OS",
+          "focal_method_names": [
+            "isVersion(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testAddArgumentWithBothQuotes()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+      "method_signature": "testIncompleteSubstitution()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.StringUtils",
+          "focal_method_names": [
+            "stringSubstitution(java.lang.String, java.util.Map, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.launcher.VmsCommandLauncherTest",
+      "method_signature": "testIsFailure()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.launcher.CommandLauncher",
+          "focal_method_names": [
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.launcher.VmsCommandLauncherTest",
+      "method_signature": "testCreateCommandFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.launcher.VmsCommandLauncher",
+          "focal_method_names": [
+            "createCommandFile(org.apache.commons.exec.CommandLine, java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testParseRealLifeCommandLine()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+      "method_signature": "testDefaultStringSubstitution()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.StringUtils",
+          "focal_method_names": [
+            "stringSubstitution(java.lang.String, java.util.Map, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.MapUtilTest",
+      "method_signature": "testPrefixMap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.MapUtils",
+          "focal_method_names": [
+            "prefix(java.util.Map, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+      "method_signature": "testNoStringSubstitution()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.StringUtils",
+          "focal_method_names": [
+            "stringSubstitution(java.lang.String, java.util.Map, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+      "method_signature": "testErroneousTemplate()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.StringUtils",
+          "focal_method_names": [
+            "stringSubstitution(java.lang.String, java.util.Map, boolean)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.util.MapUtilTest",
+      "method_signature": "testCopyMap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.util.MapUtils",
+          "focal_method_names": [
+            "copy(java.util.Map)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec49Test",
+      "method_signature": "testExec49Part1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testParseComplexCommandLine1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String, java.util.Map)",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.environment.EnvironmentUtilsTest",
+      "method_signature": "testGetProcEnvironment()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.environment.EnvironmentUtils",
+          "focal_method_names": [
+            "getProcEnvironment()",
+            "toStrings(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testComplexAddArgument()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String, boolean)",
+            "toStrings()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec60Test",
+      "method_signature": "testExec60()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "execute(org.apache.commons.exec.CommandLine)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.environment.EnvironmentUtilsTest",
+      "method_signature": "testCaseInsensitiveVariableLookup()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.environment.EnvironmentUtils",
+          "focal_method_names": [
+            "addVariableToEnvironment(java.util.Map, java.lang.String)",
+            "getProcEnvironment()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec49Test",
+      "method_signature": "testExec49Part2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec36Test",
+      "method_signature": "testExec36Part6()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testToString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String, java.util.Map)",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testAddTwoArguments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testCommandLineParsingWithExpansion1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)",
+            "parse(java.lang.String, java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testComplexAddArguments1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArguments(java.lang.String[], boolean)",
+            "toStrings()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+      "method_signature": "testDefaultExecutorFromPath()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.PumpStreamHandlerTest",
+      "method_signature": "testSetStopTimeout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.PumpStreamHandler",
+          "focal_method_names": [
+            "setStopTimeout(java.time.Duration)",
+            "setStopTimeout(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testExecutable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "toStrings()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec34Test",
+      "method_signature": "testExec34Part2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+      "method_signature": "testDefaultExecutorFromFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec34Test",
+      "method_signature": "testExec34Part1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testComplexAddArguments2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArguments(java.lang.String, boolean)",
+            "toStrings()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec44Test",
+      "method_signature": "testExec44()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithError()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testCopyConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)",
+            "setSubstitutionMap(java.util.Map)",
+            "isFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteAsyncWithTimelyUserTermination()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testAddArgumentWithQuotesAround()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)",
+            "toStrings()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testParseCommandLine()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "parse(java.lang.String)",
+            "toStrings()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithSingleEnvironmentVariable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, java.util.Map)",
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.LogOutputStreamTest",
+      "method_signature": "testStdout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec36Test",
+      "method_signature": "testExec36Part1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteAsync()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+      "method_signature": "testDefaultExecutorBuilderFromPath()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "setThreadFactory(java.util.concurrent.ThreadFactory)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+      "method_signature": "testBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.ExecuteWatchdog.Builder",
+          "focal_method_names": [
+            "setTimeout(java.time.Duration)",
+            "setThreadFactory(java.util.concurrent.ThreadFactory)",
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+      "method_signature": "testDefaultExecutorDefaultBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testAddArgumentWithQuote()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)",
+            "toStrings()",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testCommandLineParsingWithExpansion2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)",
+            "setSubstitutionMap(java.util.Map)",
+            "toStrings()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+      "method_signature": "testBuilder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Watchdog.Builder",
+          "focal_method_names": [
+            "setTimeout(java.time.Duration)",
+            "setThreadFactory(java.util.concurrent.ThreadFactory)",
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testAddArgumentsArray()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "toStrings()",
+            "addArguments(java.lang.String[])",
+            "toString()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec33Test",
+      "method_signature": "testExec33()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "isFailure(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec41Test",
+      "method_signature": "testExec41WithoutStreams()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testAddEnvironmentVariableEmbeddedQuote()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.CommandLineTest",
+      "method_signature": "testAddArgument()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.CommandLine",
+          "focal_method_names": [
+            "addArgument(java.lang.String)",
+            "toStrings()",
+            "toString()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteStability()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "execute(org.apache.commons.exec.CommandLine, java.util.Map)",
+            "execute(org.apache.commons.exec.CommandLine, java.util.Map, org.apache.commons.exec.ExecuteResultHandler)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+            "isFailure(int)",
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWatchdogAsync()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "setWorkingDirectory(java.io.File)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteNonExistingApplicationWithWatchDog()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithComplexArguments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteAsyncWithProcessDestroyer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setProcessDestroyer(org.apache.commons.exec.ProcessDestroyer)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "getProcessDestroyer()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithNullOutErr()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecute()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "getWorkingDirectory()",
+            "isFailure(int)",
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "getWorkingDirectoryPath()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWatchdogSync()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "setWorkingDirectory(java.io.File)",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithWorkingDirectory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "getWorkingDirectory()",
+            "isFailure(int)",
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "setWorkingDirectory(java.io.File)",
+            "getWorkingDirectoryPath()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithStdOutErr()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithRedirectOutErr()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteAsyncNonExistingApplicationWithWatchdog()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWithRedirectedStreams()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "builder()",
+            "setWorkingDirectory(java.io.File)",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.TutorialTest",
+      "method_signature": "testTutorialExample()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setExitValue(int)",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.ExecuteWatchdog.Builder",
+          "focal_method_names": [
+            "setThreadFactory(java.util.concurrent.ThreadFactory)",
+            "setTimeout(java.time.Duration)",
+            "get()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.TutorialTest.PrintResultHandler",
+          "focal_method_names": [
+            "waitFor()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteAsyncNonExistingApplication()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "execute(org.apache.commons.exec.CommandLine, org.apache.commons.exec.ExecuteResultHandler)",
+            "isFailure(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+      "method_signature": "testExecuteWatchdogVeryLongTimeout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "getTestScriptCodesForOS()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.Executor",
+          "focal_method_names": [
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "setWorkingDirectory(java.io.File)",
+            "execute(org.apache.commons.exec.CommandLine)",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.exec.issues.Exec62Test",
+      "method_signature": "testMe()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor",
+          "focal_method_names": [
+            "builder()",
+            "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+            "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+            "setExitValues(int[])",
+            "execute(org.apache.commons.exec.CommandLine)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.TestUtil",
+          "focal_method_names": [
+            "resolveScriptFileForOS(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+          "focal_method_names": [
+            "get()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.exec.OSTest",
+      "method_signature": "testIsArchMacOs()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.exec.OS",
+          "focal_method_names": [
+            "isFamilyOpenVms()",
+            "isFamilyNetware()",
+            "isFamilyZOS()",
+            "isFamilyOS2()",
+            "isFamilyDOS()",
+            "isFamilyTandem()",
+            "isFamilyUnix()",
+            "isFamilyWindows()",
+            "isFamilyOS400()",
+            "isFamilyWin9x()",
+            "isFamilyMac()",
+            "isFamilyWinNT()"
+          ]
+        }
+      ]
+    }
+  ]
+}

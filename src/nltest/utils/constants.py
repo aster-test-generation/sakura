@@ -4,6 +4,19 @@ Common Constants
 
 import sys
 from typing import Dict
+from enum import Enum
+
+MAVEN_CMD = "mvn.cmd" if sys.platform == "win32" else "mvn"
+JACOCO_VERSION = "0.8.13"
+MAVEN_COV_DIR = "target/coverage"
+MAVEN_JACOCO_COV_FILE = f"{MAVEN_COV_DIR}/jacoco.exec"
+
+
+class MutationOperators(str, Enum):
+    defaults = "DEFAULTS"
+    stronger = "STRONGER"
+    all = "ALL"
+
 
 RESOURCE_DIR = "resources/datasets"
 ASTER_REPORTS_DIR = "reports"

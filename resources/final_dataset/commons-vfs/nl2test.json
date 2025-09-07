@@ -1,0 +1,1590 @@
+{
+  "dataset_name": "commons-vfs",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.EmptyFileFilterTest",
+      "method_signature": "testZipFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSelectInfo",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.SymbolicLinkFileFilterTest",
+      "method_signature": "testZipFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSelectInfo",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.test.FileObjectSortTest",
+      "method_signature": "testSortListMoveAll()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.NameFileFilterTest",
+      "method_signature": "testAcceptString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.filter.NameFileFilter",
+          "focal_method_names": [
+            "accept(org.apache.commons.vfs2.FileSelectInfo)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.util.FileObjectUtilsTest",
+      "method_signature": "testNotExistsNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.util.FileObjectUtils",
+          "focal_method_names": [
+            "exists(org.apache.commons.vfs2.FileObject)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.EmptyFileFilterTest",
+      "method_signature": "testAcceptEmpty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileFilter",
+          "focal_method_names": [
+            "accept(org.apache.commons.vfs2.FileSelectInfo)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.DefaultFileContentTest",
+      "method_signature": "testOutputStreamBufferSize1()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.test.GenericFileNameTest",
+      "method_signature": "testParseIPv6InvalidHostsTolerance()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.GenericURLFileNameParser",
+          "focal_method_names": [
+            "parseUri(org.apache.commons.vfs2.provider.VfsComponentContext, org.apache.commons.vfs2.FileName, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.GenericFileName",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.res.ResSchemeTest",
+      "method_signature": "testResolveURIStringS()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.OrFileFilterTest",
+      "method_signature": "testSetFileFilters()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.filter.OrFileFilter",
+          "focal_method_names": [
+            "setFileFilters(java.util.List)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.res.ResSchemeTest",
+      "method_signature": "testResolveFileStringSSSnull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.res.ResSchemeTest",
+      "method_signature": "testResolveURIStringSSSnull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.res.Vfs444TestCase.Vfs444Tests",
+      "method_signature": "testResolveFullPathURI2()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileName",
+          "focal_method_names": [
+            "isFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.UriParserTest",
+      "method_signature": "testColonInFileNameAndNotSupportedScheme()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.UriParser",
+          "focal_method_names": [
+            "extractScheme(java.lang.String[], java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.res.ResSchemeTest",
+      "method_signature": "testResolveURIString()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.local.WindowsFileNameTests",
+      "method_signature": "testWindowsWrongRoots()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileName",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.DefaultFileContentTest",
+      "method_signature": "testMarkingWorks()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.sftp.SftpFileSystemGroupsTests",
+      "method_signature": "testShouldThrowOnUnexpectedOutput()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.sftp.SftpFileSystem",
+          "focal_method_names": [
+            "parseGroupIdOutput(java.lang.StringBuilder)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.test.FileObjectSortTest",
+      "method_signature": "testSortArrayMoveNone()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.SuffixFileFilterTest",
+      "method_signature": "testAcceptList()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.filter.SuffixFileFilter",
+          "focal_method_names": [
+            "accept(org.apache.commons.vfs2.FileSelectInfo)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.zip.FileLockTest",
+      "method_signature": "testResolveAndOpenReadCloseInputStream()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.UriTests",
+      "method_signature": "testReservedCharacterSpace()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "getURI()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.filter.AgeFileFilterTest",
+      "method_signature": "testAgeFileFilterLongBoolean()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.filter.AgeFileFilter",
+          "focal_method_names": [
+            "accept(org.apache.commons.vfs2.FileSelectInfo)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.zip.ZipFileObjectTest",
+      "method_signature": "testResolveNestedFileWithoutCleanup()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.util.FileObjectUtilsTest",
+      "method_signature": "testgetContentAsStringStringNull()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.util.FileObjectUtils",
+          "focal_method_names": [
+            "getContentAsString(org.apache.commons.vfs2.FileObject, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.UrlTests",
+      "method_signature": "testURL()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getURL()",
+            "resolveFile(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.zip.FileLockTest",
+      "method_signature": "testResolveAndOpenCloseInputStream3()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.FileSystemOptionsTest",
+      "method_signature": "testEqualsHashCodeAndCompareToWithSftpIdentityProviderMatch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder",
+          "focal_method_names": [
+            "setIdentityProvider(org.apache.commons.vfs2.FileSystemOptions, org.apache.commons.vfs2.provider.sftp.IdentityProvider[])",
+            "getInstance()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.tar.CreateFileSystemTest",
+      "method_signature": "testTarFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "createFileSystem(org.apache.commons.vfs2.FileObject)",
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.util.FileObjectUtilsTest",
+      "method_signature": "testReadPropertiesInto()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.util.FileObjectUtils",
+          "focal_method_names": [
+            "readProperties(org.apache.commons.vfs2.FileObject, java.util.Properties)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.AbstractFileNameTest",
+      "method_signature": "testHashSignEncoded()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.AbstractFileName",
+          "focal_method_names": [
+            "getURI()",
+            "getFriendlyURI()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.url.UrlFileNameParserTest",
+      "method_signature": "testJira739SchemeRam()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileName",
+          "focal_method_names": [
+            "getURI()",
+            "getScheme()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.webdav4.test.Webdav4VersioningTests",
+      "method_signature": "testVersioning()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.webdav4.Webdav4FileSystemConfigBuilder",
+          "focal_method_names": [
+            "setVersioning(org.apache.commons.vfs2.FileSystemOptions, boolean)",
+            "isVersioning(org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.zip.FileLockTest",
+      "method_signature": "testResolveOpenCloseNestedInputStreams()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderReadTests",
+      "method_signature": "testRoot()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "getRootURI()",
+            "getFileSystemOptions()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http.HttpFilesCacheTest",
+      "method_signature": "testQueryStringUrls()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getURL()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.tar.CreateFileSystemTest",
+      "method_signature": "testTbz2File()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "createFileSystem(org.apache.commons.vfs2.FileObject)",
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ftp.FtpMdtmOnLastModifiedTests",
+      "method_signature": "testGetLastModifiedFileExactMatch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ContentTests",
+      "method_signature": "testAllContent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getName()",
+            "exists()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.LastModifiedTests",
+      "method_signature": "testSetLastModifiedFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "getFileSystem()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.UriTests",
+      "method_signature": "testURIContentProvider()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "exists()",
+            "getFileSystem()",
+            "resolveFile(java.lang.String)",
+            "getURI()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.hdfs.HdfsFileProviderTest",
+      "method_signature": "testGetContentSize()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "exists()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilderTest",
+      "method_signature": "testControlKeepAliveTimeout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilder",
+          "focal_method_names": [
+            "getControlKeepAliveTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "getInstance()",
+            "setControlKeepAliveTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http.HttpGetContentInfoFunctionalTest",
+      "method_signature": "testGetContentInfo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder",
+          "focal_method_names": [
+            "setProxyPort(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getInstance()",
+            "setProxyHost(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String, org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileContent",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http5.Http5ProviderTestCase",
+      "method_signature": "testResolveFolderSlashNoRedirectOff()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http5.Http5FileSystemConfigBuilder",
+          "focal_method_names": [
+            "getInstance()",
+            "setFollowRedirect(org.apache.commons.vfs2.FileSystemOptions, boolean)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.impl.DefaultFileMonitorTest",
+      "method_signature": "testChildFileRecreated()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileMonitor",
+          "focal_method_names": [
+            "addFile(org.apache.commons.vfs2.FileObject)",
+            "start()",
+            "setRecursive(boolean)",
+            "setDelay(long)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.FileSystemOptionsTest",
+      "method_signature": "testEqualsHashCodeAndCompareTo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemOptionsTest.JUnitConfigBuilder",
+          "focal_method_names": [
+            "getInstance()",
+            "setNames(org.apache.commons.vfs2.FileSystemOptions, java.lang.String[])",
+            "setId(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.PatternFileSelectorTest",
+      "method_signature": "testMatchAll()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.test.JunctionTests",
+      "method_signature": "testAncestors()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "addJunction(java.lang.String, org.apache.commons.vfs2.FileObject)",
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getFileSystem()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ContentTests",
+      "method_signature": "testRootURI()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "exists()",
+            "getType()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "getRootURI()",
+            "getFileSystemOptions()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ram.CustomRamProviderTest",
+      "method_signature": "testReadEmptyFileIntoBuffer()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ram.CustomRamProviderTest",
+      "method_signature": "testReadNonEmptyFileIntoBufferWithOffsetAndLength()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()",
+            "createFile()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileContent",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.zip.Jira733Test",
+      "method_signature": "testZipParentLayerIsFolder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.VFS",
+          "focal_method_names": [
+            "getManager()",
+            "reset()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getFileSystem()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.zip.ZipFileObject",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.FileExtensionSelectorTest",
+      "method_signature": "testEmpty()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilderTest",
+      "method_signature": "testDelegatingGood()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.util.DelegatingFileSystemOptionsBuilder",
+          "focal_method_names": [
+            "setConfigClass(org.apache.commons.vfs2.FileSystemOptions, java.lang.String, java.lang.String, java.lang.Class)",
+            "setConfigString(org.apache.commons.vfs2.FileSystemOptions, java.lang.String, java.lang.String, java.lang.String)",
+            "setConfigStrings(org.apache.commons.vfs2.FileSystemOptions, java.lang.String, java.lang.String, java.lang.String[])"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder",
+          "focal_method_names": [
+            "getInstance()",
+            "getUserInfo(org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.tar.TarFileObjectTest",
+      "method_signature": "testReadSpecialNameFileInTgzFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getChild(java.lang.String)",
+            "getChildren()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ContentTests",
+      "method_signature": "testParent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "exists()",
+            "resolveFile(java.lang.String)",
+            "getParent()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "getParentLayer()",
+            "getRoot()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.PermissionsTests",
+      "method_signature": "testReadable()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "createFolder()",
+            "resolveFile(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.FileTypeTest",
+      "method_signature": "testSerializationImaginary()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileType",
+          "focal_method_names": [
+            "hasAttributes()",
+            "hasChildren()",
+            "hasContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.impl.DefaultFileSystemManagerTest",
+      "method_signature": "testCreateZipFileSystem()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "toFileObject(java.nio.file.Path)",
+            "toFileObject(java.io.File)",
+            "createFileSystem(org.apache.commons.vfs2.FileObject)",
+            "resolveFile(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderCacheStrategyTests",
+      "method_signature": "testManualCache()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "refresh()",
+            "getChildren()",
+            "resolveFile(java.lang.String)",
+            "getFileSystem()",
+            "getName()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.tar.LargeTarTest",
+      "method_signature": "testLargeFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "setCacheStrategy(org.apache.commons.vfs2.CacheStrategy)",
+            "setFilesCache(org.apache.commons.vfs2.FilesCache)",
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getName()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getName()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getName()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderRandomReadWriteTests",
+      "method_signature": "testRandomWrite()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "createFolder()",
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.RandomAccessContent",
+          "focal_method_names": [
+            "seek(long)",
+            "readByte()",
+            "writeByte(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.PatternFileSelectorTest",
+      "method_signature": "testMatchPartialDelimited()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderReadTests",
+      "method_signature": "testSort()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "toString()",
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "toString()",
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "toString()",
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "toString()",
+            "findFiles(org.apache.commons.vfs2.FileSelector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.PatternFileSelectorTest",
+      "method_signature": "testFileExtensions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "toString()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderRenameTests",
+      "method_signature": "testRenameFileIntoEmptyFolder()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "createFolder()",
+            "getType()",
+            "getChildren()",
+            "exists()",
+            "resolveFile(java.lang.String)",
+            "delete()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.local.WindowsFileNameTests",
+      "method_signature": "testWindowsRoots()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileName",
+          "focal_method_names": [
+            "getExtension()",
+            "getRoot()",
+            "getFriendlyURI()",
+            "getPathDecoded()",
+            "getPath()",
+            "toString()",
+            "getRootURI()",
+            "getBaseName()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ram.CustomRamProviderTest",
+      "method_signature": "testMoveFile()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "moveTo(org.apache.commons.vfs2.FileObject)",
+            "canRenameTo(org.apache.commons.vfs2.FileObject)",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.PatternFileSelectorTest",
+      "method_signature": "testMatchPartial()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderRandomSetLengthTests",
+      "method_signature": "testRandomSetLength()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "createFolder()",
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.RandomAccessContent",
+          "focal_method_names": [
+            "seek(long)",
+            "readByte()",
+            "writeBytes(java.lang.String)",
+            "setLength(long)",
+            "length()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderCacheStrategyTests",
+      "method_signature": "testOnCallCache()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "getChildren()",
+            "resolveFile(java.lang.String)",
+            "getFileSystem()",
+            "getName()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.FileExtensionSelectorTest",
+      "method_signature": "testOneExtension()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "toString()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.zip.ParseXmlInZipTest",
+      "method_signature": "testResolveAndParseXmlInZipWithTwoXmlSchema()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "close()",
+            "exists()",
+            "resolveFile(java.lang.String)",
+            "toString()",
+            "getContent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http5.Http5GetContentInfoTest",
+      "method_signature": "testGetContentWithProxyAuthInfo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http5.Http5FileSystemConfigBuilder",
+          "focal_method_names": [
+            "setProxyPort(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "setProxyAuthenticator(org.apache.commons.vfs2.FileSystemOptions, org.apache.commons.vfs2.UserAuthenticator)",
+            "getInstance()",
+            "setProxyHost(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String, org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileContent",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderWriteTests",
+      "method_signature": "testCreateDeleteCreateSameFileSystem()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "createFolder()",
+            "exists()",
+            "resolveFile(java.lang.String)",
+            "delete()",
+            "copyFrom(org.apache.commons.vfs2.FileObject, org.apache.commons.vfs2.FileSelector)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http4.Http4GetContentInfoTest",
+      "method_signature": "testGetContentInfo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http4.Http4FileSystemConfigBuilder",
+          "focal_method_names": [
+            "setProxyPort(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getInstance()",
+            "setProxyHost(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)",
+            "setProxyScheme(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String, org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileContent",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.FileExtensionSelectorTest",
+      "method_signature": "testManyExtensions()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "deleteAll()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "toString()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http5.Http5GetContentInfoTest",
+      "method_signature": "testGetContentInfo()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http5.Http5FileSystemConfigBuilder",
+          "focal_method_names": [
+            "setProxyPort(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getInstance()",
+            "setProxyHost(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)",
+            "setProxyScheme(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String, org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getContent()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileContent",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.operations.BasicOperationsTest",
+      "method_signature": "testNotFoundAny()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "toFileObject(java.io.File)",
+            "addOperationProvider(java.lang.String, org.apache.commons.vfs2.operations.FileOperationProvider)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "getFileOperations()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.operations.FileOperations",
+          "focal_method_names": [
+            "getOperations()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http4.Http4ProviderTestCase",
+      "method_signature": "testHttpTimeoutConfig()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http4.Http4FileSystemConfigBuilder",
+          "focal_method_names": [
+            "getConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "setConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)",
+            "setSoTimeout(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getInstance()",
+            "setUserAgent(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)",
+            "getConnectionTimeoutDuration(org.apache.commons.vfs2.FileSystemOptions)",
+            "setSoTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)",
+            "getUserAgent(org.apache.commons.vfs2.FileSystemOptions)",
+            "getSoTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "setConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getSoTimeoutDuration(org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ram.CustomRamProviderTest",
+      "method_signature": "testSchemePrefix()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "getSchemes()",
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "getChild(java.lang.String)",
+            "getType()",
+            "getChildren()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "createFile()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.ProviderWriteTests",
+      "method_signature": "testListener()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "delete(org.apache.commons.vfs2.FileSelector)",
+            "createFolder()",
+            "copyFrom(org.apache.commons.vfs2.FileObject, org.apache.commons.vfs2.FileSelector)",
+            "exists()",
+            "getFileSystem()",
+            "resolveFile(java.lang.String)",
+            "delete()",
+            "getContent()",
+            "createFile()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileSystem",
+          "focal_method_names": [
+            "removeListener(org.apache.commons.vfs2.FileObject, org.apache.commons.vfs2.FileListener)",
+            "addListener(org.apache.commons.vfs2.FileObject, org.apache.commons.vfs2.FileListener)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.ProviderWriteTests.TestListener",
+          "focal_method_names": [
+            "addCreateEvent()",
+            "assertFinished()",
+            "addDeleteEvent()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http5.Http5ProviderTestCase",
+      "method_signature": "testHttpTimeoutConfig()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http5.Http5FileSystemConfigBuilder",
+          "focal_method_names": [
+            "getConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "setConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)",
+            "setSoTimeout(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getInstance()",
+            "setUserAgent(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)",
+            "getConnectionTimeoutDuration(org.apache.commons.vfs2.FileSystemOptions)",
+            "setSoTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)",
+            "getUserAgent(org.apache.commons.vfs2.FileSystemOptions)",
+            "getSoTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "setConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "getSoTimeoutDuration(org.apache.commons.vfs2.FileSystemOptions)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.http.HttpProviderTestCase",
+      "method_signature": "testHttpTimeoutConfig()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.provider.http.HttpFileSystemConfigBuilder",
+          "focal_method_names": [
+            "getConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "setConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)",
+            "getInstance()",
+            "setUserAgent(org.apache.commons.vfs2.FileSystemOptions, java.lang.String)",
+            "getConnectionTimeoutDuration(org.apache.commons.vfs2.FileSystemOptions)",
+            "setSoTimeout(org.apache.commons.vfs2.FileSystemOptions, java.time.Duration)",
+            "getUserAgent(org.apache.commons.vfs2.FileSystemOptions)",
+            "getSoTimeout(org.apache.commons.vfs2.FileSystemOptions)",
+            "getSoTimeoutDuration(org.apache.commons.vfs2.FileSystemOptions)",
+            "setConnectionTimeout(org.apache.commons.vfs2.FileSystemOptions, int)",
+            "setSoTimeout(org.apache.commons.vfs2.FileSystemOptions, int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.vfs2.provider.ram.CustomRamProviderTest",
+      "method_signature": "testSpecialName()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.vfs2.impl.DefaultFileSystemManager",
+          "focal_method_names": [
+            "resolveFile(java.lang.String)",
+            "addProvider(java.lang.String, org.apache.commons.vfs2.provider.FileProvider)",
+            "init()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.vfs2.FileObject",
+          "focal_method_names": [
+            "createFolder()",
+            "getChild(java.lang.String)",
+            "getType()",
+            "getChildren()",
+            "resolveFile(java.lang.String)",
+            "findFiles(org.apache.commons.vfs2.FileSelector)",
+            "getName()",
+            "createFile()"
+          ]
+        }
+      ]
+    }
+  ]
+}

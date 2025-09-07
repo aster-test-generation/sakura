@@ -1,0 +1,810 @@
+{
+  "dataset_name": "commons-email",
+  "tests_with_one_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.resolver.DataSourcePathResolverTest",
+      "method_signature": "testResolveLenient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.IDNEmailAddressConverterTest",
+      "method_signature": "testNonIDNEmailAddressToAsciiConversion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.IDNEmailAddressConverter",
+          "focal_method_names": [
+            "toASCII(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.IDNEmailAddressConverterTest",
+      "method_signature": "testNonIDNEmailAddressToAsciiConversion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.IDNEmailAddressConverter",
+          "focal_method_names": [
+            "toASCII(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.resolver.DataSourceUrlResolverTest",
+      "method_signature": "testResolvingHttpNonLenient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.resolver.DataSourceFileResolverTest",
+      "method_signature": "testResolveStrict()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.EmailTest",
+      "method_signature": "testGetSetAuthentication()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.mocks.MockEmailConcrete",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.DefaultAuthenticator",
+          "focal_method_names": [
+            "getPasswordAuthentication()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.IDNEmailAddressConverterTest",
+      "method_signature": "testConvertInvalidEmailAddressToAscii()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.IDNEmailAddressConverter",
+          "focal_method_names": [
+            "toASCII(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.HtmlEmailTest",
+      "method_signature": "testEmbedFileWithCID()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.mocks.MockHtmlEmailConcrete",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.core.EmailUtils",
+          "focal_method_names": [
+            "encodeUrl(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.resolver.DataSourceFileResolverTest",
+      "method_signature": "testResolveLenient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.EmailLiveTest",
+      "method_signature": "testHtmlMailMimeLayout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.Email",
+          "focal_method_names": [
+            "getMimeMessage()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.IDNEmailAddressConverterTest",
+      "method_signature": "testMultipleIDNEmailAddressToAsciiConversion()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.IDNEmailAddressConverter",
+          "focal_method_names": [
+            "toASCII(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.resolver.DataSourcePathResolverTest",
+      "method_signature": "testResolveStrict()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.DefaultAuthenticatorTest",
+      "method_signature": "testDefaultAuthenticatorConstructor()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.DefaultAuthenticator",
+          "focal_method_names": [
+            "getPasswordAuthentication()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.core.EmailUtilsTest",
+      "method_signature": "testIsEmptyMap()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.core.EmailUtils",
+          "focal_method_names": [
+            "isEmpty(java.util.Map)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.resolver.DataSourcePathResolverTest",
+      "method_signature": "testResolveLenient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.resolver.DataSourceUrlResolverTest",
+      "method_signature": "testResolvingFilesLenient()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.core.EmailUtilsTest",
+      "method_signature": "testUrlEncoding()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.core.EmailUtils",
+          "focal_method_names": [
+            "encodeUrl(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.resolver.DataSourcePathResolverTest",
+      "method_signature": "testResolveStrict()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.DataSourceResolver",
+          "focal_method_names": [
+            "resolve(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.HtmlEmailTest",
+      "method_signature": "testEmbedFileWithCID()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.mocks.MockHtmlEmailConcrete",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.core.EmailUtils",
+          "focal_method_names": [
+            "encodeUrl(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.IDNEmailAddressConverterTest",
+      "method_signature": "testConvertInvalidEmailAddressToAscii()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.IDNEmailAddressConverter",
+          "focal_method_names": [
+            "toASCII(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_two_focal_methods": [],
+  "tests_with_more_than_two_to_five_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.EmailLiveTest",
+      "method_signature": "testSendingEmailsInBatch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.Email",
+          "focal_method_names": [
+            "getMailSession()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.SimpleEmail",
+          "focal_method_names": [
+            "buildMimeMessage()",
+            "getMimeMessage()",
+            "setMsg(java.lang.String)",
+            "setSubject(java.lang.String)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseNoHeaderSeperatorWithOutOfMemory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "isMultipart()",
+            "getBcc()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseNoHeaderSeperatorWithOutOfMemory()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "isMultipart()",
+            "getBcc()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.EmailLiveTest",
+      "method_signature": "testSendingEmailsInBatch()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.Email",
+          "focal_method_names": [
+            "getMailSession()"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.SimpleEmail",
+          "focal_method_names": [
+            "buildMimeMessage()",
+            "getMimeMessage()",
+            "setMsg(java.lang.String)",
+            "setSubject(java.lang.String)"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_five_to_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseInlineCID()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getContentIds()",
+            "getTo()",
+            "findAttachmentByCid(java.lang.String)",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseMultipartReport()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseHtmlEmailWithAttachments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseHtmlEmailWithHtmlAttachment()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseHtmlEmailWithAttachments()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseCreatedHtmlEmailWithMixedContent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.HtmlEmail",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testMultipartTextAttachmentOnly()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseInlineCID()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getContentIds()",
+            "getTo()",
+            "findAttachmentByCid(java.lang.String)",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.HtmlEmailTest",
+      "method_signature": "testHtmlMailMimeLayout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.mocks.MockHtmlEmailConcrete",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.HtmlEmail",
+          "focal_method_names": [
+            "buildMimeMessage()",
+            "getMimeMessage()",
+            "setHtmlMsg(java.lang.String)",
+            "setFrom(java.lang.String)",
+            "setHostName(java.lang.String)",
+            "addTo(java.lang.String)",
+            "setSmtpPort(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseCreatedHtmlEmailWithNoContent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.HtmlEmail",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseCreatedHtmlEmailWithTextContent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.HtmlEmail",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testMultipartTextAttachment()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseMultipartReport()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.HtmlEmailTest",
+      "method_signature": "testHtmlMailMimeLayout()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.mocks.MockHtmlEmailConcrete",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.HtmlEmail",
+          "focal_method_names": [
+            "buildMimeMessage()",
+            "getMimeMessage()",
+            "setHtmlMsg(java.lang.String)",
+            "setFrom(java.lang.String)",
+            "setHostName(java.lang.String)",
+            "addTo(java.lang.String)",
+            "setSmtpPort(int)"
+          ]
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": []
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseCreatedHtmlEmailWithMixedContent()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.HtmlEmail",
+          "focal_method_names": []
+        },
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testAttachmentOnly()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testAttachmentOnly()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testMultipartTextAttachmentOnly()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "findAttachmentByName(java.lang.String)",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.util.MimeMessageParserTest",
+      "method_signature": "testParseSimpleEmail()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.util.MimeMessageParserTest",
+      "method_signature": "testParseSimpleReplyEmail()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.util.MimeMessageParser",
+          "focal_method_names": [
+            "getFrom()",
+            "getSubject()",
+            "getCc()",
+            "getTo()",
+            "hasAttachments()",
+            "isMultipart()",
+            "getBcc()",
+            "getReplyTo()"
+          ]
+        }
+      ]
+    }
+  ],
+  "tests_with_more_than_ten_focal_methods": [
+    {
+      "qualified_class_name": "org.apache.commons.mail2.javax.MultiPartEmailTest",
+      "method_signature": "testSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.javax.mocks.MockMultiPartEmailConcrete",
+          "focal_method_names": [
+            "setMsg(java.lang.String)",
+            "setSubject(java.lang.String)",
+            "getMsg()",
+            "getToAddresses()",
+            "send()",
+            "setFrom(java.lang.String)",
+            "setHostName(java.lang.String)",
+            "setSubType(java.lang.String)",
+            "addTo(java.lang.String)",
+            "getCcAddresses()",
+            "setHeaders(java.util.Map)",
+            "setAuthentication(java.lang.String, java.lang.String)",
+            "getBccAddresses()",
+            "setSmtpPort(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "qualified_class_name": "org.apache.commons.mail2.jakarta.MultiPartEmailTest",
+      "method_signature": "testSend()",
+      "focal_details": [
+        {
+          "focal_class": "org.apache.commons.mail2.jakarta.mocks.MockMultiPartEmailConcrete",
+          "focal_method_names": [
+            "setMsg(java.lang.String)",
+            "setSubject(java.lang.String)",
+            "getMsg()",
+            "getToAddresses()",
+            "send()",
+            "setFrom(java.lang.String)",
+            "setHostName(java.lang.String)",
+            "setSubType(java.lang.String)",
+            "addTo(java.lang.String)",
+            "getCcAddresses()",
+            "setHeaders(java.util.Map)",
+            "setAuthentication(java.lang.String, java.lang.String)",
+            "getBccAddresses()",
+            "setSmtpPort(int)"
+          ]
+        }
+      ]
+    }
+  ]
+}

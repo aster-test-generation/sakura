@@ -12,3 +12,34 @@
 poetry install
 poetry shell
 ```
+
+### Datasets
+This table lists various Apache Commons datasets and whether they are **multi-module** projects.
+
+| Dataset              | Multi-module |
+|----------------------|--------------|
+| commons-bcel         | ✅           |
+| commons-beanutils    | ✅           |
+| commons-bsf          | ✅           |
+| commons-cli          | ✅           |
+| commons-codec        | ✅           |
+| commons-configuration| ✅           |
+| commons-crypto       | ✅           |
+| commons-csv          | ✅           |
+| commons-dbcp         | ✅           |
+| commons-dbutils      | ✅           |
+| commons-email        | ❌           |
+| commons-exec         | ✅           |
+| commons-fileupload   | ❌           |
+| commons-imaging      | ✅           |
+| commons-io           | ✅           |
+| commons-jcs          | ❌           |
+| commons-jexl         | ✅           |
+| commons-lang         | ✅           |
+| commons-math         | ❌           |
+| commons-net          | ✅           |
+| commons-numbers      | ❌           |
+| commons-pool         | ✅           |
+| commons-text         | ✅           |
+| commons-validator    | ✅           |
+| commons-vfs          | ❌           |

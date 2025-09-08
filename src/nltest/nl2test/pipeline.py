@@ -7,7 +7,6 @@ from nltest.nl2test.generation.localization.orchestrators import (
     GrammaticalLocalizationOrchestrator,
     GherkinLocalizationOrchestrator,
 )
-from nltest.nl2test.generation.composition.orchestrator import CompositionOrchestrator
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.tools import SupervisorTools
 from nltest.nl2test.models import (
@@ -56,11 +55,6 @@ class Pipeline:
         # Initialized during preprocessing
         self.method_searcher: MethodSearcher = None
         self.class_searcher: ClassSearcher = None
-
-        # Initialized during respective methods
-        # TODO: Remove all orchestrators from self
-        self.composition_orchestrator: CompositionOrchestrator = None
-        self.supervisor_agent: SupervisorReActAgent = None
 
     def run_preprocessing(self) -> Tuple[MethodSearcher, ClassSearcher]:
         # Build search indices

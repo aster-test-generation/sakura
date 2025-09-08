@@ -18,8 +18,7 @@ from tests._base_test2nl import BaseTest2NL
 
 
 class TestDescriptionGeneration(BaseTest2NL):
-    def test_cli_generate_descriptions_executes(self):
-        """Ensure CLI generate_descriptions runs without error with test resources."""
+    def test_cli_generate_descriptions(self):
         analysis_dir = "./output/resources/output/"
         organized_methods_dir = "./output/resources/nl2test/"
         output_dir = "./output/resources/test2nl/"
@@ -38,6 +37,7 @@ class TestDescriptionGeneration(BaseTest2NL):
                 output_dir=output_dir,
                 organized_methods_dir=organized_methods_dir,
                 llm_model=self.llm_model,
+                llm_provider="openrouter",
                 clear_dataset=True,
                 max_methods=2,
                 num_proj_parallel=2,

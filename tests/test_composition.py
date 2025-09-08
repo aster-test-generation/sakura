@@ -8,9 +8,60 @@ from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 
 from nltest.utils.pretty.prints import pretty_print
 from tests._base_nl2test import BaseNL2Test
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 
 
 class TestCompositionAgent(BaseNL2Test):
+    def test_composition_system_prompt_formatting(self):
+        """Verify system prompt formatting for composition Gherkin with placeholders."""
+        prompt = LoadPrompt.load_prompt(
+            "composition_agent_gherkin.jinja2", PromptFormat.JINJA2, "system"
+        )
+
+        # parallelizable True path
+        iters_true = 4
+        rendered_true = prompt.format(parallelizable=True, max_iters=iters_true)
+        pretty_print("Parallelizable prompt", rendered_true)
+        self.assertIn(
+            f"You must complete within at most {iters_true} tool invocation(s).",
+            rendered_true,
+        )
+        self.assertIn("You may parallelize metadata lookups", rendered_true)
+        self.assertNotIn("Use sequential calls.", rendered_true)
+
+        # parallelizable False path
+        iters_false = 6
+        rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
+        pretty_print("Not parallelizable prompt", rendered_true)
+        self.assertIn(
+            f"You must complete within at most {iters_false} tool invocation(s).",
+            rendered_false,
+        )
+        self.assertIn("Use sequential calls.", rendered_false)
+        self.assertNotIn("You may parallelize metadata lookups", rendered_false)
+
+    def test_composition_chat_prompt_formatting(self):
+        """Verify chat prompt formatting for composition Gherkin with placeholders."""
+        prompt = LoadPrompt.load_prompt(
+            "composition_agent_gherkin.jinja2", PromptFormat.JINJA2, "chat"
+        )
+
+        nl_description = "Compose a unit test for PetController update"
+        instructions = "Use JUnit 5 and avoid Mockito unless necessary"
+        localized_scenario = "{\n  'given': [], 'when': [], 'then': []\n}"
+
+        rendered = prompt.format(
+            nl_description=nl_description,
+            instructions=instructions,
+            localized_scenario=localized_scenario,
+        )
+
+        # Assertions
+        self.assertIn(nl_description, rendered)
+        self.assertIn(instructions, rendered)
+        self.assertIn("CURRENT LOCALIZED SCENARIO", rendered)
+        self.assertIn("Compose a compilable and runnable Java test", rendered)
+
     def test_composition_agent_gherkin(self):
         method_searcher = MethodIndexer(self.analysis).build_index()
         class_searcher = ClassIndexer(self.analysis).build_index()
@@ -241,8 +292,8 @@ class TestCompositionAgent(BaseNL2Test):
         localized_scenario = LocalizedScenario(**localized_scenario_data)
 
         instructions = "Compose the Java test for this scenario and finalize."
-        updated_scenario, final_comments, package, class_name = composition_agent.assign_task(
-            localized_scenario, instructions=instructions
+        updated_scenario, final_comments, package, class_name = (
+            composition_agent.assign_task(localized_scenario, instructions=instructions)
         )
 
         self.assertIsInstance(updated_scenario, LocalizedScenario)

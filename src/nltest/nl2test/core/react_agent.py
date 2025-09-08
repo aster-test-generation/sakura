@@ -92,6 +92,12 @@ class ReActAgent:
                     "You MUST execute the `finalize` tool call now to produce your final output based on all gathered information."
                 )
                 state.messages.append(HumanMessage(content=warning_message))
+            elif remaining_iterations == 2:
+                warning_message = (
+                    "WARNING: This is your second last allowed iteration in this sequence. "
+                    "You MUST execute any last tools to prepare your output. You MUST execute the `finalize` tool after this turn, so perform any last actions before completing as needed."
+                )
+                state.message.append(HumanMessage(content=warning_message))
 
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,

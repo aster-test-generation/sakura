@@ -11,18 +11,22 @@ CSV_FILE = "../tests/output/resources/test2nl/test2nl.csv"
 
 # CLI arguments
 MAX_ENTRIES = 0  # Note: 0 = unlimited
+
 LLM_MODEL = "google/gemini-2.5-flash"
+# Either LLM_PROVIDER or LLM_API_URL must be non-None
+LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama"
+LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
+
+EMB_MODEL = "nomic-embed-text:v1.5"  # Use an Ollama embedding model by default
+# Either EMB_PROVIDER or EMB_API_URL must be non_None
+EMB_PROVIDER: str | None = "ollama"  # Supported providers: "ollama"
+EMB_API_URL: str | None = None
 
 # Localization settings
 LOCALIZATION_MAX_ITERS = 50
 
 # Decomposition mode (must match DecompositionMode enum values)
-_ALLOWED_DECOMP_MODES = {"grammatical", "gherkin"}
-DECOMPOSITION_MODE = "gherkin"
-if DECOMPOSITION_MODE not in _ALLOWED_DECOMP_MODES:
-    raise ValueError(
-        f"Invalid DECOMPOSITION_MODE='{DECOMPOSITION_MODE}'. Choose one of {_ALLOWED_DECOMP_MODES}."
-    )
+DECOMPOSITION_MODE = "gherkin"  # Supported modes: "gherkin", "grammatical"
 
 # Parallelization defaults
 NUM_PROJ_PARALLEL = 2
@@ -70,6 +74,8 @@ def main() -> None:
         str(test2nl_file),
         "--llm-model",
         LLM_MODEL,
+        "--emb-model",
+        EMB_MODEL,
         "--decomposition-mode",
         DECOMPOSITION_MODE,
         "--localization-max-iters",
@@ -81,6 +87,16 @@ def main() -> None:
         "--max-inflight",
         str(MAX_INFLIGHT),
     ]
+
+    # Optional connectivity flags (only if provided)
+    if LLM_PROVIDER:
+        cmd.extend(["--llm-provider", LLM_PROVIDER])
+    if LLM_API_URL:
+        cmd.extend(["--llm-api-url", LLM_API_URL])
+    if EMB_PROVIDER:
+        cmd.extend(["--emb-provider", EMB_PROVIDER])
+    if EMB_API_URL:
+        cmd.extend(["--emb-api-url", EMB_API_URL])
 
     if MAX_ENTRIES > 0:
         cmd.extend(["--max-entries", str(MAX_ENTRIES)])

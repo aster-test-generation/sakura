@@ -65,10 +65,22 @@ class BaseCompositionOrchestrator:
         # Determine if the model supports parallel tool calls and pass max_iters to the system prompt
         parallelizable: bool = decision_llm.can_parallel_tool_call()
         max_iters = Config().get("composition", "max_iters")
-        system_message = system_prompt.format(
-            parallelizable=parallelizable,
-            max_iters=max_iters,
+        duplicate_tools_str = (
+            ", ".join(f"`{t.name}`" for t in allow_duplicate_tools)
+            if allow_duplicate_tools
+            else ""
         )
+
+        if self.decomposition_mode != DecompositionMode.GHERKIN:
+            raise NotImplementedError("Only supported for Gherkin style...")
+
+        system_kwargs = {
+            "parallelizable": parallelizable,
+            "max_iters": max_iters,
+            "duplicate_tools": duplicate_tools_str,
+        }
+
+        system_message = system_prompt.format(**system_kwargs)
 
         self.agent = CompositionReActAgent(
             llm=decision_llm,

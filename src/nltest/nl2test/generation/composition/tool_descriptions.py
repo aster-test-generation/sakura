@@ -1,44 +1,62 @@
 EXTRACT_CODE_DESC = """
-Get a method's complete source (declaration + body) from the analyzed codebase.
+Get full source code (declaration + body) for a specific method.
 Args:
-  qualified_class_name: Class that declares the method.
-  method_signature: Exact signature to extract.
+  qualified_class_name: Fully qualified implementing class.
+  method_signature: Exact method signature of the method to analyze, including any qualified parameter types.
 Use when:
-  Verifying behavior, generating tests, or creating examples for an identified method.
+  Understanding implementation details, side effects, or parameter semantics to write assertions or setup.
+Tips:
+  - Prefer `get_method_details` first for quick checks; use `extract_method_code` only when behavior or parameter meaning is unclear.
 Limitations:
-  Fails if the method is not found; returns source as-is (no formatting changes).
+  - Returns raw source as-is.
+  - Cannot be used to retrieve any inherited library methods. Fails if the method cannot be found in the application.
 Returns:
-  String containing the full method code.
-  On failure, a structured error dict is returned.
+  String with full method source, or a structured error dict on failure.
 """
 
 METHOD_DETAILS_DESC = """
-Fetch fast metadata for a method.
+Fetch declaration-site metadata for a method.
 Args:
-  qualified_class_name: Declaring class.
-  method_signature: Exact signature.
+  qualified_class_name: Fully qualified implementing class.
+  method_signature: Exact method signature of the method to analyze, including any qualified parameter types.
 Use when:
-  You need signature, parameter types, return type, modifiers, or visibility to filter/rank candidates, or to form test scaffolds.
+  Selecting overloads, confirming parameter/return types, visibility, and static/instance modifiers.
+Tips:
+  - This is the fastest path to fix signature mismatches that cause compilation failures.
+  - Use to decide whether to instantiate the class or call statically.
 Limitations:
-  Only the declaration site; does not include inherited versions or overrides from other classes.
+  - Only the declaration site.
+  - Cannot be used to retrieve any inherited library methods.
 Returns:
-  Dict with method_signature, modifiers, return_type, parameter_types, comments, visibility.
-  Visibility options: "public" (accessible from anywhere), "same_package_or_subclass" (accessible from same package or subclasses), "same_package" (accessible only from same package).
-  On failure, a structured error dict is returned.
+  Dict with:
+    method_signature
+    modifiers (e.g., ["public", "static"])
+    return_type (fully qualified when available)
+    parameter_types (list; fully qualified when available)
+    comments (docstring or extracted comments if available)
+    visibility ("public" | "same_package_or_subclass" | "same_package")
+  Or a structured error dict on failure.
 """
 
 CALL_SITE_DETAILS_DESC = """
-List callees invoked inside a specific method (static analysis).
+List callees invoked inside a specific method through static analysis.
 Args:
-  qualified_class_name: Declaring class of the caller.
-  method_signature: Signature of the caller method.
+  qualified_class_name: Fully qualified implementing class.
+  method_signature: Exact method signature of the method to analyze, including any qualified parameter types.
 Use when:
-  Expanding candidates by usage, understanding side effects, or mapping sentences to downstream calls.
+  Tracing downstream effects to design assertions or mocks, or to confirm that a facade method delegates as expected.
 Limitations:
-  Static only; may miss reflection/dynamic dispatch. Quality depends on the symbol table and parsed code.
+  - Static analysis only; reflective/dynamic calls may be missed. 
+  - Only looks at call sites within the select method at depth one, and does not expand further.
 Returns:
-  List of dicts with callee qualified_class_name, method_signature, return_type, parameter_types, modifiers, num_times_called.
-  On failure, a structured error dict is returned.
+  List of dicts with:
+    callee qualified_class_name
+    method_signature
+    return_type
+    parameter_types
+    modifiers
+    num_times_called
+  Or a structured error dict on failure.
 """
 
 GET_CLASS_FIELDS_DESC = """
@@ -46,136 +64,153 @@ List declared fields for a class.
 Args:
   qualified_class_name: Fully qualified class to inspect.
 Use when:
-  Planning object setup, mocks, or state assertions where fields matter.
+  Verifying or setting state for assertions; retrieving values; designing minimal fakes for dependencies.
+Tips:
+  - Combine with `get_getters_and_setters` to read/write state without reflection.
 Limitations:
-  No inheritance traversal; returns only fields declared in the class.
+  No inheritance traversal; only fields declared directly in the class.
 Returns:
-  List of dicts with variable_names (list of names in the declaration), type, and modifiers.
-  On failure, a structured error dict is returned.
+  List of dicts with:
+    variable_names (list of declared names per field line)
+    type
+    modifiers
+  Or a structured error dict on failure.
 """
 
 GET_CLASS_IMPORTS_DESC = """
-Get the import statements for a class's compilation unit.
+Get import statements for a class's compilation unit.
 Args:
   qualified_class_name: Fully qualified class to inspect.
 Use when:
-  Ensuring generated tests include all necessary imports for referenced types and frameworks.
+  Mirroring imports in your test for external types or frameworks used by the SUT.
+Tips:
+  - Use this to detect presence of libraries and adapt test dependencies accordingly.
 Limitations:
-  Reads only the class's compilation unit; does not infer transitive imports.
+  Reads only the select class's compilation unit; does not expand transitive imports.
 Returns:
-  List of fully qualified import names (without the leading 'import ' prefix).
-  On failure, a structured error dict is returned.
+  List of fully qualified import names (without the leading 'import ').
+  Or a structured error dict on failure.
 """
 
 GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC = """
-List constructors and simple factory methods for a class.
+List constructors and obvious factory methods for a class.
 Args:
   qualified_class_name: Fully qualified class to inspect.
 Use when:
-  Understanding how to instantiate the class under test in generated tests.
+  Determining how to instantiate SUT or collaborators.
+Tips:
+  - Factories are heuristically detected: static methods returning the class type.
+  - Prefer the simplest constructor/factory that satisfies parameter availability.
 Limitations:
-  Factory detection is heuristic: static methods returning the class type; may miss builders or complex factories.
+  May miss builder patterns or complex factories.
 Returns:
-  List of dicts with method_signature and type ('constructor' or 'factory').
-  On failure, a structured error dict is returned.
+  List of dicts with:
+    method_signature
+    type ("constructor" or "factory")
+  Or a structured error dict on failure.
 """
 
 GET_GETTERS_AND_SETTERS_DESC = """
-Find methods that look like simple getters/setters.
+Find simple getters and setters within a class.
 Args:
-  qualified_class_name: Fully qualified class to inspect.
+  qualified_class_name: Fully qualified class to analyze.
 Use when:
-  Identifying trivial accessors that might not need explicit tests or can be used to set up/verify state.
+  Setting up objects or asserting on resulting state.
 Limitations:
-  Pattern-based; considers short methods whose signature starts with 'get' or 'set'. May include false positives.
+  - Pattern-based; may include false positives.
+  - Only includes basic one-line getters and setters.
 Returns:
-  List of method signatures classified as getters or setters.
-  On failure, a structured error dict is returned.
+  List of method signatures, each labeled as getter or setter when available.
+  Or a structured error dict on failure.
 """
 
 VIEW_TEST_CODE_DESC = """
-View the current saved test file content for the working test class.
+View the currently saved test file content for the active test class.
 Args:
-  None.
+  None
 Use when:
-  Inspecting the current code before edits or after generation to verify content.
+  Inspecting what has been generated or verifying that fixes in a newly generated code input were applied as intended.
 Limitations:
-  Depends on current agent state for which test class is active; returns a message if none saved.
+  Can usually refer to the tool history for the state of the generated test file.
 Returns:
-  String with the test source code, or a message if the file is missing.
+  String containing the test source code, or a message when missing.
 """
 
 GENERATE_TEST_CODE_DESC = """
-Create or overwrite the test file content and target class name.
+Create or overwrite the test file with newly generated code and set the active test class.
 Args:
-  test_code: Complete Java test source including package and imports.
-  qualified_class_name: Fully qualified name for the test class (e.g., 'com.example.MyTest').
+  test_code: Complete Java test code including package, imports, class, and methods. This will replace all previous test code in the file.
+  qualified_class_name: Fully qualified name for the test class. Be careful with ensuring the package before the simple class name is compliant with the localized methods.
 Use when:
-  You are ready to write or update the test file for the current scenario/blocks.
-Limitations:
-  The tool echoes your inputs; the agent saves the file and updates active package/class state.
+  Writing or updating the test to reflect the localized scenario.
+Rules:
+  - Always send the full file; this overwrites existing content.
+  - Ensure package mirrors the primary SUT package to access package-private members.
+  - Prefer explicit imports; avoid wildcard imports.
+  - Include minimal helper fakes as nested static classes if needed.
 Returns:
-  Dict echoing {test_code, qualified_class_name}; the agent persists and reports the save location.
+  Dict echoing { test_code, qualified_class_name } and the persisted save location.
 """
 
 COMPILE_AND_EXECUTE_TESTS_DESC = """
-Compile the project and execute the currently active test class, returning feedback.
+Compile the Maven project and execute the active test class.
 Args:
-  None.
+  None
 Use when:
-  Validating that the generated test compiles and runs; use iteratively to fix issues.
-Limitations:
-  Runs Maven compile and tests; execution feedback is available only if compilation succeeds for the target class.
+  Getting feedback on compilation and runtime assertions; use iteratively in a fix loop.
+Notes:
+  - This runs Maven build steps for test compilation and execution.
+  - Execution feedback is only available if the target class compiles.
 Returns:
-  JSON string with keys: erroneous_classes (list of '.java' filenames with compile errors), target_class_file ('.java' filename), has_errors_for_target (bool), and execution_feedback (dict with returncode/stdout/stderr/command) when available.
+  JSON with:
+    erroneous_classes: list of '.java' filenames with compile errors
+    target_class_file: the '.java' filename of the active test
+    has_errors_for_target: boolean
+    execution_feedback: when available, { returncode, stdout, stderr, command }
 """
 
 FINALIZE_DESC = """
-Finalize the composition with optional final comments.
+Finalize composition with a brief comment log.
 Args:
-  comments: Short rationale, caveats, or next steps.
+  comments: A concise rationale describing what compiled, what ran, any skipped steps, and localization feedback if steps should be revised. State the confidence in the test suite and whether further localization and composition should be done or would be productive.
 Use when:
-  All end conditions are met and you want to finish the composition.
-Limitations:
-  Does not modify files or state beyond recording the comments and ending the run.
+  End conditions are met or iteration limit reached. The test case compiles successfully and contains the desired logic for the test scenario.
 Returns:
-  String containing the final comments.
+  String echoing the final comments.
 """
 
 MODIFY_SCENARIO_COMMENT_DESC = """
-Update the comment for a specific step in a Gherkin LocalizedScenario.
+Update the comment for a localized step.
 Args:
   id: Step identifier to update.
-  comment: New comment for the step.
+  comment: A concise note explaining adjustments or difficulties (e.g., switched to alternate method, added stub, assertion rationale, or localization problems).
 Use when:
-  Annotating or clarifying a step during composition based on findings or changes.
+  Capturing decisions or clarifications tied to individual steps.
 Limitations:
-  Only updates comments; does not change step ordering or bindings.
+  Only updates the step comment; does not change ordering or bindings.
 Returns:
-  Tuple (id, comment) echoed back; the agent applies the update to the scenario.
+  Tuple (id, comment).
 """
 
 MODIFY_ATOMIC_BLOCKS_DESC = """
-Replace the working AtomicBlockList to reflect refined decomposition for composition.
+Replace the working AtomicBlock list to reflect composition-oriented refinements.
 Args:
-  atomic_blocks: The full, updated list of atomic blocks.
+  atomic_blocks: Full replacement list of atomic blocks.
 Use when:
-  You must merge, split, or reorder blocks to better match executable test steps.
-Limitations:
-  Overwrites the working list; provide the complete desired list, not deltas.
+  You need to re-chunk steps for code generation while preserving overall scenario semantics.
+Caution:
+  This overwrites the current list; provide the entire desired list, not deltas.
 Returns:
-  The updated AtomicBlockList.
+  The updated AtomicBlock list.
 """
 
 MODIFY_ATOMIC_BLOCK_NOTE_DESC = """
 Update the note for a specific atomic block by order.
 Args:
-  order: The block order identifier to update.
-  note: New note for the block.
+  order: Atomic block order identifier.
+  note: Short note capturing decisions or requirements for that block.
 Use when:
-  Capturing decisions, requirements, or clarifications per block during composition.
-Limitations:
-  Only updates a note; does not change block content or ordering.
+  Recording per-block guidance during the composition loop.
 Returns:
-  Tuple (order, note) echoed back; the agent applies the update to the working blocks.
+  Tuple (order, note).
 """

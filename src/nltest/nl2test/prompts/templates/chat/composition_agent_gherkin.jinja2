@@ -1,4 +1,9 @@
-# SCENARIO
+# TASK
+Compose a compilable and runnable Java test for a Maven project using the provided localized steps and its description. Pay attention to any extra instructions provided.
+Sequence all code in ascending step-id order and place the test in a package that mirrors the primary SUT package.
+Use tools to analyze method signatures and source, generate the test, compile, run, and refine.
+
+# TEST DESCRIPTION
 {{ nl_description }}
 
 # INSTRUCTIONS
@@ -8,11 +13,11 @@
 {{ localized_scenario }}
 
 # YOUR TURN
-Proceed with test generation, compilation, and execution. Use the available tools to:
-- Analyze the localized scenario (setup, given/when/then steps, teardown)
-- Generate or update test code to implement the scenario
-- Compile and check for errors; run tests when compilable
-- Configure mocks/imports as needed
-- Add comments for steps when you adjust or clarify behavior
+Proceed with:
+1) Planning package, class name, and skeleton.
+2) Generating or updating the test with `generate_test_code`.
+3) Compiling and executing via `compile_and_execute_tests`, then fixing issues.
+4) Adding or refining imports, constructors, factories, mocks/fakes, and assertions.
+5) Updating step comments with `modify_scenario_comment` when you adjust or justify behavior, or if you encounter difficulties.
 
-If a tool is needed, call it. Continue until the scenario is fully implemented and tests are ready.
+If a tool is needed, call it. Finalize with comments describing test confidence, difficulties, lcoalization problems to address, and implementation details using the `finalize` tool when done or out of iterations.

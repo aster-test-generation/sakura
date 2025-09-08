@@ -56,6 +56,7 @@ class LocalizedStep(Step):
     best_candidate: CandidateMethod
     arg_bindings: List[ArgBinding]
     comments: str
+    external: bool
 
 
 class LocalizedGherkinStep(BaseModel):
@@ -95,6 +96,7 @@ class LocalizedScenario(Scenario):
                 best_candidate=empty_candidate,
                 arg_bindings=[],
                 comments="",
+                external=False,
             )
 
         localized_steps: List[LocalizedGherkinStep] = []

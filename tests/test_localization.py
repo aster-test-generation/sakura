@@ -25,9 +25,103 @@ from nltest.utils.llm import usage_tracker
 from nltest.utils.pretty.prints import pretty_print
 
 from tests._base_nl2test import BaseNL2Test
+from nltest.cli import evaluate_localization
+import os
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 
 
 class TestLocalizationAgent(BaseNL2Test):
+    def test_gherkin_localization_system_prompt_formatting(self):
+        """Ensure the system prompt renders with correct Jinja2 placeholders."""
+        prompt = LoadPrompt.load_prompt(
+            "localization_agent_gherkin.jinja2", PromptFormat.JINJA2, "system"
+        )
+
+        # Case 1: parallelizable True
+        max_iters_parallel = 3
+        rendered_parallel = prompt.format(
+            parallelizable=True, max_iters=max_iters_parallel
+        )
+        pretty_print("Parallelizable prompt", rendered_parallel)
+        expected_cap_parallel = (
+            f"You must complete within at most {max_iters_parallel} tool invocation(s)."
+        )
+        self.assertIn(expected_cap_parallel, rendered_parallel)
+        self.assertIn("You may parallelize tool calls", rendered_parallel)
+        self.assertNotIn("You must call tools sequentially", rendered_parallel)
+        # Literal braces should remain intact
+        self.assertIn("Never repeat the same {tool, args} pair.", rendered_parallel)
+
+        # Case 2: parallelizable False
+        max_iters_sequential = 7
+        rendered_sequential = prompt.format(
+            parallelizable=False, max_iters=max_iters_sequential
+        )
+        pretty_print("Not parallelizable", rendered_sequential)
+        expected_cap_sequential = f"You must complete within at most {max_iters_sequential} tool invocation(s)."
+        self.assertIn(expected_cap_sequential, rendered_sequential)
+        self.assertIn("You must call tools sequentially", rendered_sequential)
+        self.assertNotIn("You may parallelize tool calls", rendered_sequential)
+
+    def test_gherkin_localization_chat_prompt_formatting(self):
+        """Ensure the chat prompt renders with required placeholders and includes a preview."""
+        prompt = LoadPrompt.load_prompt(
+            "localization_agent_gherkin.jinja2", PromptFormat.JINJA2, "chat"
+        )
+
+        nl_description = "Describe pet update behavior"
+        instructions = "Be concise and prefer primary SUT methods"
+        steps = "- Given owner exists\n- When pet is updated\n- Then response redirects"
+
+        rendered = prompt.format(
+            nl_description=nl_description,
+            instructions=instructions,
+            steps=steps,
+        )
+
+        # Print a small preview for debugging
+        pretty_print("Chat prompt (gherkin localization)", rendered)
+
+        # Assertions
+        self.assertIn(nl_description, rendered)
+        self.assertIn(instructions, rendered)
+        self.assertIn("Given", rendered)
+        self.assertIn("When", rendered)
+        self.assertIn("Then", rendered)
+
+    def test_cli_evaluate_localization(self):
+        """Ensure CLI evaluate_localization runs without error using defaults from rq4_localization.py."""
+        # Use an empty base project dir so no projects are processed
+        base_project_dir = "./resources/"
+        output_dir = "./output"
+        test2nl_file = "./output/resources/test2nl/test2nl.csv"
+
+        orig_cwd = os.getcwd()
+        try:
+            os.chdir(Path(__file__).resolve().parent)
+            # Ensure directories exist
+            Path(base_project_dir).mkdir(parents=True, exist_ok=True)
+            Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+            evaluate_localization(
+                base_project_dir=base_project_dir,
+                output_dir=output_dir,
+                test2nl_file=test2nl_file,
+                llm_model="google/gemini-2.5-flash",
+                emb_model="nomic-embed-text:v1.5",
+                decomposition_mode="gherkin",
+                save_results=False,
+                max_entries=1,
+                num_proj_parallel=1,
+                per_proj_concurrency=3,
+                localization_max_iters=5,
+                max_inflight=1,
+                llm_provider="openrouter",
+                emb_provider="ollama",
+            )
+        finally:
+            os.chdir(orig_cwd)
+
     def test_localization_agent_simple_grammatical(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
         nl_decomposer = NLDecomposer(mode=DecompositionMode.GRAMMATICAL)

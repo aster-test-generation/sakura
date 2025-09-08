@@ -69,17 +69,25 @@ class BaseCompositionTools:
         self.tools: List[BaseTool] = [
             self._make_extract_code_tool(),
             self._make_get_method_details_tool(),
+            self._make_get_class_fields_tool(),
+            self._make_get_class_imports_tool(),
+            self._make_get_class_constructors_and_factories_tool(),
+            self._make_get_getters_and_setters_tool(),
             self._make_view_test_code_tool(),
             self._make_generate_test_tool(),
             self._make_compile_and_execute_tests_tool(),
             self._make_finalize_tool(),
+            self._make_call_site_details_tool(),
             # self._make_compile_test_tool(),  # DEPRECATED
             # self._make_execution_test_tool(),  # DEPRECATED
         ]
 
         # Tools that are allowed to be invoked repeatedly with identical args
         # without being treated as duplicates. Empty by default.
-        self.allow_duplicate_tools: List[BaseTool] = []
+        self.allow_duplicate_tools: List[BaseTool] = [
+            self._make_view_test_code_tool(),
+            self._make_compile_and_execute_tests_tool(),
+        ]
 
     def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
         # Return tool list and the subset allowed to duplicate

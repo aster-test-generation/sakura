@@ -120,11 +120,37 @@ def generate_descriptions(
             show_default=True,
         ),
     ] = [],
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
 ):
     if clear_dataset is False:
         raise NotImplementedError(
             "Behavior for retrieving the max ID for continuing dataset appends is not implemented."
         )
+
+    if llm_provider is None and llm_api_url is None:
+        raise Exception(
+            "Either --llm-provider or --llm-api-url must be provided. Provider only guides the API URL default."
+        )
+    if llm_provider is not None:
+        try:
+            llm_provider = Provider(llm_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --llm-provider: {llm_provider}. Must be one of {[p.value for p in Provider]}"
+            )
 
     output_dir = Path(output_dir)
     analysis_root = Path(analysis_dir)
@@ -295,6 +321,8 @@ def generate_descriptions(
                 analysis_root_dir=str(analysis_root),
                 output_dir=str(output_dir),
                 llm_model=llm_model,
+                llm_provider=llm_provider,
+                llm_api_url=llm_api_url,
                 base_project_dir=str(methods_root / project_name),
             )
 
@@ -615,12 +643,12 @@ def evaluate_localization(
         ),
     ] = "nomic-embed-text:v1.5",
     decomposition_mode: Annotated[
-        DecompositionMode,
+        str,
         typer.Option(
             help="Decomposition mode: grammatical or gherkin",
             show_default=True,
         ),
-    ] = DecompositionMode.GRAMMATICAL,
+    ] = "gherkin",
     save_results: Annotated[
         bool,
         typer.Option(
@@ -663,7 +691,67 @@ def evaluate_localization(
             show_default=True,
         ),
     ] = 0,
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
+    emb_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter. Either this or --emb-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    emb_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="Base URL for the Embedding API if using an HTTP endpoint.",
+            show_default=False,
+        ),
+    ] = None,
 ):
+    try:
+        decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
+    except Exception:
+        raise Exception(
+            f"Invalid --decomposition-mode: {decomposition_mode}. Must be one of {[d.value for d in DecompositionMode]}"
+        )
+
+    if llm_provider is None and llm_api_url is None:
+        raise Exception(
+            "Either --llm-provider or --llm-api-url must be provided. Provider only guides the API URL default."
+        )
+    if emb_provider is None and emb_api_url is None:
+        raise Exception(
+            "Either --emb-provider or --emb-api-url must be provided for embeddings. Provider only guides the API URL default."
+        )
+
+    if llm_provider is not None:
+        try:
+            llm_provider = Provider(llm_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --llm-provider: {llm_provider}. Must be one of {[p.value for p in Provider]}"
+            )
+
+    if emb_provider is not None:
+        try:
+            emb_provider = Provider(emb_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --emb-provider: {emb_provider}. Must be one of {[p.value for p in Provider]}"
+            )
+
     base_project_dir = Path(base_project_dir)
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
@@ -778,6 +866,10 @@ def evaluate_localization(
                 output_dir=str(output_dir),
                 llm_model=llm_model,
                 emb_model=emb_model,
+                llm_provider=llm_provider,
+                llm_api_url=llm_api_url,
+                emb_provider=emb_provider,
+                emb_api_url=emb_api_url,
                 decomposition_mode=decomposition_mode.value,
                 localization_max_iters=localization_max_iters,
             )

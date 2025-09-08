@@ -60,10 +60,10 @@ class BaseLocalizationTools:
             self._make_method_details_tool(),
             self._make_class_details_tool(),
             self._make_get_inherited_library_classes_tool(),
+            self._make_call_site_details_tool(),
         ]
 
-        # Tools that are allowed to be invoked repeatedly with identical args
-        # without being treated as duplicates. Empty by default.
+        # Allows tools
         self.allow_duplicate_tools: List[BaseTool] = []
 
     def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:

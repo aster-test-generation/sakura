@@ -18,8 +18,8 @@ def init_config(
     *,
     base_project_dir: str,
     output_dir: str,
-    llm_provider: Provider,
     llm_model: str,
+    llm_provider: Provider = None,
     emb_provider: Provider = None,
     emb_model: str = None,
     llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint

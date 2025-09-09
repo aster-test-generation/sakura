@@ -77,6 +77,7 @@ class LocalizationActor:
             self.analysis,
             self.project_root,
             decomposition_mode=self.decomposition_mode,
+            analysis_dir=self.project_output_dir,
         )
         self.pipeline.run_preprocessing()
 

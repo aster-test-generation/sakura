@@ -56,3 +56,8 @@ class BlockNotFoundError(BaseToolException):
 class FileDeletionError(BaseToolException):
     """Raised when a file deletion operation fails."""
     pass
+
+
+class PomXmlNotFoundError(BaseToolException):
+    """Raised when the project's root pom.xml is missing."""
+    pass

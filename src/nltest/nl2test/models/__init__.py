@@ -8,6 +8,7 @@ from .nl2test import (
     AbstractionLevel,
     NL2TestInput,
     NL2LocalizationOutput,
+    NL2EvaluationResults,
 )
 from .agents import (
     AgentState,
@@ -25,6 +26,8 @@ from .agents import (
     ModifyScenarioArgs,
     ModifyScenarioCommentArgs,
     ModifyAtomicBlockNoteArgs,
+    CallAgentGherkinArgs,
+    CallAgentGrammaticalArgs,
 )
 
 from .decomposition import (
@@ -55,6 +58,7 @@ __all__ = [
     "AbstractionLevel",
     "NL2TestInput",
     "NL2LocalizationOutput",
+    "NL2EvaluationResults",
     "QueryMethodArgs",
     "QueryClassArgs",
     "QueryVectorDataArgs",
@@ -64,6 +68,8 @@ __all__ = [
     "FinalizeAtomicBlockArgs",
     "FinalizeScenarioArgs",
     "ModifyAtomicBlockNotesArgs",
+    "CallAgentGherkinArgs",
+    "CallAgentGrammaticalArgs",
     "LocalizationEvaluationResults",
     # decomposition
     "DecompositionMode",

@@ -28,7 +28,7 @@ class BaseCompositionOrchestrator:
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
-        base_project_dir: str | None = None,
+        project_root: str,
         decomposition_mode: DecompositionMode,
     ) -> None:
         decision_llm = LLMClient(ClientType.DECISION)
@@ -40,7 +40,7 @@ class BaseCompositionOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
-                base_project_dir=base_project_dir or ".",
+                project_root=project_root,
                 nl2_input=nl2_input,
             )
             if decomposition_mode == DecompositionMode.GHERKIN
@@ -49,7 +49,7 @@ class BaseCompositionOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
-                base_project_dir=base_project_dir or ".",
+                project_root=project_root,
                 nl2_input=nl2_input,
             )
         )
@@ -87,9 +87,8 @@ class BaseCompositionOrchestrator:
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            project_root=Path(base_project_dir or "."),
+            project_root=Path(project_root or "."),
             max_iters=max_iters,
-            decomposition_mode=decomposition_mode,
         )
 
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:

@@ -67,4 +67,3 @@ class BaseNL2Test(TestCase):
         )
 
         usage_tracker.reset()
-

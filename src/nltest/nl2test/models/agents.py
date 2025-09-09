@@ -176,3 +176,27 @@ class ModifyScenarioCommentArgs(BaseModel):
 class ModifyAtomicBlockNoteArgs(BaseModel):
     order: Annotated[int, Field(description="The order of the atomic block to update.")]
     note: Annotated[str, Field(description="The new note for the atomic block.")]
+
+
+class CallAgentGherkinArgs(BaseModel):
+    """Arguments for delegating from Supervisor to agents in Gherkin mode."""
+
+    blocks: Annotated[
+        LocalizedScenario,
+        Field(description="The current LocalizedScenario to operate on."),
+    ]
+    instructions: Annotated[
+        str, Field(description="Actionable instructions for the delegated agent."),
+    ]
+
+
+class CallAgentGrammaticalArgs(BaseModel):
+    """Arguments for delegating from Supervisor to agents in Grammatical mode."""
+
+    blocks: Annotated[
+        AtomicBlockList,
+        Field(description="The current AtomicBlockList to operate on."),
+    ]
+    instructions: Annotated[
+        str, Field(description="Actionable instructions for the delegated agent."),
+    ]

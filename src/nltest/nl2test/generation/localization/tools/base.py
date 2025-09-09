@@ -44,12 +44,10 @@ class BaseLocalizationTools:
         analysis: JavaAnalysis,
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
-        structured_llm: LLMClient,
     ) -> None:
         self.analysis = analysis
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
-        self.structured_llm = structured_llm
 
         # Subclasses should add their finalize tool if desired
         self.tools: List[BaseTool] = [

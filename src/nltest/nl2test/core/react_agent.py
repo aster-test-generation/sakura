@@ -26,6 +26,7 @@ class ReActAgent:
         tools: List[BaseTool],
         allow_duplicate_tools: Optional[List[BaseTool]] = None,
         system_message: Optional[str] = None,
+        allow_parallelize: bool = False,
         max_iters: int = 20,
     ) -> None:
         self.llm = llm
@@ -33,6 +34,7 @@ class ReActAgent:
         self.allow_duplicate_tools = allow_duplicate_tools or []
         self.max_iters = max_iters
         self.system_message = system_message or "You are a helpful AI assistant."
+        self.allow_parallelize = allow_parallelize
 
         self._allow_duplicate_tool_names = {t.name for t in self.allow_duplicate_tools}
         self.tool_map: Dict[str, BaseTool] = {t.name: t for t in tools}
@@ -97,13 +99,13 @@ class ReActAgent:
                     "WARNING: This is your second last allowed iteration in this sequence. "
                     "You MUST execute any last tools to prepare your output. You MUST execute the `finalize` tool after this turn, so perform any last actions before completing as needed."
                 )
-                state.message.append(HumanMessage(content=warning_message))
+                state.messages.append(HumanMessage(content=warning_message))
 
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,
                 tools=self.tools,
                 tool_choice="any",
-                extra_model_kwargs={"parallel_tool_calls": True},
+                extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
             state.messages.append(out)
             state.iterations += 1
@@ -211,7 +213,7 @@ class ReActAgent:
                 state.messages,
                 tools=tools_to_bind,
                 tool_choice="any",
-                extra_model_kwargs={"parallel_tool_calls": True},
+                extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
             state.messages.append(out)
 
@@ -305,38 +307,6 @@ class ReActAgent:
             ):
                 effective.messages.insert(0, SystemMessage(content=self.system_message))
 
-            # If continuing conversation, resolve toool calls if possible
-            last_ai: Optional[AIMessage] = None
-            for msg in reversed(effective.messages):
-                if isinstance(msg, AIMessage):
-                    last_ai = msg
-                    break
-            if last_ai and getattr(last_ai, "tool_calls", None):
-                try:
-                    start_idx = (
-                        len(effective.messages)
-                        - 1
-                        - effective.messages[::-1].index(last_ai)
-                    )
-                except ValueError:
-                    start_idx = len(effective.messages)
-                responded_ids = set(
-                    getattr(m, "tool_call_id", None)
-                    for m in effective.messages[start_idx + 1 :]
-                    if isinstance(m, ToolMessage)
-                )
-                for tc in last_ai.tool_calls:
-                    if tc.get("id") not in responded_ids:
-                        effective.messages.append(
-                            ToolMessage(
-                                content=(
-                                    "Carried-over tool call skipped prior to new input."
-                                ),
-                                tool_call_id=tc["id"],
-                            )
-                        )
-
-            # Append the new user input
             effective.messages.append(HumanMessage(content=input_msg))
 
         result = self.graph.invoke(

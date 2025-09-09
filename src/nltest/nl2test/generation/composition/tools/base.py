@@ -37,11 +37,13 @@ from nltest.nl2test.generation.composition.tool_descriptions import (
     GET_CLASS_IMPORTS_DESC,
     GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
     GET_GETTERS_AND_SETTERS_DESC,
+    GET_MAVEN_DEPENDENCIES_DESC,
     VIEW_TEST_CODE_DESC,
     GENERATE_TEST_CODE_DESC,
     COMPILE_AND_EXECUTE_TESTS_DESC,
     FINALIZE_DESC,
 )
+from nltest.utils.file_io.pom_processor import PomProcessor
 
 
 class BaseCompositionTools:
@@ -54,7 +56,7 @@ class BaseCompositionTools:
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         structured_llm: LLMClient,
-        base_project_dir: Union[str, Path],
+        project_root: str,
         nl2_input: NL2TestInput,
     ) -> None:
         self.analysis = analysis
@@ -62,7 +64,8 @@ class BaseCompositionTools:
         self.class_searcher = class_searcher
         self.structured_llm = structured_llm
 
-        self.project_root: Path = Path(base_project_dir) / nl2_input.project_name
+        # Accept project root directly
+        self.project_root: Path = Path(project_root)
         self.nl2_input: NL2TestInput = nl2_input
 
         # Keep the same initial tool set as before; subclasses may append.
@@ -73,6 +76,7 @@ class BaseCompositionTools:
             self._make_get_class_imports_tool(),
             self._make_get_class_constructors_and_factories_tool(),
             self._make_get_getters_and_setters_tool(),
+            self._make_get_maven_dependencies_tool(),
             self._make_view_test_code_tool(),
             self._make_generate_test_tool(),
             self._make_compile_and_execute_tests_tool(),
@@ -324,6 +328,20 @@ class BaseCompositionTools:
             name="get_getters_and_setters",
             description=GET_GETTERS_AND_SETTERS_DESC,
             args_schema=QueryClassArgs,
+            handle_tool_error=ToolExceptionHandler.handle_error,
+        )
+
+    def _make_get_maven_dependencies_tool(self) -> StructuredTool:
+        def _get_maven_dependencies() -> List[Dict[str, str]]:
+            deps = PomProcessor.identify_dependencies(self.project_root)
+            return [
+                {"group_id": d.group_id, "artifact_id": d.artifact_id} for d in deps
+            ]
+
+        return StructuredTool.from_function(
+            func=_get_maven_dependencies,
+            name="get_maven_dependencies",
+            description=GET_MAVEN_DEPENDENCIES_DESC,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 

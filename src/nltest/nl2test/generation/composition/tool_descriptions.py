@@ -92,6 +92,23 @@ Returns:
   Or a structured error dict on failure.
 """
 
+GET_MAVEN_DEPENDENCIES_DESC = """
+List direct Maven dependencies declared in the project's root pom.xml.
+Args:
+  None
+Use when:
+  Detecting external libraries to align imports, mocks, or test utilities.
+Notes:
+  - Reads only the top-level <dependencies> section of the root POM.
+  - Raises an error if the root pom.xml is missing.
+  - Returns an empty list if the POM exists but cannot be parsed.
+Limitations:
+  Does not include transitive dependencies, managed versions, profiles, or parent inheritance.
+Returns:
+  List of dicts with: { group_id, artifact_id }.
+  Or a structured error dict on failure.
+"""
+
 GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC = """
 List constructors and obvious factory methods for a class.
 Args:
@@ -143,6 +160,10 @@ Args:
   qualified_class_name: Fully qualified name for the test class. Be careful with ensuring the package before the simple class name is compliant with the localized methods.
 Use when:
   Writing or updating the test to reflect the localized scenario.
+Strict formatting for arguments:
+  - Provide raw Java source for `test_code`. Do NOT wrap it in Markdown fences (``` ... ```), triple quotes (''' ... '''), or any other wrapper/annotations.
+  - Do NOT include JSON, Markdown, XML, or commentary in `test_code`. Only valid Java source.
+  - Ensure newlines are literal (no escaped newline sequences) and the string is valid JSON.
 Rules:
   - Always send the full file; this overwrites existing content.
   - Ensure package mirrors the primary SUT package to access package-private members.
@@ -159,14 +180,40 @@ Args:
 Use when:
   Getting feedback on compilation and runtime assertions; use iteratively in a fix loop.
 Notes:
-  - This runs Maven build steps for test compilation and execution.
-  - Execution feedback is only available if the target class compiles.
+  - Runs Maven steps for test compilation and execution.
+  - Execution details are only available if the target class compiles.
 Returns:
   JSON with:
-    erroneous_classes: list of '.java' filenames with compile errors
-    target_class_file: the '.java' filename of the active test
-    has_errors_for_target: boolean
-    execution_feedback: when available, { returncode, stdout, stderr, command }
+    compilation: {
+      target_class_file: '.java' filename of the active test
+      has_errors_for_target: boolean
+      any_compilation_errors: boolean (any project errors)
+      errors_for_target_class: list of { file, line, column|null, message, details[] }
+      error_summary: { total_errors, files_with_errors[], error_counts_by_file{ file: count } }
+    }
+    execution: when compiled and tests pass, {
+      executed: true
+      status: 'tests_passed'
+      message: 'All tests in class passed.'
+      num_tests_run: int
+      num_failures: int
+      num_errors: int
+    }
+    execution: when compiled and tests fail or error, {
+      executed: true
+      status: string (e.g., 'TEST_FAILURES' | 'TEST_ERRORS' | 'execution_failed')
+      message: concise one-liner reason
+      num_tests_run: int
+      num_failures: int
+      num_errors: int
+      issues: list of short strings summarizing top failures, e.g.:
+        "failure: com.example.MyTests.myTest @ MyTests.java:42 -> expected X but was Y"
+    }
+    execution: when not compiled, {
+      executed: false
+      status: 'compilation_errors'
+      message: reason to fix compilation
+    }
 """
 
 FINALIZE_DESC = """

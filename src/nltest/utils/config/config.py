@@ -28,6 +28,7 @@ def init_config(
     emb_api_key: str = None,
     localization_max_iters: int = 40,
     composition_max_iters: int = 40,
+    supervisor_max_iters: int = 5,
     reuse_config: bool = False,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
@@ -74,10 +75,13 @@ def init_config(
 
     # Assign localization agent settings
     # NOTE: Max iters should be higher for open-source models that do not support parallel tool calling
-    config.set("localization", "max_iters", val=localization_max_iters or 20)
+    config.set("localization", "max_iters", val=localization_max_iters)
 
     # Assign composition agent settings
-    config.set("composition", "max_iters", val=composition_max_iters or 20)
+    config.set("composition", "max_iters", val=composition_max_iters)
+
+    # Assign supervisor agent settings
+    config.set("supervisor", "max_iters", val=supervisor_max_iters)
 
     # Assign project settings
     config.set("project", "base_project_dir", val=base_project_dir)

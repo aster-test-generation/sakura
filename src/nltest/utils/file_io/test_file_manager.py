@@ -57,6 +57,21 @@ class TestFileManager:
         self.test_base_dir = project_root / Path(test_base_dir)
 
     @staticmethod
+    def _sanitize_generated_code(code: str) -> str:
+        if not isinstance(code, str):
+            return code
+
+        s = code.strip("\ufeff\r\n\t ")
+
+        # Remove a leading ``` (optionally with language) or leading ''' / """
+        s = re.sub(r"^\s*(?:```[^\n]*\n|(?:'''|\"\"\")[\t ]*\n?)", "", s)
+
+        # Remove a trailing ```, ''' or """
+        s = re.sub(r"(?:\n?```|\n?(?:'''|\"\"\"))\s*$", "", s)
+
+        return s
+
+    @staticmethod
     def _package_dir_from_qualified(qualified_class_name: str) -> Path:
         package = qualified_class_name.rsplit(".", 1)[0]
         return Path(*package.split(".")) if package else Path()
@@ -164,6 +179,7 @@ class TestFileManager:
         *,
         sync_names: bool = False,
         encode_class_name: bool = False,
+        sanitize_wrappers: bool = True,
     ) -> Tuple[str, Path]:
         """
         Save a single test file. If a conflict occurs, append a numeric suffix
@@ -194,8 +210,15 @@ class TestFileManager:
             file_path = parent_dir / f"{class_name}.java"
             counter += 1
 
+        # Optionally sanitize wrapper noise before any processing
+        content = (
+            self._sanitize_generated_code(test_info.test_code)
+            if sanitize_wrappers
+            else test_info.test_code
+        )
+
         # Rewrite package and class name in code content
-        content = self._rewrite_java_header(package, class_name, test_info.test_code)
+        # content = self._rewrite_java_header(package, class_name, content)
 
         # Write file
         with open(file_path, "w", encoding="utf-8") as f:

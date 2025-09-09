@@ -30,21 +30,18 @@ class BaseLocalizationOrchestrator:
         decomposition_mode: DecompositionMode,
     ) -> None:
         decision_llm = LLMClient(ClientType.DECISION)
-        structured_llm = LLMClient(ClientType.STRUCTURED)
 
         if decomposition_mode == DecompositionMode.GHERKIN:
             tool_builder = GherkinLocalizationTools(
                 analysis=analysis,
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
-                structured_llm=structured_llm,
             )
         else:
             tool_builder = GrammaticalLocalizationTools(
                 analysis=analysis,
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
-                structured_llm=structured_llm,
             )
 
         tools, allow_duplicate_tools = tool_builder.all()

@@ -44,6 +44,10 @@ class ReActAgent:
 
         self.graph = self._build_graph()
 
+    def reset_agent(self) -> None:
+        """Reset internal termination flag so the agent can continue running."""
+        self._end_now = False
+
     # Subclass hooks
     def _prepare_tool_args(
         self, tool_name: str, raw_args: Dict[str, Any], state: AgentState

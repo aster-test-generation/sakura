@@ -1,14 +1,31 @@
 from __future__ import annotations
 
+from cldk.analysis.java import JavaAnalysis
+from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
 from nltest.nl2test.models.decomposition import DecompositionMode
-from nltest.nl2test.models import AgentState, AtomicBlockList
+from nltest.nl2test.models import AgentState, AtomicBlockList, NL2TestInput
 
 from .base import BaseSupervisorOrchestrator
 
 
 class GrammaticalSupervisorOrchestrator(BaseSupervisorOrchestrator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(decomposition_mode=DecompositionMode.GRAMMATICAL, **kwargs)
+    def __init__(
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+        base_project_dir: str,
+    ) -> None:
+        super().__init__(
+            analysis=analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+            nl2_input=nl2_input,
+            decomposition_mode=DecompositionMode.GRAMMATICAL,
+            base_project_dir=base_project_dir,
+        )
 
     def assign_task(self, blocks):
         if self.decomposition_mode != DecompositionMode.GRAMMATICAL:

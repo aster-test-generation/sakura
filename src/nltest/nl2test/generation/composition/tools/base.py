@@ -12,6 +12,7 @@ from nltest.nl2test.models import (
     NL2TestInput,
     QueryClassArgs,
     QueryMethodArgs,
+    QueryVectorDataArgs,
     TestCodeArgs,
     AtomicBlockList,
     FinalizeCommentsArgs,
@@ -30,6 +31,7 @@ from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
+    QUERY_CLASS_DESC,
     EXTRACT_CODE_DESC,
     METHOD_DETAILS_DESC,
     CALL_SITE_DETAILS_DESC,
@@ -60,9 +62,9 @@ class BaseCompositionTools:
         nl2_input: NL2TestInput,
     ) -> None:
         self.analysis = analysis
+        self.structured_llm = structured_llm
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
-        self.structured_llm = structured_llm
 
         # Accept project root directly
         self.project_root: Path = Path(project_root)
@@ -70,6 +72,7 @@ class BaseCompositionTools:
 
         # Keep the same initial tool set as before; subclasses may append.
         self.tools: List[BaseTool] = [
+            self._make_query_class_tool(),
             self._make_extract_code_tool(),
             self._make_get_method_details_tool(),
             self._make_get_class_fields_tool(),
@@ -96,6 +99,28 @@ class BaseCompositionTools:
     def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
         # Return tool list and the subset allowed to duplicate
         return self.tools, self.allow_duplicate_tools
+
+    # Get relevant classes from the database by similarity search, within a range
+    def _make_query_class_tool(self) -> StructuredTool:
+        def _query_class_db(query: str, i: int, j: int) -> List[Dict[str, str]]:
+            from nltest.utils.exceptions import InvalidArgumentError
+
+            if i <= 0:
+                raise InvalidArgumentError("i must be positive", extra_info={"i": i})
+            if j < i:
+                raise InvalidArgumentError(
+                    "j must be greater than i", extra_info={"i": i, "j": j}
+                )
+
+            return self.class_searcher.find_similar_in_range(query, i, j)
+
+        return StructuredTool.from_function(
+            func=_query_class_db,
+            name="query_class_db",
+            description=QUERY_CLASS_DESC,
+            args_schema=QueryVectorDataArgs,
+            handle_tool_error=ToolExceptionHandler.handle_error,
+        )
 
     # Understand conditional branches and code structure
     def _make_extract_code_tool(self) -> StructuredTool:

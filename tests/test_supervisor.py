@@ -12,19 +12,27 @@ from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
     GherkinSupervisorOrchestrator,
 )
 from nltest.nl2test.pipeline import Pipeline as NL2Pipeline
+from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.utils.pretty.prints import pretty_print
+from nltest.utils.llm import usage_tracker
 
 from tests._base_nl2test import BaseNL2Test
 
 
 class TestSupervisorAgent(BaseNL2Test):
     def test_supervisor_end_to_end(self):
+        usage_tracker.start()
         # Load dataset entries from CSV relative to this test file
         test_dir = Path(__file__).resolve().parent
         data_dir = test_dir / "output" / "resources" / "test2nl"
         sdm = StructuredDataManager(data_dir)
         entries = sdm.load("test2nl.csv", Test2NLEntry, format="csv")
         self.assertTrue(len(entries) > 0, "No Test2NL entries loaded from CSV")
+
+        # Tighten iteration limits for this test
+        self.config.set("localization", "max_iters", 40)
+        self.config.set("composition", "max_iters", 40)
+        self.config.set("supervisor", "max_iters", 10)
 
         # Pick a random entry and convert to NL2TestInput
         entry = random.choice(entries)
@@ -41,23 +49,34 @@ class TestSupervisorAgent(BaseNL2Test):
         scenario = decomposer.decompose(nl2_input.description)
         localized = LocalizedScenario.from_scenario(scenario)
 
+        # Index database
+        method_indexer = MethodIndexer(self.analysis)
+        class_indexer = ClassIndexer(self.analysis)
+        method_searcher = method_indexer.build_index()
+        class_searcher = class_indexer.build_index()
+
         # Instantiate Supervisor (GHERKIN mode) and run
         supervisor = GherkinSupervisorOrchestrator(
             analysis=self.analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
             nl2_input=nl2_input,
             base_project_dir=str(project_root),
         )
 
-        instructions = (
-            "Use delegate agents to localize and compose the test. Finalize when done."
-        )
-        updated_state = supervisor.assign_task(localized, instructions=instructions)
+        updated_state = supervisor.assign_task(localized)
+
+        pretty_print("Updated state", updated_state)
 
         # Validate updated AgentState includes selected package/class
         self.assertIsNotNone(updated_state.package)
         self.assertIsNotNone(updated_state.class_name)
 
+        prices = usage_tracker.stop()
+        pretty_print("Token usage", prices)
+
     def test_pipeline_run_nl2test(self):
+        usage_tracker.start()
         # Load dataset entries from CSV using the same path pattern
         test_dir = Path(__file__).resolve().parent
         data_dir = test_dir / "output" / "resources" / "test2nl"
@@ -83,11 +102,12 @@ class TestSupervisorAgent(BaseNL2Test):
         )
 
         # Tighten iteration limits for this test
-        self.config.set("localization", "max_iters", 10)
-        self.config.set("composition", "max_iters", 6)
-        self.config.set("supervisor", "max_iters", 3)
+        self.config.set("localization", "max_iters", 15)
+        self.config.set("composition", "max_iters", 10)
+        self.config.set("supervisor", "max_iters", 6)
 
         # Run end-to-end NL2Test
+        pipeline.run_preprocessing()
         result = pipeline.run_nl2test(nl2_input)
 
         # Pretty print results
@@ -100,3 +120,6 @@ class TestSupervisorAgent(BaseNL2Test):
         self.assertIsNotNone(result.pred_class_name)
         self.assertIsNotNone(result.pred_method_signature)
         self.assertIsNotNone(result.structural_metrics)
+
+        prices = usage_tracker.stop()
+        pretty_print("Token usage", prices)

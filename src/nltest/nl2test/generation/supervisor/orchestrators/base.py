@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from cldk.analysis.java import JavaAnalysis
 from langchain_core.prompts import PromptTemplate
@@ -34,12 +34,12 @@ class BaseSupervisorOrchestrator:
     def __init__(
         self,
         *,
-        analysis: Optional[JavaAnalysis] = None,
-        method_searcher: Optional[MethodSearcher] = None,
-        class_searcher: Optional[ClassSearcher] = None,
-        nl2_input: Optional[NL2TestInput] = None,
-        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
-        base_project_dir: str | None = None,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+        decomposition_mode: DecompositionMode,
+        base_project_dir: str,
     ) -> None:
         # Only GHERKIN is supported for Supervisor orchestration right now.
         if decomposition_mode != DecompositionMode.GHERKIN:
@@ -54,6 +54,12 @@ class BaseSupervisorOrchestrator:
         self.decomposition_mode = decomposition_mode
         self.base_project_dir = base_project_dir
 
+        # Validate required dependencies are present
+        if self.method_searcher is None or self.class_searcher is None:
+            raise Exception(
+                "The database is not indexed and provided to the supervisor orchestrator."
+            )
+
         # Initialize LLMs and tools
         decision_llm = LLMClient(ClientType.DECISION)
 
@@ -62,7 +68,6 @@ class BaseSupervisorOrchestrator:
             tool_builder = GherkinSupervisorTools(
                 llm=decision_llm,
                 project_root=base_project_dir,
-                nl2_input=nl2_input,
             )
             localization_agent = GherkinLocalizationOrchestrator(
                 analysis=analysis,

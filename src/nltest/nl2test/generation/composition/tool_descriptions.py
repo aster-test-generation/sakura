@@ -14,6 +14,21 @@ Returns:
   String with full method source, or a structured error dict on failure.
 """
 
+QUERY_CLASS_DESC = """
+Semantic search over application classes (vector index).
+Args:
+  query: Natural language or code-like phrase describing the class you want or the likely class name.
+  i, j: 1-based inclusive window into the ranked results (i > 0, j >= i).
+Use when:
+  - You want to find similar classes in the application to the query.
+  - Identify the package and location of application classes relevant to the test method for resolving imports.
+Limitations:
+  Application classes only; library classes are not indexed.
+Returns:
+  List of dicts with implementing_class_name.
+  On failure, a structured error dict is returned.
+"""
+
 METHOD_DETAILS_DESC = """
 Fetch declaration-site metadata for a method.
 Args:

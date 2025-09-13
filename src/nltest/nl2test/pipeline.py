@@ -51,7 +51,7 @@ class Pipeline:
         analysis: JavaAnalysis,
         project_root: Path,
         *,
-        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
+        decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
         analysis_dir: Path | None = None,
     ):
         self.analysis = analysis
@@ -221,18 +221,6 @@ class Pipeline:
         return self.analysis
 
     def run_nl2test(self, nl2_input: NL2TestInput) -> NL2EvaluationResults:
-        """
-        End-to-end NL2Test run:
-        - Decompose NL description into blocks
-        - Convert blocks for supervisor mode (LocalizedScenario or AtomicBlockList)
-        - Run Supervisor orchestrator to generate tests
-        - If no package/class in agent state, return empty results
-        - Compile and short-circuit if predicted class has compilation errors
-        - Regenerate analysis (eager=True)
-        - Identify the predicted test method (first test method in class)
-        - Grade structural similarity and build NL2EvaluationResults
-        - Load test code, add to results, then delete the test file
-        """
         # Decompose into initial blocks
         blocks = self.decompose_natural_language(nl2_input.description)
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import List, Tuple, Union
 
 from langchain_core.tools import BaseTool, StructuredTool
 
@@ -19,17 +19,11 @@ class BaseSupervisorTools:
     def __init__(
         self,
         *,
-        llm: Optional[LLMClient] = None,
-        project_root: Union[str, Path, None] = None,
-        nl2_input: Optional[NL2TestInput] = None,
-        localization_agent: Optional[ReActAgent] = None,
-        composition_agent: Optional[ReActAgent] = None,
+        llm: LLMClient,
+        project_root: Union[str, Path],
     ) -> None:
         self.llm = llm
-        self.project_root = Path(project_root) if project_root is not None else None
-        self.nl2_input = nl2_input
-        self.localization_agent = localization_agent
-        self.composition_agent = composition_agent
+        self.project_root = Path(project_root)
 
         self.tools: List[BaseTool] = [
             self._make_view_test_code_tool(),

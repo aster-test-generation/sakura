@@ -60,6 +60,10 @@ class SupervisorReActAgent(ReActAgent):
         cleaned = state.model_copy(deep=True) if hasattr(state, "model_copy") else state
         cleaned.iterations = 0
         cleaned.final_comments = ""
+        cleaned.messages = (
+            []
+        )  # Note: react_agent.py handles injecting system prompt to start of message convo
+        # TODO: Extend message cleaning to maybe use summaries of past history
         return cleaned
 
     def _prepare_tool_args(
@@ -74,7 +78,8 @@ class SupervisorReActAgent(ReActAgent):
 
         # Delegate calls: Supervisor triggers underlying agents and returns normalized payload
         if name == "call_localization_agent":
-            # Tools now return (blocks, instructions)
+            # Ensure the supervisor can continue running after delegate calls
+            self.reset_agent()
 
             blocks = result.get("blocks")
             instructions = result.get("instructions")
@@ -138,7 +143,9 @@ class SupervisorReActAgent(ReActAgent):
             return
 
         if name == "call_composition_agent":
-            # Tools now return (blocks, instructions)
+            # Ensure the supervisor can continue running after delegate calls
+            self.reset_agent()
+
             blocks = result.get("blocks")
             instructions = result.get("instructions")
 

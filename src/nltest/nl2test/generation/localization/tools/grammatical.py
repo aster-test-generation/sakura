@@ -1,4 +1,6 @@
 from typing import Tuple
+from cldk.analysis.java import JavaAnalysis
+from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
 
 from langchain_core.tools import StructuredTool
 
@@ -13,8 +15,18 @@ from .base import BaseLocalizationTools
 
 
 class GrammaticalLocalizationTools(BaseLocalizationTools):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+    ) -> None:
+        super().__init__(
+            analysis=analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+        )
         # Add the grammatical finalize tool
         self.tools.append(self._make_finalize_tool())
 

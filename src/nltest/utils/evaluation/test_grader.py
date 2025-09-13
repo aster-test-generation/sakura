@@ -319,6 +319,10 @@ class TestGrader:
         Grades structural similarity of a predicted test vs ground truth.
         Returns an average score and the per-metric breakdown.
         """
+        _, application_classes = (
+            self.common.get_test_methods_classes_and_application_classes()
+        )
+
         gt_frameworks = self.common.get_testing_frameworks_for_class(gt_class_name)
         pred_frameworks = self.common.get_testing_frameworks_for_class(pred_class_name)
 
@@ -326,7 +330,7 @@ class TestGrader:
             gt_class_name, testing_frameworks=gt_frameworks
         )
         gt_analysis = TestMethodAnalysisInfo(
-            self.analysis, "TestDataset"
+            self.analysis, "TestDataset", application_classes
         ).get_test_method_analysis_info(
             gt_frameworks, gt_class_name, gt_method_sig, gt_setup_methods
         )
@@ -335,7 +339,7 @@ class TestGrader:
             pred_class_name, testing_frameworks=pred_frameworks
         )
         pred_analysis = TestMethodAnalysisInfo(
-            self.analysis, "TestDataset"
+            self.analysis, "TestDataset", application_classes
         ).get_test_method_analysis_info(
             pred_frameworks, pred_class_name, pred_method_sig, pred_setup_methods
         )

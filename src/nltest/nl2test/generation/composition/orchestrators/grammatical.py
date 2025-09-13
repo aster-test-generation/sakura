@@ -3,13 +3,30 @@ from __future__ import annotations
 from nltest.nl2test.generation.composition.orchestrators.base import (
     BaseCompositionOrchestrator,
 )
-from nltest.nl2test.models import AgentState, AtomicBlockList
+from cldk.analysis.java import JavaAnalysis
+from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
+from nltest.nl2test.models import AgentState, AtomicBlockList, NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
 
 
 class GrammaticalCompositionOrchestrator(BaseCompositionOrchestrator):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(decomposition_mode=DecompositionMode.GRAMMATICAL, **kwargs)
+    def __init__(
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+        project_root: str,
+    ) -> None:
+        super().__init__(
+            analysis=analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+            nl2_input=nl2_input,
+            project_root=project_root,
+            decomposition_mode=DecompositionMode.GRAMMATICAL,
+        )
 
     def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:
         if self.decomposition_mode != DecompositionMode.GRAMMATICAL:

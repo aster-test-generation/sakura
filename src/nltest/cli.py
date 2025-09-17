@@ -15,7 +15,7 @@ from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
-from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput
+from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput, NL2TestEval
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
@@ -1047,6 +1047,13 @@ def run_nl2test(
             show_default=False,
         ),
     ] = None,
+    clear_output: Annotated[
+        bool,
+        typer.Option(
+            help="Whether to remove existing NL2Test evaluation results before running.",
+            show_default=True,
+        ),
+    ] = True,
     test2nl_file: Annotated[
         str,
         typer.Option(
@@ -1206,15 +1213,15 @@ def run_nl2test(
         analysis_project_dir = base_analysis_dir / project_name
         analysis_json_path = analysis_project_dir / "analysis.json"
         if not (project_root.exists() and project_root.is_dir()):
-            RichLog.error(
-                f"Project directory {project_root} does not exist. Skipping project {project_name}."
-            )
-            continue
+            RichLog.error(f"Project directory {project_root} does not exist.")
+            raise Exception(f"Project directory {project_root} does not exist.")
         if not analysis_json_path.exists():
             RichLog.error(
-                f"Missing analysis.json for {project_name} at {analysis_json_path}. Skipping project."
+                f"Missing analysis.json for {project_name} at {analysis_json_path}."
             )
-            continue
+            raise Exception(
+                f"Missing analysis.json for {project_name} at {analysis_json_path}."
+            )
         pending_projects.append(project_name)
 
     if not pending_projects:
@@ -1229,8 +1236,16 @@ def run_nl2test(
         raise RuntimeError(f"Failed to initialize Ray: {exc}") from exc
 
     # Project-level scheduling, only between-project parallelism
-    data_manager = StructuredDataManager(output_dir)
     results_filename = "nl2test_evaluation_results.json"
+    project_data_managers: dict[str, StructuredDataManager] = {}
+    cleared_projects: set[str] = set()
+
+    def get_project_data_manager(project_name: str) -> StructuredDataManager:
+        manager = project_data_managers.get(project_name)
+        if manager is None:
+            manager = StructuredDataManager(output_dir / project_name)
+            project_data_managers[project_name] = manager
+        return manager
 
     total_success = 0
     total_failed = 0
@@ -1252,6 +1267,16 @@ def run_nl2test(
             RichLog.info(f"\n{sep}")
             RichLog.info(f"Starting NL2Test actor for project: {project_name}")
             RichLog.info(sep)
+
+            project_manager = get_project_data_manager(project_name)
+            if clear_output and project_name not in cleared_projects:
+                cleared = project_manager.delete(results_filename)
+                if cleared:
+                    RichLog.info(
+                        f"[{project_name}] Removed existing evaluation results at "
+                        f"{project_manager.base_dir / results_filename}"
+                    )
+                cleared_projects.add(project_name)
 
             actor = NL2TestActor.options(max_concurrency=1).remote(
                 project_name=project_name,
@@ -1307,18 +1332,22 @@ def run_nl2test(
             # Persist and aggregate results
             project_success = 0
             project_failed = 0
-            batch_to_save: list[dict] = []
+            batch_to_save: list[NL2TestEval] = []
             for item in results or []:
                 if item.get("success"):
                     res = item.get("result")
-                    if res:
+                    if res is not None:
+                        # Ensure NL2TestEval objects persist correctly even if serialized across Ray execution
+                        if isinstance(res, dict):
+                            res = NL2TestEval(**res)
                         batch_to_save.append(res)
                     project_success += 1
                 else:
                     project_failed += 1
 
             if batch_to_save:
-                data_manager.save(
+                project_manager = get_project_data_manager(project_name)
+                project_manager.save(
                     results_filename, batch_to_save, format="json", mode="append"
                 )
 

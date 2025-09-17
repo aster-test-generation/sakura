@@ -18,34 +18,6 @@ from tests._base_test2nl import BaseTest2NL
 
 
 class TestDescriptionGeneration(BaseTest2NL):
-    def test_cli_generate_descriptions(self):
-        analysis_dir = "./output/resources/output/"
-        organized_methods_dir = "./output/resources/nl2test/"
-        output_dir = "./output/resources/test2nl/"
-
-        orig_cwd = os.getcwd()
-        try:
-            os.chdir(Path(__file__).resolve().parent)
-            for p in [
-                Path(analysis_dir),
-                Path(organized_methods_dir),
-                Path(output_dir),
-            ]:
-                p.mkdir(parents=True, exist_ok=True)
-            generate_descriptions(
-                analysis_dir=analysis_dir,
-                output_dir=output_dir,
-                organized_methods_dir=organized_methods_dir,
-                llm_model=self.llm_model,
-                llm_provider="openrouter",
-                clear_dataset=True,
-                max_methods=2,
-                num_proj_parallel=2,
-                per_proj_concurrency=8,
-                max_inflight=0,
-            )
-        finally:
-            os.chdir(orig_cwd)
 
     def test_desc_one_abs_one_method(self):
         qualified_class_name = (

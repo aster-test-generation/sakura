@@ -9,9 +9,11 @@ from typing import Dict
 from .decomposition import (
     AtomicBlock,
     AtomicBlockList,
-    LocalizationEvaluationResults,
+    LocalizationEval,
+    LocalizationEvaluationResultsOld,
     LocalizedScenario,
 )
+from .agents import ToolLog
 
 
 class AbstractionLevel(Enum):
@@ -39,7 +41,9 @@ class NL2LocalizationOutput(BaseModel):
 
     nl2_input: NL2TestInput
     localized_blocks: Union[AtomicBlockList, LocalizedScenario]
-    evaluation_results: Optional[LocalizationEvaluationResults] = None
+    evaluation_results: Optional[
+        Union[LocalizationEvaluationResultsOld, LocalizationEval]
+    ] = None
 
 
 class NL2EvaluationResults(BaseModel):
@@ -61,3 +65,33 @@ class NL2EvaluationResults(BaseModel):
 
     # Snapshot of generated code
     test_code: str = ""
+
+
+class NL2TestMetadata(BaseModel):
+    qualified_test_class_name: str
+    code: str
+
+
+class NL2TestStructuralEval(BaseModel):
+    obj_creation_recall: float
+    assertion_recall: float
+    callable_recall: float
+    focal_recall: float
+
+
+class NL2TestCoverageEval(BaseModel):
+    class_coverage: float
+    method_coverage: float
+    line_coverage: float
+    branch_coverage: float
+
+
+# TODO: Add ToolLog and localization results
+class NL2TestEval(BaseModel):
+    compiles: bool
+    nl2test_input: NL2TestInput
+    nl2test_metadata: NL2TestMetadata
+    structured_eval: Optional[NL2TestStructuralEval]
+    coverage_eval: Optional[NL2TestCoverageEval]
+    localization_eval: Optional[LocalizationEval] = None
+    tool_log: Optional[ToolLog] = None

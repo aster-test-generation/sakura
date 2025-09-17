@@ -13,6 +13,7 @@ CSV_FILE = "../tests/output/resources/test2nl/test2nl.csv"
 # CLI arguments
 MAX_ENTRIES = 0
 # Note: 0 = unlimited
+CLEAR_OUTPUT = True
 
 LLM_MODEL = "google/gemini-2.5-flash"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
@@ -110,6 +111,9 @@ def main() -> None:
         cmd.extend(["--emb-provider", EMB_PROVIDER])
     if EMB_API_URL:
         cmd.extend(["--emb-api-url", EMB_API_URL])
+
+    if CLEAR_OUTPUT:
+        cmd.append("--clear-output")
 
     # Optional caps
     if MAX_ENTRIES and MAX_ENTRIES > 0:

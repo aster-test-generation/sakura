@@ -85,6 +85,9 @@ class BaseLocalizationOrchestrator:
         )
         return chat_prompt, system_prompt
 
+    def reset_agent(self) -> None:
+        self.agent.reset_agent()
+
     # Shared signature implemented by subclasses. Intentionally untyped for blocks/output.
     def assign_task(self, blocks, *, instructions: str):  # pragma: no cover - interface
         raise NotImplementedError

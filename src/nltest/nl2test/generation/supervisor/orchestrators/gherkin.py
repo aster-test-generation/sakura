@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Tuple
 
 from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
@@ -27,7 +28,7 @@ class GherkinSupervisorOrchestrator(BaseSupervisorOrchestrator):
             base_project_dir=base_project_dir,
         )
 
-    def assign_task(self, blocks):
+    def assign_task(self, blocks) -> Tuple[AgentState, AgentState, AgentState]:
         if self.decomposition_mode != DecompositionMode.GHERKIN:
             raise TypeError("GherkinSupervisorOrchestrator is not in GHERKIN mode.")
 
@@ -39,5 +40,7 @@ class GherkinSupervisorOrchestrator(BaseSupervisorOrchestrator):
             nl_description=self.nl2_input.description,
         )
 
-        updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
-        return updated_state
+        supervisor_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
+        localization_state: AgentState = self.agent.localization_state
+        composition_state: AgentState = self.agent.composition_state
+        return supervisor_state, localization_state, composition_state

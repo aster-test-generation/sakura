@@ -218,7 +218,9 @@ class TestFileManager:
         )
 
         # Rewrite package and class name in code content
-        # content = self._rewrite_java_header(package, class_name, content)
+        conflict_renamed = class_name != base_class_name
+        if sync_names or conflict_renamed:
+            content = self._rewrite_java_header(package, class_name, content)
 
         # Write file
         with open(file_path, "w", encoding="utf-8") as f:

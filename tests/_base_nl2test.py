@@ -52,7 +52,7 @@ class BaseNL2Test(TestCase):
             llm_model=llm_model,
             emb_provider=Provider.OLLAMA,
             emb_model=emb_model,
-            llm_api_key=os.getenv("OPENROUTER_API_KEY"),
+            llm_api_key=os.getenv("LLM_API_KEY"),
             emb_api_key=None,
             localization_max_iters=5,
         )

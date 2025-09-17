@@ -54,6 +54,15 @@ class AgentState(BaseModel):
         Optional[str], "Final comments from the agent, if any"
     ] = ""
 
+    def reset_message_history(self) -> None:
+        """Reset tracked conversation history between agent invocations."""
+        self.iterations = 0
+        self.final_comments = ""
+        self.messages = (
+            []
+        )  # TODO: Maybe have some functionality for summarizing this instead of clearing
+        self.tool_calls = {}
+
 
 class QueryMethodArgs(BaseModel):
     qualified_class_name: Annotated[
@@ -186,7 +195,8 @@ class CallAgentGherkinArgs(BaseModel):
         Field(description="The current LocalizedScenario to operate on."),
     ]
     instructions: Annotated[
-        str, Field(description="Actionable instructions for the delegated agent."),
+        str,
+        Field(description="Actionable instructions for the delegated agent."),
     ]
 
 
@@ -198,5 +208,16 @@ class CallAgentGrammaticalArgs(BaseModel):
         Field(description="The current AtomicBlockList to operate on."),
     ]
     instructions: Annotated[
-        str, Field(description="Actionable instructions for the delegated agent."),
+        str,
+        Field(description="Actionable instructions for the delegated agent."),
     ]
+
+
+class AgentToolLog(BaseModel):
+    tool_counts: Dict[str, int]
+
+
+class ToolLog(BaseModel):
+    supervisor_agent_calls: AgentToolLog
+    localization_agent_calls: AgentToolLog
+    composition_agent_calls: AgentToolLog

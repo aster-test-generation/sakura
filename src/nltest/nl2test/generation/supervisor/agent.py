@@ -51,18 +51,19 @@ class SupervisorReActAgent(ReActAgent):
         self.localization_agent = localization_agent
         self.composition_agent = composition_agent
         # Track last known states for reuse between calls
-        self._localization_state: Optional[AgentState] = None
-        self._composition_state: Optional[AgentState] = None
+        self.localization_state: Optional[AgentState] = None
+        self.composition_state: Optional[AgentState] = None
 
-    def _clean_agent_state(self, state: Optional[AgentState]) -> Optional[AgentState]:
+    def _clean_agent(
+        self,
+        state: Optional[AgentState],
+        orchestrator: BaseLocalizationOrchestrator | BaseCompositionOrchestrator,
+    ) -> Optional[AgentState]:
+        orchestrator.reset_agent()
         if state is None:
             return None
         cleaned = state.model_copy(deep=True) if hasattr(state, "model_copy") else state
-        cleaned.iterations = 0
-        cleaned.final_comments = ""
-        cleaned.messages = (
-            []
-        )  # Note: react_agent.py handles injecting system prompt to start of message convo
+        cleaned.reset_message_history()
         # TODO: Extend message cleaning to maybe use summaries of past history
         return cleaned
 
@@ -78,13 +79,11 @@ class SupervisorReActAgent(ReActAgent):
 
         # Delegate calls: Supervisor triggers underlying agents and returns normalized payload
         if name == "call_localization_agent":
-            # Ensure the supervisor can continue running after delegate calls
-            self.reset_agent()
-
             blocks = result.get("blocks")
             instructions = result.get("instructions")
 
-            if self.localization_agent is None:
+            orchestrator = self.localization_agent
+            if orchestrator is None:
                 outputs.append(
                     ToolMessage(
                         content=json.dumps(
@@ -98,9 +97,9 @@ class SupervisorReActAgent(ReActAgent):
                 )
                 return
 
-            prev_state = self._clean_agent_state(self._localization_state)
+            prev_state = self._clean_agent(self.localization_state, orchestrator)
             try:
-                updated_state: AgentState = self.localization_agent.assign_task(
+                updated_state: AgentState = orchestrator.assign_task(
                     blocks, instructions=instructions, agent_state=prev_state
                 )
             except Exception as e:
@@ -118,7 +117,7 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             # Persist latest localization state
-            self._localization_state = updated_state
+            self.localization_state = updated_state
 
             # Update Supervisor state with blocks
             if updated_state.atomic_blocks is not None:
@@ -143,13 +142,11 @@ class SupervisorReActAgent(ReActAgent):
             return
 
         if name == "call_composition_agent":
-            # Ensure the supervisor can continue running after delegate calls
-            self.reset_agent()
-
             blocks = result.get("blocks")
             instructions = result.get("instructions")
 
-            if self.composition_agent is None:
+            orchestrator = self.composition_agent
+            if orchestrator is None:
                 outputs.append(
                     ToolMessage(
                         content=json.dumps(
@@ -163,9 +160,9 @@ class SupervisorReActAgent(ReActAgent):
                 )
                 return
 
-            prev_state = self._clean_agent_state(self._composition_state)
+            prev_state = self._clean_agent(self.composition_state, orchestrator)
             try:
-                updated_state: AgentState = self.composition_agent.assign_task(
+                updated_state: AgentState = orchestrator.assign_task(
                     blocks, instructions=instructions, agent_state=prev_state
                 )
             except Exception as e:
@@ -183,7 +180,7 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             # Persist latest composition state
-            self._composition_state = updated_state
+            self.composition_state = updated_state
 
             # Update Supervisor state with blocks and packaging
             if updated_state.atomic_blocks is not None:

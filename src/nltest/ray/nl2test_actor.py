@@ -95,7 +95,7 @@ class NL2TestActor:
         try:
             nl2_input = NL2TestInput(**input_payload)
             result = self.pipeline.run_nl2test(nl2_input)
-            return {"success": True, "result": result.model_dump(mode="json")}
+            return {"success": True, "result": result}
         except Exception as e:
             return {"success": False, "error": str(e), "input": input_payload}
 

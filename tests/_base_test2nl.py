@@ -35,8 +35,8 @@ class BaseTest2NL(TestCase):
             raise Exception(f"Project root directory {project_root} does not exist.")
         output_dir = (test_dir / "output" / self.project_name).resolve()
 
-        if not os.getenv("OPENROUTER_API_KEY"):
-            raise AssertionError("OPENROUTER_API_KEY environment variable is not set.")
+        if not os.getenv("LLM_API_KEY"):
+            raise AssertionError("LLM_API_KEY environment variable is not set.")
 
         self.config = init_config(
             project_name=self.project_name,
@@ -46,7 +46,7 @@ class BaseTest2NL(TestCase):
             llm_model=llm_model,
             emb_provider=Provider.VLLM,
             emb_model=emb_model,
-            llm_api_key=os.getenv("OPENROUTER_API_KEY"),
+            llm_api_key=os.getenv("LLM_API_KEY"),
             emb_api_key=None,
         )
 

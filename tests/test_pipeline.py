@@ -1,36 +1,41 @@
 from pathlib import Path
+import random
 
 from nltest.nl2test.models import (
     AtomicBlock,
     AtomicBlockList,
     NL2LocalizationOutput,
+    NL2TestEval,
     NL2TestInput,
     LocalizedScenario,
     AbstractionLevel as NL2AbstractionLevel,
-    LocalizationEvaluationResults,
+    LocalizationEval,
 )
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
     GrammaticalBlockList,
 )
-from nltest.nl2test.pipeline import Pipeline
+from nltest.nl2test.pipeline import Pipeline as NL2TestPipeline
+from nltest.test2nl.pipeline import Pipeline as Test2NLPipeline
+from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.utils.llm import usage_tracker
 from nltest.utils.pretty.prints import pretty_print
 
-from nltest.test2nl.model.models import AbstractionLevel
+from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
 
+from nltest.utils.utilities import test2nl_entry_to_nl2test_input
 from tests._base_nl2test import BaseNL2Test
 from tests._base_test2nl import BaseTest2NL
 
 
-class TestPipelineDescriptions(BaseTest2NL):
+class TestTest2NLPipeline(BaseTest2NL):
     def test_all_low_abs(self):
         self.pipeline.reset_dataset()
         self.pipeline.run_descriptions_of_project(AbstractionLevel.LOW)
 
 
-class TestPipelineLocalization(BaseNL2Test):
-    def test_pipeline_run_localization_agent(self):
+class TestNL2TestPipeline(BaseNL2Test):
+    def test_pipeline_run_localization_pipeline_grammatical(self):
         """Test the pipeline's run_localization_agent method with a petclinic-based test case."""
 
         nl2_input = NL2TestInput(
@@ -44,7 +49,7 @@ class TestPipelineLocalization(BaseNL2Test):
         # Initialize pipeline
         test_dir = Path(__file__).resolve().parent
         project_root = (test_dir / "resources" / "spring-petclinic").resolve()
-        pipeline = Pipeline(self.analysis, project_root)
+        pipeline = Test2NLPipeline(self.analysis, project_root)
 
         # Run preprocessing
         method_searcher, class_searcher = pipeline.run_preprocessing()
@@ -92,9 +97,14 @@ class TestPipelineLocalization(BaseNL2Test):
         # Initialize pipeline
         test_dir = Path(__file__).resolve().parent
         project_root = (test_dir / "resources" / "spring-petclinic").resolve()
-        pipeline = Pipeline(
+        pipeline = NL2TestPipeline(
             self.analysis, project_root, decomposition_mode=DecompositionMode.GHERKIN
         )
+
+        # Tighten iteration limits for this test
+        self.config.set("localization", "max_iters", 10)
+        self.config.set("composition", "max_iters", 6)
+        self.config.set("supervisor", "max_iters", 4)
 
         # Run the complete evaluation pipeline
         usage_tracker.start()
@@ -105,16 +115,124 @@ class TestPipelineLocalization(BaseNL2Test):
         self.assertIsInstance(output, NL2LocalizationOutput)
         self.assertIsInstance(output.localized_blocks, LocalizedScenario)
         self.assertIsNotNone(output.evaluation_results)
-        self.assertIsInstance(
-            output.evaluation_results, LocalizationEvaluationResults
-        )
-        # coverage_score now lives inside evaluation_results
-        self.assertIsInstance(output.evaluation_results.coverage_score, float)
-        self.assertGreaterEqual(output.evaluation_results.coverage_score, 0.0)
-        self.assertLessEqual(output.evaluation_results.coverage_score, 1.0)
+        self.assertIsInstance(output.evaluation_results, LocalizationEval)
+        self.assertIsInstance(output.evaluation_results.localization_recall, float)
+        self.assertGreaterEqual(output.evaluation_results.localization_recall, 0.0)
+        self.assertLessEqual(output.evaluation_results.localization_recall, 1.0)
 
         pretty_print(
             "Localized blocks from evaluation pipeline", output.localized_blocks
         )
-        pretty_print("Coverage score", output.evaluation_results.coverage_score)
+        pretty_print(
+            "Localization recall",
+            output.evaluation_results.localization_recall,
+        )
+        pretty_print("Token usage", prices)
+
+    def test_pipeline_run_nl2test_simple_gherkin(self):
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.vet.VetControllerTests",
+            method_signature="testShowResourcesVetList()",
+            description="Ensure that the veterinarian controller correctly renders a JSON list of veterinarians by first configuring the VetRepository dependency as a Mockito mock during test setup to return two predefined veterinarian objects for both its unpaginated findAll method and its paginated findAll method (when invoked with any Pageable argument), then using the auto-wired MockMvc instance to perform an HTTP GET request to the /vets endpoint with an Accept header specifying JSON media type, and verifying that the response returns a 200 OK status, confirms the content type as JSON, and validates through JsonPath assertions that the first element in the vetList array of the response body contains an identifier matching the expected value for the initial veterinarian instance, all implemented using JUnit 5 for test lifecycle management, Spring Boot Test's @WebMvcTest for web layer testing configuration, Mockito for repository behavior stubbing via @MockitoBean, and Spring MVC Test's MockMvc framework for request execution and response validation with its built-in status, content, and jsonPath matchers.",
+            project_name="spring-petclinic",
+            abstraction_level=NL2AbstractionLevel("low"),
+        )
+
+        test_dir = Path(__file__).resolve().parent
+        project_root = (test_dir / "resources" / "spring-petclinic").resolve()
+        pipeline = NL2TestPipeline(
+            self.analysis, project_root, decomposition_mode=DecompositionMode.GHERKIN
+        )
+        pipeline.run_preprocessing()
+
+        # Tighten iteration limits for this test
+        self.config.set("localization", "max_iters", 10)
+        self.config.set("composition", "max_iters", 6)
+        self.config.set("supervisor", "max_iters", 4)
+
+        usage_tracker.start()
+        eval_result = pipeline.run_nl2test(nl2_input)
+        prices = usage_tracker.stop()
+
+        self.assertIsInstance(eval_result, NL2TestEval)
+        self.assertEqual(eval_result.nl2test_input, nl2_input)
+        self.assertIsInstance(eval_result.compiles, bool)
+        self.assertIsInstance(
+            eval_result.nl2test_metadata.qualified_test_class_name, str
+        )
+
+        self.assertIsNotNone(eval_result.localization_eval)
+        self.assertIsInstance(eval_result.localization_eval, LocalizationEval)
+        self.assertIsNotNone(eval_result.tool_log)
+        self.assertIsInstance(
+            eval_result.tool_log.supervisor_agent_calls.tool_counts, dict
+        )
+
+        pretty_print("NL2Test evaluation result", eval_result)
+        pretty_print("Token usage", prices)
+
+    def test_pipeline_run_nl2test_random_gherkin(self):
+        usage_tracker.start()
+        # Load dataset entries from CSV using the same path pattern
+        test_dir = Path(__file__).resolve().parent
+        data_dir = test_dir / "output" / "resources" / "test2nl"
+        sdm = StructuredDataManager(data_dir)
+        entries = sdm.load("test2nl.csv", Test2NLEntry, format="csv")
+        self.assertTrue(len(entries) > 0, "No Test2NL entries loaded from CSV")
+
+        # Pick a random entry and convert to NL2TestInput
+        entry = random.choice(entries)
+        nl2_input = test2nl_entry_to_nl2test_input(entry)
+
+        # Build pipeline
+        project_name = nl2_input.project_name
+        base_project_dir = Path(self.config.get("project", "base_project_dir"))
+        project_root = base_project_dir / project_name
+        output_dir = Path(self.config.get("project", "output_dir"))
+
+        pipeline = NL2TestPipeline(
+            self.analysis,
+            project_root,
+            decomposition_mode=DecompositionMode.GHERKIN,
+            analysis_dir=output_dir,
+        )
+
+        # Tighten iteration limits for this test
+        self.config.set("localization", "max_iters", 3)
+        self.config.set("composition", "max_iters", 5)
+        self.config.set("supervisor", "max_iters", 5)
+
+        # Run end-to-end NL2Test
+        pipeline.run_preprocessing()
+        result = pipeline.run_nl2test(nl2_input)
+
+        # Pretty print results
+        pretty_print("NL2 test evaluation results", result)
+
+        # Basic sanity assertions for NL2TestOutput
+        self.assertIsNotNone(result)
+        self.assertEqual(result.nl2test_input, nl2_input)
+        self.assertIsInstance(result.compiles, bool)
+        self.assertIsInstance(result.nl2test_metadata.qualified_test_class_name, str)
+        # Structured eval fields
+        se = result.structured_eval
+        self.assertGreaterEqual(se.assertion_recall, 0.0)
+        self.assertLessEqual(se.assertion_recall, 1.0)
+        self.assertGreaterEqual(se.obj_creation_recall, 0.0)
+        self.assertLessEqual(se.obj_creation_recall, 1.0)
+        self.assertGreaterEqual(se.callable_recall, 0.0)
+        self.assertLessEqual(se.callable_recall, 1.0)
+        self.assertGreaterEqual(se.focal_recall, 0.0)
+        # Coverage eval fields are in percent [0, 100]
+        cv = result.coverage_eval
+        self.assertGreaterEqual(cv.class_coverage, 0.0)
+        self.assertLessEqual(cv.class_coverage, 100.0)
+        self.assertGreaterEqual(cv.method_coverage, 0.0)
+        self.assertLessEqual(cv.method_coverage, 100.0)
+        self.assertGreaterEqual(cv.line_coverage, 0.0)
+        self.assertLessEqual(cv.line_coverage, 100.0)
+        self.assertGreaterEqual(cv.branch_coverage, 0.0)
+        self.assertLessEqual(cv.branch_coverage, 100.0)
+
+        prices = usage_tracker.stop()
         pretty_print("Token usage", prices)

@@ -64,62 +64,15 @@ class TestSupervisorAgent(BaseNL2Test):
             base_project_dir=str(project_root),
         )
 
-        updated_state = supervisor.assign_task(localized)
-
-        pretty_print("Updated state", updated_state)
-
-        # Validate updated AgentState includes selected package/class
-        self.assertIsNotNone(updated_state.package)
-        self.assertIsNotNone(updated_state.class_name)
-
-        prices = usage_tracker.stop()
-        pretty_print("Token usage", prices)
-
-    def test_pipeline_run_nl2test(self):
-        usage_tracker.start()
-        # Load dataset entries from CSV using the same path pattern
-        test_dir = Path(__file__).resolve().parent
-        data_dir = test_dir / "output" / "resources" / "test2nl"
-        sdm = StructuredDataManager(data_dir)
-        entries = sdm.load("test2nl.csv", Test2NLEntry, format="csv")
-        self.assertTrue(len(entries) > 0, "No Test2NL entries loaded from CSV")
-
-        # Pick a random entry and convert to NL2TestInput
-        entry = random.choice(entries)
-        nl2_input = test2nl_entry_to_nl2test_input(entry)
-
-        # Build pipeline
-        project_name = nl2_input.project_name
-        base_project_dir = Path(self.config.get("project", "base_project_dir"))
-        project_root = base_project_dir / project_name
-        output_dir = Path(self.config.get("project", "output_dir"))
-
-        pipeline = NL2Pipeline(
-            self.analysis,
-            project_root,
-            decomposition_mode=DecompositionMode.GHERKIN,
-            analysis_dir=output_dir,
+        supervisor_state, localization_state, composition_state = (
+            supervisor.assign_task(localized)
         )
 
-        # Tighten iteration limits for this test
-        self.config.set("localization", "max_iters", 15)
-        self.config.set("composition", "max_iters", 10)
-        self.config.set("supervisor", "max_iters", 6)
+        pretty_print("Updated state", supervisor_state)
 
-        # Run end-to-end NL2Test
-        pipeline.run_preprocessing()
-        result = pipeline.run_nl2test(nl2_input)
-
-        # Pretty print results
-        pretty_print("NL2 test evaluation results", result)
-
-        # Basic sanity assertions (non-None fields)
-        self.assertIsNotNone(result)
-        self.assertIsNotNone(result.gt_class_name)
-        self.assertIsNotNone(result.gt_method_signature)
-        self.assertIsNotNone(result.pred_class_name)
-        self.assertIsNotNone(result.pred_method_signature)
-        self.assertIsNotNone(result.structural_metrics)
+        # Validate updated AgentState includes selected package/class
+        self.assertIsNotNone(supervisor_state.package)
+        self.assertIsNotNone(supervisor_state.class_name)
 
         prices = usage_tracker.stop()
         pretty_print("Token usage", prices)

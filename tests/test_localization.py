@@ -6,6 +6,7 @@ from nltest.nl2test.generation.localization import (
     GherkinLocalizationOrchestrator,
     LocalizationTools,
 )
+from nltest.nl2test.evaluation.localization_grader_old import LocalizationGraderOld
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.nl2test.models import (
     AtomicBlock,
@@ -23,6 +24,7 @@ from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.utils.llm import usage_tracker
 from nltest.utils.pretty.prints import pretty_print
+from nltest.utils.analysis import CommonAnalysis
 
 from tests._base_nl2test import BaseNL2Test
 from nltest.cli import evaluate_localization
@@ -88,39 +90,6 @@ class TestLocalizationAgent(BaseNL2Test):
         self.assertIn("Given", rendered)
         self.assertIn("When", rendered)
         self.assertIn("Then", rendered)
-
-    def test_cli_evaluate_localization(self):
-        """Ensure CLI evaluate_localization runs without error using defaults from rq4_localization.py."""
-        # Use an empty base project dir so no projects are processed
-        base_project_dir = "./resources/"
-        output_dir = "./output"
-        test2nl_file = "./output/resources/test2nl/test2nl.csv"
-
-        orig_cwd = os.getcwd()
-        try:
-            os.chdir(Path(__file__).resolve().parent)
-            # Ensure directories exist
-            Path(base_project_dir).mkdir(parents=True, exist_ok=True)
-            Path(output_dir).mkdir(parents=True, exist_ok=True)
-
-            evaluate_localization(
-                base_project_dir=base_project_dir,
-                output_dir=output_dir,
-                test2nl_file=test2nl_file,
-                llm_model="google/gemini-2.5-flash",
-                emb_model="nomic-embed-text:v1.5",
-                decomposition_mode="gherkin",
-                save_results=False,
-                max_entries=1,
-                num_proj_parallel=1,
-                per_proj_concurrency=3,
-                localization_max_iters=5,
-                max_inflight=1,
-                llm_provider="openrouter",
-                emb_provider="ollama",
-            )
-        finally:
-            os.chdir(orig_cwd)
 
     def test_localization_agent_simple_grammatical(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
@@ -265,7 +234,186 @@ class TestLocalizationAgent(BaseNL2Test):
 
 
 class TestLocalizationGrader(BaseNL2Test):
-    def test_localization_grader(self):
+    def _petcontroller_localized_scenario_payload(self) -> dict:
+        return {
+            "testing_framework": "junit",
+            "setup": [
+                {
+                    "id": 0,
+                    "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
+                    "uses": "",
+                    "produces": "mock_mvc_context",
+                    "candidate_methods": [],
+                    "best_candidate": {
+                        "implementing_class_name": "",
+                        "containing_class_name": "",
+                        "method_signature": "",
+                        "return_type": "",
+                    },
+                    "arg_bindings": [],
+                    "comments": "@WebMvcTest is an annotation, not a method.",
+                    "external": False,
+                },
+                {
+                    "id": 1,
+                    "task": "Disable test in native image and AOT modes",
+                    "uses": "mock_mvc_context",
+                    "produces": "",
+                    "candidate_methods": [],
+                    "best_candidate": {
+                        "implementing_class_name": "",
+                        "containing_class_name": "",
+                        "method_signature": "",
+                        "return_type": "",
+                    },
+                    "arg_bindings": [],
+                    "comments": "Disabled annotations are not methods.",
+                    "external": False,
+                },
+                {
+                    "id": 2,
+                    "task": "Mock OwnerRepository.findPetTypes to return a PetType list",
+                    "uses": "mocked_owner_repository",
+                    "produces": "pet_types",
+                    "candidate_methods": [],
+                    "best_candidate": {
+                        "implementing_class_name": "",
+                        "containing_class_name": "",
+                        "method_signature": "",
+                        "return_type": "java.util.List<org.springframework.samples.petclinic.owner.PetType>",
+                    },
+                    "arg_bindings": [],
+                    "comments": "Mockito stubbing for findPetTypes.",
+                    "external": False,
+                },
+                {
+                    "id": 3,
+                    "task": "Mock OwnerRepository.findById to return an Owner",
+                    "uses": "mocked_owner_repository, TEST_OWNER_ID",
+                    "produces": "owner_with_pets",
+                    "candidate_methods": [],
+                    "best_candidate": {
+                        "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                        "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                        "method_signature": "findById(java.lang.Integer)",
+                        "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
+                    },
+                    "arg_bindings": [{"arg_name": "id", "arg_value": "TEST_OWNER_ID"}],
+                    "comments": "Mockito stubbing for findById.",
+                    "external": False,
+                },
+                {
+                    "id": 4,
+                    "task": "Prepare Owner instance with Pet for updating",
+                    "uses": "owner_with_pets, pet_types",
+                    "produces": "owner_with_pet_to_update",
+                    "candidate_methods": [],
+                    "best_candidate": {
+                        "implementing_class_name": "",
+                        "containing_class_name": "",
+                        "method_signature": "",
+                        "return_type": "",
+                    },
+                    "arg_bindings": [],
+                    "comments": "Data preparation, no direct method.",
+                    "external": False,
+                },
+                {
+                    "id": 5,
+                    "task": "Prepare pet details for update request",
+                    "uses": "owner_with_pet_to_update",
+                    "produces": "pet_details",
+                    "candidate_methods": [],
+                    "best_candidate": {
+                        "implementing_class_name": "",
+                        "containing_class_name": "",
+                        "method_signature": "",
+                        "return_type": "",
+                    },
+                    "arg_bindings": [],
+                    "comments": "Setup data.",
+                    "external": False,
+                },
+            ],
+            "steps": [
+                {
+                    "given": [],
+                    "when": [
+                        {
+                            "id": 6,
+                            "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
+                            "uses": "mock_mvc, TEST_OWNER_ID, TEST_PET_ID, pet_name, pet_type, pet_birth_date",
+                            "produces": "http_response",
+                            "candidate_methods": [
+                                {
+                                    "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
+                                    "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
+                                    "return_type": "java.lang.String",
+                                }
+                            ],
+                            "best_candidate": {
+                                "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
+                                "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
+                                "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
+                                "return_type": "java.lang.String",
+                            },
+                            "arg_bindings": [
+                                {"arg_name": "owner", "arg_value": "owner_with_pets"},
+                                {"arg_name": "pet", "arg_value": "pet_details"},
+                                {
+                                    "arg_name": "result",
+                                    "arg_value": "new BindingResult()",
+                                },
+                                {
+                                    "arg_name": "redirectAttributes",
+                                    "arg_value": "new RedirectAttributes()",
+                                },
+                            ],
+                            "comments": "processUpdateForm is the focal method.",
+                            "external": False,
+                        }
+                    ],
+                    "then": [
+                        {
+                            "id": 7,
+                            "task": "Verify response has 3xx redirection status code",
+                            "uses": "http_response",
+                            "produces": "",
+                            "candidate_methods": [],
+                            "best_candidate": {
+                                "implementing_class_name": "",
+                                "containing_class_name": "",
+                                "method_signature": "",
+                                "return_type": "",
+                            },
+                            "arg_bindings": [],
+                            "comments": "Assertion helper; not a method under test.",
+                            "external": False,
+                        },
+                        {
+                            "id": 8,
+                            "task": "Verify view name is a redirection to the owner's details page",
+                            "uses": "http_response",
+                            "produces": "",
+                            "candidate_methods": [],
+                            "best_candidate": {
+                                "implementing_class_name": "",
+                                "containing_class_name": "",
+                                "method_signature": "",
+                                "return_type": "",
+                            },
+                            "arg_bindings": [],
+                            "comments": "Assertion helper; not a method under test.",
+                            "external": False,
+                        },
+                    ],
+                }
+            ],
+            "teardown": [],
+        }
+
+    def test_localization_grader_old(self):
         nl2_input = NL2TestInput(
             qualified_class_name="org.springframework.samples.petclinic.owner.OwnerControllerTests",
             method_signature="testProcessCreationFormSuccess()",
@@ -300,7 +448,7 @@ class TestLocalizationGrader(BaseNL2Test):
             ]
         )
 
-        grader = LocalizationGrader(
+        grader = LocalizationGraderOld(
             nl2_input, self.analysis, self.config.get("project", "base_project_dir")
         )
 
@@ -351,7 +499,7 @@ class TestLocalizationGrader(BaseNL2Test):
         self.assertIsInstance(detailed_results["fp"], int)
         self.assertIsInstance(detailed_results["fn"], int)
 
-    def test_localization_grader_scenario(self):
+    def test_localization_grader_scenario_old(self):
         nl2_input = NL2TestInput(
             qualified_class_name="org.springframework.samples.petclinic.owner.PetControllerTests",
             method_signature="testProcessUpdateFormSuccess()",
@@ -361,148 +509,11 @@ class TestLocalizationGrader(BaseNL2Test):
             project_name="spring-petclinic",
         )
 
-        localized_scenario_data = {
-            "testing_framework": "junit",
-            "setup": [
-                {
-                    "id": 0,
-                    "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
-                    "uses": "",
-                    "produces": "mock_mvc_context",
-                    "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
-                    "arg_bindings": [],
-                    "comments": "@WebMvcTest is an annotation, not a method.",
-                },
-                {
-                    "id": 1,
-                    "task": "Disable test in native image and AOT modes",
-                    "uses": "mock_mvc_context",
-                    "produces": "",
-                    "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
-                    "arg_bindings": [],
-                    "comments": "Disabled annotations are not methods.",
-                },
-                {
-                    "id": 2,
-                    "task": "Mock OwnerRepository.findPetTypes to return a PetType list",
-                    "uses": "mocked_owner_repository",
-                    "produces": "pet_types",
-                    "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "java.util.List<org.springframework.samples.petclinic.owner.PetType>",
-                    },
-                    "arg_bindings": [],
-                    "comments": "Mockito stubbing for findPetTypes.",
-                },
-                {
-                    "id": 3,
-                    "task": "Mock OwnerRepository.findById to return an Owner",
-                    "uses": "mocked_owner_repository, TEST_OWNER_ID",
-                    "produces": "owner_with_pets",
-                    "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "method_signature": "findById(java.lang.Integer)",
-                        "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
-                    },
-                    "arg_bindings": [{"arg_name": "id", "arg_value": "TEST_OWNER_ID"}],
-                    "comments": "Mockito stubbing for findById.",
-                },
-            ],
-            "steps": [
-                {
-                    "given": [],
-                    "when": [
-                        {
-                            "id": 6,
-                            "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
-                            "uses": "mock_mvc, TEST_OWNER_ID, TEST_PET_ID, pet_name, pet_type, pet_birth_date",
-                            "produces": "http_response",
-                            "candidate_methods": [
-                                {
-                                    "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                    "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                    "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
-                                    "return_type": "java.lang.String",
-                                }
-                            ],
-                            "best_candidate": {
-                                "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
-                                "return_type": "java.lang.String",
-                            },
-                            "arg_bindings": [
-                                {"arg_name": "owner", "arg_value": "owner_with_pets"},
-                                {"arg_name": "pet", "arg_value": "pet_details"},
-                                {
-                                    "arg_name": "result",
-                                    "arg_value": "new BindingResult()",
-                                },
-                                {
-                                    "arg_name": "redirectAttributes",
-                                    "arg_value": "new RedirectAttributes()",
-                                },
-                            ],
-                            "comments": "processUpdateForm is the focal method.",
-                        }
-                    ],
-                    "then": [
-                        {
-                            "id": 7,
-                            "task": "Verify response has 3xx redirection status code",
-                            "uses": "http_response",
-                            "produces": "",
-                            "candidate_methods": [],
-                            "best_candidate": {
-                                "implementing_class_name": "",
-                                "containing_class_name": "",
-                                "method_signature": "",
-                                "return_type": "",
-                            },
-                            "arg_bindings": [],
-                            "comments": "Assertion helper; not a method under test.",
-                        },
-                        {
-                            "id": 8,
-                            "task": "Verify view name is a redirection to the owner's details page",
-                            "uses": "http_response",
-                            "produces": "",
-                            "candidate_methods": [],
-                            "best_candidate": {
-                                "implementing_class_name": "",
-                                "containing_class_name": "",
-                                "method_signature": "",
-                                "return_type": "",
-                            },
-                            "arg_bindings": [],
-                            "comments": "Assertion helper; not a method under test.",
-                        },
-                    ],
-                }
-            ],
-            "teardown": [],
-        }
+        localized_scenario_data = self._petcontroller_localized_scenario_payload()
 
         localized_scenario = LocalizedScenario(**localized_scenario_data)
 
-        grader = LocalizationGrader(
+        grader = LocalizationGraderOld(
             nl2_input, self.analysis, self.config.get("project", "base_project_dir")
         )
 
@@ -518,6 +529,45 @@ class TestLocalizationGrader(BaseNL2Test):
 
         self.assertGreaterEqual(detailed_results["tp"], 1)
         self.assertEqual(detailed_results["fp"], 1)
+
+    def test_localization_grader_localized_scenario(self):
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.owner.PetControllerTests",
+            method_signature="testProcessUpdateFormSuccess()",
+            description="Validate successful processing of a pet update form via PetController.",
+            project_name="spring-petclinic",
+        )
+
+        localized_scenario_data = self._petcontroller_localized_scenario_payload()
+
+        localized_scenario = LocalizedScenario(**localized_scenario_data)
+
+        project_root = Path(self.config.get("project", "base_project_dir"))
+        common_analysis = CommonAnalysis(self.analysis)
+        _, application_classes = (
+            common_analysis.get_test_methods_classes_and_application_classes()
+        )
+
+        grader = LocalizationGrader(
+            analysis=self.analysis,
+            project_root=project_root,
+            decomposition_mode=DecompositionMode.GHERKIN,
+            application_classes=application_classes,
+        )
+
+        results = grader.grade(localized_scenario, nl2_input)
+
+        pretty_print("Localization Results", results)
+
+        self.assertEqual(results.qualified_class_name, nl2_input.qualified_class_name)
+        self.assertEqual(results.method_signature, nl2_input.method_signature)
+        self.assertGreaterEqual(results.tp, 1)
+        self.assertGreaterEqual(results.localization_recall, 0.0)
+        self.assertLessEqual(results.localization_recall, 1.0)
+        self.assertEqual(
+            len(results.covered_focal_methods) + len(results.uncovered_focal_methods),
+            len(results.all_focal_methods),
+        )
 
 
 class TestLocalizationTools(BaseNL2Test):

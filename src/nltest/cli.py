@@ -15,13 +15,14 @@ from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
-from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput
+from nltest.nl2test.models import NL2TestInput, NL2LocalizationOutput, NL2TestEval
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.test2nl.model.models import Test2NLEntry, TestDescriptionInfo
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.dataset_creation.model import NL2TestDataset, Test as DatasetTest
 from nltest.utils.models import Method
 from nltest.ray.localization_actor import LocalizationActor
+from nltest.ray.nl2test_actor import NL2TestActor
 from nltest.ray.test2nl_actor import Test2NLActor
 
 app = typer.Typer(
@@ -46,6 +47,60 @@ IGNORED_DIRS = {
 @app.callback()
 def main() -> None:
     return
+
+
+def _load_nl2_inputs_by_project_from_csv(
+    test2nl_file: str, max_entries: int
+) -> dict[str, list[NL2TestInput]]:
+    """Load Test2NL CSV and convert to NL2TestInput grouped by project."""
+    if test2nl_file is None:
+        raise Exception("Parameter --test2nl-file is required and was not provided.")
+
+    csv_path = Path(test2nl_file)
+    if not csv_path.exists():
+        raise Exception(f"CSV file {csv_path} does not exist.")
+
+    RichLog.info(f"Loading Test2NL entries from {csv_path}")
+    data_manager = StructuredDataManager(csv_path.parent)
+    test2nl_entries = data_manager.load(csv_path.name, Test2NLEntry, format="csv")
+
+    # Sort entries by qualified_class_name and method_signature to group related entries together
+    test2nl_entries.sort(
+        key=lambda entry: (entry.qualified_class_name, entry.method_signature)
+    )
+    RichLog.info(
+        f"Loaded and sorted {len(test2nl_entries)} Test2NL entries by class-method pairs"
+    )
+
+    # Limit entries if specified (applied to individual entries, not class-method pairs)
+    if max_entries > 0:
+        test2nl_entries = test2nl_entries[:max_entries]
+        RichLog.info(
+            f"Processing first {len(test2nl_entries)} entries (max_entries={max_entries})"
+        )
+
+    # Convert Test2NL entries to NL2TestInput objects and organize by project
+    nl2test_inputs_by_project: dict[str, list[NL2TestInput]] = {}
+    for entry in test2nl_entries:
+        nl2test_input = NL2TestInput(
+            description=entry.description,
+            project_name=entry.project_name,
+            qualified_class_name=entry.qualified_class_name,
+            method_signature=entry.method_signature,
+            abstraction_level=entry.abstraction_level.value,
+            is_bdd=entry.is_bdd,
+            id=entry.id,
+        )
+
+        if entry.project_name not in nl2test_inputs_by_project:
+            nl2test_inputs_by_project[entry.project_name] = []
+        nl2test_inputs_by_project[entry.project_name].append(nl2test_input)
+
+    RichLog.info(
+        f"Organized inputs by {len(nl2test_inputs_by_project)} projects: {list(nl2test_inputs_by_project.keys())}"
+    )
+
+    return nl2test_inputs_by_project
 
 
 @app.command()
@@ -120,11 +175,37 @@ def generate_descriptions(
             show_default=True,
         ),
     ] = [],
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
 ):
     if clear_dataset is False:
         raise NotImplementedError(
             "Behavior for retrieving the max ID for continuing dataset appends is not implemented."
         )
+
+    if llm_provider is None and llm_api_url is None:
+        raise Exception(
+            "Either --llm-provider or --llm-api-url must be provided. Provider only guides the API URL default."
+        )
+    if llm_provider is not None:
+        try:
+            llm_provider = Provider(llm_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --llm-provider: {llm_provider}. Must be one of {[p.value for p in Provider]}"
+            )
 
     output_dir = Path(output_dir)
     analysis_root = Path(analysis_dir)
@@ -295,6 +376,8 @@ def generate_descriptions(
                 analysis_root_dir=str(analysis_root),
                 output_dir=str(output_dir),
                 llm_model=llm_model,
+                llm_provider=llm_provider,
+                llm_api_url=llm_api_url,
                 base_project_dir=str(methods_root / project_name),
             )
 
@@ -615,12 +698,12 @@ def evaluate_localization(
         ),
     ] = "nomic-embed-text:v1.5",
     decomposition_mode: Annotated[
-        DecompositionMode,
+        str,
         typer.Option(
             help="Decomposition mode: grammatical or gherkin",
             show_default=True,
         ),
-    ] = DecompositionMode.GRAMMATICAL,
+    ] = "gherkin",
     save_results: Annotated[
         bool,
         typer.Option(
@@ -663,7 +746,67 @@ def evaluate_localization(
             show_default=True,
         ),
     ] = 0,
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
+    emb_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter. Either this or --emb-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    emb_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="Base URL for the Embedding API if using an HTTP endpoint.",
+            show_default=False,
+        ),
+    ] = None,
 ):
+    try:
+        decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
+    except Exception:
+        raise Exception(
+            f"Invalid --decomposition-mode: {decomposition_mode}. Must be one of {[d.value for d in DecompositionMode]}"
+        )
+
+    if llm_provider is None and llm_api_url is None:
+        raise Exception(
+            "Either --llm-provider or --llm-api-url must be provided. Provider only guides the API URL default."
+        )
+    if emb_provider is None and emb_api_url is None:
+        raise Exception(
+            "Either --emb-provider or --emb-api-url must be provided for embeddings. Provider only guides the API URL default."
+        )
+
+    if llm_provider is not None:
+        try:
+            llm_provider = Provider(llm_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --llm-provider: {llm_provider}. Must be one of {[p.value for p in Provider]}"
+            )
+
+    if emb_provider is not None:
+        try:
+            emb_provider = Provider(emb_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --emb-provider: {emb_provider}. Must be one of {[p.value for p in Provider]}"
+            )
+
     base_project_dir = Path(base_project_dir)
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
@@ -673,52 +816,9 @@ def evaluate_localization(
     if not output_dir.exists():
         raise Exception(f"Output directory {output_dir} does not exist.")
 
-    # Load Test2NL entries from the provided file path (no dependency on output_dir)
-    if test2nl_file is None:
-        raise Exception("Parameter --test2nl-file is required and was not provided.")
-
-    csv_path = Path(test2nl_file)
-    if not csv_path.exists():
-        raise Exception(f"CSV file {csv_path} does not exist.")
-
-    RichLog.info(f"Loading Test2NL entries from {csv_path}")
-    data_manager = StructuredDataManager(csv_path.parent)
-    test2nl_entries = data_manager.load(csv_path.name, Test2NLEntry, format="csv")
-
-    # Sort entries by qualified_class_name and method_signature to group related entries together
-    test2nl_entries.sort(
-        key=lambda entry: (entry.qualified_class_name, entry.method_signature)
-    )
-    RichLog.info(
-        f"Loaded and sorted {len(test2nl_entries)} Test2NL entries by class-method pairs"
-    )
-
-    # Limit entries if specified (applied to individual entries, not class-method pairs)
-    if max_entries > 0:
-        test2nl_entries = test2nl_entries[:max_entries]
-        RichLog.info(
-            f"Processing first {len(test2nl_entries)} entries (max_entries={max_entries})"
-        )
-
-    # Convert Test2NL entries to NL2TestInput objects and organize by project
-    nl2test_inputs_by_project = {}
-    for entry in test2nl_entries:
-        nl2test_input = NL2TestInput(
-            description=entry.description,
-            project_name=entry.project_name,
-            qualified_class_name=entry.qualified_class_name,
-            method_signature=entry.method_signature,
-            abstraction_level=entry.abstraction_level.value,
-            is_bdd=entry.is_bdd,
-            id=entry.id,
-        )
-
-        if entry.project_name not in nl2test_inputs_by_project:
-            nl2test_inputs_by_project[entry.project_name] = []
-        nl2test_inputs_by_project[entry.project_name].append(nl2test_input)
-
-    RichLog.info(
-        f"Organized inputs by {len(nl2test_inputs_by_project)} projects: {list(nl2test_inputs_by_project.keys())}"
+    # Load and prepare NL2Test inputs grouped by project
+    nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(
+        test2nl_file, max_entries
     )
 
     # Initialize Ray
@@ -778,6 +878,10 @@ def evaluate_localization(
                 output_dir=str(output_dir),
                 llm_model=llm_model,
                 emb_model=emb_model,
+                llm_provider=llm_provider,
+                llm_api_url=llm_api_url,
+                emb_provider=emb_provider,
+                emb_api_url=emb_api_url,
                 decomposition_mode=decomposition_mode.value,
                 localization_max_iters=localization_max_iters,
             )
@@ -913,6 +1017,353 @@ def evaluate_localization(
         RichLog.info(f"No successful evaluations to save")
 
     # Shutdown Ray
+    try:
+        if ray.is_initialized():
+            ray.shutdown()
+    except Exception:
+        pass
+
+
+@app.command()
+def run_nl2test(
+    base_project_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the base directory containing all project directories.",
+            show_default=False,
+        ),
+    ] = "./resources",
+    base_analysis_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the base directory containing per-project analysis.json directories.",
+            show_default=False,
+        ),
+    ] = None,
+    output_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the output directory for saving NL2Test generation results.",
+            show_default=False,
+        ),
+    ] = None,
+    clear_output: Annotated[
+        bool,
+        typer.Option(
+            help="Whether to remove existing NL2Test evaluation results before running.",
+            show_default=True,
+        ),
+    ] = True,
+    test2nl_file: Annotated[
+        str,
+        typer.Option(
+            help="Path to the Test2NL CSV file to use as inputs (e.g., /path/to/test2nl.csv).",
+            show_default=False,
+        ),
+    ] = None,
+    llm_model: Annotated[
+        str,
+        typer.Option(
+            help="LLM model to use for NL2Test generation.",
+            show_default=False,
+        ),
+    ] = "mistralai/devstral-small",
+    emb_model: Annotated[
+        str,
+        typer.Option(
+            help="Embedding model to use for vector search.",
+            show_default=False,
+        ),
+    ] = "nomic-embed-text:v1.5",
+    decomposition_mode: Annotated[
+        str,
+        typer.Option(
+            help="Decomposition mode (must be 'gherkin' for now).",
+            show_default=True,
+        ),
+    ] = "gherkin",
+    supervisor_max_iters: Annotated[
+        int,
+        typer.Option(
+            help="Maximum iterations for the supervisor agent.",
+            show_default=True,
+        ),
+    ] = 10,
+    localization_max_iters: Annotated[
+        int,
+        typer.Option(
+            help="Maximum iterations for the localization agent.",
+            show_default=True,
+        ),
+    ] = 40,
+    composition_max_iters: Annotated[
+        int,
+        typer.Option(
+            help="Maximum iterations for the composition agent.",
+            show_default=True,
+        ),
+    ] = 30,
+    num_proj_parallel: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of projects to process concurrently.",
+            show_default=True,
+        ),
+    ] = 2,
+    max_inflight: Annotated[
+        int,
+        typer.Option(
+            help="Global cap on in-flight project tasks (0 uses num_proj_parallel).",
+            show_default=True,
+        ),
+    ] = 0,
+    max_entries: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of Test2NL entries to process (0 for all).",
+            show_default=False,
+        ),
+    ] = 0,
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
+    emb_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter. Either this or --emb-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    emb_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="Base URL for the Embedding API if using an HTTP endpoint.",
+            show_default=False,
+        ),
+    ] = None,
+):
+    try:
+        decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
+    except Exception:
+        raise Exception(
+            f"Invalid --decomposition-mode: {decomposition_mode}. Must be one of {[d.value for d in DecompositionMode]}"
+        )
+    if decomposition_mode != DecompositionMode.GHERKIN:
+        raise Exception(
+            "Only 'gherkin' decomposition is supported for run_nl2test at the moment."
+        )
+
+    if llm_provider is None and llm_api_url is None:
+        raise Exception(
+            "Either --llm-provider or --llm-api-url must be provided. Provider only guides the API URL default."
+        )
+    if emb_provider is None and emb_api_url is None:
+        raise Exception(
+            "Either --emb-provider or --emb-api-url must be provided for embeddings. Provider only guides the API URL default."
+        )
+    if llm_provider is not None:
+        try:
+            llm_provider = Provider(llm_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --llm-provider: {llm_provider}. Must be one of {[p.value for p in Provider]}"
+            )
+    if emb_provider is not None:
+        try:
+            emb_provider = Provider(emb_provider.strip().lower())
+        except Exception:
+            raise Exception(
+                f"Invalid --emb-provider: {emb_provider}. Must be one of {[p.value for p in Provider]}"
+            )
+
+    base_project_dir = Path(base_project_dir)
+    if not (base_project_dir.exists() and base_project_dir.is_dir()):
+        raise Exception(f"Base project directory {base_project_dir} does not exist.")
+
+    base_analysis_dir = Path(base_analysis_dir) if base_analysis_dir else None
+    if base_analysis_dir is None or not (
+        base_analysis_dir.exists() and base_analysis_dir.is_dir()
+    ):
+        raise Exception(f"Base analysis directory {base_analysis_dir} does not exist.")
+
+    output_dir = Path(output_dir)
+    if not output_dir.exists():
+        raise Exception(f"Output directory {output_dir} does not exist.")
+
+    # Load and prepare NL2Test inputs grouped by project
+    nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(
+        test2nl_file, max_entries
+    )
+
+    # Build pending projects, ensuring both project dir and analysis.json exist
+    pending_projects = deque()
+    for project_name in nl2test_inputs_by_project.keys():
+        project_root = base_project_dir / project_name
+        analysis_project_dir = base_analysis_dir / project_name
+        analysis_json_path = analysis_project_dir / "analysis.json"
+        if not (project_root.exists() and project_root.is_dir()):
+            RichLog.error(f"Project directory {project_root} does not exist.")
+            raise Exception(f"Project directory {project_root} does not exist.")
+        if not analysis_json_path.exists():
+            RichLog.error(
+                f"Missing analysis.json for {project_name} at {analysis_json_path}."
+            )
+            raise Exception(
+                f"Missing analysis.json for {project_name} at {analysis_json_path}."
+            )
+        pending_projects.append(project_name)
+
+    if not pending_projects:
+        RichLog.error("No valid projects to process. Exiting.")
+        return
+
+    # Initialize Ray
+    try:
+        if not ray.is_initialized():
+            ray.init()
+    except Exception as exc:
+        raise RuntimeError(f"Failed to initialize Ray: {exc}") from exc
+
+    # Project-level scheduling, only between-project parallelism
+    results_filename = "nl2test_evaluation_results.json"
+    project_data_managers: dict[str, StructuredDataManager] = {}
+    cleared_projects: set[str] = set()
+
+    def get_project_data_manager(project_name: str) -> StructuredDataManager:
+        manager = project_data_managers.get(project_name)
+        if manager is None:
+            manager = StructuredDataManager(output_dir / project_name)
+            project_data_managers[project_name] = manager
+        return manager
+
+    total_success = 0
+    total_failed = 0
+
+    inflight_futures: set[ray.ObjectRef] = set()
+    future_to_project: dict[ray.ObjectRef, str] = {}
+    project_payload_counts: dict[str, int] = {}
+
+    effective_max_inflight = (
+        max_inflight
+        if max_inflight and max_inflight > 0
+        else max(1, int(num_proj_parallel))
+    )
+
+    def launch_projects_up_to_limit() -> None:
+        while pending_projects and len(inflight_futures) < effective_max_inflight:
+            project_name = pending_projects.popleft()
+            sep = "=" * 60
+            RichLog.info(f"\n{sep}")
+            RichLog.info(f"Starting NL2Test actor for project: {project_name}")
+            RichLog.info(sep)
+
+            project_manager = get_project_data_manager(project_name)
+            if clear_output and project_name not in cleared_projects:
+                cleared = project_manager.delete(results_filename)
+                if cleared:
+                    RichLog.info(
+                        f"[{project_name}] Removed existing evaluation results at "
+                        f"{project_manager.base_dir / results_filename}"
+                    )
+                cleared_projects.add(project_name)
+
+            actor = NL2TestActor.options(max_concurrency=1).remote(
+                project_name=project_name,
+                base_project_dir=str(base_project_dir),
+                base_analysis_dir=str(base_analysis_dir),
+                output_dir=str(output_dir),
+                llm_model=llm_model,
+                emb_model=emb_model,
+                llm_provider=llm_provider,
+                llm_api_url=llm_api_url,
+                emb_provider=emb_provider,
+                emb_api_url=emb_api_url,
+                decomposition_mode=decomposition_mode.value,
+                supervisor_max_iters=supervisor_max_iters,
+                localization_max_iters=localization_max_iters,
+                composition_max_iters=composition_max_iters,
+            )
+
+            payloads = [
+                x.model_dump(mode="json")
+                for x in nl2test_inputs_by_project.get(project_name, [])
+            ]
+            project_payload_counts[project_name] = len(payloads)
+
+            fut = actor.run_nl2test_batch.remote(payloads)
+            inflight_futures.add(fut)
+            future_to_project[fut] = project_name
+
+    # Start initial batch
+    launch_projects_up_to_limit()
+
+    # Main scheduling loop
+    while inflight_futures or pending_projects:
+        if not inflight_futures:
+            launch_projects_up_to_limit()
+            if not inflight_futures and not pending_projects:
+                break
+
+        ready_refs, _ = ray.wait(list(inflight_futures), num_returns=1)
+        for ref in ready_refs:
+            project_name = future_to_project.pop(ref, None)
+            inflight_futures.discard(ref)
+            if project_name is None:
+                continue
+            try:
+                results = ray.get(ref)
+            except Exception as exc:
+                RichLog.error(f"[{project_name}] NL2Test batch failed: {exc}")
+                total_failed += project_payload_counts.get(project_name, 0)
+                launch_projects_up_to_limit()
+                continue
+
+            # Persist and aggregate results
+            project_success = 0
+            project_failed = 0
+            batch_to_save: list[NL2TestEval] = []
+            for item in results or []:
+                if item.get("success"):
+                    res = item.get("result")
+                    if res is not None:
+                        # Ensure NL2TestEval objects persist correctly even if serialized across Ray execution
+                        if isinstance(res, dict):
+                            res = NL2TestEval(**res)
+                        batch_to_save.append(res)
+                    project_success += 1
+                else:
+                    project_failed += 1
+
+            if batch_to_save:
+                project_manager = get_project_data_manager(project_name)
+                project_manager.save(
+                    results_filename, batch_to_save, format="json", mode="append"
+                )
+
+            total_success += project_success
+            total_failed += project_failed
+            RichLog.info(
+                f"[{project_name}] Completed NL2Test: success={project_success}, failed={project_failed} (inputs={project_payload_counts.get(project_name, 0)})"
+            )
+
+            # Launch more if capacity allows
+            launch_projects_up_to_limit()
+
+    RichLog.info(
+        f"Overall NL2Test: projects={len(nl2test_inputs_by_project)}, success={total_success}, failed={total_failed}"
+    )
+
     try:
         if ray.is_initialized():
             ray.shutdown()

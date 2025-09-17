@@ -11,6 +11,10 @@ OUTPUT_DIR = "../tests/output/resources/test2nl"
 
 # CLI arguments
 LLM_MODEL = "deepseek/deepseek-chat-v3.1"
+# Either LLM_PROVIDER or LLM_API_URL must be non-None
+LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama"
+LLM_API_URL: str | None = None  # must be OpenAI API compatible
+
 CLEAR_DATASET = True
 MAX_METHODS = 0  # Note: 0 = unlimited
 
@@ -74,6 +78,12 @@ def main() -> None:
         "--max-inflight",
         str(MAX_INFLIGHT),
     ]
+
+    # Optional connectivity flags (only if provided)
+    if LLM_PROVIDER:
+        cmd.extend(["--llm-provider", LLM_PROVIDER])
+    if LLM_API_URL:
+        cmd.extend(["--llm-api-url", LLM_API_URL])
 
     if CLEAR_DATASET:
         cmd.append("--clear-dataset")

@@ -8,6 +8,11 @@ from .nl2test import (
     AbstractionLevel,
     NL2TestInput,
     NL2LocalizationOutput,
+    NL2EvaluationResults,
+    NL2TestEval,
+    NL2TestCoverageEval,
+    NL2TestMetadata,
+    NL2TestStructuralEval,
 )
 from .agents import (
     AgentState,
@@ -25,6 +30,8 @@ from .agents import (
     ModifyScenarioArgs,
     ModifyScenarioCommentArgs,
     ModifyAtomicBlockNoteArgs,
+    CallAgentGherkinArgs,
+    CallAgentGrammaticalArgs,
 )
 
 from .decomposition import (
@@ -42,7 +49,8 @@ from .decomposition import (
     ArgBinding,
     CandidateMethod,
     AtomicBlock,
-    LocalizationEvaluationResults,
+    LocalizationEval,
+    LocalizationEvaluationResultsOld,
 )
 
 __all__ = [
@@ -53,8 +61,7 @@ __all__ = [
     "ClassSnippet",
     "AgentState",
     "AbstractionLevel",
-    "NL2TestInput",
-    "NL2LocalizationOutput",
+    "NL2EvaluationResults",
     "QueryMethodArgs",
     "QueryClassArgs",
     "QueryVectorDataArgs",
@@ -64,7 +71,10 @@ __all__ = [
     "FinalizeAtomicBlockArgs",
     "FinalizeScenarioArgs",
     "ModifyAtomicBlockNotesArgs",
-    "LocalizationEvaluationResults",
+    "CallAgentGherkinArgs",
+    "CallAgentGrammaticalArgs",
+    "LocalizationEval",
+    "LocalizationEvaluationResultsOld",
     # decomposition
     "DecompositionMode",
     "PrepPhrase",
@@ -80,4 +90,11 @@ __all__ = [
     "ArgBinding",
     "CandidateMethod",
     "AtomicBlock",
+    # nl2test
+    "NL2TestInput",
+    "NL2LocalizationOutput",
+    "NL2TestEval",
+    "NL2TestStructuralEval",
+    "NL2TestMetadata",
+    "NL2TestCoverageEval",
 ]

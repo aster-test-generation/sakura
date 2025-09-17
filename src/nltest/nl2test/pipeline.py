@@ -1,15 +1,21 @@
-from typing import Tuple, List, Union
+from typing import Dict, Tuple, List, Union
 from pathlib import Path
 
 from cldk.analysis.java import JavaAnalysis
+from cldk import CLDK
+from cldk.analysis import AnalysisLevel
 
 from nltest.nl2test.generation.localization.orchestrators import (
     GrammaticalLocalizationOrchestrator,
     GherkinLocalizationOrchestrator,
 )
-from nltest.nl2test.generation.composition.orchestrator import CompositionOrchestrator
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
-from nltest.nl2test.generation.supervisor.tools import SupervisorTools
+from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
+    GherkinSupervisorOrchestrator,
+)
+from nltest.nl2test.generation.supervisor.orchestrators.grammatical import (
+    GrammaticalSupervisorOrchestrator,
+)
 from nltest.nl2test.models import (
     AgentState,
     NL2TestInput,
@@ -18,11 +24,16 @@ from nltest.nl2test.models import (
     GrammaticalBlockList,
     AtomicBlockList,
     NL2LocalizationOutput,
-    LocalizationEvaluationResults,
     Scenario,
     LocalizedScenario,
+    LocalizationEval,
+    NL2TestMetadata,
+    NL2TestStructuralEval,
+    NL2TestCoverageEval,
 )
+from nltest.nl2test.models.agents import AgentToolLog, ToolLog
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.nl2test.models.nl2test import NL2TestEval
 from nltest.nl2test.preprocessing.indexers import ClassIndexer
 from nltest.nl2test.preprocessing.indexers import MethodIndexer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
@@ -32,6 +43,10 @@ from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm.llm_client import LLMClient, ClientType
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.pretty.prints import pretty_print
+from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.evaluation import TestGrader
+from nltest.utils.execution import JavaCompilation
+from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 
 
 class Pipeline:
@@ -40,11 +55,15 @@ class Pipeline:
         analysis: JavaAnalysis,
         project_root: Path,
         *,
-        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL
+        decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
+        analysis_dir: Path | None = None,
     ):
         self.analysis = analysis
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
+        self.analysis_dir = (
+            Path(analysis_dir) if analysis_dir is not None else self.project_root
+        )
 
         self.nl_decomposer = NLDecomposer(mode=self.decomposition_mode)
         self.method_indexer = MethodIndexer(analysis)
@@ -57,10 +76,24 @@ class Pipeline:
         self.method_searcher: MethodSearcher = None
         self.class_searcher: ClassSearcher = None
 
-        # Initialized during respective methods
-        # TODO: Remove all orchestrators from self
-        self.composition_orchestrator: CompositionOrchestrator = None
-        self.supervisor_agent: SupervisorReActAgent = None
+        # Initialize TestGrader with current analysis and application classes
+        _cmn = CommonAnalysis(self.analysis)
+        _test_map, _application_classes = (
+            _cmn.get_test_methods_classes_and_application_classes()
+        )
+        self.application_classes = _application_classes
+        self.test_grader = TestGrader(
+            analysis=self.analysis,
+            project_root=self.project_root,
+            project_erroneous_classes=[],
+            application_classes=_application_classes,
+        )
+        self.localization_grader = LocalizationGrader(
+            analysis=self.analysis,
+            project_root=self.project_root,
+            decomposition_mode=self.decomposition_mode,
+            application_classes=_application_classes,
+        )
 
     def run_preprocessing(self) -> Tuple[MethodSearcher, ClassSearcher]:
         # Build search indices
@@ -117,7 +150,26 @@ class Pipeline:
                     ]
                 )
 
-        return localization_orchestrator.assign_task(blocks, instructions=instructions)
+        # New behavior: assign_task returns an AgentState; extract outputs.
+        updated_state: AgentState = localization_orchestrator.assign_task(
+            blocks, instructions=instructions
+        )
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            assert (
+                updated_state.localized_scenario is not None
+            ), "Localization agent did not return LocalizedScenario"
+            return (
+                updated_state.localized_scenario,
+                updated_state.final_comments or "No comments.",
+            )
+        else:
+            assert (
+                updated_state.atomic_blocks is not None
+            ), "Localization agent did not return AtomicBlockList"
+            return (
+                updated_state.atomic_blocks,
+                updated_state.final_comments or "No comments.",
+            )
 
     def run_localization_evaluation_pipeline(
         self, nl2_input: NL2TestInput
@@ -136,17 +188,12 @@ class Pipeline:
 
         # Run evaluation using LocalizationGrader with detailed output
         grader = LocalizationGrader(
-            nl2_input,
-            self.analysis,
-            self.project_root,
+            analysis=self.analysis,
+            project_root=self.project_root,
             decomposition_mode=self.decomposition_mode,
+            application_classes=self.application_classes,
         )
-        coverage_score, detailed_results = grader.grade(result, detailed_output=True)
-
-        # Convert detailed_results dict to LocalizationEvaluationResults model
-        evaluation_results = None
-        if detailed_results:
-            evaluation_results = LocalizationEvaluationResults(**detailed_results)
+        evaluation_results = grader.grade(result, nl2_input)
 
         # Create and return NL2LocalizationOutput
         return NL2LocalizationOutput(
@@ -154,3 +201,202 @@ class Pipeline:
             localized_blocks=result,
             evaluation_results=evaluation_results,
         )
+
+    def _empty_localization_eval(self, nl2_input: NL2TestInput) -> LocalizationEval:
+        return LocalizationEval(
+            qualified_class_name=nl2_input.qualified_class_name,
+            method_signature=nl2_input.method_signature,
+            all_focal_methods=[],
+            covered_focal_methods=[],
+            uncovered_focal_methods=[],
+            tp=0,
+            fn=0,
+            localization_recall=0.0,
+        )
+
+    def _agent_tool_log_from_state(self, state: AgentState | None) -> AgentToolLog:
+        tool_counts: Dict[str, int] = {}
+        if state and state.tool_calls:
+            for tool_name, arg_counts in state.tool_calls.items():
+                total = 0
+                if isinstance(arg_counts, dict):
+                    for count in arg_counts.values():
+                        if isinstance(count, int):
+                            total += count
+                tool_counts[tool_name] = tool_counts.get(tool_name, 0) + total
+        return AgentToolLog(tool_counts=tool_counts)
+
+    def _localization_eval_from_state(
+        self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
+    ) -> LocalizationEval:
+        localization_eval = self._empty_localization_eval(nl2_input)
+        if not supervisor_state:
+            return localization_eval
+
+        localization_target = (
+            supervisor_state.localized_scenario
+            if self.decomposition_mode == DecompositionMode.GHERKIN
+            else supervisor_state.atomic_blocks
+        )
+        if localization_target is None:
+            return localization_eval
+
+        try:
+            return self.localization_grader.grade(localization_target, nl2_input)
+        except (NotImplementedError, TypeError):
+            return localization_eval
+        except Exception:
+            return localization_eval
+
+    def _build_tool_log(
+        self,
+        supervisor_state: AgentState | None,
+        localization_state: AgentState | None,
+        composition_state: AgentState | None,
+    ) -> ToolLog:
+        return ToolLog(
+            supervisor_agent_calls=self._agent_tool_log_from_state(supervisor_state),
+            localization_agent_calls=self._agent_tool_log_from_state(
+                localization_state
+            ),
+            composition_agent_calls=self._agent_tool_log_from_state(composition_state),
+        )
+
+    def _empty_nl2test_eval(self, nl2_input: NL2TestInput) -> NL2TestEval:
+        """Create an empty NL2TestOutput object with zeroed metrics."""
+        return NL2TestEval(
+            compiles=False,
+            nl2test_input=nl2_input,
+            nl2test_metadata=NL2TestMetadata(qualified_test_class_name="", code=""),
+            structured_eval=NL2TestStructuralEval(
+                obj_creation_recall=0.0,
+                assertion_recall=0.0,
+                callable_recall=0.0,
+                focal_recall=0.0,
+            ),
+            coverage_eval=NL2TestCoverageEval(
+                class_coverage=0.0,
+                method_coverage=0.0,
+                line_coverage=0.0,
+                branch_coverage=0.0,
+            ),
+            localization_eval=self._empty_localization_eval(nl2_input),
+            tool_log=self._build_tool_log(None, None, None),
+        )
+
+    def regenerate_analysis(self, *, eager: bool = True) -> JavaAnalysis:
+        """Regenerate the Java analysis to include newly created test classes."""
+        self.analysis = CLDK(language="java").analysis(
+            project_path=self.project_root,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=self.analysis_dir,
+            eager=eager,
+        )
+        return self.analysis
+
+    def run_nl2test(self, nl2_input: NL2TestInput) -> NL2TestEval:
+        # Decompose into initial blocks
+        blocks = self.decompose_natural_language(nl2_input.description)
+
+        # Prepare blocks for supervisor orchestrator
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            if isinstance(blocks, Scenario):
+                sup_blocks = LocalizedScenario.from_scenario(blocks)
+            elif isinstance(blocks, LocalizedScenario):
+                sup_blocks = blocks
+            else:
+                raise TypeError("Unexpected blocks type for GHERKIN mode.")
+            supervisor = GherkinSupervisorOrchestrator(
+                analysis=self.analysis,
+                method_searcher=self.method_searcher,
+                class_searcher=self.class_searcher,
+                nl2_input=nl2_input,
+                base_project_dir=str(self.project_root),
+            )
+        else:
+            if isinstance(blocks, GrammaticalBlockList):
+                sup_blocks = AtomicBlockList(
+                    atomic_blocks=[
+                        AtomicBlock.from_grammatical_block(gb)
+                        for gb in blocks.grammatical_blocks
+                    ]
+                )
+            elif isinstance(blocks, AtomicBlockList):
+                sup_blocks = blocks
+            else:
+                raise TypeError("Unexpected blocks type for GRAMMATICAL mode.")
+            supervisor = GrammaticalSupervisorOrchestrator(
+                analysis=self.analysis,
+                method_searcher=self.method_searcher,
+                class_searcher=self.class_searcher,
+                nl2_input=nl2_input,
+                base_project_dir=str(self.project_root),
+            )
+
+        supervisor_state, localization_state, composition_state = (
+            supervisor.assign_task(sup_blocks)
+        )
+
+        tool_log = self._build_tool_log(
+            supervisor_state, localization_state, composition_state
+        )
+
+        has_class_name = bool(
+            supervisor_state and (supervisor_state.class_name or "").strip()
+        )
+        # Handle case where we can't do test case eval
+        if not has_class_name:
+            localization_eval = self._localization_eval_from_state(
+                supervisor_state, nl2_input
+            )
+            empty_eval = self._empty_nl2test_eval(nl2_input)
+            empty_eval.localization_eval = localization_eval
+            empty_eval.tool_log = tool_log
+            return empty_eval
+
+        simple_class_name = supervisor_state.class_name.strip()
+        package = (supervisor_state.package or "").strip()
+        qualified_test_class_name = (
+            f"{package}.{simple_class_name}" if package else simple_class_name
+        )
+
+        # Regenerate analysis to pick up new test class and update grader
+        new_analysis = self.regenerate_analysis(eager=True)
+        self.test_grader.set_analysis(new_analysis)
+        self.localization_grader.set_analysis(new_analysis)
+
+        # Gather erroneous classes and pass to grader
+        erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
+        self.test_grader.set_project_erroneous_classes(erroneous_classes)
+
+        # Build NL2TestMetadata for the predicted class; code filled after grading
+        nl2_metadata = NL2TestMetadata(
+            qualified_test_class_name=qualified_test_class_name, code=""
+        )
+
+        eval_result: NL2TestEval = self.test_grader.grade(nl2_input, nl2_metadata)
+
+        localization_eval = self._localization_eval_from_state(
+            supervisor_state, nl2_input
+        )
+
+        # Load and attach test code, then delete the file
+        fm = TestFileManager(self.project_root)
+        info = TestFileInfo(qualified_class_name=qualified_test_class_name)
+        try:
+            code = fm.load(info, encode_class_name=False)
+            # Attach code to metadata
+            eval_result.nl2test_metadata.code = code
+        except FileNotFoundError:
+            pass
+        finally:
+            try:
+                fm.delete_single(info, encode_class_name=False)
+            except Exception:
+                pass
+
+        eval_result.localization_eval = localization_eval
+        eval_result.tool_log = tool_log
+
+        return eval_result

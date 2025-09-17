@@ -1,5 +1,9 @@
-# Task
-Convert the input below into one Scenario object using the system rules and checklist. The response_format binding defines the structure. Set testing_framework to "junit". Think through the decomposition privately and return only the Scenario object.
+# TASK
+Convert the input below into one Scenario object using the system rules and checklist. It should consist of steps in logical order, with relevant and concise task descriptions that maintain any domain terms from the description. 
+Do not localize to concrete methods or code, or infer any application characteristics not present in the input.
 
-# Execute
-Input: {{ input }}
+# INPUT
+{{ input }}
+
+# OUTPUT
+Return only the Scenario object. Think through the decomposition privately, before coming to an informed answer that is faithful to the input description.

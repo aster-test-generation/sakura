@@ -17,23 +17,32 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
-        base_project_dir: str | None = None,
+        project_root: str,
     ) -> None:
         super().__init__(
             analysis=analysis,
             method_searcher=method_searcher,
             class_searcher=class_searcher,
             nl2_input=nl2_input,
-            base_project_dir=base_project_dir,
+            project_root=project_root,
             decomposition_mode=DecompositionMode.GHERKIN,
         )
 
-    def assign_task(self, blocks, *, instructions: str):
+    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:
         if self.decomposition_mode != DecompositionMode.GHERKIN:
             raise TypeError("GherkinCompositionOrchestrator is not in GHERKIN mode.")
 
         localized_scenario: LocalizedScenario = blocks
-        initial_state = AgentState(localized_scenario=localized_scenario)
+        if agent_state is not None:
+            # Reuse existing state and set current input blocks
+            initial_state = (
+                agent_state.model_copy(deep=True)
+                if hasattr(agent_state, "model_copy")
+                else agent_state
+            )
+            initial_state.localized_scenario = localized_scenario
+        else:
+            initial_state = AgentState(localized_scenario=localized_scenario)
 
         chat_prompt = self.chat_prompt.format(
             nl_description=self.nl2_input.description,
@@ -42,9 +51,4 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
         )
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
-        return (
-            updated_state.localized_scenario,
-            updated_state.final_comments or "No comments.",
-            updated_state.package,
-            updated_state.class_name,
-        )
+        return updated_state

@@ -43,7 +43,7 @@ OR you have exhausted the allowed iterations.
 - Always verify methods via tool calls before adding them to a block.
 - Do not call `finalize` immediately; gather sufficient evidence first, then finalize with the updated blocks and explanations.
 - When referring to classes or methods, use fully qualified names and exact method signatures as provided by static analysis outputs - no modifiers or shortened types.
-{%- if parallelizable %}
+{%- if parallel_flag %}
 - When independent and appropriate, prefer parallel calls to speed up discovery.
 {%- else %}
 - Only call tools sequentially; do not emit multiple tool calls at once.

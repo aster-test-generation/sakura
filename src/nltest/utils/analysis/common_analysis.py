@@ -232,6 +232,18 @@ class CommonAnalysis:
 
         return teardown_methods
 
+    def get_test_methods_in_class(self, qualified_class_name: str) -> List[Tuple[str, str]]:
+        """
+        Returns a list of (qualified_class_name, method_signature) for all test methods in the class.
+        A method is considered a test method if is_test_method(...) evaluates to True.
+        """
+        testing_frameworks = self.get_testing_frameworks_for_class(qualified_class_name)
+        results: List[Tuple[str, str]] = []
+        for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
+            if self.is_test_method(method_sig, qualified_class_name, testing_frameworks):
+                results.append((qualified_class_name, method_sig))
+        return results
+
     def get_ascii_methods(self, qualified_class_name: str) -> List[JCallable]:
         """Returns all methods in class that is ASCII"""
         valid_methods: List[JCallable] = []

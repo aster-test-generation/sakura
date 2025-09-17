@@ -11,7 +11,11 @@ class PromptFormat(Enum):
 
 class LoadPrompt:
     @staticmethod
-    def load_prompt(file_name: str, prompt_format: PromptFormat, prompt_type: Literal["chat", "system"]) -> PromptTemplate:
+    def load_prompt(
+        file_name: str,
+        prompt_format: PromptFormat,
+        prompt_type: Literal["chat", "system"],
+    ) -> PromptTemplate:
         prompt_file = Path(__file__).parent / "templates" / prompt_type / file_name
 
         try:

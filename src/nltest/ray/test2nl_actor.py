@@ -28,6 +28,8 @@ class Test2NLActor:
         analysis_root_dir: str,
         output_dir: str,
         llm_model: str,
+        llm_provider: Provider,
+        llm_api_url: str | None = None,
         base_project_dir: str | None = None,
     ) -> None:
         self.project_name = project_name
@@ -46,11 +48,12 @@ class Test2NLActor:
             project_name=self.project_name,
             base_project_dir=str(self.base_project_dir),
             output_dir=str(self.output_dir),
-            llm_provider=Provider.OPENROUTER,
+            llm_provider=llm_provider,
             llm_model=self.llm_model,
             emb_provider=None,
             emb_model=None,
-            llm_api_key=os.getenv("OPENROUTER_API_KEY"),
+            llm_api_url=llm_api_url,
+            llm_api_key=os.getenv("LLM_API_KEY"),
             emb_api_key=None,
             localization_max_iters=20,
         )

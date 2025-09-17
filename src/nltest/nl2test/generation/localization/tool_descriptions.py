@@ -96,21 +96,6 @@ Returns:
   On failure, a structured error dict is returned.
 """
 
-MODIFY_BLOCKS_DESC = """
-Edit the current AtomicBlocks to better reflect the intended test steps or method assignments. Do thorough static analysis to inform edits.
-Do not call this tool in parallel.
-Args:
-  instructions: Detailed, clear edits (merge/split/reorder/add/remove) and any method assignments; reference blocks by order_id. Indicate if certain blocks are just descriptive, and not relevant for method mapping. Indicate modifications in a number list if there are multiple. Refer to `notes` for adding any comments for a specific block, and `candidate_methods` for suggesting methods to assign to blocks. Use fully qualified class and method signature (without modifiers) names, like the outputs from the static analysis.
-  current_blocks: Current list of AtomicBlock objects. Take this from the output of the last `modify_atomic_blocks` call, or the initial state from the first chat prompt if this is the first call.
-Use when:
-  You want to align block structure to the discovered methods and narrative from the sentence(s). Use static analysis results to inform edits.
-Limitations:
-  LLM-driven; results may be non-deterministic. Be explicit about which blocks change and why. Use structured language like {"implementing_class_name": "...", "containing_class_name": "...", "method_signature": "..."} to reference methods.
-Returns:
-  Updated list of AtomicBlock objects.
-  On failure, a structured error dict is returned.
-"""
-
 FINALIZE_ATOMIC_BLOCKS_DESC = """
 Finish and return the final grammatical AtomicBlocks with localized methods and clear comments for downstream execution after all modifications.
 Focus on concise, actionable comments capturing rationale, caveats, or localization notes relevant to implementation.

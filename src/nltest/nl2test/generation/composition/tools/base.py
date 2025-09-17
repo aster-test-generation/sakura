@@ -12,6 +12,7 @@ from nltest.nl2test.models import (
     NL2TestInput,
     QueryClassArgs,
     QueryMethodArgs,
+    QueryVectorDataArgs,
     TestCodeArgs,
     AtomicBlockList,
     FinalizeCommentsArgs,
@@ -30,6 +31,7 @@ from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
+    QUERY_CLASS_DESC,
     EXTRACT_CODE_DESC,
     METHOD_DETAILS_DESC,
     CALL_SITE_DETAILS_DESC,
@@ -37,11 +39,13 @@ from nltest.nl2test.generation.composition.tool_descriptions import (
     GET_CLASS_IMPORTS_DESC,
     GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
     GET_GETTERS_AND_SETTERS_DESC,
+    GET_MAVEN_DEPENDENCIES_DESC,
     VIEW_TEST_CODE_DESC,
     GENERATE_TEST_CODE_DESC,
     COMPILE_AND_EXECUTE_TESTS_DESC,
     FINALIZE_DESC,
 )
+from nltest.utils.file_io.pom_processor import PomProcessor
 
 
 class BaseCompositionTools:
@@ -54,36 +58,69 @@ class BaseCompositionTools:
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         structured_llm: LLMClient,
-        base_project_dir: Union[str, Path],
+        project_root: str,
         nl2_input: NL2TestInput,
     ) -> None:
         self.analysis = analysis
+        self.structured_llm = structured_llm
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
-        self.structured_llm = structured_llm
 
-        self.project_root: Path = Path(base_project_dir) / nl2_input.project_name
+        # Accept project root directly
+        self.project_root: Path = Path(project_root)
         self.nl2_input: NL2TestInput = nl2_input
 
         # Keep the same initial tool set as before; subclasses may append.
         self.tools: List[BaseTool] = [
+            self._make_query_class_tool(),
             self._make_extract_code_tool(),
             self._make_get_method_details_tool(),
+            self._make_get_class_fields_tool(),
+            self._make_get_class_imports_tool(),
+            self._make_get_class_constructors_and_factories_tool(),
+            self._make_get_getters_and_setters_tool(),
+            self._make_get_maven_dependencies_tool(),
             self._make_view_test_code_tool(),
             self._make_generate_test_tool(),
             self._make_compile_and_execute_tests_tool(),
             self._make_finalize_tool(),
+            self._make_call_site_details_tool(),
             # self._make_compile_test_tool(),  # DEPRECATED
             # self._make_execution_test_tool(),  # DEPRECATED
         ]
 
         # Tools that are allowed to be invoked repeatedly with identical args
         # without being treated as duplicates. Empty by default.
-        self.allow_duplicate_tools: List[BaseTool] = []
+        self.allow_duplicate_tools: List[BaseTool] = [
+            self._make_view_test_code_tool(),
+            self._make_compile_and_execute_tests_tool(),
+        ]
 
     def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
         # Return tool list and the subset allowed to duplicate
         return self.tools, self.allow_duplicate_tools
+
+    # Get relevant classes from the database by similarity search, within a range
+    def _make_query_class_tool(self) -> StructuredTool:
+        def _query_class_db(query: str, i: int, j: int) -> List[Dict[str, str]]:
+            from nltest.utils.exceptions import InvalidArgumentError
+
+            if i <= 0:
+                raise InvalidArgumentError("i must be positive", extra_info={"i": i})
+            if j < i:
+                raise InvalidArgumentError(
+                    "j must be greater than i", extra_info={"i": i, "j": j}
+                )
+
+            return self.class_searcher.find_similar_in_range(query, i, j)
+
+        return StructuredTool.from_function(
+            func=_query_class_db,
+            name="query_class_db",
+            description=QUERY_CLASS_DESC,
+            args_schema=QueryVectorDataArgs,
+            handle_tool_error=ToolExceptionHandler.handle_error,
+        )
 
     # Understand conditional branches and code structure
     def _make_extract_code_tool(self) -> StructuredTool:
@@ -316,6 +353,20 @@ class BaseCompositionTools:
             name="get_getters_and_setters",
             description=GET_GETTERS_AND_SETTERS_DESC,
             args_schema=QueryClassArgs,
+            handle_tool_error=ToolExceptionHandler.handle_error,
+        )
+
+    def _make_get_maven_dependencies_tool(self) -> StructuredTool:
+        def _get_maven_dependencies() -> List[Dict[str, str]]:
+            deps = PomProcessor.identify_dependencies(self.project_root)
+            return [
+                {"group_id": d.group_id, "artifact_id": d.artifact_id} for d in deps
+            ]
+
+        return StructuredTool.from_function(
+            func=_get_maven_dependencies,
+            name="get_maven_dependencies",
+            description=GET_MAVEN_DEPENDENCIES_DESC,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 

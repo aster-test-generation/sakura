@@ -32,7 +32,7 @@ class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
             decomposition_mode=DecompositionMode.GRAMMATICAL,
         )
 
-    def assign_task(self, blocks, *, instructions: str):
+    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:
         if self.decomposition_mode != DecompositionMode.GRAMMATICAL:
             raise TypeError(
                 "GrammaticalLocalizationOrchestrator is not in GRAMMATICAL mode."
@@ -40,7 +40,15 @@ class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
 
         # Expect an AtomicBlockList as input blocks
         atomic_blocks: AtomicBlockList = blocks
-        initial_state = AgentState(atomic_blocks=atomic_blocks)
+        if agent_state is not None:
+            initial_state = (
+                agent_state.model_copy(deep=True)
+                if hasattr(agent_state, "model_copy")
+                else agent_state
+            )
+            initial_state.atomic_blocks = atomic_blocks
+        else:
+            initial_state = AgentState(atomic_blocks=atomic_blocks)
         prompt_blocks = atomic_blocks.atomic_blocks
 
         chat_prompt = self.chat_prompt.format(
@@ -50,6 +58,4 @@ class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
         )
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
-        if not updated_state.atomic_blocks:
-            raise ValueError("Agent did not return AtomicBlockList in GRAMMATICAL mode")
-        return updated_state.atomic_blocks, (updated_state.final_comments or "No comments.")
+        return updated_state

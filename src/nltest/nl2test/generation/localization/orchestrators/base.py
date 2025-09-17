@@ -30,21 +30,18 @@ class BaseLocalizationOrchestrator:
         decomposition_mode: DecompositionMode,
     ) -> None:
         decision_llm = LLMClient(ClientType.DECISION)
-        structured_llm = LLMClient(ClientType.STRUCTURED)
 
         if decomposition_mode == DecompositionMode.GHERKIN:
             tool_builder = GherkinLocalizationTools(
                 analysis=analysis,
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
-                structured_llm=structured_llm,
             )
         else:
             tool_builder = GrammaticalLocalizationTools(
                 analysis=analysis,
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
-                structured_llm=structured_llm,
             )
 
         tools, allow_duplicate_tools = tool_builder.all()
@@ -87,6 +84,9 @@ class BaseLocalizationOrchestrator:
             system_file, PromptFormat.JINJA2, prompt_type="system"
         )
         return chat_prompt, system_prompt
+
+    def reset_agent(self) -> None:
+        self.agent.reset_agent()
 
     # Shared signature implemented by subclasses. Intentionally untyped for blocks/output.
     def assign_task(self, blocks, *, instructions: str):  # pragma: no cover - interface

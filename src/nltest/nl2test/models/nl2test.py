@@ -4,13 +4,16 @@ from enum import Enum
 from typing import Annotated, List, Optional, Union
 
 from pydantic import BaseModel, Field, ConfigDict
+from typing import Dict
 
 from .decomposition import (
     AtomicBlock,
     AtomicBlockList,
-    LocalizationEvaluationResults,
+    LocalizationEval,
+    LocalizationEvaluationResultsOld,
     LocalizedScenario,
 )
+from .agents import ToolLog
 
 
 class AbstractionLevel(Enum):
@@ -38,4 +41,57 @@ class NL2LocalizationOutput(BaseModel):
 
     nl2_input: NL2TestInput
     localized_blocks: Union[AtomicBlockList, LocalizedScenario]
-    evaluation_results: Optional[LocalizationEvaluationResults] = None
+    evaluation_results: Optional[
+        Union[LocalizationEvaluationResultsOld, LocalizationEval]
+    ] = None
+
+
+class NL2EvaluationResults(BaseModel):
+    """Evaluation results for a single NL2Test generation run."""
+
+    nl2_input: NL2TestInput
+
+    # Prediction identifiers
+    pred_class_name: str = ""
+    pred_method_signature: str = ""
+
+    # Ground truth identifiers
+    gt_class_name: str = ""
+    gt_method_signature: str = ""
+
+    # Structural grading
+    structural_score: float = 0.0
+    structural_metrics: Dict[str, float] = Field(default_factory=dict)
+
+    # Snapshot of generated code
+    test_code: str = ""
+
+
+class NL2TestMetadata(BaseModel):
+    qualified_test_class_name: str
+    code: str
+
+
+class NL2TestStructuralEval(BaseModel):
+    obj_creation_recall: float
+    assertion_recall: float
+    callable_recall: float
+    focal_recall: float
+
+
+class NL2TestCoverageEval(BaseModel):
+    class_coverage: float
+    method_coverage: float
+    line_coverage: float
+    branch_coverage: float
+
+
+# TODO: Add ToolLog and localization results
+class NL2TestEval(BaseModel):
+    compiles: bool
+    nl2test_input: NL2TestInput
+    nl2test_metadata: NL2TestMetadata
+    structured_eval: Optional[NL2TestStructuralEval]
+    coverage_eval: Optional[NL2TestCoverageEval]
+    localization_eval: Optional[LocalizationEval] = None
+    tool_log: Optional[ToolLog] = None

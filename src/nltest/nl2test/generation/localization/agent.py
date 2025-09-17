@@ -25,7 +25,7 @@ class LocalizationReActAgent(ReActAgent):
         tools: List[BaseTool],
         allow_duplicate_tools: List[BaseTool] | None = None,
         system_message: str,
-        max_iters: int = 8,
+        max_iters: int = 30,
         decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
     ):
         super().__init__(
@@ -33,6 +33,7 @@ class LocalizationReActAgent(ReActAgent):
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
+            allow_parallelize=True,
             max_iters=max_iters,
         )
         self.decomposition_mode = decomposition_mode
@@ -58,24 +59,6 @@ class LocalizationReActAgent(ReActAgent):
     def _process_tool_output(
         self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        # In grammatical mode, modify_atomic_blocks updates the working AtomicBlockList
-        if tool_call["name"] == "modify_atomic_blocks":
-            if self.decomposition_mode == DecompositionMode.GRAMMATICAL and isinstance(
-                result, AtomicBlockList
-            ):
-                state.atomic_blocks = result
-                outputs.append(
-                    ToolMessage(
-                        content="AtomicBlocks successfully updated.",
-                        tool_call_id=tool_call["id"],
-                    )
-                )
-            else:
-                outputs.append(
-                    ToolMessage(content=str(result), tool_call_id=tool_call["id"])
-                )
-            return
-
         # Finalize and end based on decomposition mode; avoid per-type isinstance checks
         if tool_call["name"] == "finalize":
             blocks, comments = result

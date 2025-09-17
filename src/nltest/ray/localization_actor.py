@@ -29,6 +29,10 @@ class LocalizationActor:
         output_dir: str,
         llm_model: str,
         emb_model: str | None,
+        llm_provider: Provider,
+        llm_api_url: str | None,
+        emb_provider: Provider,
+        emb_api_url: str | None,
         decomposition_mode: str | DecompositionMode,
         localization_max_iters: int,
     ) -> None:
@@ -50,12 +54,14 @@ class LocalizationActor:
             project_name=self.project_name,
             base_project_dir=str(self.project_root),
             output_dir=str(self.project_output_dir),
-            llm_provider=Provider.OPENROUTER,
+            llm_provider=llm_provider,
             llm_model=self.llm_model,
-            emb_provider=Provider.OLLAMA if self.emb_model else None,
+            emb_provider=emb_provider,
             emb_model=self.emb_model,
-            llm_api_key=os.getenv("OPENROUTER_API_KEY"),
-            emb_api_key=None,
+            llm_api_url=llm_api_url,
+            emb_api_url=emb_api_url,
+            llm_api_key=os.getenv("LLM_API_KEY"),
+            emb_api_key=os.getenv("EMB_API_KEY"),
             localization_max_iters=(self.localization_max_iters or 20),
         )
         self.analysis = CLDK(language="java").analysis(
@@ -71,6 +77,7 @@ class LocalizationActor:
             self.analysis,
             self.project_root,
             decomposition_mode=self.decomposition_mode,
+            analysis_dir=self.project_output_dir,
         )
         self.pipeline.run_preprocessing()
 

@@ -28,7 +28,7 @@ class BaseCompositionOrchestrator:
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
-        base_project_dir: str | None = None,
+        project_root: str,
         decomposition_mode: DecompositionMode,
     ) -> None:
         decision_llm = LLMClient(ClientType.DECISION)
@@ -40,7 +40,7 @@ class BaseCompositionOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
-                base_project_dir=base_project_dir or ".",
+                project_root=project_root,
                 nl2_input=nl2_input,
             )
             if decomposition_mode == DecompositionMode.GHERKIN
@@ -49,7 +49,7 @@ class BaseCompositionOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
-                base_project_dir=base_project_dir or ".",
+                project_root=project_root,
                 nl2_input=nl2_input,
             )
         )
@@ -65,19 +65,30 @@ class BaseCompositionOrchestrator:
         # Determine if the model supports parallel tool calls and pass max_iters to the system prompt
         parallelizable: bool = decision_llm.can_parallel_tool_call()
         max_iters = Config().get("composition", "max_iters")
-        system_message = system_prompt.format(
-            parallelizable=parallelizable,
-            max_iters=max_iters,
+        duplicate_tools_str = (
+            ", ".join(f"`{t.name}`" for t in allow_duplicate_tools)
+            if allow_duplicate_tools
+            else ""
         )
+
+        if self.decomposition_mode != DecompositionMode.GHERKIN:
+            raise NotImplementedError("Only supported for Gherkin style...")
+
+        system_kwargs = {
+            "parallelizable": parallelizable,
+            "max_iters": max_iters,
+            "duplicate_tools": duplicate_tools_str,
+        }
+
+        system_message = system_prompt.format(**system_kwargs)
 
         self.agent = CompositionReActAgent(
             llm=decision_llm,
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            project_root=Path(base_project_dir or "."),
+            project_root=Path(project_root or "."),
             max_iters=max_iters,
-            decomposition_mode=decomposition_mode,
         )
 
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:
@@ -96,6 +107,9 @@ class BaseCompositionOrchestrator:
             system_file, PromptFormat.JINJA2, prompt_type="system"
         )
         return chat_prompt, system_prompt
+
+    def reset_agent(self) -> None:
+        self.agent.reset_agent()
 
     # Shared signature implemented by subclasses. Intentionally untyped for different decomposition modes
     def assign_task(self, blocks, *, instructions: str):

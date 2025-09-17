@@ -8,9 +8,94 @@ from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 
 from nltest.utils.pretty.prints import pretty_print
 from tests._base_nl2test import BaseNL2Test
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from langchain_core.tools import StructuredTool
 
 
 class TestCompositionAgent(BaseNL2Test):
+    def test_composition_system_prompt_formatting(self):
+        """Verify system prompt formatting for composition Gherkin with placeholders."""
+        prompt = LoadPrompt.load_prompt(
+            "composition_agent_gherkin.jinja2", PromptFormat.JINJA2, "system"
+        )
+
+        # parallelizable True path
+        iters_true = 4
+        rendered_true = prompt.format(parallelizable=True, max_iters=iters_true)
+        pretty_print("Parallelizable prompt", rendered_true)
+        self.assertIn(
+            f"You must complete within at most {iters_true} tool invocation(s).",
+            rendered_true,
+        )
+        self.assertIn("You may parallelize metadata lookups", rendered_true)
+        self.assertNotIn("Use sequential calls.", rendered_true)
+
+        # parallelizable False path
+        iters_false = 6
+        rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
+        pretty_print("Not parallelizable prompt", rendered_true)
+        self.assertIn(
+            f"You must complete within at most {iters_false} tool invocation(s).",
+            rendered_false,
+        )
+        self.assertIn("Use sequential calls.", rendered_false)
+        self.assertNotIn("You may parallelize metadata lookups", rendered_false)
+
+        # duplicate_tools path — mirror orchestrator formatting
+        # Create simple tools using LangChain's StructuredTool (a BaseTool subclass)
+        dup_tools = [
+            StructuredTool.from_function(
+                func=lambda: None, name="view_test_code", description=""
+            ),
+            StructuredTool.from_function(
+                func=lambda: None,
+                name="compile_and_execute_tests",
+                description="",
+            ),
+        ]
+        duplicate_tools_str = ", ".join(f"`{t.name}`" for t in dup_tools)
+
+        rendered_with_dups = prompt.format(
+            parallelizable=True,
+            max_iters=iters_true,
+            duplicate_tools=duplicate_tools_str,
+        )
+        pretty_print("With duplicate_tools", rendered_with_dups)
+
+        # When duplicate_tools is provided, the template uses the conditional branch
+        self.assertIn(
+            "You are only allowed to repeat the `view_test_code`, `compile_and_execute_tests` tools",
+            rendered_with_dups,
+        )
+        # The strict "never repeat" bullet (else-branch) should not appear verbatim
+        self.assertNotIn(
+            "- Never repeat the same {tool, args} pair", rendered_with_dups
+        )
+        # And the default (no-duplicates) branch should not claim duplicates are allowed
+        self.assertNotIn("You are only allowed to repeat", rendered_true)
+
+    def test_composition_chat_prompt_formatting(self):
+        """Verify chat prompt formatting for composition Gherkin with placeholders."""
+        prompt = LoadPrompt.load_prompt(
+            "composition_agent_gherkin.jinja2", PromptFormat.JINJA2, "chat"
+        )
+
+        nl_description = "Compose a unit test for PetController update"
+        instructions = "Use JUnit 5 and avoid Mockito unless necessary"
+        localized_scenario = "{\n  'given': [], 'when': [], 'then': []\n}"
+
+        rendered = prompt.format(
+            nl_description=nl_description,
+            instructions=instructions,
+            localized_scenario=localized_scenario,
+        )
+
+        # Assertions
+        self.assertIn(nl_description, rendered)
+        self.assertIn(instructions, rendered)
+        self.assertIn("CURRENT LOCALIZED SCENARIO", rendered)
+        self.assertIn("Compose a compilable and runnable Java test", rendered)
+
     def test_composition_agent_gherkin(self):
         method_searcher = MethodIndexer(self.analysis).build_index()
         class_searcher = ClassIndexer(self.analysis).build_index()
@@ -52,7 +137,7 @@ class TestCompositionAgent(BaseNL2Test):
             method_searcher=method_searcher,
             class_searcher=class_searcher,
             nl2_input=nl2_input,
-            base_project_dir=str(project_root),
+            project_root=str(project_root),
         )
 
         localized_scenario_data = {
@@ -72,6 +157,7 @@ class TestCompositionAgent(BaseNL2Test):
                     },
                     "arg_bindings": [],
                     "comments": "@WebMvcTest is an annotation, not a method. It's used at the class level to configure the Spring application context for testing a Spring MVC controller.",
+                    "external": False,
                 },
                 {
                     "id": 1,
@@ -87,6 +173,7 @@ class TestCompositionAgent(BaseNL2Test):
                     },
                     "arg_bindings": [],
                     "comments": "@DisabledInNativeImage and @DisabledInAotMode are annotations used at the class level to disable tests in specific Spring Boot modes. They are not methods.",
+                    "external": False,
                 },
                 {
                     "id": 2,
@@ -102,6 +189,7 @@ class TestCompositionAgent(BaseNL2Test):
                     },
                     "arg_bindings": [],
                     "comments": "@MockitoBean is an annotation used to add Mockito mocks to the Spring application context. It's not a method call but a declaration.",
+                    "external": False,
                 },
                 {
                     "id": 3,
@@ -117,6 +205,7 @@ class TestCompositionAgent(BaseNL2Test):
                     },
                     "arg_bindings": [],
                     "comments": "@Autowired is an annotation used for dependency injection. MockMvc is typically injected into the test class, not called as a method.",
+                    "external": False,
                 },
                 {
                     "id": 4,
@@ -139,6 +228,7 @@ class TestCompositionAgent(BaseNL2Test):
                     },
                     "arg_bindings": [],
                     "comments": "This step involves Mockito's `when().thenReturn()` syntax to stub the `findPetTypes` method.",
+                    "external": False,
                 },
                 {
                     "id": 5,
@@ -161,6 +251,7 @@ class TestCompositionAgent(BaseNL2Test):
                     },
                     "arg_bindings": [{"arg_name": "id", "arg_value": "TEST_OWNER_ID"}],
                     "comments": "This step involves Mockito's `when().thenReturn()` syntax to stub the `findById` method.",
+                    "external": False,
                 },
             ],
             "steps": [
@@ -199,6 +290,7 @@ class TestCompositionAgent(BaseNL2Test):
                                 },
                             ],
                             "comments": "This step will use MockMvc.perform(post(...)) to simulate the HTTP POST request. The processUpdateForm method in PetController is the target method for this request.",
+                            "external": False,
                         }
                     ],
                     "then": [
@@ -216,6 +308,7 @@ class TestCompositionAgent(BaseNL2Test):
                             },
                             "arg_bindings": [],
                             "comments": "This step will use MockMvcResultMatchers.status().is3xxRedirection(). This is a static method from Spring Test.",
+                            "external": False,
                         },
                         {
                             "id": 8,
@@ -231,6 +324,7 @@ class TestCompositionAgent(BaseNL2Test):
                             },
                             "arg_bindings": [],
                             "comments": "This step will use MockMvcResultMatchers.view().name(). This is a static method from Spring Test.",
+                            "external": False,
                         },
                     ],
                 }
@@ -241,8 +335,8 @@ class TestCompositionAgent(BaseNL2Test):
         localized_scenario = LocalizedScenario(**localized_scenario_data)
 
         instructions = "Compose the Java test for this scenario and finalize."
-        updated_scenario, final_comments, package, class_name = composition_agent.assign_task(
-            localized_scenario, instructions=instructions
+        updated_scenario, final_comments, package, class_name = (
+            composition_agent.assign_task(localized_scenario, instructions=instructions)
         )
 
         self.assertIsInstance(updated_scenario, LocalizedScenario)

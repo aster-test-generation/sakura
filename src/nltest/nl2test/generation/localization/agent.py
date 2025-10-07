@@ -14,7 +14,7 @@ from nltest.nl2test.models import (
     LocalizedScenario,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
-from nltest.utils.llm.llm_client import LLMClient
+from nltest.utils.llm import LLMClient
 
 
 class LocalizationReActAgent(ReActAgent):

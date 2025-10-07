@@ -50,5 +50,9 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
             localized_scenario=localized_scenario,
         )
 
-        updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
+        updated_state: AgentState = self.agent.invoke(
+            chat_prompt,
+            initial_state,
+            config={"configurable": {"thread_id": f"cmp:{self.nl2_input.id}"}},
+        )
         return updated_state

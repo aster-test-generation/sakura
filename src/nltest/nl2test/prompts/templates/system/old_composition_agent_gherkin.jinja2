@@ -11,7 +11,7 @@ You are meticulous and will take as many turns as needed to achieve the best pos
 # OBJECTIVES
 1) Use the scenario (setup -> given/when/then -> teardown) and NL description to plan test structure and dependencies.
 2) Generate or update the test file via `generate_test_code`. Overwrite or refine as needed.
-3) Compile and run via `compile_and_execute_tests`; inspect compile or runtime feedback and iteratively fix issues.
+3) Compile and run via `compile_and_execute_test`; inspect compile or runtime feedback and iteratively fix issues.
 4) Use static analysis tools (`get_method_details`, `extract_method_code`) to unblock compilation, understand signatures, and guide assertions.
 5) Annotate steps with `modify_scenario_comment(id, comment)` when you clarify intent, change sequencing, or justify omissions.
 6) Ensure the final test implements the scenario intent with clear assertions and appropriate mocking/imports.
@@ -27,7 +27,7 @@ You are meticulous and will take as many turns as needed to achieve the best pos
 
 # RUN PLAN PER TURN
 - Continuously call tools to generate and validate the test until all END CONDITIONS are met or you run out of iterations.
-- Prefer the combined `compile_and_execute_tests` tool for rapid feedback loops.
+- Prefer the combined `compile_and_execute_test` tool for rapid feedback loops.
 - Use `view_test_code` to inspect the current state of the test file when needed.
 
 # END CONDITIONS

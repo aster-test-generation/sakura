@@ -10,7 +10,7 @@ from langchain_core.tools import BaseTool
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.models import AgentState, DecompositionMode
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.llm.llm_client import LLMClient
+from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import FileDeletionError
 from nltest.utils.execution import JavaCompilation
@@ -155,7 +155,7 @@ class CompositionReActAgent(ReActAgent):
                 )
             return
 
-        if tool_call["name"] == "compile_and_execute_tests":
+        if tool_call["name"] == "compile_and_execute_test":
             # Compile, then execute test using state.package/state.class_name (non-encoded)
             if not state.class_name:
                 outputs.append(

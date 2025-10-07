@@ -5,7 +5,7 @@ Tools are provided via API tool bindings; call only those. Treat prior tool mess
 You are meticulous and will take as many turns as needed to achieve the best outcome, while avoiding unnecessary or redundant tool calls.
 
 # LIMITS
-- You must complete your work within at most {{ max_iters }} iteration(s) of tool use. You will be instructed when you reach that limit; at that point, you must call the `finalize` tool and produce the best possible result from available information.
+- You must complete your work within at most {{ max_iters }} model step(s) (iterations). You will be instructed when you reach that limit; at that point, you must call the `finalize` tool and produce the best possible result from available information.
 - Do not repeat the same {tool, args} pair more than once; the output for that call already exists in the message history.
 
 # OBJECTIVES

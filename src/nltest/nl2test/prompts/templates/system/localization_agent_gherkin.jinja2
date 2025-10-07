@@ -13,8 +13,8 @@ You are an agent that specializes in localization of test scenarios to concrete 
 - Never repeat the same {tool, args} pair, as those results should already be in the tool-call log and are deterministic.
 
 # ITERATION LIMIT
-- You must complete within at most {{ max_iters }} tool invocation(s). This is a hard cap.
-- If you hit the limit, immediately produce your best possible localized scenario using finalize.
+- You must complete within at most {{ max_iters }} model step(s) (iterations). This is a hard cap on your think-respond cycles.
+- If you hit the limit, immediately produce your best possible localized scenario using `finalize`.
 
 # OBJECTIVES
 1) Perform static analysis to understand the codebase. Start with method-level search, then classes, then reachability/metadata, then source/code extraction when needed.

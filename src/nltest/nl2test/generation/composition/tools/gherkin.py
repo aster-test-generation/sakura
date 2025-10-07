@@ -10,7 +10,7 @@ from nltest.utils.exceptions import ToolExceptionHandler
 from .base import BaseCompositionTools
 from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
-from nltest.utils.llm.llm_client import LLMClient
+from nltest.utils.llm import LLMClient
 from nltest.nl2test.models import NL2TestInput
 from nltest.nl2test.generation.composition.tool_descriptions import (
     MODIFY_SCENARIO_COMMENT_DESC,

@@ -97,34 +97,25 @@ Returns:
 """
 
 FINALIZE_ATOMIC_BLOCKS_DESC = """
-Finish and return the final grammatical AtomicBlocks with localized methods and clear comments for downstream execution after all modifications.
-Focus on concise, actionable comments capturing rationale, caveats, or localization notes relevant to implementation.
+End localization by returning the final AtomicBlockList and brief comments.
 Args:
-  comments: Short rationale or execution notes for the finalized plan.
-  current_blocks: The finalized list of AtomicBlock objects.
+  current_blocks: The finalized AtomicBlockList.
+  comments: Short notes on selection rationale and any non-localized tasks retained.
 Use when:
-  You are done editing the grammatical blocks and ready to hand off to the next stage (e.g., test generation/execution).
-  Only call this once you are satisfied with potential methods and comments for the grammatical blocks.
-Limitations:
-  Requires precise formatted block outputs that must be carefully checked and cross-referenced with the static analysis results.
+  The blocks are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
 Returns:
-  Tuple of (final AtomicBlock list, comments string).
-  On failure, a structured error dict is returned.
+  Tuple (AtomicBlockList, comments).
 """
 
 FINALIZE_LOCALIZED_SCENARIO_DESC = """
-Finish and return the final LocalizedScenario plus clear comments for downstream execution after all modifications.
-The `scenario` argument is the localized scenario consisting of setup, steps, and teardown that have already been localized.
+End localization by returning the final LocalizedScenario and brief comments.
 Args:
-  comments: Short rationale or execution notes for the finalized plan.
-  scenario: LocalizedScenario aggregating setup, steps, and teardown.
+  scenario: The finalized LocalizedScenario (setup + steps + teardown).
+  comments: Short notes on choices, alternates, and any non-localized tasks retained.
 Use when:
-  You are done editing the scenario structure and method localization and ready to hand off to the next stage (e.g., test generation/execution).
-Limitations:
-  Requires precise formatted scenario outputs that must be carefully checked and cross-referenced with the static analysis results.
+  Steps are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
 Returns:
-  Tuple of (final LocalizedScenario, comments string).
-  On failure, a structured error dict is returned.
+  Tuple (LocalizedScenario, comments).
 """
 
 INHERITED_LIBRARY_CLASSES_DESC = """

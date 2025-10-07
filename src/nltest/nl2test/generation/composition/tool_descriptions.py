@@ -188,7 +188,7 @@ Returns:
   Dict echoing { test_code, qualified_class_name } and the persisted save location.
 """
 
-COMPILE_AND_EXECUTE_TESTS_DESC = """
+COMPILE_AND_EXECUTE_TEST_DESC = """
 Compile the Maven project and execute the active test class.
 Args:
   None
@@ -232,11 +232,11 @@ Returns:
 """
 
 FINALIZE_DESC = """
-Finalize composition with a brief comment log.
+End composition with a concise status comment.
 Args:
-  comments: A concise rationale describing what compiled, what ran, any skipped steps, and localization feedback if steps should be revised. State the confidence in the test suite and whether further localization and composition should be done or would be productive.
+  comments: 1–4 sentences on selected package/class, key fixes, any excluded steps, and unresolved items.
 Use when:
-  End conditions are met or iteration limit reached. The test case compiles successfully and contains the desired logic for the test scenario.
+  The test compiles and reflects the localized scenario/description, or the iteration limit is reached. This call ends the run.
 Returns:
   String echoing the final comments.
 """

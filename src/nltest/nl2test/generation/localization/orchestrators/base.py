@@ -16,7 +16,7 @@ from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.config import Config
-from nltest.utils.llm.llm_client import ClientType, LLMClient
+from nltest.utils.llm import ClientType, LLMClient
 
 
 class BaseLocalizationOrchestrator:

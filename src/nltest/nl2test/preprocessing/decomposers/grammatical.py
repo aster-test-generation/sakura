@@ -5,7 +5,7 @@ from typing import List
 from nltest.nl2test.models.decomposition import GrammaticalBlock, GrammaticalBlockList
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.decomposers.base import BaseDecomposer
-from nltest.utils.llm.llm_client import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType
 
 
 class GrammaticalDecomposer(BaseDecomposer):

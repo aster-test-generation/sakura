@@ -40,7 +40,7 @@ from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.llm.llm_client import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.analysis import CommonAnalysis

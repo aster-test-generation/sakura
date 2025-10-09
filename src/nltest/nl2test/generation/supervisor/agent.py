@@ -16,7 +16,7 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
 )
 from nltest.nl2test.models import AgentState
 from nltest.nl2test.models import LocalizedScenario, AtomicBlockList
-from nltest.utils.llm.llm_client import LLMClient
+from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.execution import JavaCompilation
 from nltest.utils.execution.execution import JavaExecution
@@ -79,8 +79,24 @@ class SupervisorReActAgent(ReActAgent):
 
         # Delegate calls: Supervisor triggers underlying agents and returns normalized payload
         if name == "call_localization_agent":
-            blocks = result.get("blocks")
-            instructions = result.get("instructions")
+            # Be robust to non-dict tool results
+            if isinstance(result, dict):
+                incoming_blocks = result.get("blocks")
+                instructions = result.get("instructions")
+            else:
+                outputs.append(
+                    ToolMessage(
+                        content=json.dumps(
+                            {
+                                "status": "error",
+                                "reason": "unexpected_result_type",
+                                "received_type": type(result).__name__,
+                            }
+                        ),
+                        tool_call_id=tool_call["id"],
+                    )
+                )
+                return
 
             orchestrator = self.localization_agent
             if orchestrator is None:
@@ -99,8 +115,19 @@ class SupervisorReActAgent(ReActAgent):
 
             prev_state = self._clean_agent(self.localization_state, orchestrator)
             try:
+                # Choose canonical blocks from state; ignore model-provided blocks except for first bootstrap
+                canonical_blocks = None
+                if self.localization_state and self.localization_state.localized_scenario is not None:
+                    canonical_blocks = self.localization_state.localized_scenario
+                elif state.localized_scenario is not None:
+                    canonical_blocks = state.localized_scenario
+                elif getattr(state, "atomic_blocks", None) is not None:
+                    canonical_blocks = state.atomic_blocks
+                else:
+                    canonical_blocks = incoming_blocks
+
                 updated_state: AgentState = orchestrator.assign_task(
-                    blocks, instructions=instructions, agent_state=prev_state
+                    canonical_blocks, instructions=instructions, agent_state=prev_state
                 )
             except Exception as e:
                 outputs.append(
@@ -142,8 +169,24 @@ class SupervisorReActAgent(ReActAgent):
             return
 
         if name == "call_composition_agent":
-            blocks = result.get("blocks")
-            instructions = result.get("instructions")
+            # Be robust to non-dict tool results
+            if isinstance(result, dict):
+                incoming_blocks = result.get("blocks")
+                instructions = result.get("instructions")
+            else:
+                outputs.append(
+                    ToolMessage(
+                        content=json.dumps(
+                            {
+                                "status": "error",
+                                "reason": "unexpected_result_type",
+                                "received_type": type(result).__name__,
+                            }
+                        ),
+                        tool_call_id=tool_call["id"],
+                    )
+                )
+                return
 
             orchestrator = self.composition_agent
             if orchestrator is None:
@@ -162,8 +205,19 @@ class SupervisorReActAgent(ReActAgent):
 
             prev_state = self._clean_agent(self.composition_state, orchestrator)
             try:
+                # Choose canonical blocks from state; ignore model-provided blocks except for first bootstrap
+                canonical_blocks = None
+                if self.composition_state and self.composition_state.localized_scenario is not None:
+                    canonical_blocks = self.composition_state.localized_scenario
+                elif state.localized_scenario is not None:
+                    canonical_blocks = state.localized_scenario
+                elif getattr(state, "atomic_blocks", None) is not None:
+                    canonical_blocks = state.atomic_blocks
+                else:
+                    canonical_blocks = incoming_blocks
+
                 updated_state: AgentState = orchestrator.assign_task(
-                    blocks, instructions=instructions, agent_state=prev_state
+                    canonical_blocks, instructions=instructions, agent_state=prev_state
                 )
             except Exception as e:
                 outputs.append(
@@ -189,11 +243,13 @@ class SupervisorReActAgent(ReActAgent):
                 state.localized_scenario = updated_state.localized_scenario
             state.package = updated_state.package
             state.class_name = updated_state.class_name
+            state.method_signature = updated_state.method_signature
 
             payload: Dict[str, Any] = {
                 "comments": str(updated_state.final_comments or ""),
                 "package": updated_state.package,
                 "class_name": updated_state.class_name,
+                "method_signature": updated_state.method_signature,
             }
             if updated_state.atomic_blocks is not None:
                 payload["blocks"] = updated_state.atomic_blocks.model_dump()
@@ -242,7 +298,7 @@ class SupervisorReActAgent(ReActAgent):
                 )
             return
 
-        if name == "compile_and_execute_code":
+        if name == "compile_and_execute_test":
             if not state.class_name:
                 outputs.append(
                     ToolMessage(
@@ -253,11 +309,11 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             project_root = self.project_root or Path(".")
-            erroneous_classes, compilation_errors = (
-                JavaCompilation.get_erroneous_classes_and_errors(project_root)
+            erroneous_files, compilation_errors = (
+                JavaCompilation.get_erroneous_files_and_errors(project_root)
             )
             file_key = f"{state.class_name}.java"
-            has_error = any(ec == file_key for ec in erroneous_classes)
+            has_error = any(ef == file_key for ef in erroneous_files)
 
             comp_errors_dicts: List[Dict[str, Any]] = [
                 e.model_dump() for e in compilation_errors
@@ -272,7 +328,7 @@ class SupervisorReActAgent(ReActAgent):
                 if f:
                     error_counts_by_file[f] = error_counts_by_file.get(f, 0) + 1
 
-            any_compilation_errors = len(erroneous_classes) > 0
+            any_compilation_errors = len(erroneous_files) > 0
 
             result_payload: Dict[str, Any] = {
                 "compilation": {

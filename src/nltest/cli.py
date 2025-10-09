@@ -178,7 +178,7 @@ def generate_descriptions(
     llm_provider: Annotated[
         str | None,
         typer.Option(
-            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
             show_default=False,
         ),
     ] = None,
@@ -749,7 +749,7 @@ def evaluate_localization(
     llm_provider: Annotated[
         str | None,
         typer.Option(
-            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
             show_default=False,
         ),
     ] = None,
@@ -763,7 +763,7 @@ def evaluate_localization(
     emb_provider: Annotated[
         str | None,
         typer.Option(
-            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter. Either this or --emb-api-url must be provided.",
+            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter, gcp. Either this or --emb-api-url must be provided.",
             show_default=False,
         ),
     ] = None,
@@ -1127,7 +1127,7 @@ def run_nl2test(
     llm_provider: Annotated[
         str | None,
         typer.Option(
-            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai. Either this or --llm-api-url must be provided.",
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
             show_default=False,
         ),
     ] = None,
@@ -1141,7 +1141,7 @@ def run_nl2test(
     emb_provider: Annotated[
         str | None,
         typer.Option(
-            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter. Either this or --emb-api-url must be provided.",
+            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter, gcp. Either this or --emb-api-url must be provided.",
             show_default=False,
         ),
     ] = None,

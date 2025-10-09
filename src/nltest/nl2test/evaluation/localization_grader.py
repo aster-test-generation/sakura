@@ -72,6 +72,7 @@ class LocalizationGrader:
         fn = len(uncovered)
         denominator = tp + fn
         recall = tp / denominator if denominator else 1.0
+        recall = round(recall, 4)
 
         return LocalizationEval(
             qualified_class_name=nl2_input.qualified_class_name,
@@ -93,7 +94,7 @@ class LocalizationGrader:
             uncovered_focal_methods=[],
             tp=0,
             fn=0,
-            localization_recall=1.0,
+            localization_recall=round(1.0, 4),
         )
 
     def _get_focal_methods(self, nl2_input: NL2TestInput) -> Set[FocalMethod]:

@@ -39,17 +39,19 @@ class TestGrader:
         self,
         analysis: JavaAnalysis,
         project_root: Path,
-        project_erroneous_classes: Optional[List[str]] = None,
+        project_erroneous_files: Optional[List[str]] = None,
         application_classes: Optional[List[str]] = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = project_root
-        self.project_erroneous_classes: Set[str] = set(project_erroneous_classes or [])
+        # Track erroneous Java filenames for the project (e.g., MyTest.java)
+        self.project_erroneous_files: Set[str] = set(project_erroneous_files or [])
         self.application_classes: List[str] = list(application_classes or [])
         self.common = CommonAnalysis(analysis)
 
-    def set_project_erroneous_classes(self, classes: List[str]) -> None:
-        self.project_erroneous_classes = set(classes)
+    def set_project_erroneous_files(self, files: List[str]) -> None:
+        """Replace the set of erroneous Java filenames used for compiles flag."""
+        self.project_erroneous_files = set(files)
 
     def set_analysis(self, analysis: JavaAnalysis) -> None:
         self.analysis = analysis
@@ -135,6 +137,7 @@ class TestGrader:
             set(detail.assertion_type or []) for detail in pred_assert_details
         ]
 
+        # Count matched assertion groups by compatible assertion types
         matched_asserts = 0
         used_pred_indices: Set[int] = set()
         for gt_types in gt_assert_types:
@@ -142,12 +145,13 @@ class TestGrader:
                 if idx in used_pred_indices:
                     continue
                 if any(a in pred_types for a in gt_types):
-                    matched += 1
+                    matched_asserts += 1
                     used_pred_indices.add(idx)
                     break
 
         matched_calls = (gt_calls & pred_calls).total()
         total_gt = sum(gt_calls.values()) + len(gt_assert_types)
+        # If there is no GT, use a non-penalizing score
         return (matched_calls + matched_asserts) / total_gt if total_gt else 1.0
 
     def _get_constructor_types(self, class_name: str, method_sig: str) -> Set[str]:
@@ -202,7 +206,7 @@ class TestGrader:
         pred_class_name: str,
         gt_method_sig: str,
         gt_class_name: str,
-    ) -> NL2TestStructuralEval:
+    ) -> Optional[NL2TestStructuralEval]:
         if not self.analysis.get_class(pred_class_name) or not self.analysis.get_method(
             pred_class_name, pred_method_sig
         ):
@@ -259,10 +263,10 @@ class TestGrader:
         focal_recall = (len(focal_intersection) / len(gt_focal)) if gt_focal else 1.0
 
         return NL2TestStructuralEval(
-            obj_creation_recall=obj_creation_recall,
-            assertion_recall=assertion_recall,
-            callable_recall=callable_recall,
-            focal_recall=focal_recall,
+            obj_creation_recall=round(obj_creation_recall, 4),
+            assertion_recall=round(assertion_recall, 4),
+            callable_recall=round(callable_recall, 4),
+            focal_recall=round(focal_recall, 4),
         )
 
     def grade_coverage(
@@ -271,10 +275,10 @@ class TestGrader:
         pred_class_name: str,
         gt_method_sig: str,
         gt_class_name: str,
-    ) -> NL2TestCoverageEval:
+    ) -> Optional[NL2TestCoverageEval]:
         """
         Compute coverage overlap between prediction and ground truth.
-        Returns coverage as percentages of GT covered by prediction.
+        Returns per-metric fractions in [0.0, 1.0] (non-penalizing 1.0 when GT is empty).
         """
         if not self.analysis.get_class(pred_class_name) or not self.analysis.get_method(
             pred_class_name, pred_method_sig
@@ -365,30 +369,64 @@ class TestGrader:
         hit_lines = pred_lines & gt_lines
         hit_branch_lines = pred_branch_lines & gt_branch_lines
 
-        def pct(n: int, d: int) -> float:
-            return (n / d * 100.0) if d > 0 else 0.0
+        def frac(n: int, d: int) -> float:
+            # Non-penalizing when GT denominator is empty: return 1.0
+            return (n / d) if d > 0 else 1.0
 
         return NL2TestCoverageEval(
-            class_coverage=round(pct(len(hit_classes), len(gt_classes)), 2),
-            method_coverage=round(pct(len(hit_methods), len(gt_methods)), 2),
-            line_coverage=round(pct(len(hit_lines), len(gt_lines)), 2),
-            branch_coverage=round(pct(len(hit_branch_lines), len(gt_branch_lines)), 2),
+            class_coverage=round(frac(len(hit_classes), len(gt_classes)), 4),
+            method_coverage=round(frac(len(hit_methods), len(gt_methods)), 4),
+            line_coverage=round(frac(len(hit_lines), len(gt_lines)), 4),
+            branch_coverage=round(frac(len(hit_branch_lines), len(gt_branch_lines)), 4),
         )
 
     def grade(
         self, nl2_input: NL2TestInput, nl2_metadata: NL2TestMetadata
     ) -> NL2TestEval:
-        compiles = (
-            nl2_metadata.qualified_test_class_name not in self.project_erroneous_classes
+        pred_simple_file = (
+            nl2_metadata.qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
         )
+        compiles = pred_simple_file not in self.project_erroneous_files
 
         pred_class_name = nl2_metadata.qualified_test_class_name
-        pred_methods = list(self.analysis.get_methods_in_class(pred_class_name) or [])
-        if not pred_methods:
-            pred_method_sig = ""
-        else:
-            first = pred_methods[0]
-            pred_method_sig = getattr(first, "signature", first)
+        # Prefer method signature from metadata when available. If that method
+        # cannot be found in the analysis, fall back to the first discovered test
+        # method, and if none exist, use the first declared method.
+        pred_method_sig = (nl2_metadata.method_signature or "").strip()
+
+        def _method_exists(sig: str) -> bool:
+            if not sig:
+                return False
+            try:
+                return bool(self.analysis.get_method(pred_class_name, sig))
+            except Exception:
+                return False
+
+        if not _method_exists(pred_method_sig):
+            test_methods = self.common.get_test_methods_in_class(pred_class_name)
+            fallback_sig = ""
+            if test_methods:
+                for _, candidate_sig in test_methods:
+                    if _method_exists(candidate_sig):
+                        fallback_sig = candidate_sig
+                        break
+                else:
+                    fallback_sig = test_methods[0][1]
+            if not fallback_sig:
+                pred_methods = list(
+                    self.analysis.get_methods_in_class(pred_class_name) or []
+                )
+                for candidate in pred_methods:
+                    candidate_sig = getattr(candidate, "signature", None) or str(
+                        candidate
+                    )
+                    if _method_exists(candidate_sig):
+                        fallback_sig = candidate_sig
+                        break
+                if not fallback_sig and pred_methods:
+                    first = pred_methods[0]
+                    fallback_sig = getattr(first, "signature", first)
+            pred_method_sig = fallback_sig.strip()
 
         gt_class_name = nl2_input.qualified_class_name
         gt_method_sig = nl2_input.method_signature

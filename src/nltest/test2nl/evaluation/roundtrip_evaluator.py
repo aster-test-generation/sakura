@@ -31,13 +31,13 @@ class RoundTripEvaluator:
         return self.analysis
 
     def find_errors(self) -> List[str]:
-        return JavaCompilation.get_erroneous_classes(self.project_root)
+        return JavaCompilation.get_erroneous_files(self.project_root)
 
     def grade(self, roundtrip_tests: List[RoundTripTest]):
         analysis = self.analysis
-        erroneous_classes = self.find_errors()
-        pretty_print("Erroneous classes", erroneous_classes)
-        grader = TestGrader(analysis, self.project_root, erroneous_classes)
+        erroneous_files = self.find_errors()
+        pretty_print("Erroneous files", erroneous_files)
+        grader = TestGrader(analysis, self.project_root, erroneous_files)
 
         for rt_test in roundtrip_tests:
             encoded_class = TestFileManager.encode_class_name(rt_test.generated_description.id)

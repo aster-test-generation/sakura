@@ -40,7 +40,11 @@ class GherkinSupervisorOrchestrator(BaseSupervisorOrchestrator):
             nl_description=self.nl2_input.description,
         )
 
-        supervisor_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
+        supervisor_state: AgentState = self.agent.invoke(
+            chat_prompt,
+            initial_state,
+            config={"configurable": {"thread_id": f"sup:{self.nl2_input.id}"}},
+        )
         localization_state: AgentState = self.agent.localization_state
         composition_state: AgentState = self.agent.composition_state
         return supervisor_state, localization_state, composition_state

@@ -32,9 +32,6 @@ from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
     QUERY_CLASS_DESC,
-    EXTRACT_CODE_DESC,
-    METHOD_DETAILS_DESC,
-    CALL_SITE_DETAILS_DESC,
     GET_CLASS_FIELDS_DESC,
     GET_CLASS_IMPORTS_DESC,
     GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
@@ -42,13 +39,21 @@ from nltest.nl2test.generation.composition.tool_descriptions import (
     GET_MAVEN_DEPENDENCIES_DESC,
     VIEW_TEST_CODE_DESC,
     GENERATE_TEST_CODE_DESC,
-    COMPILE_AND_EXECUTE_TESTS_DESC,
+    COMPILE_AND_EXECUTE_TEST_DESC,
     FINALIZE_DESC,
+)
+from nltest.nl2test.generation.common.tool_descriptions import (
+    EXTRACT_CODE_DESC,
+    METHOD_DETAILS_DESC,
+    CALL_SITE_DETAILS_DESC,
+)
+from nltest.nl2test.generation.common.tools.common_java_analysis import (
+    CommonJavaAnalysisToolsMixin,
 )
 from nltest.utils.file_io.pom_processor import PomProcessor
 
 
-class BaseCompositionTools:
+class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
     """Shared composition tools; subclasses can extend with mode-specific tools."""
 
     def __init__(
@@ -61,7 +66,7 @@ class BaseCompositionTools:
         project_root: str,
         nl2_input: NL2TestInput,
     ) -> None:
-        self.analysis = analysis
+        super().__init__(analysis=analysis)
         self.structured_llm = structured_llm
         self.method_searcher = method_searcher
         self.class_searcher = class_searcher
@@ -82,7 +87,7 @@ class BaseCompositionTools:
             self._make_get_maven_dependencies_tool(),
             self._make_view_test_code_tool(),
             self._make_generate_test_tool(),
-            self._make_compile_and_execute_tests_tool(),
+            self._make_compile_and_execute_test_tool(),
             self._make_finalize_tool(),
             self._make_call_site_details_tool(),
             # self._make_compile_test_tool(),  # DEPRECATED
@@ -93,7 +98,7 @@ class BaseCompositionTools:
         # without being treated as duplicates. Empty by default.
         self.allow_duplicate_tools: List[BaseTool] = [
             self._make_view_test_code_tool(),
-            self._make_compile_and_execute_tests_tool(),
+            self._make_compile_and_execute_test_tool(),
         ]
 
     def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
@@ -383,11 +388,14 @@ class BaseCompositionTools:
         )
 
     def _make_generate_test_tool(self) -> StructuredTool:
-        def _generate_test_code(test_code: str, qualified_class_name: str) -> dict:
+        def _generate_test_code(
+            test_code: str, qualified_class_name: str, method_signature: str
+        ) -> dict:
             # NOTE: Work is done by the agent hook for state injection
             return {
                 "test_code": test_code,
                 "qualified_class_name": qualified_class_name,
+                "method_signature": method_signature,
             }
 
         return StructuredTool.from_function(
@@ -401,18 +409,18 @@ class BaseCompositionTools:
     # DEPRECATED
     def _make_compile_test_tool(self) -> StructuredTool:
         def _compile_test_code() -> Dict[str, Any]:
-            erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
+            erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
 
             class_key = TestFileManager(self.project_root).encode_class_name(
                 self.nl2_input.id
             )
             file_key = f"{class_key}.java"
             has_error = any(
-                ec.endswith(file_key) or ec == file_key for ec in erroneous_classes
+                ef.endswith(file_key) or ef == file_key for ef in erroneous_files
             )
 
             return {
-                "erroneous_classes": erroneous_classes,
+                "erroneous_files": erroneous_files,
                 "target_class_file": file_key,
                 "has_errors_for_target": has_error,
             }
@@ -439,15 +447,15 @@ class BaseCompositionTools:
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    def _make_compile_and_execute_tests_tool(self) -> StructuredTool:
-        def _compile_and_execute_tests() -> dict:
+    def _make_compile_and_execute_test_tool(self) -> StructuredTool:
+        def _compile_and_execute_test() -> dict:
             # NOTE: Work is done by the agent for state injection
             return {}
 
         return StructuredTool.from_function(
-            func=_compile_and_execute_tests,
-            name="compile_and_execute_tests",
-            description=COMPILE_AND_EXECUTE_TESTS_DESC,
+            func=_compile_and_execute_test,
+            name="compile_and_execute_test",
+            description=COMPILE_AND_EXECUTE_TEST_DESC,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
@@ -464,13 +472,4 @@ class BaseCompositionTools:
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    def _parse_and_validate(self, content: str, expected_type: type) -> Any:
-        for _ in range(3):
-            try:
-                data = json.loads(content)
-                if isinstance(data, expected_type):
-                    return data
-            except json.JSONDecodeError:
-                correction = self.structured_llm.generate("TEMP")  # TODO: refine prompt
-                content = correction
-        raise ValueError(f"Failed to parse output as {expected_type}")
+    # Removed legacy _parse_and_validate helper; structured tools return typed outputs.

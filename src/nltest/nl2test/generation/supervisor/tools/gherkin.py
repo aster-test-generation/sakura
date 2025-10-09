@@ -11,7 +11,7 @@ from nltest.nl2test.generation.supervisor.tool_descriptions import (
     CALL_COMPOSITION_AGENT_GHERKIN_DESC,
 )
 from nltest.utils.exceptions import ToolExceptionHandler
-from nltest.utils.llm.llm_client import LLMClient
+from nltest.utils.llm import LLMClient
 
 
 class GherkinSupervisorTools(BaseSupervisorTools):

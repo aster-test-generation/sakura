@@ -70,8 +70,11 @@ class NL2EvaluationResults(BaseModel):
 class NL2TestMetadata(BaseModel):
     qualified_test_class_name: str
     code: str
+    # Optional predicted test method signature (e.g., testFindAll())
+    method_signature: Optional[str] = None
 
 
+# TODO: Add false positive counts for precision
 class NL2TestStructuralEval(BaseModel):
     obj_creation_recall: float
     assertion_recall: float
@@ -86,7 +89,6 @@ class NL2TestCoverageEval(BaseModel):
     branch_coverage: float
 
 
-# TODO: Add ToolLog and localization results
 class NL2TestEval(BaseModel):
     compiles: bool
     nl2test_input: NL2TestInput

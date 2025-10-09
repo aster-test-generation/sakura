@@ -3,7 +3,7 @@ from __future__ import annotations
 from nltest.nl2test.models.decomposition import Scenario
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.decomposers.base import BaseDecomposer
-from nltest.utils.llm.llm_client import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType
 
 
 class GherkinDecomposer(BaseDecomposer):
@@ -26,4 +26,3 @@ class GherkinDecomposer(BaseDecomposer):
         )
 
         return scenario
-

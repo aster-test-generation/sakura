@@ -9,7 +9,7 @@ from nltest.nl2test.models import NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.llm.llm_client import ClientType, LLMClient
+from nltest.utils.llm import ClientType, LLMClient
 from nltest.utils.config import Config
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.tools import (

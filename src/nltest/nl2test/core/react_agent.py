@@ -28,6 +28,8 @@ class ReActAgent:
         system_message: Optional[str] = None,
         allow_parallelize: bool = False,
         max_iters: int = 20,
+        strict_finalize: bool = True,
+        use_checkpointer: bool = True,
     ) -> None:
         self.llm = llm
         self.tools = tools
@@ -35,12 +37,28 @@ class ReActAgent:
         self.max_iters = max_iters
         self.system_message = system_message or "You are a helpful AI assistant."
         self.allow_parallelize = allow_parallelize
+        self.strict_finalize = strict_finalize
+        self.use_checkpointer = use_checkpointer
 
         self._allow_duplicate_tool_names = {t.name for t in self.allow_duplicate_tools}
         self.tool_map: Dict[str, BaseTool] = {t.name: t for t in tools}
 
         # Internal flag for tool-driven termination
         self._end_now: bool = False
+
+        # Validate finalize tool presence when strict finalize is enabled
+        if self.strict_finalize:
+            has_finalize = any(getattr(t, "name", None) == "finalize" for t in self.tools)
+            if not has_finalize:
+                # Defer import to avoid cycles
+                from nltest.utils.exceptions import ConfigurationException
+
+                raise ConfigurationException(
+                    "finalize_tool_missing",
+                    message=(
+                        "ReActAgent requires a 'finalize' tool when strict_finalize is enabled."
+                    ),
+                )
 
         self.graph = self._build_graph()
 
@@ -213,16 +231,53 @@ class ReActAgent:
             finalize_tools = [t for t in self.tools if t.name == "finalize"]
             tools_to_bind = finalize_tools if finalize_tools else self.tools
 
+            # Route explicitly to the finalize tool when available
+            tool_choice = (
+                {"type": "tool", "name": "finalize"}
+                if finalize_tools
+                else "any"
+            )
+
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,
                 tools=tools_to_bind,
-                tool_choice="any",
+                tool_choice=tool_choice,
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
             state.messages.append(out)
 
             # Enter end state so we aren't in infinite force_end loop
             self._end_now = True
+
+            # If strict, ensure finalize was actually called; otherwise raise
+            if self.strict_finalize:
+                last_ai: Optional[AIMessage] = None
+                for msg in reversed(state.messages):
+                    if isinstance(msg, AIMessage):
+                        last_ai = msg
+                        break
+                # No tool calls or wrong tool
+                if not last_ai or not getattr(last_ai, "tool_calls", None):
+                    from nltest.utils.exceptions import ConfigurationException
+
+                    raise ConfigurationException(
+                        "finalize_not_called",
+                        message=(
+                            "Model did not call 'finalize' in force_end despite strict enforcement."
+                        ),
+                    )
+                else:
+                    # Validate the tool called is finalize
+                    names = [tc.get("name") for tc in last_ai.tool_calls]
+                    if not any(n == "finalize" for n in names):
+                        from nltest.utils.exceptions import ConfigurationException
+
+                        raise ConfigurationException(
+                            "finalize_not_called",
+                            message=(
+                                "Model called a non-finalize tool during force_end in strict mode."
+                            ),
+                        )
 
             return state
 
@@ -279,8 +334,8 @@ class ReActAgent:
             },
         )
 
-        # Standard in-memory checkpointer
-        checkpointer = MemorySaver()
+        # Standard in-memory checkpointer (configurable)
+        checkpointer = MemorySaver() if getattr(self, "use_checkpointer", True) else None
 
         return workflow.compile(checkpointer=checkpointer)
 

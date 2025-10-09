@@ -40,7 +40,7 @@ from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.llm.llm_client import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.analysis import CommonAnalysis
@@ -85,7 +85,7 @@ class Pipeline:
         self.test_grader = TestGrader(
             analysis=self.analysis,
             project_root=self.project_root,
-            project_erroneous_classes=[],
+            project_erroneous_files=[],
             application_classes=_application_classes,
         )
         self.localization_grader = LocalizationGrader(
@@ -357,6 +357,11 @@ class Pipeline:
 
         simple_class_name = supervisor_state.class_name.strip()
         package = (supervisor_state.package or "").strip()
+        method_signature = (
+            (supervisor_state.method_signature or "").strip()
+            if supervisor_state
+            else ""
+        )
         qualified_test_class_name = (
             f"{package}.{simple_class_name}" if package else simple_class_name
         )
@@ -366,13 +371,15 @@ class Pipeline:
         self.test_grader.set_analysis(new_analysis)
         self.localization_grader.set_analysis(new_analysis)
 
-        # Gather erroneous classes and pass to grader
-        erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
-        self.test_grader.set_project_erroneous_classes(erroneous_classes)
+        # Gather erroneous files and pass to grader
+        erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
+        self.test_grader.set_project_erroneous_files(erroneous_files)
 
         # Build NL2TestMetadata for the predicted class; code filled after grading
         nl2_metadata = NL2TestMetadata(
-            qualified_test_class_name=qualified_test_class_name, code=""
+            qualified_test_class_name=qualified_test_class_name,
+            code="",
+            method_signature=method_signature or None,
         )
 
         eval_result: NL2TestEval = self.test_grader.grade(nl2_input, nl2_metadata)

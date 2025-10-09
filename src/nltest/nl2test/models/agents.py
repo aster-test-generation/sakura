@@ -221,3 +221,5 @@ class ToolLog(BaseModel):
     supervisor_agent_calls: AgentToolLog
     localization_agent_calls: AgentToolLog
     composition_agent_calls: AgentToolLog
+
+# TODO: Get the trajectories

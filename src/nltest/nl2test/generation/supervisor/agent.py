@@ -243,11 +243,13 @@ class SupervisorReActAgent(ReActAgent):
                 state.localized_scenario = updated_state.localized_scenario
             state.package = updated_state.package
             state.class_name = updated_state.class_name
+            state.method_signature = updated_state.method_signature
 
             payload: Dict[str, Any] = {
                 "comments": str(updated_state.final_comments or ""),
                 "package": updated_state.package,
                 "class_name": updated_state.class_name,
+                "method_signature": updated_state.method_signature,
             }
             if updated_state.atomic_blocks is not None:
                 payload["blocks"] = updated_state.atomic_blocks.model_dump()
@@ -307,11 +309,11 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             project_root = self.project_root or Path(".")
-            erroneous_classes, compilation_errors = (
-                JavaCompilation.get_erroneous_classes_and_errors(project_root)
+            erroneous_files, compilation_errors = (
+                JavaCompilation.get_erroneous_files_and_errors(project_root)
             )
             file_key = f"{state.class_name}.java"
-            has_error = any(ec == file_key for ec in erroneous_classes)
+            has_error = any(ef == file_key for ef in erroneous_files)
 
             comp_errors_dicts: List[Dict[str, Any]] = [
                 e.model_dump() for e in compilation_errors
@@ -326,7 +328,7 @@ class SupervisorReActAgent(ReActAgent):
                 if f:
                     error_counts_by_file[f] = error_counts_by_file.get(f, 0) + 1
 
-            any_compilation_errors = len(erroneous_classes) > 0
+            any_compilation_errors = len(erroneous_files) > 0
 
             result_payload: Dict[str, Any] = {
                 "compilation": {

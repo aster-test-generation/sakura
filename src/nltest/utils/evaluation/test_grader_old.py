@@ -29,11 +29,12 @@ class TestGraderOld:
         self,
         analysis: JavaAnalysis,
         project_root: Path,
-        project_erroneous_classes: Optional[Set[str]] = None,
+        project_erroneous_files: Optional[Set[str]] = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = project_root
-        self.erroneous_classes = project_erroneous_classes or set()
+        # Track erroneous Java filenames (e.g., FooTest.java)
+        self.erroneous_files = project_erroneous_files or set()
         self.common = CommonAnalysis(analysis)
 
     @staticmethod
@@ -389,7 +390,7 @@ class TestGraderOld:
         )
 
         pred_class_simple = pred_class_name.rsplit(".", 1)[-1] + ".java"
-        compilation_score = 0.0 if pred_class_simple in self.erroneous_classes else 1.0
+        compilation_score = 0.0 if pred_class_simple in self.erroneous_files else 1.0
 
         gt_counts = {
             "objects_created": gt_num_obj_created,

@@ -8,6 +8,7 @@ class Provider(Enum):
     VLLM = "vllm"
     OLLAMA = "ollama"
     OPENAI = "openai"
+    GCP = "gcp"
 
 @dataclass
 class LLMSettings:

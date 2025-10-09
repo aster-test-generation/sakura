@@ -70,6 +70,8 @@ class NL2EvaluationResults(BaseModel):
 class NL2TestMetadata(BaseModel):
     qualified_test_class_name: str
     code: str
+    # Optional predicted test method signature (e.g., testFindAll())
+    method_signature: Optional[str] = None
 
 
 # TODO: Add false positive counts for precision

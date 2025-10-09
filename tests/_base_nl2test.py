@@ -25,11 +25,12 @@ class BaseNL2Test(TestCase):
         # llm_model = "moonshotai/kimi-k2"
         # llm_model = "mistralai/devstral-small"
         # llm_model = "mistralai/devstral-medium"
-        # llm_model = "x-ai/grok-code-fast-1"
         # llm_model = "openai/gpt-4.1-mini"
         # llm_model = "z-ai/glm-4.5v" -> does not work
         # llm_model = "openai/gpt-4o-mini"
-        llm_model = "google/gemini-2.5-flash"
+        # llm_model = "google/gemini-2.5-flash"
+        # llm_model = "x-ai/grok-code-fast-1"
+        llm_model = "openai/gpt-4.1-mini"
         emb_model = "nomic-embed-text:v1.5"
 
         # Make paths relative to the tests directory

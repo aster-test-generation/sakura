@@ -388,11 +388,14 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
         )
 
     def _make_generate_test_tool(self) -> StructuredTool:
-        def _generate_test_code(test_code: str, qualified_class_name: str) -> dict:
+        def _generate_test_code(
+            test_code: str, qualified_class_name: str, method_signature: str
+        ) -> dict:
             # NOTE: Work is done by the agent hook for state injection
             return {
                 "test_code": test_code,
                 "qualified_class_name": qualified_class_name,
+                "method_signature": method_signature,
             }
 
         return StructuredTool.from_function(
@@ -406,18 +409,18 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
     # DEPRECATED
     def _make_compile_test_tool(self) -> StructuredTool:
         def _compile_test_code() -> Dict[str, Any]:
-            erroneous_classes = JavaCompilation.get_erroneous_classes(self.project_root)
+            erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
 
             class_key = TestFileManager(self.project_root).encode_class_name(
                 self.nl2_input.id
             )
             file_key = f"{class_key}.java"
             has_error = any(
-                ec.endswith(file_key) or ec == file_key for ec in erroneous_classes
+                ef.endswith(file_key) or ef == file_key for ef in erroneous_files
             )
 
             return {
-                "erroneous_classes": erroneous_classes,
+                "erroneous_files": erroneous_files,
                 "target_class_file": file_key,
                 "has_errors_for_target": has_error,
             }

@@ -214,6 +214,7 @@ class TestNL2TestPipeline(BaseNL2Test):
         self.assertEqual(result.nl2test_input, nl2_input)
         self.assertIsInstance(result.compiles, bool)
         self.assertIsInstance(result.nl2test_metadata.qualified_test_class_name, str)
+        self.assertIsInstance(result.nl2test_metadata.method_signature, str)
         # Structured eval fields
         se = result.structured_eval
         self.assertGreaterEqual(se.assertion_recall, 0.0)

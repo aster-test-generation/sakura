@@ -108,38 +108,36 @@ class TestEvaluation(TestCase):
             eager=False,
         )
 
+        qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        method_signature = "shouldUpdateOwner()"
+
+        self.assertIsNotNone(self.analysis.get_class(qualified_class_name))
+        self.assertIsNotNone(self.analysis.get_method(qualified_class_name, method_signature))
+
         common = CommonAnalysis(analysis)
         _, application_classes = (
             common.get_test_methods_classes_and_application_classes()
         )
 
-        erroneous_classes = JavaCompilation.get_erroneous_classes(project_root)
+        erroneous_files = JavaCompilation.get_erroneous_files(project_root)
 
         grader = TestGrader(
             analysis=analysis,
             project_root=project_root,
-            project_erroneous_classes=erroneous_classes,
+            project_erroneous_files=erroneous_files,
             application_classes=application_classes,
         )
 
         nl2_input = NL2TestInput(
-            description=(
-                "Initialize a test environment with a randomly assigned server port and inject the necessary "
-                "repository and REST client builder components to interact with the application's vet data layer. "
-                "Call the method responsible for retrieving all vet records twice in succession, ensuring the first "
-                "call populates the underlying cache and the second call retrieves the data from the cached result, "
-                "thereby validating that the system correctly reuses previously fetched data without re-querying the "
-                "source. Assert that the second call behaves as expected by confirming the data is returned efficiently "
-                "and consistently, indicating proper caching behavior. The test relies on the Spring Boot test framework "
-                "with web environment support and dependency injection for component setup."
-            ),
+            description="",
             project_name=project_name,
-            qualified_class_name="org.springframework.samples.petclinic.PetClinicIntegrationTests",
-            method_signature="testFindAll()",
+            qualified_class_name=qualified_class_name,
+            method_signature=method_signature,
         )
 
         nl2_metadata = NL2TestMetadata(
-            qualified_test_class_name="org.springframework.samples.petclinic.PetClinicIntegrationTests",
+            qualified_test_class_name=qualified_class_name,
+            method_signature=method_signature,
             code="",
         )
 
@@ -158,10 +156,10 @@ class TestEvaluation(TestCase):
 
         cov = output.coverage_eval
         self.assertGreaterEqual(cov.class_coverage, 0.0)
-        self.assertLessEqual(cov.class_coverage, 100.0)
+        self.assertLessEqual(cov.class_coverage, 1.0)
         self.assertGreaterEqual(cov.method_coverage, 0.0)
-        self.assertLessEqual(cov.method_coverage, 100.0)
+        self.assertLessEqual(cov.method_coverage, 1.0)
         self.assertGreaterEqual(cov.line_coverage, 0.0)
-        self.assertLessEqual(cov.line_coverage, 100.0)
+        self.assertLessEqual(cov.line_coverage, 1.0)
         self.assertGreaterEqual(cov.branch_coverage, 0.0)
-        self.assertLessEqual(cov.branch_coverage, 100.0)
+        self.assertLessEqual(cov.branch_coverage, 1.0)

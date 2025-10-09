@@ -173,6 +173,7 @@ Create or overwrite the test file with newly generated code and set the active t
 Args:
   test_code: Complete Java test code including package, imports, class, and methods. This will replace all previous test code in the file.
   qualified_class_name: Fully qualified name for the test class. Be careful with ensuring the package before the simple class name is compliant with the localized methods.
+  method_signature: Method header for the single test method annotated with a test annotation generated in your test code (for example, "testFindById()" or "findById(java.lang.Integer)"). Do not include modifiers, annotations, helper, setup, or teardown methods here.
 Use when:
   Writing or updating the test to reflect the localized scenario.
 Strict formatting for arguments:
@@ -180,12 +181,14 @@ Strict formatting for arguments:
   - Do NOT include JSON, Markdown, XML, or commentary in `test_code`. Only valid Java source.
   - Ensure newlines are literal (no escaped newline sequences) and the string is valid JSON.
 Rules:
+  - Produce exactly one test method annotated with a test annotation and report its header via `method_signature`.
   - Always send the full file; this overwrites existing content.
   - Ensure package mirrors the primary SUT package to access package-private members.
   - Prefer explicit imports; avoid wildcard imports.
   - Include minimal helper fakes as nested static classes if needed.
+  - Helper, setup, or teardown methods are allowed, but they must not be annotated as additional tests.
 Returns:
-  Dict echoing { test_code, qualified_class_name } and the persisted save location.
+  Dict echoing { test_code, qualified_class_name, method_signature } and the persisted save location.
 """
 
 COMPILE_AND_EXECUTE_TEST_DESC = """

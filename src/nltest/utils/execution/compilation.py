@@ -233,7 +233,7 @@ class JavaCompilation:
         lines: List[str], project_root: Optional[Union[str, Path]]
     ) -> Tuple[List[str], List[CompilationError]]:
         """
-        Core parser. Walks the lines once, builds a set of erroneous classes, and
+        Core parser. Walks the lines once, builds a set of erroneous files (.java), and
         a structured list of compiler errors with important details.
         """
         error_classes: set = set()
@@ -305,8 +305,19 @@ class JavaCompilation:
         project_root: Optional[Union[str, Path]] = None,
     ) -> Tuple[List[str], List[CompilationError]]:
         """
-        Parse Maven compiler output (string or list of lines), removes noise like INFO calls, and return
-        (erroneous_classes, errors) without running Maven.
+        Parse Maven compiler output (string or list of lines), remove noise like INFO lines,
+        and return (erroneous_files, errors) without running Maven. The first value is a sorted
+        list of .java filenames with compilation errors, not FQCNs.
+
+        Example:
+            >>> text = "
+            ... [INFO] COMPILATION ERROR :
+            ... [ERROR] /path/to/project/src/test/java/com/acme/MyTest.java:[12,8] cannot find symbol
+            ... [ERROR]   symbol:   class Foo
+            ... [ERROR]   location: class com.acme.MyTest
+            ... "
+            >>> JavaCompilation.parse_compilation_errors(text, "/path/to/project")
+            (['MyTest.java'], [CompilationError(file='src/test/java/com/acme/MyTest.java', line=12, column=8, message='cannot find symbol', details=['symbol:   class Foo', 'location: class com.acme.MyTest'])])
         """
         lines = JavaCompilation._iter_lines(text_or_lines)
         cleaned: List[str] = []
@@ -320,31 +331,32 @@ class JavaCompilation:
         return JavaCompilation._parse_errors_from_lines(cleaned, project_root)
 
     @staticmethod
-    def get_erroneous_classes_and_errors(
+    def get_erroneous_files_and_errors(
         project_root: Union[str, Path],
     ) -> Tuple[List[str], List[CompilationError]]:
         """
-        Runs Maven (clean test-compile), auto-applies Spring JavaFormat if requested,
-        and returns both the erroneous classes and the parsed compilation errors.
+        Run Maven (clean test-compile), auto-apply Spring JavaFormat if requested,
+        and return both the erroneous files and the parsed compilation errors.
+
+        Returns a tuple (erroneous_files, errors) where erroneous_files is a sorted list of
+        Java source filenames with compilation errors (e.g., ['MyTest.java']).
         """
         _, combined = JavaCompilation._compile_with_auto_format(project_root)
         return JavaCompilation.parse_compilation_errors(combined, project_root)
 
     @staticmethod
-    def get_erroneous_classes(project_root: Union[str, Path]) -> List[str]:
-        classes, _errors = JavaCompilation.get_erroneous_classes_and_errors(
-            project_root
-        )
-        return classes
+    def get_erroneous_files(project_root: Union[str, Path]) -> List[str]:
+        files, _errors = JavaCompilation.get_erroneous_files_and_errors(project_root)
+        return files
 
 
 if __name__ == "__main__":
     # Example usage (will run Maven in the given project root):
     project_root = "tests/resources/spring-petclinic/"
-    error_classes, errors = JavaCompilation.get_erroneous_classes_and_errors(
+    error_files, errors = JavaCompilation.get_erroneous_files_and_errors(
         project_root
     )
-    print("Erroneous classes:", error_classes)
+    print("Erroneous files:", error_files)
     print("Errors:")
     for i, e in enumerate(errors, 1):
         col = f",{e.column}" if e.column is not None else ""

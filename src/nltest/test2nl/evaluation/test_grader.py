@@ -11,10 +11,11 @@ from nltest.utils.pretty.prints import pretty_print
 
 
 class TestGrader:
-    def __init__(self, analysis: JavaAnalysis, project_root: Path, project_erroneous_classes: List[str]):
+    def __init__(self, analysis: JavaAnalysis, project_root: Path, project_erroneous_files: List[str]):
         self.analysis = analysis
         self.project_root = project_root
-        self.erroneous_classes = project_erroneous_classes
+        # List of erroneous Java source filenames (e.g., FooTest.java)
+        self.erroneous_files = project_erroneous_files
 
     def _count_num_assertions(self, seqs: List[CallAndAssertionSequenceDetails]) -> int:
         num_assertions = 0
@@ -192,7 +193,7 @@ class TestGrader:
 
         pred_class = pred_class_name.rsplit(".", 1)[-1]
         pred_class_with_ext = pred_class + ".java"
-        if pred_class_with_ext not in self.erroneous_classes:
+        if pred_class_with_ext not in self.erroneous_files:
             compilation_score = 1.0
         else:
             compilation_score = 0.0

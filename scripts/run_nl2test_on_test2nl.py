@@ -17,12 +17,12 @@ CLEAR_OUTPUT = True
 
 LLM_MODEL = "google/gemini-2.5-flash"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
-LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama"
+LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
 EMB_MODEL = "nomic-embed-text:v1.5"
 # Either EMB_PROVIDER or EMB_API_URL must be non-None
-EMB_PROVIDER: str | None = "ollama"  # Supported providers: "ollama"
+EMB_PROVIDER: str | None = "ollama"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
 EMB_API_URL: str | None = None
 
 # Decomposition mode

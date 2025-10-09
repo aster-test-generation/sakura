@@ -39,6 +39,7 @@ OR if you are out of remaining iterations.
 
 # REMINDERS
 - Avoid duplicate {tool, args} pairs.
+- Generate exactly one test method annotated with a test annotation; helpers, setup, and teardown methods may exist but must not be annotated as additional tests.
 - Keep tool arguments minimal and only include necessary parameters.
 - Use `view_test_code` to inspect the current state of the test file before or after changes.
 - Prefer explicit imports and mocks to satisfy dependencies required by the test.

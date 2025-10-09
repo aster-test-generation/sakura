@@ -53,13 +53,15 @@ class CompositionReActAgent(ReActAgent):
         if tool_call["name"] == "generate_test_code":
             test_code: Optional[str] = None
             qualified_class_name: Optional[str] = None
+            method_signature: Optional[str] = None
 
             test_code = result.get("test_code")
             qualified_class_name = result.get("qualified_class_name")
+            method_signature = result.get("method_signature")
 
             if not isinstance(test_code, str) or not isinstance(
                 qualified_class_name, str
-            ):
+            ) or not isinstance(method_signature, str):
                 outputs.append(
                     ToolMessage(
                         content="Invalid output from generate_test_code tool.",
@@ -119,6 +121,9 @@ class CompositionReActAgent(ReActAgent):
             else:
                 state.package = None
                 state.class_name = saved_qcn
+            state.method_signature = (
+                method_signature.strip() if method_signature.strip() else None
+            )
             return
 
         if tool_call["name"] == "view_test_code":
@@ -167,11 +172,11 @@ class CompositionReActAgent(ReActAgent):
                 return
 
             # Gather compile errors with detailed parsing
-            erroneous_classes, compilation_errors = (
-                JavaCompilation.get_erroneous_classes_and_errors(self.project_root)
+            erroneous_files, compilation_errors = (
+                JavaCompilation.get_erroneous_files_and_errors(self.project_root)
             )
             file_key = f"{state.class_name}.java"
-            has_error = any(ec == file_key for ec in erroneous_classes)
+            has_error = any(ef == file_key for ef in erroneous_files)
 
             comp_errors_dicts: List[Dict[str, Any]] = [
                 e.model_dump() for e in compilation_errors
@@ -186,7 +191,7 @@ class CompositionReActAgent(ReActAgent):
                 if f:
                     error_counts_by_file[f] = error_counts_by_file.get(f, 0) + 1
 
-            any_compilation_errors = len(erroneous_classes) > 0
+            any_compilation_errors = len(erroneous_files) > 0
 
             result: Dict[str, Any] = {
                 "compilation": {

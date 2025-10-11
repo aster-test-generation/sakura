@@ -44,11 +44,11 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
     """Shared localization tools; subclasses implement finalize step."""
 
     def __init__(
-        self,
-        *,
-        analysis: JavaAnalysis,
-        method_searcher: MethodSearcher,
-        class_searcher: ClassSearcher,
+            self,
+            *,
+            analysis: JavaAnalysis,
+            method_searcher: MethodSearcher,
+            class_searcher: ClassSearcher,
     ) -> None:
         super().__init__(analysis=analysis)
         self.method_searcher = method_searcher
@@ -116,12 +116,12 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
     # Get all the methods that can be called from the class, looking at its inheritance graph
     def _make_reachable_methods_tool(self) -> StructuredTool:
         def _get_reachable_methods_in_class(
-            qualified_class_name: str, visibility_mode: str
+                qualified_class_name: str, visibility_mode: str
         ) -> Dict[str, List[Dict[str, Any]]]:
             if visibility_mode not in (
-                "public",
-                "same_package",
-                "same_package_or_subclass",
+                    "public",
+                    "same_package",
+                    "same_package_or_subclass",
             ):
                 raise InvalidArgumentError(
                     "Invalid visibility mode",
@@ -147,7 +147,7 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
     # Get basic class details like what it extends, implements, modifiers, and annotations.
     def _make_class_details_tool(self) -> StructuredTool:
         def _get_class_details(
-            qualified_class_name: str,
+                qualified_class_name: str,
         ) -> Dict[str, Union[str, List[str]]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:

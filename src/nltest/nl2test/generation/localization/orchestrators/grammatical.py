@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Tuple
-
 from nltest.nl2test.generation.localization.orchestrators.base import (
     BaseLocalizationOrchestrator,
 )
@@ -13,6 +11,7 @@ from nltest.nl2test.models import (
     NL2TestInput,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.llm import UsageTracker
 
 
 class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
@@ -23,6 +22,7 @@ class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         super().__init__(
             analysis=analysis,
@@ -30,6 +30,7 @@ class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
             class_searcher=class_searcher,
             nl2_input=nl2_input,
             decomposition_mode=DecompositionMode.GRAMMATICAL,
+            usage_tracker=usage_tracker,
         )
 
     def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:

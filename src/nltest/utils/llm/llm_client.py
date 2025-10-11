@@ -14,11 +14,16 @@ from ..config.config import Config
 from .model import Provider, LLMSettings, ClientType
 from ..constants import PARALLEL_TOOL_CALLABLE
 from ..exceptions import ConfigurationException
-from .usage_tracker import usage_tracker
+from .usage_tracker import UsageTracker
 
 
 class LLMClient:
-    def __init__(self, client_type: ClientType):
+    def __init__(
+        self,
+        client_type: ClientType,
+        *,
+        usage_tracker: UsageTracker | None = None,
+    ):
         config = Config()
 
         provider = config.get("llm", "provider")
@@ -95,6 +100,7 @@ class LLMClient:
             self._model_id = self._chat.model_name
         except Exception:
             self._model_id = model
+        self._usage_tracker = usage_tracker or UsageTracker()
 
     def _build_runnable(
         self,
@@ -182,11 +188,9 @@ class LLMClient:
 
         # Record usage if we have token information
         if hasattr(out, "usage_metadata") and out.usage_metadata:
-            usage_tracker.record(
-                model=self._chat.model_name,
+            self._usage_tracker.record(
                 input_tokens=out.usage_metadata.get("input_tokens", 0),
                 output_tokens=out.usage_metadata.get("output_tokens", 0),
-                total_tokens=out.usage_metadata.get("total_tokens", 0),
             )
 
         return self._normalize_tool_call_ids(out) if isinstance(out, AIMessage) else out

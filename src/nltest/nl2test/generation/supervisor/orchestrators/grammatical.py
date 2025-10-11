@@ -5,6 +5,7 @@ from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.nl2test.models import AgentState, AtomicBlockList, NL2TestInput
+from nltest.utils.llm import UsageTracker
 
 from .base import BaseSupervisorOrchestrator
 
@@ -18,6 +19,7 @@ class GrammaticalSupervisorOrchestrator(BaseSupervisorOrchestrator):
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
         base_project_dir: str,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         super().__init__(
             analysis=analysis,
@@ -26,6 +28,7 @@ class GrammaticalSupervisorOrchestrator(BaseSupervisorOrchestrator):
             nl2_input=nl2_input,
             decomposition_mode=DecompositionMode.GRAMMATICAL,
             base_project_dir=base_project_dir,
+            usage_tracker=usage_tracker,
         )
 
     def assign_task(self, blocks) -> Tuple[AgentState, AgentState, AgentState]:
@@ -43,6 +46,11 @@ class GrammaticalSupervisorOrchestrator(BaseSupervisorOrchestrator):
         )
 
         updated_state: AgentState = self.agent.invoke(chat_prompt, initial_state)
+        if updated_state.curr_tool_trajectory:
+            updated_state.tool_trajectories.append(
+                updated_state.curr_tool_trajectory.copy()
+            )
+            updated_state.curr_tool_trajectory.clear()
         localization_state: AgentState = self.agent.localization_state
         composition_state: AgentState = self.agent.composition_state
         return updated_state, localization_state, composition_state

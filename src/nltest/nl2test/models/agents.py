@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated, List, Literal, Dict, Optional, Union
+from typing import Annotated, List, Literal, Dict, Optional, Union, Tuple
 
 from pydantic import BaseModel, Field
 
@@ -19,10 +19,14 @@ class AgentState(BaseModel):
         List[Union[BaseMessage, Dict[str, str]]], "List of messages (Human/AI/Tool)"
     ] = Field(default_factory=list)
     iterations: Annotated[int, "The current iteration number of the agent"] = 0
+
+    # Tool logging
     tool_calls: Annotated[
         Dict[str, Dict[str, int]],
         "Mapping: tool name -> encoded argument -> count of calls",
     ] = Field(default_factory=dict)
+    curr_tool_trajectory: List[str] = Field(default_factory=list)
+    tool_trajectories: List[List[str]] = Field(default_factory=list)
 
     # Inputs
     grammatical_blocks: Annotated[
@@ -66,6 +70,8 @@ class AgentState(BaseModel):
             []
         )  # TODO: Maybe have some functionality for summarizing this instead of clearing
         self.tool_calls = {}
+        self.curr_tool_trajectory.clear()
+        self.tool_trajectories.clear()
 
 
 class QueryMethodArgs(BaseModel):
@@ -227,11 +233,12 @@ class CallAgentGrammaticalArgs(BaseModel):
 
 class AgentToolLog(BaseModel):
     tool_counts: Dict[str, int]
+    tool_trajectories: List[List[str]]
 
 
 class ToolLog(BaseModel):
-    supervisor_agent_calls: AgentToolLog
-    localization_agent_calls: AgentToolLog
-    composition_agent_calls: AgentToolLog
+    supervisor_tool_log: AgentToolLog
+    localization_tool_log: AgentToolLog
+    composition_tool_log: AgentToolLog
 
 # TODO: Get the trajectories

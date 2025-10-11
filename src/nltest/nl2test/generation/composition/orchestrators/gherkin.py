@@ -7,6 +7,7 @@ from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
 from nltest.nl2test.models import AgentState, LocalizedScenario, NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.llm import UsageTracker
 
 
 class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
@@ -18,6 +19,7 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
         project_root: str,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         super().__init__(
             analysis=analysis,
@@ -26,6 +28,7 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
             nl2_input=nl2_input,
             project_root=project_root,
             decomposition_mode=DecompositionMode.GHERKIN,
+            usage_tracker=usage_tracker,
         )
 
     def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:

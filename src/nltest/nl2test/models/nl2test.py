@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, List, Optional, Union
+from typing import Annotated, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field, ConfigDict
-from typing import Dict
-
+from pydantic import BaseModel, ConfigDict, Field
 from .decomposition import (
     AtomicBlock,
     AtomicBlockList,
@@ -74,12 +72,17 @@ class NL2TestMetadata(BaseModel):
     method_signature: Optional[str] = None
 
 
-# TODO: Add false positive counts for precision
 class NL2TestStructuralEval(BaseModel):
+    """Structural precision/recall metrics for the generated test."""
+
     obj_creation_recall: float
+    obj_creation_precision: float
     assertion_recall: float
+    assertion_precision: float
     callable_recall: float
+    callable_precision: float
     focal_recall: float
+    focal_precision: float
 
 
 class NL2TestCoverageEval(BaseModel):
@@ -97,3 +100,6 @@ class NL2TestEval(BaseModel):
     coverage_eval: Optional[NL2TestCoverageEval]
     localization_eval: Optional[LocalizationEval] = None
     tool_log: Optional[ToolLog] = None
+    input_tokens: int = 0
+    output_tokens: int = 0
+    llm_calls: int = 0

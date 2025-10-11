@@ -18,7 +18,6 @@ from nltest.nl2test.models.decomposition import (
 from nltest.nl2test.pipeline import Pipeline as NL2TestPipeline
 from nltest.test2nl.pipeline import Pipeline as Test2NLPipeline
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.utils.llm import usage_tracker
 from nltest.utils.pretty.prints import pretty_print
 
 from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
@@ -62,9 +61,8 @@ class TestNL2TestPipeline(BaseNL2Test):
         self.assertGreater(len(blocks.grammatical_blocks), 0)
 
         # Run localization agent directly with decomposed blocks
-        usage_tracker.start()
         localized_blocks, comments = pipeline.run_localization_agent(nl2_input, blocks)
-        prices = usage_tracker.stop()
+        prices = {"input_tokens": 0, "output_tokens": 0, "calls": 0}
 
         # Verify outputs
         self.assertIsInstance(localized_blocks, AtomicBlockList)
@@ -107,9 +105,8 @@ class TestNL2TestPipeline(BaseNL2Test):
         self.config.set("supervisor", "max_iters", 4)
 
         # Run the complete evaluation pipeline
-        usage_tracker.start()
         output = pipeline.run_localization_evaluation_pipeline(nl2_input)
-        prices = usage_tracker.stop()
+        prices = {"input_tokens": 0, "output_tokens": 0, "calls": 0}
 
         # Verify output container and fields
         self.assertIsInstance(output, NL2LocalizationOutput)
@@ -150,9 +147,12 @@ class TestNL2TestPipeline(BaseNL2Test):
         self.config.set("composition", "max_iters", 6)
         self.config.set("supervisor", "max_iters", 4)
 
-        usage_tracker.start()
         eval_result = pipeline.run_nl2test(nl2_input)
-        prices = usage_tracker.stop()
+        prices = {
+            "input_tokens": eval_result.input_tokens,
+            "output_tokens": eval_result.output_tokens,
+            "calls": eval_result.llm_calls,
+        }
 
         self.assertIsInstance(eval_result, NL2TestEval)
         self.assertEqual(eval_result.nl2test_input, nl2_input)
@@ -165,14 +165,13 @@ class TestNL2TestPipeline(BaseNL2Test):
         self.assertIsInstance(eval_result.localization_eval, LocalizationEval)
         self.assertIsNotNone(eval_result.tool_log)
         self.assertIsInstance(
-            eval_result.tool_log.supervisor_agent_calls.tool_counts, dict
+            eval_result.tool_log.supervisor_tool_log.tool_counts, dict
         )
 
         pretty_print("NL2Test evaluation result", eval_result)
         pretty_print("Token usage", prices)
 
     def test_pipeline_run_nl2test_random_gherkin(self):
-        usage_tracker.start()
         # Load dataset entries from CSV using the same path pattern
         test_dir = Path(__file__).resolve().parent
         data_dir = test_dir / "output" / "resources" / "test2nl"
@@ -219,11 +218,20 @@ class TestNL2TestPipeline(BaseNL2Test):
         se = result.structured_eval
         self.assertGreaterEqual(se.assertion_recall, 0.0)
         self.assertLessEqual(se.assertion_recall, 1.0)
+        self.assertGreaterEqual(se.assertion_precision, 0.0)
+        self.assertLessEqual(se.assertion_precision, 1.0)
         self.assertGreaterEqual(se.obj_creation_recall, 0.0)
         self.assertLessEqual(se.obj_creation_recall, 1.0)
+        self.assertGreaterEqual(se.obj_creation_precision, 0.0)
+        self.assertLessEqual(se.obj_creation_precision, 1.0)
         self.assertGreaterEqual(se.callable_recall, 0.0)
         self.assertLessEqual(se.callable_recall, 1.0)
+        self.assertGreaterEqual(se.callable_precision, 0.0)
+        self.assertLessEqual(se.callable_precision, 1.0)
         self.assertGreaterEqual(se.focal_recall, 0.0)
+        self.assertLessEqual(se.focal_recall, 1.0)
+        self.assertGreaterEqual(se.focal_precision, 0.0)
+        self.assertLessEqual(se.focal_precision, 1.0)
         # Coverage eval fields are in percent [0, 100]
         cv = result.coverage_eval
         self.assertGreaterEqual(cv.class_coverage, 0.0)
@@ -234,6 +242,3 @@ class TestNL2TestPipeline(BaseNL2Test):
         self.assertLessEqual(cv.line_coverage, 100.0)
         self.assertGreaterEqual(cv.branch_coverage, 0.0)
         self.assertLessEqual(cv.branch_coverage, 100.0)
-
-        prices = usage_tracker.stop()
-        pretty_print("Token usage", prices)

@@ -11,16 +11,22 @@ from nltest.nl2test.preprocessing.decomposers import (
     GherkinDecomposer,
     BaseDecomposer,
 )
+from nltest.utils.llm import UsageTracker
 
 
 class NLDecomposer:
-    def __init__(self, mode: DecompositionMode = DecompositionMode.GRAMMATICAL):
+    def __init__(
+        self,
+        mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
+        usage_tracker: UsageTracker | None = None,
+    ):
         self.mode = mode
+        self.usage_tracker = usage_tracker or UsageTracker()
         impl: BaseDecomposer
         if mode == DecompositionMode.GHERKIN:
-            impl = GherkinDecomposer()
+            impl = GherkinDecomposer(usage_tracker=self.usage_tracker)
         else:
-            impl = GrammaticalDecomposer()
+            impl = GrammaticalDecomposer(usage_tracker=self.usage_tracker)
         self._impl = impl
 
     def decompose(self, nl_description: str) -> Union[GrammaticalBlockList, Scenario]:

@@ -20,16 +20,16 @@ from nltest.utils.llm import LLMClient
 
 class ReActAgent:
     def __init__(
-        self,
-        *,
-        llm: LLMClient,
-        tools: List[BaseTool],
-        allow_duplicate_tools: Optional[List[BaseTool]] = None,
-        system_message: Optional[str] = None,
-        allow_parallelize: bool = False,
-        max_iters: int = 20,
-        strict_finalize: bool = True,
-        use_checkpointer: bool = True,
+            self,
+            *,
+            llm: LLMClient,
+            tools: List[BaseTool],
+            allow_duplicate_tools: Optional[List[BaseTool]] = None,
+            system_message: Optional[str] = None,
+            allow_parallelize: bool = False,
+            max_iters: int = 20,
+            strict_finalize: bool = True,
+            use_checkpointer: bool = True,
     ) -> None:
         self.llm = llm
         self.tools = tools
@@ -68,17 +68,17 @@ class ReActAgent:
 
     # Subclass hooks
     def _prepare_tool_args(
-        self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
+            self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         """Allow subclasses to inject arguments before tool call."""
         return tool_name, raw_args
 
     def _process_tool_output(
-        self,
-        tool_call: ToolCall,
-        result: Any,
-        state: AgentState,
-        outputs: List[ToolMessage],
+            self,
+            tool_call: ToolCall,
+            result: Any,
+            state: AgentState,
+            outputs: List[ToolMessage],
     ) -> None:
         """Allow subclasses to interpret tool results and update state."""
         outputs.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))
@@ -179,6 +179,7 @@ class ReActAgent:
                 tool_history = state.tool_calls.setdefault(name, {})
                 prev_count = tool_history.get(encoding, 0)
                 tool_history[encoding] = prev_count + 1
+                state.curr_tool_trajectory.append(name)
 
                 if prev_count > 0 and name not in self._allow_duplicate_tool_names:
                     # Already executed with identical args; skip and inform the model
@@ -340,10 +341,10 @@ class ReActAgent:
         return workflow.compile(checkpointer=checkpointer)
 
     def invoke(
-        self,
-        input_msg: str,
-        state: Optional[AgentState] = None,
-        config: Optional[Dict[str, Any]] = None,
+            self,
+            input_msg: str,
+            state: Optional[AgentState] = None,
+            config: Optional[Dict[str, Any]] = None,
     ) -> AgentState:
         self._end_now = False
 
@@ -362,7 +363,7 @@ class ReActAgent:
             )
             # Ensure the first message is a SystemMessage; inject if missing
             if not effective.messages or not isinstance(
-                effective.messages[0], SystemMessage
+                    effective.messages[0], SystemMessage
             ):
                 effective.messages.insert(0, SystemMessage(content=self.system_message))
 
@@ -371,10 +372,10 @@ class ReActAgent:
         result = self.graph.invoke(
             effective,
             config=config
-            or {
-                "configurable": {"thread_id": "default"},
-                "recursion_limit": 3 * self.max_iters,
-            },
+                   or {
+                       "configurable": {"thread_id": "default"},
+                       "recursion_limit": 3 * self.max_iters,
+                   },
         )
 
         # Convert dictionary result back to AgentState if needed

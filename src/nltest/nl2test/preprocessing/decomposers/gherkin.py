@@ -3,12 +3,17 @@ from __future__ import annotations
 from nltest.nl2test.models.decomposition import Scenario
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.decomposers.base import BaseDecomposer
-from nltest.utils.llm import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 
 
 class GherkinDecomposer(BaseDecomposer):
-    def __init__(self) -> None:
-        self.structured = LLMClient(ClientType.STRUCTURED)
+    def __init__(self, *, usage_tracker: UsageTracker | None = None) -> None:
+        tracker = usage_tracker or UsageTracker()
+        self.structured = LLMClient(
+            ClientType.STRUCTURED,
+            usage_tracker=tracker,
+        )
+        self.usage_tracker = tracker
 
     def decompose(self, nl_description: str) -> Scenario:
         system_prompt = LoadPrompt.load_prompt(

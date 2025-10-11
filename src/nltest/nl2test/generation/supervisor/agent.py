@@ -24,18 +24,18 @@ from nltest.utils.execution.execution import JavaExecution
 
 class SupervisorReActAgent(ReActAgent):
     def __init__(
-        self,
-        *,
-        llm: LLMClient,
-        tools: List[BaseTool],
-        system_message: str,
-        nl_description: str,
-        project_root: Path | str | None = None,
-        allow_duplicate_tools: List[BaseTool] | None = None,
-        max_iters: int = 10,
-        localization_agent: BaseLocalizationOrchestrator | None = None,
-        composition_agent: BaseCompositionOrchestrator | None = None,
-        **kwargs,
+            self,
+            *,
+            llm: LLMClient,
+            tools: List[BaseTool],
+            system_message: str,
+            nl_description: str,
+            project_root: Path | str | None = None,
+            allow_duplicate_tools: List[BaseTool] | None = None,
+            max_iters: int = 10,
+            localization_agent: BaseLocalizationOrchestrator | None = None,
+            composition_agent: BaseCompositionOrchestrator | None = None,
+            **kwargs,
     ) -> None:
         super().__init__(
             llm=llm,
@@ -55,9 +55,9 @@ class SupervisorReActAgent(ReActAgent):
         self.composition_state: Optional[AgentState] = None
 
     def _clean_agent(
-        self,
-        state: Optional[AgentState],
-        orchestrator: BaseLocalizationOrchestrator | BaseCompositionOrchestrator,
+            self,
+            state: Optional[AgentState],
+            orchestrator: BaseLocalizationOrchestrator | BaseCompositionOrchestrator,
     ) -> Optional[AgentState]:
         orchestrator.reset_agent()
         if state is None:
@@ -68,12 +68,12 @@ class SupervisorReActAgent(ReActAgent):
         return cleaned
 
     def _prepare_tool_args(
-        self, tool_name: str, raw_args: Dict, state: AgentState
+            self, tool_name: str, raw_args: Dict, state: AgentState
     ) -> Tuple[str, Dict]:
         return tool_name, raw_args
 
     def _process_tool_output(
-        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         name = tool_call["name"]
 
@@ -144,6 +144,12 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             # Persist latest localization state
+            if updated_state.curr_tool_trajectory:
+                updated_state.tool_trajectories.append(
+                    updated_state.curr_tool_trajectory.copy()
+                )
+                updated_state.curr_tool_trajectory.clear()
+
             self.localization_state = updated_state
 
             # Update Supervisor state with blocks
@@ -234,6 +240,12 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             # Persist latest composition state
+            if updated_state.curr_tool_trajectory:
+                updated_state.tool_trajectories.append(
+                    updated_state.curr_tool_trajectory.copy()
+                )
+                updated_state.curr_tool_trajectory.clear()
+
             self.composition_state = updated_state
 
             # Update Supervisor state with blocks and packaging
@@ -371,12 +383,12 @@ class SupervisorReActAgent(ReActAgent):
                         else "execution_failed"
                     )
                     reason = (
-                        execution_feedback.failure_reason or "Test execution failed"
+                            execution_feedback.failure_reason or "Test execution failed"
                     )
                     top_issues: List[str] = []
                     for it in issues[:10]:
                         name = (
-                            f"{it.get('class_name','')}.{it.get('test_name','')}".strip(
+                            f"{it.get('class_name', '')}.{it.get('test_name', '')}".strip(
                                 "."
                             )
                         )

@@ -5,11 +5,10 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
 
-from .test_grader import TestGrader
-
 from nltest.test2nl.model.models import RoundTripTest
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.execution import JavaCompilation
+from nltest.utils.evaluation import TestGrader
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.file_io import TestFileManager
 
@@ -50,6 +49,7 @@ class RoundTripEvaluator:
             frameworks = CommonAnalysis(analysis).get_testing_frameworks_for_class(qualified_name)
             for method_sig in analysis.get_methods_in_class(qualified_name):
                 if CommonAnalysis(analysis).is_test_method(method_sig, qualified_name, frameworks):
+                    # TODO: Fix this to work with the new test grader
                     rt_test.score = grader.grade(
                         pred_method_sig=method_sig,
                         pred_class_name=qualified_name,

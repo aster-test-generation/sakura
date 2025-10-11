@@ -36,11 +36,11 @@ class TestGrader:
     """
 
     def __init__(
-        self,
-        analysis: JavaAnalysis,
-        project_root: Path,
-        project_erroneous_files: Optional[List[str]] = None,
-        application_classes: Optional[List[str]] = None,
+            self,
+            analysis: JavaAnalysis,
+            project_root: Path,
+            project_erroneous_files: Optional[List[str]] = None,
+            application_classes: Optional[List[str]] = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = project_root
@@ -63,7 +63,7 @@ class TestGrader:
 
     @staticmethod
     def _get_assertion_types(
-        seqs: List[CallAndAssertionSequenceDetails],
+            seqs: List[CallAndAssertionSequenceDetails],
     ) -> List[List[AssertionType]]:
         assertion_types: List[List[AssertionType]] = []
         for seq in seqs:
@@ -73,7 +73,7 @@ class TestGrader:
 
     @staticmethod
     def _get_expanded_seqs(
-        seqs: List[CallAndAssertionSequenceDetails],
+            seqs: List[CallAndAssertionSequenceDetails],
     ) -> List[CallableDetails | AssertionDetails]:
         expanded: List[CallableDetails | AssertionDetails] = []
         for seq in seqs:
@@ -82,30 +82,40 @@ class TestGrader:
         return expanded
 
     @staticmethod
-    def _assertion_recall(
-        gt_assertions: List[List[AssertionType]],
-        pred_assertions: List[List[AssertionType]],
-    ) -> float:
-        """Recall over assertion groups: how many GT groups are matched by any pred group."""
-        pred_groups = [set(group) for group in pred_assertions]
-        visited: Set[int] = set()
-        matched = 0
-        for gt_group in gt_assertions:
-            for i, pred_set in enumerate(pred_groups):
-                if i in visited:
+    def _assertion_scores(
+            gt_assertions: List[List[AssertionType]],
+            pred_assertions: List[List[AssertionType]],
+    ) -> Tuple[float, float]:
+        """Compute recall and precision over assertion groups."""
+        gt_groups = [set(group or []) for group in gt_assertions]
+        pred_groups = [set(group or []) for group in pred_assertions]
+
+        matched_gt_indices: Set[int] = set()
+        matched_pred_indices: Set[int] = set()
+
+        for gt_idx, gt_group in enumerate(gt_groups):
+            for pred_idx, pred_group in enumerate(pred_groups):
+                if pred_idx in matched_pred_indices:
                     continue
-                if any(a in pred_set for a in gt_group):
-                    matched += 1
-                    visited.add(i)
+                if any(assertion in pred_group for assertion in gt_group):
+                    matched_gt_indices.add(gt_idx)
+                    matched_pred_indices.add(pred_idx)
                     break
-        return matched / len(gt_assertions) if gt_assertions else 1.0
+
+        recall = (
+            len(matched_gt_indices) / len(gt_groups) if gt_groups else 1.0
+        )
+        precision = (
+            len(matched_pred_indices) / len(pred_groups) if pred_groups else 1.0
+        )
+        return recall, precision
 
     @staticmethod
-    def _callable_recall(
-        gt_seqs: List[CallAndAssertionSequenceDetails],
-        pred_seqs: List[CallAndAssertionSequenceDetails],
-    ) -> float:
-        """Recall for callable and assertions occurrences combined."""
+    def _callable_scores(
+            gt_seqs: List[CallAndAssertionSequenceDetails],
+            pred_seqs: List[CallAndAssertionSequenceDetails],
+    ) -> Tuple[float, float]:
+        """Compute recall and precision for callables and assertions combined."""
         from collections import Counter
 
         gt_expanded = TestGrader._get_expanded_seqs(gt_seqs)
@@ -151,8 +161,13 @@ class TestGrader:
 
         matched_calls = (gt_calls & pred_calls).total()
         total_gt = sum(gt_calls.values()) + len(gt_assert_types)
-        # If there is no GT, use a non-penalizing score
-        return (matched_calls + matched_asserts) / total_gt if total_gt else 1.0
+        total_pred = sum(pred_calls.values()) + len(pred_assert_types)
+
+        total_matched = matched_calls + matched_asserts
+
+        recall = total_matched / total_gt if total_gt else 1.0
+        precision = total_matched / total_pred if total_pred else 1.0
+        return recall, precision
 
     def _get_constructor_types(self, class_name: str, method_sig: str) -> Set[str]:
         types: Set[str] = set()
@@ -175,21 +190,17 @@ class TestGrader:
         return types
 
     def _get_focal_methods_for_test(
-        self, qualified_class_name: str, method_signature: str
+            self, qualified_class_name: str, method_signature: str
     ) -> Set[Tuple[str, str]]:
         """Collect focal (class, method) pairs for a given test method."""
         try:
-            testing_frameworks = self.common.get_testing_frameworks_for_class(
-                qualified_class_name
-            )
-            setup_methods = self.common.get_setup_methods(qualified_class_name)
-            setup_sigs = [m.signature for m in setup_methods]
+            setup_methods = SetupAnalysisInfo(self.analysis).get_setup_methods(qualified_class_name)
 
             focal = FocalClassMethod(
-                self.analysis, testing_frameworks, self.application_classes
+                self.analysis, self.application_classes
             )
             focal_classes, _, _, _ = focal.identify_focal_class_and_ui_api_test(
-                qualified_class_name, method_signature, setup_sigs
+                qualified_class_name, method_signature, setup_methods
             )
 
             result: Set[Tuple[str, str]] = set()
@@ -201,22 +212,22 @@ class TestGrader:
             return set()
 
     def grade_structural(
-        self,
-        pred_method_sig: str,
-        pred_class_name: str,
-        gt_method_sig: str,
-        gt_class_name: str,
+            self,
+            pred_method_sig: str,
+            pred_class_name: str,
+            gt_method_sig: str,
+            gt_class_name: str,
     ) -> Optional[NL2TestStructuralEval]:
         if not self.analysis.get_class(pred_class_name) or not self.analysis.get_method(
-            pred_class_name, pred_method_sig
+                pred_class_name, pred_method_sig
         ):
             return None
 
         gt_frameworks = self.common.get_testing_frameworks_for_class(gt_class_name)
         pred_frameworks = self.common.get_testing_frameworks_for_class(pred_class_name)
 
-        gt_setup_methods = SetupAnalysisInfo(self.analysis).get_setup_methods(
-            gt_class_name, testing_frameworks=gt_frameworks
+        gt_setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(self.analysis).get_setup_methods(
+            gt_class_name
         )
         gt_analysis = TestMethodAnalysisInfo(
             self.analysis, "TestDataset", self.application_classes
@@ -224,8 +235,8 @@ class TestGrader:
             gt_frameworks, gt_class_name, gt_method_sig, gt_setup_methods
         )
 
-        pred_setup_methods = SetupAnalysisInfo(self.analysis).get_setup_methods(
-            pred_class_name, testing_frameworks=pred_frameworks
+        pred_setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(self.analysis).get_setup_methods(
+            pred_class_name
         )
         pred_analysis = TestMethodAnalysisInfo(
             self.analysis, "TestDataset", self.application_classes
@@ -236,10 +247,12 @@ class TestGrader:
         # Object creation recall via constructor call-sites
         gt_ctor_types = self._get_constructor_types(gt_class_name, gt_method_sig)
         pred_ctor_types = self._get_constructor_types(pred_class_name, pred_method_sig)
+        ctor_matches = gt_ctor_types & pred_ctor_types
         obj_creation_recall = (
-            len(gt_ctor_types & pred_ctor_types) / len(gt_ctor_types)
-            if gt_ctor_types
-            else 1.0
+            len(ctor_matches) / len(gt_ctor_types) if gt_ctor_types else 1.0
+        )
+        obj_creation_precision = (
+            len(ctor_matches) / len(pred_ctor_types) if pred_ctor_types else 1.0
         )
 
         # Assertions and callables recall
@@ -249,11 +262,12 @@ class TestGrader:
         pred_assertion_types = self._get_assertion_types(
             pred_analysis.call_assertion_sequences
         )
-        assertion_recall = self._assertion_recall(
+        assertion_recall, assertion_precision = self._assertion_scores(
             gt_assertion_types, pred_assertion_types
         )
-        callable_recall = self._callable_recall(
-            gt_analysis.call_assertion_sequences, pred_analysis.call_assertion_sequences
+        callable_recall, callable_precision = self._callable_scores(
+            gt_analysis.call_assertion_sequences,
+            pred_analysis.call_assertion_sequences,
         )
 
         # Focal recall: number of GT focal methods also in pred focal set
@@ -261,27 +275,34 @@ class TestGrader:
         pred_focal = self._get_focal_methods_for_test(pred_class_name, pred_method_sig)
         focal_intersection = gt_focal & pred_focal
         focal_recall = (len(focal_intersection) / len(gt_focal)) if gt_focal else 1.0
+        focal_precision = (
+            len(focal_intersection) / len(pred_focal) if pred_focal else 1.0
+        )
 
         return NL2TestStructuralEval(
             obj_creation_recall=round(obj_creation_recall, 4),
+            obj_creation_precision=round(obj_creation_precision, 4),
             assertion_recall=round(assertion_recall, 4),
+            assertion_precision=round(assertion_precision, 4),
             callable_recall=round(callable_recall, 4),
+            callable_precision=round(callable_precision, 4),
             focal_recall=round(focal_recall, 4),
+            focal_precision=round(focal_precision, 4),
         )
 
     def grade_coverage(
-        self,
-        pred_method_sig: str,
-        pred_class_name: str,
-        gt_method_sig: str,
-        gt_class_name: str,
+            self,
+            pred_method_sig: str,
+            pred_class_name: str,
+            gt_method_sig: str,
+            gt_class_name: str,
     ) -> Optional[NL2TestCoverageEval]:
         """
         Compute coverage overlap between prediction and ground truth.
         Returns per-metric fractions in [0.0, 1.0] (non-penalizing 1.0 when GT is empty).
         """
         if not self.analysis.get_class(pred_class_name) or not self.analysis.get_method(
-            pred_class_name, pred_method_sig
+                pred_class_name, pred_method_sig
         ):
             return None
 
@@ -318,7 +339,7 @@ class TestGrader:
 
         # Collect covered sets we'll compare
         def _collect(
-            coverage_map: Dict[str, Dict[str, Any]],
+                coverage_map: Dict[str, Dict[str, Any]],
         ) -> Tuple[
             Set[str],  # covered classes
             Set[Tuple[str, str]],  # covered methods keyed by (app_class, method_name)
@@ -381,10 +402,10 @@ class TestGrader:
         )
 
     def grade(
-        self, nl2_input: NL2TestInput, nl2_metadata: NL2TestMetadata
+            self, nl2_input: NL2TestInput, nl2_metadata: NL2TestMetadata
     ) -> NL2TestEval:
         pred_simple_file = (
-            nl2_metadata.qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
+                nl2_metadata.qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
         )
         compiles = pred_simple_file not in self.project_erroneous_files
 

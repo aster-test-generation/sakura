@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List, Union
+from typing import Dict, Tuple, List, Union, Optional
 from pathlib import Path
 
 from cldk.analysis.java import JavaAnalysis
@@ -39,10 +39,8 @@ from nltest.nl2test.preprocessing.indexers import MethodIndexer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.searchers import MethodSearcher
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.llm import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
-from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.execution import JavaCompilation
@@ -51,12 +49,12 @@ from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 
 class Pipeline:
     def __init__(
-        self,
-        analysis: JavaAnalysis,
-        project_root: Path,
-        *,
-        decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
-        analysis_dir: Path | None = None,
+            self,
+            analysis: JavaAnalysis,
+            project_root: Path,
+            *,
+            decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
+            analysis_dir: Path | None = None,
     ):
         self.analysis = analysis
         self.project_root = Path(project_root)
@@ -65,16 +63,12 @@ class Pipeline:
             Path(analysis_dir) if analysis_dir is not None else self.project_root
         )
 
-        self.nl_decomposer = NLDecomposer(mode=self.decomposition_mode)
         self.method_indexer = MethodIndexer(analysis)
         self.class_indexer = ClassIndexer(analysis)
 
-        self.decision_llm = LLMClient(ClientType.DECISION)
-        self.structured_llm = LLMClient(ClientType.STRUCTURED)
-
         # Initialized during preprocessing
-        self.method_searcher: MethodSearcher = None
-        self.class_searcher: ClassSearcher = None
+        self.method_searcher: Optional[MethodSearcher] = None
+        self.class_searcher: Optional[ClassSearcher] = None
 
         # Initialize TestGrader with current analysis and application classes
         _cmn = CommonAnalysis(self.analysis)
@@ -103,20 +97,26 @@ class Pipeline:
         return self.method_searcher, self.class_searcher
 
     def decompose_natural_language(
-        self, nl_description: str
+            self,
+            nl_description: str,
+            usage_tracker: UsageTracker | None = None,
     ) -> Union[GrammaticalBlockList, Scenario]:
         """Decompose natural language based on pipeline decomposition mode.
 
         Returns GrammaticalBlockList if GRAMMATICAL, or Scenario if GHERKIN.
         """
-        return self.nl_decomposer.decompose(nl_description)
+        nl_decomposer = NLDecomposer(
+            mode=self.decomposition_mode,
+            usage_tracker=usage_tracker,
+        )
+        return nl_decomposer.decompose(nl_description)
 
     def run_localization_agent(
-        self,
-        nl2_input: NL2TestInput,
-        blocks: Union[
-            GrammaticalBlockList, Scenario, AtomicBlockList, LocalizedScenario
-        ],
+            self,
+            nl2_input: NL2TestInput,
+            blocks: Union[
+                GrammaticalBlockList, Scenario, AtomicBlockList, LocalizedScenario
+            ],
     ) -> Tuple[Union[AtomicBlockList, LocalizedScenario], str]:
         if not self.method_searcher or not self.class_searcher:
             raise RuntimeError("Preprocessing must be run before localization agent")
@@ -156,7 +156,7 @@ class Pipeline:
         )
         if self.decomposition_mode == DecompositionMode.GHERKIN:
             assert (
-                updated_state.localized_scenario is not None
+                    updated_state.localized_scenario is not None
             ), "Localization agent did not return LocalizedScenario"
             return (
                 updated_state.localized_scenario,
@@ -164,7 +164,7 @@ class Pipeline:
             )
         else:
             assert (
-                updated_state.atomic_blocks is not None
+                    updated_state.atomic_blocks is not None
             ), "Localization agent did not return AtomicBlockList"
             return (
                 updated_state.atomic_blocks,
@@ -172,7 +172,7 @@ class Pipeline:
             )
 
     def run_localization_evaluation_pipeline(
-        self, nl2_input: NL2TestInput
+            self, nl2_input: NL2TestInput
     ) -> NL2LocalizationOutput:
         # Ensure preprocessing was run
         if not self.method_searcher or not self.class_searcher:
@@ -215,19 +215,21 @@ class Pipeline:
         )
 
     def _agent_tool_log_from_state(self, state: AgentState | None) -> AgentToolLog:
-        tool_counts: Dict[str, int] = {}
-        if state and state.tool_calls:
-            for tool_name, arg_counts in state.tool_calls.items():
-                total = 0
-                if isinstance(arg_counts, dict):
-                    for count in arg_counts.values():
-                        if isinstance(count, int):
-                            total += count
-                tool_counts[tool_name] = tool_counts.get(tool_name, 0) + total
-        return AgentToolLog(tool_counts=tool_counts)
+        if not state:
+            return AgentToolLog(tool_counts={}, tool_trajectories=[])
+
+        tool_counts = {
+            tool_name: sum(arg_counts.values())
+            for tool_name, arg_counts in state.tool_calls.items()
+        }
+        tool_trajectories = [trajectory.copy() for trajectory in state.tool_trajectories]
+        return AgentToolLog(
+            tool_counts=tool_counts,
+            tool_trajectories=tool_trajectories,
+        )
 
     def _localization_eval_from_state(
-        self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
+            self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
     ) -> LocalizationEval:
         localization_eval = self._empty_localization_eval(nl2_input)
         if not supervisor_state:
@@ -249,17 +251,17 @@ class Pipeline:
             return localization_eval
 
     def _build_tool_log(
-        self,
-        supervisor_state: AgentState | None,
-        localization_state: AgentState | None,
-        composition_state: AgentState | None,
+            self,
+            supervisor_state: AgentState | None,
+            localization_state: AgentState | None,
+            composition_state: AgentState | None,
     ) -> ToolLog:
         return ToolLog(
-            supervisor_agent_calls=self._agent_tool_log_from_state(supervisor_state),
-            localization_agent_calls=self._agent_tool_log_from_state(
+            supervisor_tool_log=self._agent_tool_log_from_state(supervisor_state),
+            localization_tool_log=self._agent_tool_log_from_state(
                 localization_state
             ),
-            composition_agent_calls=self._agent_tool_log_from_state(composition_state),
+            composition_tool_log=self._agent_tool_log_from_state(composition_state),
         )
 
     def _empty_nl2test_eval(self, nl2_input: NL2TestInput) -> NL2TestEval:
@@ -270,9 +272,13 @@ class Pipeline:
             nl2test_metadata=NL2TestMetadata(qualified_test_class_name="", code=""),
             structured_eval=NL2TestStructuralEval(
                 obj_creation_recall=0.0,
+                obj_creation_precision=0.0,
                 assertion_recall=0.0,
+                assertion_precision=0.0,
                 callable_recall=0.0,
+                callable_precision=0.0,
                 focal_recall=0.0,
+                focal_precision=0.0,
             ),
             coverage_eval=NL2TestCoverageEval(
                 class_coverage=0.0,
@@ -282,6 +288,8 @@ class Pipeline:
             ),
             localization_eval=self._empty_localization_eval(nl2_input),
             tool_log=self._build_tool_log(None, None, None),
+            input_tokens=0,
+            output_tokens=0,
         )
 
     def regenerate_analysis(self, *, eager: bool = True) -> JavaAnalysis:
@@ -296,8 +304,13 @@ class Pipeline:
         return self.analysis
 
     def run_nl2test(self, nl2_input: NL2TestInput) -> NL2TestEval:
+        run_usage_tracker = UsageTracker()
+
         # Decompose into initial blocks
-        blocks = self.decompose_natural_language(nl2_input.description)
+        blocks = self.decompose_natural_language(
+            nl2_input.description,
+            usage_tracker=run_usage_tracker,
+        )
 
         # Prepare blocks for supervisor orchestrator
         if self.decomposition_mode == DecompositionMode.GHERKIN:
@@ -313,6 +326,7 @@ class Pipeline:
                 class_searcher=self.class_searcher,
                 nl2_input=nl2_input,
                 base_project_dir=str(self.project_root),
+                usage_tracker=run_usage_tracker,
             )
         else:
             if isinstance(blocks, GrammaticalBlockList):
@@ -332,10 +346,11 @@ class Pipeline:
                 class_searcher=self.class_searcher,
                 nl2_input=nl2_input,
                 base_project_dir=str(self.project_root),
+                usage_tracker=run_usage_tracker,
             )
 
-        supervisor_state, localization_state, composition_state = (
-            supervisor.assign_task(sup_blocks)
+        supervisor_state, localization_state, composition_state = supervisor.assign_task(
+            sup_blocks
         )
 
         tool_log = self._build_tool_log(
@@ -345,65 +360,74 @@ class Pipeline:
         has_class_name = bool(
             supervisor_state and (supervisor_state.class_name or "").strip()
         )
-        # Handle case where we can't do test case eval
+
+        final_result: NL2TestEval
+
         if not has_class_name:
             localization_eval = self._localization_eval_from_state(
                 supervisor_state, nl2_input
             )
-            empty_eval = self._empty_nl2test_eval(nl2_input)
-            empty_eval.localization_eval = localization_eval
-            empty_eval.tool_log = tool_log
-            return empty_eval
+            final_result = self._empty_nl2test_eval(nl2_input)
+            final_result.localization_eval = localization_eval
+            final_result.tool_log = tool_log
+        else:
+            simple_class_name = supervisor_state.class_name.strip()
+            package = (supervisor_state.package or "").strip()
+            method_signature = (
+                (supervisor_state.method_signature or "").strip()
+                if supervisor_state
+                else ""
+            )
+            qualified_test_class_name = (
+                f"{package}.{simple_class_name}" if package else simple_class_name
+            )
 
-        simple_class_name = supervisor_state.class_name.strip()
-        package = (supervisor_state.package or "").strip()
-        method_signature = (
-            (supervisor_state.method_signature or "").strip()
-            if supervisor_state
-            else ""
-        )
-        qualified_test_class_name = (
-            f"{package}.{simple_class_name}" if package else simple_class_name
-        )
+            # Regenerate analysis to pick up new test class and update grader
+            new_analysis = self.regenerate_analysis(eager=True)
+            self.test_grader.set_analysis(new_analysis)
+            self.localization_grader.set_analysis(new_analysis)
 
-        # Regenerate analysis to pick up new test class and update grader
-        new_analysis = self.regenerate_analysis(eager=True)
-        self.test_grader.set_analysis(new_analysis)
-        self.localization_grader.set_analysis(new_analysis)
+            # Gather erroneous files and pass to grader
+            erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
+            self.test_grader.set_project_erroneous_files(erroneous_files)
 
-        # Gather erroneous files and pass to grader
-        erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
-        self.test_grader.set_project_erroneous_files(erroneous_files)
+            # Build NL2TestMetadata for the predicted class; code filled after grading
+            nl2_metadata = NL2TestMetadata(
+                qualified_test_class_name=qualified_test_class_name,
+                code="",
+                method_signature=method_signature or None,
+            )
 
-        # Build NL2TestMetadata for the predicted class; code filled after grading
-        nl2_metadata = NL2TestMetadata(
-            qualified_test_class_name=qualified_test_class_name,
-            code="",
-            method_signature=method_signature or None,
-        )
+            eval_result: NL2TestEval = self.test_grader.grade(
+                nl2_input, nl2_metadata
+            )
 
-        eval_result: NL2TestEval = self.test_grader.grade(nl2_input, nl2_metadata)
+            localization_eval = self._localization_eval_from_state(
+                supervisor_state, nl2_input
+            )
 
-        localization_eval = self._localization_eval_from_state(
-            supervisor_state, nl2_input
-        )
-
-        # Load and attach test code, then delete the file
-        fm = TestFileManager(self.project_root)
-        info = TestFileInfo(qualified_class_name=qualified_test_class_name)
-        try:
-            code = fm.load(info, encode_class_name=False)
-            # Attach code to metadata
-            eval_result.nl2test_metadata.code = code
-        except FileNotFoundError:
-            pass
-        finally:
+            # Load and attach test code, then delete the file
+            fm = TestFileManager(self.project_root)
+            info = TestFileInfo(qualified_class_name=qualified_test_class_name)
             try:
-                fm.delete_single(info, encode_class_name=False)
-            except Exception:
+                code = fm.load(info, encode_class_name=False)
+                # Attach code to metadata
+                eval_result.nl2test_metadata.code = code
+            except FileNotFoundError:
                 pass
+            finally:
+                try:
+                    fm.delete_single(info, encode_class_name=False)
+                except Exception:
+                    pass
 
-        eval_result.localization_eval = localization_eval
-        eval_result.tool_log = tool_log
+            eval_result.localization_eval = localization_eval
+            eval_result.tool_log = tool_log
+            final_result = eval_result
 
-        return eval_result
+        totals = run_usage_tracker.totals()
+        final_result.input_tokens = totals["input_tokens"]
+        final_result.output_tokens = totals["output_tokens"]
+        final_result.llm_calls = totals["calls"]
+
+        return final_result

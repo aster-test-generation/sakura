@@ -17,7 +17,7 @@ from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.config import Config
-from nltest.utils.llm import ClientType, LLMClient
+from nltest.utils.llm import ClientType, LLMClient, UsageTracker
 
 
 class BaseCompositionOrchestrator:
@@ -30,9 +30,17 @@ class BaseCompositionOrchestrator:
         nl2_input: NL2TestInput,
         project_root: str,
         decomposition_mode: DecompositionMode,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
-        decision_llm = LLMClient(ClientType.DECISION)
-        structured_llm = LLMClient(ClientType.STRUCTURED)
+        self.usage_tracker = usage_tracker or UsageTracker()
+        decision_llm = LLMClient(
+            ClientType.DECISION,
+            usage_tracker=self.usage_tracker,
+        )
+        structured_llm = LLMClient(
+            ClientType.STRUCTURED,
+            usage_tracker=self.usage_tracker,
+        )
 
         tool_builder = (
             GherkinCompositionTools(

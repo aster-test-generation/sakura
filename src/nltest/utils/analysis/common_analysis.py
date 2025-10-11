@@ -125,7 +125,7 @@ class CommonAnalysis:
         return False
 
     def is_teardown_method(self, method_signature, qualified_class_name: str,
-                          testing_frameworks: List[TestingFramework]) -> bool:
+                           testing_frameworks: List[TestingFramework]) -> bool:
         """
         Determines whether a method is a teardown method.
         Args:
@@ -406,7 +406,8 @@ class CommonAnalysis:
     def is_public(self, qualified_class_name: str, method_signature: str) -> bool:
         return self.is_accessible_from(qualified_class_name, method_signature, mode="public")
 
-    def get_method_visibility(self, qualified_class_name: str, method_signature: str) -> Literal["public", "same_package", "same_package_or_subclass"]:
+    def get_method_visibility(self, qualified_class_name: str, method_signature: str) -> Literal[
+        "public", "same_package", "same_package_or_subclass"]:
         """
         Determines the visibility level of a method.
         
@@ -425,35 +426,35 @@ class CommonAnalysis:
     def get_complicated_focal_tests(self) -> Dict[str, List[str]]:
         test_class_map, application_classes = self.get_test_methods_classes_and_application_classes()
         complicated_tests = {}
-        
+
         for test_class in test_class_map:
             testing_frameworks = self.get_testing_frameworks_for_class(test_class)
             setup_methods = self.get_setup_methods(test_class)
             setup_method_signatures = [method.signature for method in setup_methods]
-            
+
             complicated_methods = []
-            
+
             for method_signature in test_class_map[test_class]:
                 try:
                     focal_class_method = FocalClassMethod(self.analysis, testing_frameworks, application_classes)
                     focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
                         test_class, method_signature, setup_method_signatures
                     )
-                    
+
                     is_complicated = (
-                        len(focal_classes) > 1 or 
-                        (len(focal_classes) == 1 and len(focal_classes[0].focal_method_names) > 1)
+                            len(focal_classes) > 1 or
+                            (len(focal_classes) == 1 and len(focal_classes[0].focal_method_names) > 1)
                     )
-                    
+
                     if is_complicated:
                         complicated_methods.append(method_signature)
-                        
+
                 except Exception as e:
                     continue
-            
+
             if complicated_methods:
                 complicated_tests[test_class] = complicated_methods
-        
+
         return complicated_tests
 
     def get_complicated_focal_tests_count(self) -> int:

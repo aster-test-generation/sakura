@@ -6,7 +6,6 @@ from nltest.nl2test.generation.localization import (
     GherkinLocalizationOrchestrator,
     LocalizationTools,
 )
-from nltest.nl2test.evaluation.localization_grader_old import LocalizationGraderOld
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.nl2test.models import (
     AtomicBlock,
@@ -22,7 +21,7 @@ from nltest.nl2test.models.decomposition import (
 )
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.utils.llm import usage_tracker
+from nltest.utils.llm import UsageTracker
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.analysis import CommonAnalysis
 
@@ -93,7 +92,11 @@ class TestLocalizationAgent(BaseNL2Test):
 
     def test_localization_agent_simple_grammatical(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
-        nl_decomposer = NLDecomposer(mode=DecompositionMode.GRAMMATICAL)
+        tracker = UsageTracker()
+        nl_decomposer = NLDecomposer(
+            mode=DecompositionMode.GRAMMATICAL,
+            usage_tracker=tracker,
+        )
         grammatical_blocks: GrammaticalBlockList = nl_decomposer.decompose(
             nl_description
         )
@@ -125,13 +128,13 @@ class TestLocalizationAgent(BaseNL2Test):
             method_searcher=method_searcher,
             class_searcher=class_searcher,
             nl2_input=nl2_input,
+            usage_tracker=tracker,
         )
 
-        usage_tracker.start()
         refined_blocks, comments = localization_agent.assign_task(
             atomic_blocks, instructions=supervisor_instructions
         )
-        prices = usage_tracker.stop()
+        prices = tracker.totals()
 
         pretty_print("Refined atomic blocks", refined_blocks)
         pretty_print("Comments", comments)
@@ -139,7 +142,11 @@ class TestLocalizationAgent(BaseNL2Test):
 
     def test_localization_agent_simple_gherkin(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
-        nl_decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN)
+        tracker = UsageTracker()
+        nl_decomposer = NLDecomposer(
+            mode=DecompositionMode.GHERKIN,
+            usage_tracker=tracker,
+        )
 
         scenario: Scenario = nl_decomposer.decompose(nl_description)
         pretty_print("Initial scenario", scenario)
@@ -165,15 +172,15 @@ class TestLocalizationAgent(BaseNL2Test):
             method_searcher=method_searcher,
             class_searcher=class_searcher,
             nl2_input=nl2_input,
+            usage_tracker=tracker,
         )
 
-        usage_tracker.start()
         # Convert Scenario to LocalizedScenario with empty fields
         localized_input = LocalizedScenario.from_scenario(scenario)
         localized_scenario, comments = localization_agent.assign_task(
             localized_input, instructions=supervisor_instructions
         )
-        prices = usage_tracker.stop()
+        prices = tracker.totals()
 
         # Assertions and output
         self.assertIsInstance(localized_scenario, LocalizedScenario)
@@ -190,7 +197,11 @@ class TestLocalizationAgent(BaseNL2Test):
 
         nl_description = 'Create a test case that validates the successful processing of a new owner creation form by the `OwnerController`. The test leverages Spring\'s `@WebMvcTest` with `MockMvc` to simulate HTTP requests and responses. The `OwnerRepository` dependency is mocked using `@MockitoBean`, and its behavior is pre-configured in the `setup` method: a predefined `Owner` (obtained via the `george()` helper method, which constructs and populates an `Owner` instance with associated `Pet` and `PetType` data) is returned when `owners.findByLastNameStartingWith()` is called with any `Pageable` and the last name "Franklin", and the same `Owner` is returned when `owners.findById()` is called with `TEST_OWNER_ID`. The test then performs a POST request to "/owners/new" using `mockMvc.perform()`, simulating form submission with parameters for firstName, lastName, address, city, and telephone. Finally, the test asserts that the HTTP response status is a 3xx redirection using `andExpect(status().is3xxRedirection())`, indicating successful form processing and redirection, using Spring\'s `MockMvcResultMatchers`. JUnit and Mockito are used for the test structure and mocking, respectively.'
 
-        nl_decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN)
+        tracker = UsageTracker()
+        nl_decomposer = NLDecomposer(
+            mode=DecompositionMode.GHERKIN,
+            usage_tracker=tracker,
+        )
         scenario: Scenario = nl_decomposer.decompose(nl_description)
         pretty_print("Initial scenario", scenario)
 
@@ -215,15 +226,15 @@ class TestLocalizationAgent(BaseNL2Test):
             method_searcher=method_searcher,
             class_searcher=class_searcher,
             nl2_input=nl2_input,
+            usage_tracker=tracker,
         )
 
-        usage_tracker.start()
         # Convert Scenario to LocalizedScenario with empty fields
         localized_input = LocalizedScenario.from_scenario(scenario)
         localized_scenario, comments = localization_agent.assign_task(
             localized_input, instructions=supervisor_instructions
         )
-        prices = usage_tracker.stop()
+        prices = tracker.totals()
 
         # Assertions and output
         self.assertIsInstance(localized_scenario, LocalizedScenario)

@@ -14,14 +14,14 @@ from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
 from nltest.nl2test.pipeline import Pipeline as NL2Pipeline
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.utils.pretty.prints import pretty_print
-from nltest.utils.llm import usage_tracker
+from nltest.utils.llm import UsageTracker
 
 from tests._base_nl2test import BaseNL2Test
 
 
 class TestSupervisorAgent(BaseNL2Test):
     def test_supervisor_end_to_end(self):
-        usage_tracker.start()
+        tracker = UsageTracker()
         # Load dataset entries from CSV relative to this test file
         test_dir = Path(__file__).resolve().parent
         data_dir = test_dir / "output" / "resources" / "test2nl"
@@ -45,7 +45,7 @@ class TestSupervisorAgent(BaseNL2Test):
         self.assertTrue(project_root.exists(), "Project root does not exist")
 
         # Decompose NL into Gherkin Scenario and wrap as LocalizedScenario
-        decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN)
+        decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN, usage_tracker=tracker)
         scenario = decomposer.decompose(nl2_input.description)
         localized = LocalizedScenario.from_scenario(scenario)
 
@@ -62,6 +62,7 @@ class TestSupervisorAgent(BaseNL2Test):
             class_searcher=class_searcher,
             nl2_input=nl2_input,
             base_project_dir=str(project_root),
+            usage_tracker=tracker,
         )
 
         supervisor_state, localization_state, composition_state = (
@@ -74,5 +75,5 @@ class TestSupervisorAgent(BaseNL2Test):
         self.assertIsNotNone(supervisor_state.package)
         self.assertIsNotNone(supervisor_state.class_name)
 
-        prices = usage_tracker.stop()
+        prices = tracker.totals()
         pretty_print("Token usage", prices)

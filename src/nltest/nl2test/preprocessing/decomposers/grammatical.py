@@ -5,12 +5,17 @@ from typing import List
 from nltest.nl2test.models.decomposition import GrammaticalBlock, GrammaticalBlockList
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.decomposers.base import BaseDecomposer
-from nltest.utils.llm import LLMClient, ClientType
+from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 
 
 class GrammaticalDecomposer(BaseDecomposer):
-    def __init__(self) -> None:
-        self.structured = LLMClient(ClientType.STRUCTURED)
+    def __init__(self, *, usage_tracker: UsageTracker | None = None) -> None:
+        tracker = usage_tracker or UsageTracker()
+        self.structured = LLMClient(
+            ClientType.STRUCTURED,
+            usage_tracker=tracker,
+        )
+        self.usage_tracker = tracker
 
     def decompose(self, nl_description: str) -> GrammaticalBlockList:
         system_prompt = LoadPrompt.load_prompt(

@@ -8,7 +8,7 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
 from nltest.utils.config import init_config
-from nltest.utils.llm import usage_tracker
+
 from nltest.utils.llm.model import Provider
 
 
@@ -66,5 +66,3 @@ class BaseNL2Test(TestCase):
             analysis_json_path=output_dir,
             eager=False,
         )
-
-        usage_tracker.reset()

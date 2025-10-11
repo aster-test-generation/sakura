@@ -1,11 +1,11 @@
 from .format_validator import FormatValidator
 from .model import ClientType
-from .usage_tracker import usage_tracker
+from .usage_tracker import UsageTracker
 
 __all__ = [
     "FormatValidator",
     "ClientType",
-    "usage_tracker",
+    "UsageTracker",
     "LLMClient",  # Lazily provided via __getattr__
 ]
 

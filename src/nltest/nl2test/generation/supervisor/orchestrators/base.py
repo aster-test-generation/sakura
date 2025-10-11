@@ -9,7 +9,7 @@ from nltest.nl2test.models import NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.llm import ClientType, LLMClient
+from nltest.utils.llm import ClientType, LLMClient, UsageTracker
 from nltest.utils.config import Config
 from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.tools import (
@@ -40,6 +40,7 @@ class BaseSupervisorOrchestrator:
         nl2_input: NL2TestInput,
         decomposition_mode: DecompositionMode,
         base_project_dir: str,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         # Only GHERKIN is supported for Supervisor orchestration right now.
         if decomposition_mode != DecompositionMode.GHERKIN:
@@ -54,6 +55,8 @@ class BaseSupervisorOrchestrator:
         self.decomposition_mode = decomposition_mode
         self.base_project_dir = base_project_dir
 
+        self.usage_tracker = usage_tracker or UsageTracker()
+
         # Validate required dependencies are present
         if self.method_searcher is None or self.class_searcher is None:
             raise Exception(
@@ -61,7 +64,10 @@ class BaseSupervisorOrchestrator:
             )
 
         # Initialize LLMs and tools
-        decision_llm = LLMClient(ClientType.DECISION)
+        decision_llm = LLMClient(
+            ClientType.DECISION,
+            usage_tracker=self.usage_tracker,
+        )
 
         # Choose tool builder by decomposition mode (guarded above, but keep structure)
         if self.decomposition_mode == DecompositionMode.GHERKIN:
@@ -74,6 +80,7 @@ class BaseSupervisorOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
+                usage_tracker=self.usage_tracker,
             )
             composition_agent = GherkinCompositionOrchestrator(
                 analysis=analysis,
@@ -81,6 +88,7 @@ class BaseSupervisorOrchestrator:
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
                 project_root=base_project_dir or "",
+                usage_tracker=self.usage_tracker,
             )
         else:  # pragma: no cover - defensive
             tool_builder = GrammaticalSupervisorTools(
@@ -93,6 +101,7 @@ class BaseSupervisorOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
+                usage_tracker=self.usage_tracker,
             )
             composition_agent = GrammaticalCompositionOrchestrator(
                 analysis=analysis,
@@ -100,6 +109,7 @@ class BaseSupervisorOrchestrator:
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
                 project_root=base_project_dir or "",
+                usage_tracker=self.usage_tracker,
             )
 
         tools, allow_duplicate_tools = tool_builder.all()

@@ -6,6 +6,7 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
 from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
 from nltest.nl2test.models import AgentState, LocalizedScenario, NL2TestInput
+from nltest.utils.llm import UsageTracker
 from nltest.nl2test.models.decomposition import DecompositionMode
 
 
@@ -17,6 +18,7 @@ class GherkinLocalizationOrchestrator(BaseLocalizationOrchestrator):
         method_searcher: MethodSearcher,
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         super().__init__(
             analysis=analysis,
@@ -24,6 +26,7 @@ class GherkinLocalizationOrchestrator(BaseLocalizationOrchestrator):
             class_searcher=class_searcher,
             nl2_input=nl2_input,
             decomposition_mode=DecompositionMode.GHERKIN,
+            usage_tracker=usage_tracker,
         )
 
     def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:

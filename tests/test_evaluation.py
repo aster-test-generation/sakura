@@ -10,7 +10,6 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
 from nltest.utils.analysis.common_analysis import CommonAnalysis
-from nltest.utils.evaluation.test_grader_old import TestGraderOld
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.execution.compilation import JavaCompilation
 from nltest.nl2test.models.nl2test import NL2TestInput, NL2TestMetadata
@@ -150,9 +149,16 @@ class TestEvaluation(TestCase):
 
         self.assertEqual(output.structured_eval.assertion_recall, 1.0)
         self.assertEqual(output.structured_eval.obj_creation_recall, 1.0)
+        self.assertEqual(output.structured_eval.assertion_precision, 1.0)
+        self.assertEqual(output.structured_eval.obj_creation_precision, 1.0)
         self.assertGreaterEqual(output.structured_eval.callable_recall, 0.0)
         self.assertLessEqual(output.structured_eval.callable_recall, 1.0)
+        self.assertGreaterEqual(output.structured_eval.callable_precision, 0.0)
+        self.assertLessEqual(output.structured_eval.callable_precision, 1.0)
         self.assertGreaterEqual(output.structured_eval.focal_recall, 0.0)
+        self.assertLessEqual(output.structured_eval.focal_recall, 1.0)
+        self.assertGreaterEqual(output.structured_eval.focal_precision, 0.0)
+        self.assertLessEqual(output.structured_eval.focal_precision, 1.0)
 
         cov = output.coverage_eval
         self.assertGreaterEqual(cov.class_coverage, 0.0)

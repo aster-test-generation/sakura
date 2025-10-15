@@ -5,8 +5,8 @@ from pathlib import Path
 # === CONFIGURATION CONSTANTS ===
 # Directory paths relative to this script
 SRC_DIR = "../src"
-BASE_PROJECT_DIR = "../tests/resources"
-BASE_ANALYSIS_DIR = "../tests/output/"
+BASE_PROJECT_DIR = "../resources/datasets/"
+BASE_ANALYSIS_DIR = "../resources/analysis/"
 OUTPUT_DIR = "../resources/output/"
 # Test2NL CSV file path (must include the filename)
 CSV_FILE = "../resources/test2nl/partitioned_dataset/selected_from_subsets.csv"
@@ -16,14 +16,14 @@ MAX_ENTRIES = 0
 # Note: 0 = unlimited
 CLEAR_OUTPUT = True
 
-LLM_MODEL = "google/gemini-2.5-flash"
+LLM_MODEL = "Azure/gpt-5-2025-08-07"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
-LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
+LLM_PROVIDER: str | None = "gcp"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
-EMB_MODEL = "nomic-embed-text:v1.5"
+EMB_MODEL = "Azure/text-embedding-3-small-1"
 # Either EMB_PROVIDER or EMB_API_URL must be non-None
-EMB_PROVIDER: str | None = "ollama"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
+EMB_PROVIDER: str | None = "gcp"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
 EMB_API_URL: str | None = None
 
 # Decomposition mode
@@ -31,8 +31,8 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 10
-LOCALIZATION_MAX_ITERS: int = 40
-COMPOSITION_MAX_ITERS: int = 30
+LOCALIZATION_MAX_ITERS: int = 20
+COMPOSITION_MAX_ITERS: int = 20
 
 # Parallelization defaults (only between projects)
 NUM_PROJ_PARALLEL = 2

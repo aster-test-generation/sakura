@@ -9,7 +9,7 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
 PROJECTS_DIR = "../resources/datasets/"
-BASE_ANALYSIS_DIR = "../analysis/"
+BASE_ANALYSIS_DIR = "../resources/analysis/"
 OVERRIDE_EXISTING = True
 
 

@@ -79,6 +79,7 @@ def init_config(
         config.set("emb", "api_url", val="http://localhost:8000/v1")
     elif emb_provider == Provider.GCP:
         config.set("emb", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
+
     config.set("emb", "api_key", val=emb_api_key)
 
     # Assign localization agent settings

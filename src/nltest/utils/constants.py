@@ -23,7 +23,6 @@ ASTER_REPORTS_DIR = "reports"
 DEFAULT_ANALYSIS_DIR = "resources/output"
 HAMSTER_MODEL_DIR = "resources/hamster_models"
 NL2TEST_DIR = "resources/nl2test"
-MAVEN_CMD = "mvn.cmd" if sys.platform == "win32" else "mvn"
 
 # directories for storing prompts and telemetry io
 DEBUG_DIR = "nl2test_log"
@@ -68,9 +67,13 @@ PARALLEL_TOOL_CALLABLE: Dict[bool, set[str]] = {
         "openai/gpt-5-mini",
         "openai/gpt-4o-mini",
         "openai/gpt-4.1-mini",
+        "Azure/gpt-5-2025-08-07",
+        "Azure/gpt-4.1"
         # XAI models,
         "x-ai/grok-code-fast-1",
         # Google models
         "google/gemini-2.5-flash",
+        # Anthopic models
+        "GCP/claude-4-sonnet",
     },
 }

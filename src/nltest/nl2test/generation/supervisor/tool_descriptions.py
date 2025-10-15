@@ -48,26 +48,6 @@ Returns:
   Tuple (updated AtomicBlockList, composition_comments, current_package|null, current_class|null).
 """
 
-VIEW_TEST_CODE_DESC = """
-View the currently saved test file content for the active test class.
-Args:
-  None
-Use when:
-  Inspecting the latest generated test source after a composition step, verifying that requested fixes or integrations were applied, or capturing context for subsequent instructions.
-  Determining if the test code remains faithful to the natural language description of the test case.
-Returns:
-  String containing the current test source code, or a descriptive message when the file is missing or not yet generated.
-"""
-
-COMPILE_AND_EXECUTE_TEST_DESC = """
-Compile the project and execute the active test class.
-Args:
-  None
-Use when:
-  Obtaining concrete feedback on compilation status and runtime behavior to drive the next targeted localization or composition iteration; use iteratively as part of a fix loop after code changes.
-Returns:
-  Dict with compilation details (target_class_file, has_errors_for_target, any_compilation_errors, errors_for_target_class[], error_summary{}) and, when compilation succeeds, `execution` details including test run status, counts, failures, and error messages.
-"""
 
 FINALIZE_DESC = """
 End supervision when goals are met or iterations are exhausted.

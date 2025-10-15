@@ -8,11 +8,12 @@ SRC_DIR = "../src"
 ANALYSIS_DIR = "../tests/output/resources/output"
 ORGANIZED_METHODS_DIR = "../tests/output/resources/nl2test"
 OUTPUT_DIR = "../tests/output/resources/test2nl"
+ORGANIZED_METHODS_FILE_NAME = "nl2test.json"
 
 # CLI arguments
 LLM_MODEL = "deepseek/deepseek-chat-v3.1"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
-LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama"
+LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama", "gcp"
 LLM_API_URL: str | None = None  # must be OpenAI API compatible
 
 CLEAR_DATASET = True
@@ -69,6 +70,8 @@ def main() -> None:
         str(output_dir),
         "--organized-methods-dir",
         str(organized_methods_dir),
+        "--organized-methods-file-name",
+        ORGANIZED_METHODS_FILE_NAME,
         "--llm-model",
         LLM_MODEL,
         "--num-proj-parallel",

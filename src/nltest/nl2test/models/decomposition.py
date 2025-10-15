@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import List, Optional, Literal, Dict, Any, Annotated
+from typing import List, Optional, Literal, Dict, Any, Annotated, Union, Tuple, Set
 
 from pydantic import BaseModel, Field, ConfigDict
+
+from nltest.utils.models import NL2TestInput
 
 
 class DecompositionMode(Enum):
@@ -46,6 +48,54 @@ class CandidateMethod(BaseModel):
     return_type: str
 
 
+def _is_valid_candidate(candidate: CandidateMethod | None) -> bool:
+    if candidate is None:
+        return False
+    return any(
+        getattr(candidate, attr, "").strip()
+        for attr in ("implementing_class_name", "containing_class_name", "method_signature")
+    )
+
+
+def _candidate_key(candidate: CandidateMethod) -> Tuple[str, str, str, str]:
+    return (
+        (candidate.implementing_class_name or "").strip(),
+        (candidate.containing_class_name or "").strip(),
+        (candidate.method_signature or "").strip(),
+        (candidate.return_type or "").strip(),
+    )
+
+
+def _normalize_candidates(
+    candidates: List[CandidateMethod],
+    best_candidate: CandidateMethod,
+    limit: int = 3,
+) -> Tuple[List[CandidateMethod], CandidateMethod]:
+    if limit <= 0:
+        return [], best_candidate
+
+    ordered: List[CandidateMethod] = []
+    seen: Set[Tuple[str, str, str, str]] = set()
+
+    def _add(candidate: CandidateMethod | None) -> None:
+        if not _is_valid_candidate(candidate):
+            return
+        key = _candidate_key(candidate)  # type: ignore[arg-type]
+        if key in seen:
+            return
+        seen.add(key)
+        ordered.append(candidate)  # type: ignore[arg-type]
+
+    _add(best_candidate)
+    for c in candidates:
+        _add(c)
+
+    truncated = ordered[:limit]
+    if truncated:
+        return truncated, truncated[0]
+    return [], best_candidate
+
+
 class ArgBinding(BaseModel):
     arg_name: str
     arg_value: str  # Can be ${...} or a literal value
@@ -57,6 +107,16 @@ class LocalizedStep(Step):
     arg_bindings: List[ArgBinding]
     comments: str
     external: bool
+
+    def enforce_candidate_limit(self, limit: int = 3) -> None:
+        truncated, new_best = _normalize_candidates(
+            self.candidate_methods, self.best_candidate, limit
+        )
+        self.candidate_methods = truncated
+        if truncated:
+            self.best_candidate = truncated[0]
+        else:
+            self.best_candidate = new_best
 
 
 class LocalizedGherkinStep(BaseModel):
@@ -116,6 +176,16 @@ class LocalizedScenario(Scenario):
             teardown=[_to_localized_step(s) for s in scenario.teardown],
         )
 
+    def enforce_candidate_limits(self, limit: int = 3) -> None:
+        for step in self.setup:
+            step.enforce_candidate_limit(limit)
+        for grouped in self.steps:
+            for collection in (grouped.given, grouped.when, grouped.then):
+                for step in collection:
+                    step.enforce_candidate_limit(limit)
+        for step in self.teardown:
+            step.enforce_candidate_limit(limit)
+
 
 # ---- Grammatical Block Decomposition ----
 
@@ -154,14 +224,24 @@ class AtomicBlock(GrammaticalBlock):
     )
     notes: str
 
+    def enforce_candidate_limit(self, limit: int = 3) -> None:
+        truncated, new_best = _normalize_candidates(
+            self.candidate_methods, self.best_candidate, limit
+        )
+        self.candidate_methods = truncated
+        if truncated:
+            self.best_candidate = truncated[0]
+        else:
+            self.best_candidate = new_best
+
     @classmethod
     def from_grammatical_block(
-        cls,
-        gb: GrammaticalBlock,
-        *,
-        candidate_methods: List[CandidateMethod] | None = None,
-        best_candidate: CandidateMethod | None = None,
-        notes: str = "",
+            cls,
+            gb: GrammaticalBlock,
+            *,
+            candidate_methods: List[CandidateMethod] | None = None,
+            best_candidate: CandidateMethod | None = None,
+            notes: str = "",
     ) -> "AtomicBlock":
         cm = list(candidate_methods) if candidate_methods is not None else []
         bc = (
@@ -222,3 +302,17 @@ class AtomicBlockList(BaseModel):
     atomic_blocks: Annotated[
         List[AtomicBlock], Field(description="Ordered list of atomic blocks.")
     ]
+
+    def enforce_candidate_limits(self, limit: int = 3) -> None:
+        for block in self.atomic_blocks:
+            block.enforce_candidate_limit(limit)
+
+
+class NL2LocalizationOutput(BaseModel):
+    """Combined output from NL2Test localization evaluation."""
+
+    nl2_input: NL2TestInput
+    localized_blocks: Union[AtomicBlockList, LocalizedScenario]
+    evaluation_results: Optional[
+        Union[LocalizationEvaluationResultsOld, LocalizationEval]
+    ] = None

@@ -16,22 +16,29 @@ from nltest.nl2test.generation.common.tool_descriptions import (
     METHOD_DETAILS_DESC,
     CALL_SITE_DETAILS_DESC,
 )
+from nltest.nl2test.models.agents import QueryMethodArgs, ExtractMethodCodeArgs
+
 from cldk.analysis.java import JavaAnalysis
 
 
-class CommonJavaAnalysisToolsMixin:
+class CommonJavaAnalysisTools:
     """
-    Mixin providing shared Java static-analysis tools used by both
+    Shared Java static-analysis tools used by both
     localization and composition tool builders.
     """
 
     def __init__(self, *, analysis: JavaAnalysis) -> None:
         self.analysis = analysis
 
+    # Understand conditional branches and code structure
     def _make_extract_code_tool(self) -> StructuredTool:
         def _extract_method_code(
-            qualified_class_name: str, method_signature: str
-        ) -> str:
+                qualified_class_name: str,
+                method_signature: str,
+                start_line: int,
+                end_line: int,
+        ) -> Dict[str, Any]:
+            # Look up method; fail clearly if not found
             method_details = self.analysis.get_method(
                 qualified_class_name, method_signature
             )
@@ -44,21 +51,48 @@ class CommonJavaAnalysisToolsMixin:
                     },
                 )
 
-            return CommonAnalysis.get_complete_method_code(
+            # Build the full method source and compute an inclusive slice
+            full_source = CommonAnalysis.get_complete_method_code(
                 method_details.declaration, method_details.code
             )
+            lines = full_source.splitlines()
+            total = len(lines)
+
+            # Clamp to 1-based inclusive bounds; return empty when out of range
+            start = max(1, start_line)
+            end = max(0, end_line)
+            if total == 0:
+                start = 1
+                end = 0
+            else:
+                start = min(start, total)
+                end = min(end, total)
+
+            empty_slice = start > end
+            slice_lines: List[str] = [] if empty_slice else lines[start - 1:end]
+            note = "" if not empty_slice else "start_line greater than end_line; returning empty slice."
+
+            return {
+                "source": "\n".join(slice_lines),
+                "start_line": start,
+                "end_line": end,
+                "total_lines": total,
+                "note": note,
+            }
 
         return StructuredTool.from_function(
             func=_extract_method_code,
             name="extract_method_code",
             description=EXTRACT_CODE_DESC,
+            args_schema=ExtractMethodCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    def _make_method_details_tool(self) -> StructuredTool:
+    # Get basic method details like what it returns, parameters, modifiers, and comments.
+    def _make_get_method_details_tool(self) -> StructuredTool:
         def _get_method_details(
-            qualified_class_name: str, method_signature: str
-        ) -> Dict[str, Union[str, List[str]]]:
+                qualified_class_name: str, method_signature: str
+        ) -> Dict[str, any]:
             method_details = self.analysis.get_method(
                 qualified_class_name, method_signature
             )
@@ -81,7 +115,7 @@ class CommonJavaAnalysisToolsMixin:
                 "modifiers": method_details.modifiers,
                 "return_type": method_details.return_type,
                 "parameter_types": [p.type for p in method_details.parameters],
-                "comments": [c.content for c in method_details.comments],
+                "comments": [c.content[:25] for c in method_details.comments if c.content],
                 "visibility": visibility,
             }
 
@@ -89,13 +123,14 @@ class CommonJavaAnalysisToolsMixin:
             func=_get_method_details,
             name="get_method_details",
             description=METHOD_DETAILS_DESC,
+            args_schema=QueryMethodArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_call_site_details_tool(self) -> StructuredTool:
         def _get_call_site_details(
-            qualified_class_name: str, method_signature: str
-        ) -> List[Dict[str, Any]]:
+                qualified_class_name: str, method_signature: str
+        ) -> List[Dict[str, Union[str, List[str]]]]:
             method_details = self.analysis.get_method(
                 qualified_class_name, method_signature
             )
@@ -117,16 +152,16 @@ class CommonJavaAnalysisToolsMixin:
             result: List[Dict[str, Any]] = []
             for entry in entries:
                 callee_details: JMethodDetail = entry["callee_method"]
-                method: JCallable = callee_details.method
+                method_details: JCallable = callee_details.method
                 lines = entry.get("calling_lines", [])
                 count = max(len(lines), 1)
                 result.append(
                     {
                         "qualified_class_name": callee_details.klass,
-                        "method_signature": method.signature,
-                        "return_type": method.return_type,
-                        "parameter_types": [p.type for p in method.parameters],
-                        "modifiers": method.modifiers,
+                        "method_signature": method_details.signature,
+                        "return_type": method_details.return_type,
+                        "parameter_types": [p.type for p in method_details.parameters],
+                        "modifiers": method_details.modifiers,
                         "num_times_called": count,
                     }
                 )
@@ -136,5 +171,6 @@ class CommonJavaAnalysisToolsMixin:
             func=_get_call_site_details,
             name="get_call_site_details",
             description=CALL_SITE_DETAILS_DESC,
+            args_schema=QueryMethodArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

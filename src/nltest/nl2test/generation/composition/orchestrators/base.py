@@ -120,5 +120,5 @@ class BaseCompositionOrchestrator:
         self.agent.reset_agent()
 
     # Shared signature implemented by subclasses. Intentionally untyped for different decomposition modes
-    def assign_task(self, blocks, *, instructions: str):
+    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None):
         raise NotImplementedError

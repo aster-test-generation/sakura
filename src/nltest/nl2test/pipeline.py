@@ -31,9 +31,8 @@ from nltest.nl2test.models import (
     NL2TestStructuralEval,
     NL2TestCoverageEval,
 )
-from nltest.nl2test.models.agents import AgentToolLog, ToolLog
 from nltest.nl2test.models.decomposition import DecompositionMode
-from nltest.nl2test.models.nl2test import NL2TestEval
+from nltest.utils.models import AgentToolLog, ToolLog, NL2TestEval
 from nltest.nl2test.preprocessing.indexers import ClassIndexer
 from nltest.nl2test.preprocessing.indexers import MethodIndexer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
@@ -42,9 +41,10 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.evaluation import TestGrader
 from nltest.utils.execution import JavaCompilation
+from nltest.utils.evaluation import TestGrader
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
+from nltest.utils.exceptions import ProjectCompilationError
 
 
 class Pipeline:
@@ -349,9 +349,15 @@ class Pipeline:
                 usage_tracker=run_usage_tracker,
             )
 
-        supervisor_state, localization_state, composition_state = supervisor.assign_task(
-            sup_blocks
-        )
+        try:
+            supervisor_state, localization_state, composition_state = supervisor.assign_task(
+                sup_blocks
+            )
+        except ProjectCompilationError as exc:
+            raise ProjectCompilationError(
+                f"Project compilation failed outside the generated test for input {nl2_input.id}.",
+                extra_info=getattr(exc, "extra_info", {}),
+            ) from exc
 
         tool_log = self._build_tool_log(
             supervisor_state, localization_state, composition_state

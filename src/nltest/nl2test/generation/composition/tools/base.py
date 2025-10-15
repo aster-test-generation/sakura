@@ -12,10 +12,10 @@ from nltest.nl2test.models import (
     NL2TestInput,
     QueryClassArgs,
     QueryMethodArgs,
-    QueryVectorDataArgs,
-    TestCodeArgs,
+    GenerateTestCodeArgs,
     AtomicBlockList,
     FinalizeCommentsArgs,
+    NoArgs,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
@@ -31,45 +31,48 @@ from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
-    QUERY_CLASS_DESC,
     GET_CLASS_FIELDS_DESC,
     GET_CLASS_IMPORTS_DESC,
     GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
     GET_GETTERS_AND_SETTERS_DESC,
     GET_MAVEN_DEPENDENCIES_DESC,
-    VIEW_TEST_CODE_DESC,
     GENERATE_TEST_CODE_DESC,
-    COMPILE_AND_EXECUTE_TEST_DESC,
     FINALIZE_DESC,
 )
 from nltest.nl2test.generation.common.tool_descriptions import (
     EXTRACT_CODE_DESC,
     METHOD_DETAILS_DESC,
     CALL_SITE_DETAILS_DESC,
+    VIEW_TEST_CODE_DESC,
+    COMPILE_AND_EXECUTE_TEST_DESC,
 )
 from nltest.nl2test.generation.common.tools.common_java_analysis import (
-    CommonJavaAnalysisToolsMixin,
+    CommonJavaAnalysisTools,
+)
+from nltest.nl2test.generation.common.tools.common_search import (
+    CommonSearchTools,
 )
 from nltest.utils.file_io.pom_processor import PomProcessor
 
 
-class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
+class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
     """Shared composition tools; subclasses can extend with mode-specific tools."""
 
     def __init__(
-        self,
-        *,
-        analysis: JavaAnalysis,
-        method_searcher: MethodSearcher,
-        class_searcher: ClassSearcher,
-        structured_llm: LLMClient,
-        project_root: str,
-        nl2_input: NL2TestInput,
+            self,
+            *,
+            analysis: JavaAnalysis,
+            method_searcher: MethodSearcher,
+            class_searcher: ClassSearcher,
+            structured_llm: LLMClient,
+            project_root: str,
+            nl2_input: NL2TestInput,
     ) -> None:
-        super().__init__(analysis=analysis)
+        CommonJavaAnalysisTools.__init__(self, analysis=analysis)
+        CommonSearchTools.__init__(self, class_searcher=class_searcher)
+
         self.structured_llm = structured_llm
         self.method_searcher = method_searcher
-        self.class_searcher = class_searcher
 
         # Accept project root directly
         self.project_root: Path = Path(project_root)
@@ -105,146 +108,12 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
         # Return tool list and the subset allowed to duplicate
         return self.tools, self.allow_duplicate_tools
 
-    # Get relevant classes from the database by similarity search, within a range
-    def _make_query_class_tool(self) -> StructuredTool:
-        def _query_class_db(query: str, i: int, j: int) -> List[Dict[str, str]]:
-            from nltest.utils.exceptions import InvalidArgumentError
-
-            if i <= 0:
-                raise InvalidArgumentError("i must be positive", extra_info={"i": i})
-            if j < i:
-                raise InvalidArgumentError(
-                    "j must be greater than i", extra_info={"i": i, "j": j}
-                )
-
-            return self.class_searcher.find_similar_in_range(query, i, j)
-
-        return StructuredTool.from_function(
-            func=_query_class_db,
-            name="query_class_db",
-            description=QUERY_CLASS_DESC,
-            args_schema=QueryVectorDataArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    # Understand conditional branches and code structure
-    def _make_extract_code_tool(self) -> StructuredTool:
-        def _extract_method_code(
-            qualified_class_name: str, method_signature: str
-        ) -> str:
-            method_details = self.analysis.get_method(
-                qualified_class_name, method_signature
-            )
-            if not method_details:
-                raise MethodNotFoundError(
-                    f"Method {method_signature} not found in class {qualified_class_name}.",
-                    extra_info={
-                        "qualified_class_name": qualified_class_name,
-                        "method_signature": method_signature,
-                    },
-                )
-
-            return CommonAnalysis.get_complete_method_code(
-                method_details.declaration, method_details.code
-            )
-
-        return StructuredTool.from_function(
-            func=_extract_method_code,
-            name="extract_method_code",
-            description=EXTRACT_CODE_DESC,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    # Get basic method details like what it returns, parameters, modifiers, and comments.
-    def _make_get_method_details_tool(self) -> StructuredTool:
-        def _get_method_details(
-            qualified_class_name: str, method_signature: str
-        ) -> Dict[str, Union[str, List[str]]]:
-            method_details = self.analysis.get_method(
-                qualified_class_name, method_signature
-            )
-            if not method_details:
-                raise MethodNotFoundError(
-                    f"Method {method_signature} not found in class {qualified_class_name}.",
-                    extra_info={
-                        "qualified_class_name": qualified_class_name,
-                        "method_signature": method_signature,
-                    },
-                )
-
-            common_analysis = CommonAnalysis(self.analysis)
-            visibility = common_analysis.get_method_visibility(
-                qualified_class_name, method_signature
-            )
-
-            return {
-                "method_signature": method_details.signature,
-                "modifiers": method_details.modifiers,
-                "return_type": method_details.return_type,
-                "parameter_types": [p.type for p in method_details.parameters],
-                "comments": [c.content for c in method_details.comments],
-                "visibility": visibility,
-            }
-
-        return StructuredTool.from_function(
-            func=_get_method_details,
-            name="get_method_details",
-            description=METHOD_DETAILS_DESC,
-            args_schema=QueryMethodArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    def _make_call_site_details_tool(self) -> StructuredTool:
-        def _get_call_site_details(
-            qualified_class_name: str, method_signature: str
-        ) -> List[Dict[str, Union[str, List[str]]]]:
-            method_details = self.analysis.get_method(
-                qualified_class_name, method_signature
-            )
-            if not method_details:
-                raise CallSiteNotFoundError(
-                    f"Call sites could not be found because method {method_signature} not found in class {qualified_class_name}.",
-                    extra_info={
-                        "qualified_class_name": qualified_class_name,
-                        "method_signature": method_signature,
-                    },
-                )
-
-            entries = self.analysis.get_callees(
-                source_class_name=qualified_class_name,
-                source_method_declaration=method_signature,
-                using_symbol_table=True,
-            ).get("callee_details", [])
-
-            result: List[Dict[str, Any]] = []
-            for entry in entries:
-                callee_details: JMethodDetail = entry["callee_method"]
-                method_details: JCallable = callee_details.method
-                lines = entry.get("calling_lines", [])
-                count = max(len(lines), 1)
-                result.append(
-                    {
-                        "qualified_class_name": callee_details.klass,
-                        "method_signature": method_details.signature,
-                        "return_type": method_details.return_type,
-                        "parameter_types": [p.type for p in method_details.parameters],
-                        "modifiers": method_details.modifiers,
-                        "num_times_called": count,
-                    }
-                )
-            return result
-
-        return StructuredTool.from_function(
-            func=_get_call_site_details,
-            name="get_call_site_details",
-            description=CALL_SITE_DETAILS_DESC,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
+    # query_class_db now provided by CommonSearchTools
 
     # For instantiating class properties that might be used
     def _make_get_class_fields_tool(self) -> StructuredTool:
         def _get_class_fields(
-            qualified_class_name: str,
+                qualified_class_name: str,
         ) -> List[Dict[str, Union[str, List[str]]]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -291,7 +160,7 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
     # Understand how to instantiate class objects and requirements
     def _make_get_class_constructors_and_factories_tool(self) -> StructuredTool:
         def _get_class_constructors_and_factories(
-            qualified_class_name: str,
+                qualified_class_name: str,
         ) -> List[Dict[str, str]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -313,8 +182,8 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
                 if method_details.is_constructor:
                     class_constructors.append(method_sig)
                 elif (
-                    "static" in method_details.modifiers
-                    and qualified_class_name == method_details.return_type
+                        "static" in method_details.modifiers
+                        and qualified_class_name == method_details.return_type
                 ):
                     class_factories.append(method_sig)
 
@@ -372,24 +241,27 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
             func=_get_maven_dependencies,
             name="get_maven_dependencies",
             description=GET_MAVEN_DEPENDENCIES_DESC,
+            args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_view_test_code_tool(self) -> StructuredTool:
         def _view_test_code() -> dict:
             # NOTE: Work is done by the agent hook for state injection
+            # Returning an empty dict satisfies the tool pipeline.
             return {}
 
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
             description=VIEW_TEST_CODE_DESC,
+            args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
     def _make_generate_test_tool(self) -> StructuredTool:
         def _generate_test_code(
-            test_code: str, qualified_class_name: str, method_signature: str
+                test_code: str, qualified_class_name: str, method_signature: str
         ) -> dict:
             # NOTE: Work is done by the agent hook for state injection
             return {
@@ -402,7 +274,7 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
             func=_generate_test_code,
             name="generate_test_code",
             description=GENERATE_TEST_CODE_DESC,
-            args_schema=TestCodeArgs,
+            args_schema=GenerateTestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
@@ -429,21 +301,7 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
             func=_compile_test_code,
             name="compile_test_code",
             description="",
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    # DEPRECATED
-    def _make_execution_test_tool(self) -> StructuredTool:
-        def _execute_test() -> Dict[str, Any]:
-            info = TestFileInfo.from_nl2test_input(self.nl2_input)
-            test_fqn = TestFileManager(self.project_root).make_test_fqn(info)
-            execution_feedback = JavaExecution.execute(str(self.project_root), test_fqn)
-            return execution_feedback
-
-        return StructuredTool.from_function(
-            func=_execute_test,
-            name="execute_test",
-            description="",
+            args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
@@ -456,6 +314,7 @@ class BaseCompositionTools(CommonJavaAnalysisToolsMixin):
             func=_compile_and_execute_test,
             name="compile_and_execute_test",
             description=COMPILE_AND_EXECUTE_TEST_DESC,
+            args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 

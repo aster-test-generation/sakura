@@ -1,17 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Annotated, Dict, List, Optional, Union
+from typing import Annotated, Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
-from .decomposition import (
-    AtomicBlock,
-    AtomicBlockList,
-    LocalizationEval,
-    LocalizationEvaluationResultsOld,
-    LocalizedScenario,
-)
-from .agents import ToolLog
 
 
 class AbstractionLevel(Enum):
@@ -34,14 +26,15 @@ class NL2TestInput(BaseModel):
     model_config = ConfigDict(use_enum_values=True)
 
 
-class NL2LocalizationOutput(BaseModel):
-    """Combined output from NL2Test localization evaluation."""
+class AgentToolLog(BaseModel):
+    tool_counts: Dict[str, int]
+    tool_trajectories: List[List[str]]
 
-    nl2_input: NL2TestInput
-    localized_blocks: Union[AtomicBlockList, LocalizedScenario]
-    evaluation_results: Optional[
-        Union[LocalizationEvaluationResultsOld, LocalizationEval]
-    ] = None
+
+class ToolLog(BaseModel):
+    supervisor_tool_log: AgentToolLog
+    localization_tool_log: AgentToolLog
+    composition_tool_log: AgentToolLog
 
 
 class NL2EvaluationResults(BaseModel):
@@ -98,7 +91,7 @@ class NL2TestEval(BaseModel):
     nl2test_metadata: NL2TestMetadata
     structured_eval: Optional[NL2TestStructuralEval]
     coverage_eval: Optional[NL2TestCoverageEval]
-    localization_eval: Optional[LocalizationEval] = None
+    localization_eval: Optional[Any] = None  # Accepts LocalizationEval from nl2test flows.
     tool_log: Optional[ToolLog] = None
     input_tokens: int = 0
     output_tokens: int = 0

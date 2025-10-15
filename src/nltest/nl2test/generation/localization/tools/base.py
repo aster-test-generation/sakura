@@ -5,8 +5,6 @@ from cldk.models.java.models import JMethodDetail, JCallable
 from langchain_core.tools import StructuredTool, BaseTool
 
 from nltest.nl2test.models import (
-    AtomicBlockList,
-    QueryMethodArgs,
     QueryClassArgs,
     QueryVectorDataArgs,
     ReachableMethodsArgs,
@@ -25,22 +23,19 @@ from nltest.utils.exceptions.tool_exceptions import BlockNotFoundError
 from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.localization.tool_descriptions import (
     QUERY_METHOD_DESC,
-    QUERY_CLASS_DESC,
     REACHABLE_METHODS_DESC,
     CLASS_DETAILS_DESC,
     INHERITED_LIBRARY_CLASSES_DESC,
 )
-from nltest.nl2test.generation.common.tool_descriptions import (
-    EXTRACT_CODE_DESC,
-    METHOD_DETAILS_DESC,
-    CALL_SITE_DETAILS_DESC,
-)
 from nltest.nl2test.generation.common.tools.common_java_analysis import (
-    CommonJavaAnalysisToolsMixin,
+    CommonJavaAnalysisTools,
+)
+from nltest.nl2test.generation.common.tools.common_search import (
+    CommonSearchTools,
 )
 
 
-class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
+class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
     """Shared localization tools; subclasses implement finalize step."""
 
     def __init__(
@@ -50,9 +45,10 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
             method_searcher: MethodSearcher,
             class_searcher: ClassSearcher,
     ) -> None:
-        super().__init__(analysis=analysis)
+        CommonJavaAnalysisTools.__init__(self, analysis=analysis)
+        CommonSearchTools.__init__(self, class_searcher=class_searcher)
+
         self.method_searcher = method_searcher
-        self.class_searcher = class_searcher
 
         # Subclasses should add their finalize tool if desired
         self.tools: List[BaseTool] = [
@@ -60,8 +56,8 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
             self._make_query_class_tool(),
             self._make_reachable_methods_tool(),
             self._make_extract_code_tool(),
-            self._make_method_details_tool(),
-            self._make_class_details_tool(),
+            self._make_get_method_details_tool(),
+            self._make_get_class_details_tool(),
             self._make_get_inherited_library_classes_tool(),
             self._make_call_site_details_tool(),
         ]
@@ -89,26 +85,6 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
             func=_query_method_db,
             name="query_method_db",
             description=QUERY_METHOD_DESC,
-            args_schema=QueryVectorDataArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    # Get relevant classes from the database by similarity search, within a range
-    def _make_query_class_tool(self) -> StructuredTool:
-        def _query_class_db(query: str, i: int, j: int) -> List[Dict[str, str]]:
-            if i <= 0:
-                raise InvalidArgumentError("i must be positive", extra_info={"i": i})
-            if j < i:
-                raise InvalidArgumentError(
-                    "j must be greater than i", extra_info={"i": i, "j": j}
-                )
-
-            return self.class_searcher.find_similar_in_range(query, i, j)
-
-        return StructuredTool.from_function(
-            func=_query_class_db,
-            name="query_class_db",
-            description=QUERY_CLASS_DESC,
             args_schema=QueryVectorDataArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -142,10 +118,8 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    # extract_method_code and get_method_details provided by CommonJavaAnalysisToolsMixin
-
     # Get basic class details like what it extends, implements, modifiers, and annotations.
-    def _make_class_details_tool(self) -> StructuredTool:
+    def _make_get_class_details_tool(self) -> StructuredTool:
         def _get_class_details(
                 qualified_class_name: str,
         ) -> Dict[str, Union[str, List[str]]]:
@@ -201,5 +175,3 @@ class BaseLocalizationTools(CommonJavaAnalysisToolsMixin):
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
-
-    # call_site_details provided by CommonJavaAnalysisToolsMixin

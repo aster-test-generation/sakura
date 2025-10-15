@@ -16,6 +16,10 @@ from langchain_core.messages import (
 from langchain_core.tools import BaseTool
 from nltest.nl2test.models import AgentState
 from nltest.utils.llm import LLMClient
+from nltest.utils.tool_messages import (
+    format_tool_error,
+    format_tool_ok,
+)
 
 
 class ReActAgent:
@@ -81,7 +85,27 @@ class ReActAgent:
             outputs: List[ToolMessage],
     ) -> None:
         """Allow subclasses to interpret tool results and update state."""
-        outputs.append(ToolMessage(content=str(result), tool_call_id=tool_call["id"]))
+        try:
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_ok(result),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+        except Exception as exc:  # pragma: no cover - defensive
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code=type(exc).__name__,
+                        message=str(exc),
+                        details={
+                            "tool": tool_call.get("name"),
+                            "tool_call_id": tool_call["id"],
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
 
     def _should_end_after_tools(self, state: AgentState) -> bool:
         """Hook for subclasses to request ending immediately after tools."""
@@ -112,14 +136,12 @@ class ReActAgent:
             remaining_iterations = self.max_iters - state.iterations
             if remaining_iterations == 1:
                 warning_message = (
-                    "WARNING: This is your last allowed iteration in this sequence. "
-                    "You MUST execute the `finalize` tool call now to produce your final output based on all gathered information."
+                    "SYSTEM NOTICE: Final iteration. Call the finalize tool now using the best available context."
                 )
                 state.messages.append(HumanMessage(content=warning_message))
             elif remaining_iterations == 2:
                 warning_message = (
-                    "WARNING: This is your second last allowed iteration in this sequence. "
-                    "You MUST execute any last tools to prepare your output. You MUST execute the `finalize` tool after this turn, so perform any last actions before completing as needed."
+                    "SYSTEM NOTICE: Second-to-last iteration. Finish any remaining tool work now; plan to call finalize next turn."
                 )
                 state.messages.append(HumanMessage(content=warning_message))
 
@@ -146,7 +168,10 @@ class ReActAgent:
             if last_ai and getattr(last_ai, "tool_calls", None):
                 return "use_tools"
 
-            # No tool calls: if we've reached the limit, transition to force_end
+            # No tool calls: enforce finalize when required and guard iteration limit
+            if self.strict_finalize and not getattr(state, "finalize_called", False):
+                return "force_end"
+
             if state.iterations >= self.max_iters:
                 return "force_end"
 
@@ -158,8 +183,13 @@ class ReActAgent:
                 m for m in reversed(state.messages) if isinstance(m, AIMessage)
             )
             tool_msgs: List[ToolMessage] = []
+            tool_calls = list(getattr(last_ai, "tool_calls", []))
+            skipped_tool_calls: List[ToolCall] = []
+            if not self.allow_parallelize and len(tool_calls) > 1:
+                skipped_tool_calls = tool_calls[1:]
+                tool_calls = tool_calls[:1]
 
-            for tc in last_ai.tool_calls:
+            for tc in tool_calls:
                 name: str = tc["name"]
                 args: Dict[str, Any] = self.llm.parse_tool_args(tc.get("args"))
 
@@ -169,7 +199,15 @@ class ReActAgent:
                 if tool is None:
                     tool_msgs.append(
                         ToolMessage(
-                            content=f"[Tool '{name}' not found]", tool_call_id=tc["id"]
+                            content=format_tool_error(
+                                code="tool_not_found",
+                                message=f"Tool '{name}' is not registered.",
+                                details={
+                                    "tool": name,
+                                    "tool_call_id": tc["id"],
+                                },
+                            ),
+                            tool_call_id=tc["id"],
                         )
                     )
                     continue
@@ -182,33 +220,63 @@ class ReActAgent:
                 state.curr_tool_trajectory.append(name)
 
                 if prev_count > 0 and name not in self._allow_duplicate_tool_names:
-                    # Already executed with identical args; skip and inform the model
-                    try:
-                        content = json.dumps(
-                            {
-                                "status": "skipped",
-                                "reason": "duplicate_tool_call",
-                                "tool": name,
-                                "args": args,
-                            },
-                            ensure_ascii=False,
-                        )
-                    except Exception:
-                        content = (
-                            f"skipped: duplicate_tool_call for tool={name} args={args}"
-                        )
                     tool_msgs.append(
-                        ToolMessage(content=content, tool_call_id=tc["id"])
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="duplicate_tool_call",
+                                message="Skipped duplicate tool call with identical arguments.",
+                                details={
+                                    "tool": name,
+                                    "args": args,
+                                    "tool_call_id": tc["id"],
+                                },
+                            ),
+                            tool_call_id=tc["id"],
+                        )
                     )
                     continue
 
                 try:
                     result = tool.invoke(args)
-                except Exception as e:
-                    result = f"[{name} raised: {e}]"
+                except Exception as exc:  # pragma: no cover - defensive
+                    tool_msgs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code=type(exc).__name__,
+                                message=str(exc),
+                                details={
+                                    "tool": name,
+                                    "tool_call_id": tc["id"],
+                                    "args": args,
+                                },
+                            ),
+                            tool_call_id=tc["id"],
+                        )
+                    )
+                    continue
 
                 # Let subclasses interpret results + possibly update state
                 self._process_tool_output(tc, result, state, tool_msgs)
+
+            for skipped_tc in skipped_tool_calls:
+                skipped_args = self.llm.parse_tool_args(skipped_tc.get("args"))
+                tool_msgs.append(
+                    ToolMessage(
+                        content=format_tool_error(
+                            code="parallel_call_disallowed",
+                            message=(
+                                "Skipped additional tool call because only one tool is allowed per iteration. "
+                                "Resend the tool call in a new turn."
+                            ),
+                            details={
+                                "tool": skipped_tc.get("name"),
+                                "tool_call_id": skipped_tc["id"],
+                                "args": skipped_args,
+                            },
+                        ),
+                        tool_call_id=skipped_tc["id"],
+                    )
+                )
 
             state.messages.extend(tool_msgs)
             return state
@@ -220,11 +288,21 @@ class ReActAgent:
                 state.messages[0], SystemMessage
             ), "First message must be a SystemMessage"
 
+            state.force_end_attempts = getattr(state, "force_end_attempts", 0) + 1
+            attempt = state.force_end_attempts
+
             # Nudge the model explicitly to call finalize with the available context
-            prompt = (
-                "You have reached the iteration limit. Use the 'finalize' tool now to produce the final answer "
-                "based on all prior tool results and messages. Do not call any other tools or perform any other behavior but finalizing the answer through the tool call."
-            )
+            if attempt == 1:
+                prompt = (
+                    "You have reached the iteration limit. Use the 'finalize' tool now to produce the final answer "
+                    "based on all prior tool results and messages. Do not call any other tools or perform any other behavior."
+                )
+            else:
+                prompt = (
+                    "FINAL NOTICE: You must call the 'finalize' tool immediately. No other tools are allowed. "
+                    "Summarize the best available result, then call finalize now."
+                )
+
             human_prompt = HumanMessage(content=prompt)
             # Include the instruction in the state history
             state.messages.append(human_prompt)
@@ -247,37 +325,34 @@ class ReActAgent:
             )
             state.messages.append(out)
 
-            # Enter end state so we aren't in infinite force_end loop
-            self._end_now = True
+            last_ai: Optional[AIMessage] = out
+            tool_calls = list(getattr(last_ai, "tool_calls", []) or [])
+            requested_finalize = any(tc.get("name") == "finalize" for tc in tool_calls)
 
-            # If strict, ensure finalize was actually called; otherwise raise
+            from nltest.utils.exceptions import ConfigurationException
+
             if self.strict_finalize:
-                last_ai: Optional[AIMessage] = None
-                for msg in reversed(state.messages):
-                    if isinstance(msg, AIMessage):
-                        last_ai = msg
-                        break
-                # No tool calls or wrong tool
-                if not last_ai or not getattr(last_ai, "tool_calls", None):
-                    from nltest.utils.exceptions import ConfigurationException
-
+                if not tool_calls or not requested_finalize:
                     raise ConfigurationException(
                         "finalize_not_called",
                         message=(
                             "Model did not call 'finalize' in force_end despite strict enforcement."
+                            if not tool_calls
+                            else "Model called a non-finalize tool during force_end in strict mode."
                         ),
+                        details={"state": state},
                     )
-                else:
-                    # Validate the tool called is finalize
-                    names = [tc.get("name") for tc in last_ai.tool_calls]
-                    if not any(n == "finalize" for n in names):
-                        from nltest.utils.exceptions import ConfigurationException
-
+            else:
+                if not requested_finalize:
+                    # Prevent execution of unrelated tools; retry with stronger reminder.
+                    last_ai.tool_calls = []
+                    if attempt >= 2:
                         raise ConfigurationException(
-                            "finalize_not_called",
+                            "non_strict_finalize_not_called",
                             message=(
-                                "Model called a non-finalize tool during force_end in strict mode."
+                                "Model failed to call 'finalize' after explicit reminders; aborting."
                             ),
+                            details={"attempts": attempt, "state": state},
                         )
 
             return state
@@ -291,6 +366,12 @@ class ReActAgent:
                     break
             if last_ai and getattr(last_ai, "tool_calls", None):
                 return "use_tools"
+            if (
+                    not getattr(state, "finalize_called", False)
+                    and not self.strict_finalize
+                    and getattr(state, "force_end_attempts", 0) < 2
+            ):
+                return "force_end"
             return "end"
 
         # Decide whether to end after tools or continue/force end

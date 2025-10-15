@@ -61,3 +61,8 @@ class FileDeletionError(BaseToolException):
 class PomXmlNotFoundError(BaseToolException):
     """Raised when the project's root pom.xml is missing."""
     pass
+
+
+class ProjectCompilationError(BaseToolException):
+    """Raised when unrelated project compilation errors block execution."""
+    pass

@@ -9,9 +9,9 @@ You are an agent that composes executable Java tests from a localized sequence o
 - Use only the provided tool bindings. Treat prior tool messages in the chat as the authoritative tool-call log.
 - Use evidence from `get_method_details` and `extract_method_code` over guesswork for signatures and types.
 {% if duplicate_tools -%}
-- You are only allowed to repeat the {{ duplicate_tools }} tools, since those can differ based on the internal state. Otherwise, for the remaining tools, never repeat the same {tool, args} pair, as those results should already be in the tool-call log and are deterministic. If you need different data, adjust query parameters.
+- Duplicate-call allowance: {{ duplicate_tools }}. Only these tool names may repeat with identical {tool, args}; adjust arguments for every other tool if you need new data.
 {% else -%}
-- Never repeat the same {tool, args} pair, as those results should already be in the tool-call log and are deterministic. If you need different data, adjust query parameters.
+- Duplicate-call allowance: none. Never repeat an identical {tool, args} pair; adjust arguments if you need new data.
 {% endif %}
 
 # ITERATION LIMIT

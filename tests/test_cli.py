@@ -1,8 +1,13 @@
 import os
+import tempfile
 from pathlib import Path
 from unittest import TestCase
 
-from nltest.cli import generate_descriptions, evaluate_localization, run_nl2test
+from nltest.cli import (
+    generate_descriptions,
+    run_nl2test,
+    _load_nl2_inputs_by_project_from_csv,
+)
 
 
 def _ensure_empty_test2nl_csv(csv_path: Path) -> None:
@@ -34,6 +39,7 @@ class TestCLI(TestCase):
                 analysis_dir=analysis_dir,
                 output_dir=output_dir,
                 organized_methods_dir=organized_methods_dir,
+                organized_methods_file_name="nl2test.json",
                 llm_model="google/gemini-2.5-flash",
                 llm_provider="openrouter",
                 llm_api_url=None,
@@ -43,40 +49,6 @@ class TestCLI(TestCase):
                 per_proj_concurrency=2,
                 max_inflight=0,
                 exclude_groups=[],
-            )
-        finally:
-            os.chdir(orig_cwd)
-
-    def test_cli_evaluate_localization_smoke(self):
-        base_project_dir = "./resources/"
-        output_dir = "./output"
-        test2nl_file = "./output/resources/test2nl/test2nl.csv"
-
-        orig_cwd = os.getcwd()
-        try:
-            os.chdir(Path(__file__).resolve().parent)
-            # Ensure directories and an empty CSV exist
-            Path(base_project_dir).mkdir(parents=True, exist_ok=True)
-            Path(output_dir).mkdir(parents=True, exist_ok=True)
-            _ensure_empty_test2nl_csv(Path(test2nl_file))
-
-            evaluate_localization(
-                base_project_dir=base_project_dir,
-                output_dir=output_dir,
-                test2nl_file=test2nl_file,
-                llm_model="google/gemini-2.5-flash",
-                emb_model="nomic-embed-text:v1.5",
-                decomposition_mode="gherkin",
-                save_results=False,
-                max_entries=1,
-                num_proj_parallel=1,
-                per_proj_concurrency=2,
-                localization_max_iters=5,
-                max_inflight=1,
-                llm_provider="openrouter",
-                llm_api_url=None,
-                emb_provider="ollama",
-                emb_api_url=None,
             )
         finally:
             os.chdir(orig_cwd)
@@ -105,9 +77,9 @@ class TestCLI(TestCase):
                 llm_model="google/gemini-2.5-flash",
                 emb_model="nomic-embed-text:v1.5",
                 decomposition_mode="gherkin",
-                supervisor_max_iters=3,
-                localization_max_iters=3,
-                composition_max_iters=3,
+                supervisor_max_iters=5,
+                localization_max_iters=5,
+                composition_max_iters=5,
                 num_proj_parallel=1,
                 max_inflight=1,
                 max_entries=1,
@@ -118,3 +90,13 @@ class TestCLI(TestCase):
             )
         finally:
             os.chdir(orig_cwd)
+
+    def test_load_nl2_inputs_requires_csv_file_path(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            test2nl_dir = Path(tmp_dir) / "test2nl"
+            test2nl_dir.mkdir(parents=True, exist_ok=True)
+
+            with self.assertRaisesRegex(
+                    Exception, "Expected --test2nl-file to point to a CSV file"
+            ):
+                _load_nl2_inputs_by_project_from_csv(test2nl_dir, max_entries=0)

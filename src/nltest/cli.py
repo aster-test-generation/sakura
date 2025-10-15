@@ -1,3 +1,4 @@
+import random
 from pathlib import Path
 from collections import deque
 from dotenv import load_dotenv
@@ -61,6 +62,19 @@ def _load_nl2_inputs_by_project_from_csv(
     RichLog.info(f"Loading Test2NL entries from {csv_path}")
     data_manager = StructuredDataManager(csv_path.parent)
     test2nl_entries = data_manager.load(csv_path.name, Test2NLEntry, format="csv")
+    total_entries = len(test2nl_entries)
+
+    # Limit entries if specified (applied to individual entries, not class-method pairs)
+    if max_entries > 0 and total_entries > max_entries:
+        test2nl_entries = random.sample(test2nl_entries, k=max_entries)
+        RichLog.info(
+            f"Processing random subset of {len(test2nl_entries)} entries "
+            f"(max_entries={max_entries}, total_entries={total_entries})"
+        )
+    elif max_entries > 0:
+        RichLog.info(
+            f"Requested {max_entries} entries but only {total_entries} available. Processing all entries."
+        )
 
     # Sort entries by qualified_class_name and method_signature to group related entries together
     test2nl_entries.sort(
@@ -69,13 +83,6 @@ def _load_nl2_inputs_by_project_from_csv(
     RichLog.info(
         f"Loaded and sorted {len(test2nl_entries)} Test2NL entries by class-method pairs"
     )
-
-    # Limit entries if specified (applied to individual entries, not class-method pairs)
-    if max_entries > 0:
-        test2nl_entries = test2nl_entries[:max_entries]
-        RichLog.info(
-            f"Processing first {len(test2nl_entries)} entries (max_entries={max_entries})"
-        )
 
     # Convert Test2NL entries to NL2TestInput objects and organize by project
     nl2test_inputs_by_project: dict[str, list[NL2TestInput]] = {}

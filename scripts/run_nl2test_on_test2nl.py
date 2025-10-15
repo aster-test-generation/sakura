@@ -68,8 +68,11 @@ def main() -> None:
             "Please set BASE_ANALYSIS_DIR to the path containing per-project analysis.json folders."
         )
 
-    if not output_dir.is_dir():
-        raise FileNotFoundError(f"Output directory not found: {output_dir}")
+    if output_dir.exists() and not output_dir.is_dir():
+        raise FileNotFoundError(f"Output path is not a directory: {output_dir}")
+    if not output_dir.exists():
+        # Create output directory on demand for generated artifacts.
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     if not test2nl_file.is_file():
         raise FileNotFoundError(f"Test2NL CSV not found: {test2nl_file}")

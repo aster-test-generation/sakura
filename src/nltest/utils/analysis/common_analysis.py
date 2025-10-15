@@ -312,7 +312,7 @@ class CommonAnalysis:
             return False
 
         cls_info = self.analysis.get_class(class_name)
-        if not cls_info or not cls_info.is_interface:
+        if not cls_info:
             return False
 
         stack = []
@@ -336,10 +336,10 @@ class CommonAnalysis:
 
             if curr_info.is_interface:
                 # Interfaces can't extend class or abstract class
-                stack.extend(curr.implements_list)
+                stack.extend(curr_info.implements_list)
             else:
-                stack.extend(curr.extends_list)
-                stack.extend(curr.implements_list)
+                stack.extend(curr_info.extends_list)
+                stack.extend(curr_info.implements_list)
 
         return False
 

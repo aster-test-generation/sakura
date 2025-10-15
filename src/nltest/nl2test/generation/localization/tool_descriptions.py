@@ -12,20 +12,6 @@ Returns:
   On failure, a structured error dict is returned.
 """
 
-QUERY_CLASS_DESC = """
-Semantic search over application classes (vector index).
-Args:
-  query: Natural language or code-like phrase describing the class you want or the likely class name.
-  i, j: 1-based inclusive window into the ranked results (i > 0, j >= i).
-Use when:
-  You want classes likely to contain or relate to target methods.
-Limitations:
-  Application classes only; library classes are not indexed.
-Returns:
-  List of dicts with implementing_class_name.
-  On failure, a structured error dict is returned.
-"""
-
 REACHABLE_METHODS_DESC = """
 List methods visible from a class with metadata, honoring Java access rules and going through the inheritance chain.
 Args:
@@ -37,35 +23,6 @@ Limitations:
   Includes inherited methods from application classes only; external library parents are excluded.
 Returns:
   Dict mapping implementing_class_name (class that directly implements the method) -> list of method metadata dicts (e.g., signature, modifiers, and other details) that are reachable from the qualified_class_name used in the query.
-  On failure, a structured error dict is returned.
-"""
-
-EXTRACT_CODE_DESC = """
-Get a method's complete source (declaration + body) from the analyzed codebase.
-Args:
-  qualified_class_name: Class that declares the method.
-  method_signature: Exact signature to extract.
-Use when:
-  Verifying behavior, generating tests, or creating examples for an identified method.
-Limitations:
-  Fails if the method is not found; returns source as-is (no formatting changes).
-Returns:
-  String containing the full method code.
-  On failure, a structured error dict is returned.
-"""
-
-METHOD_DETAILS_DESC = """
-Fetch fast metadata for a method.
-Args:
-  qualified_class_name: Declaring class.
-  method_signature: Exact signature.
-Use when:
-  You need signature, parameter types, return type, modifiers, or visibility to filter/rank candidates, or to form test scaffolds.
-Limitations:
-  Only the declaration site; does not include inherited versions or overrides from other classes.
-Returns:
-  Dict with method_signature, modifiers, return_type, parameter_types, comments, visibility.
-  Visibility options: "public" (accessible from anywhere), "same_package_or_subclass" (accessible from same package or subclasses), "same_package" (accessible only from same package).
   On failure, a structured error dict is returned.
 """
 
@@ -82,19 +39,6 @@ Returns:
   On failure, a structured error dict is returned.
 """
 
-CALL_SITE_DETAILS_DESC = """
-List callees invoked inside a specific method (static analysis).
-Args:
-  qualified_class_name: Declaring class of the caller.
-  method_signature: Signature of the caller method.
-Use when:
-  Expanding candidates by usage, understanding side effects, or mapping sentences to downstream calls.
-Limitations:
-  Static only; may miss reflection/dynamic dispatch. Quality depends on the symbol table and parsed code.
-Returns:
-  List of dicts with callee qualified_class_name, method_signature, return_type, parameter_types, modifiers, num_times_called.
-  On failure, a structured error dict is returned.
-"""
 
 FINALIZE_ATOMIC_BLOCKS_DESC = """
 End localization by returning the final AtomicBlockList and brief comments.

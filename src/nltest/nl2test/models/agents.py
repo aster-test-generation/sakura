@@ -61,11 +61,21 @@ class AgentState(BaseModel):
     final_comments: Annotated[
         Optional[str], "Final comments from the agent, if any"
     ] = ""
+    finalize_called: Annotated[
+        bool,
+        "True when the agent has successfully called the finalize tool for this run.",
+    ] = False
+    force_end_attempts: Annotated[
+        int,
+        "Number of times the agent has entered the force_end node to coerce finalization.",
+    ] = 0
 
     def reset_message_history(self) -> None:
         """Reset tracked conversation history between agent invocations."""
         self.iterations = 0
         self.final_comments = ""
+        self.finalize_called = False
+        self.force_end_attempts = 0
         self.messages = (
             []
         )  # TODO: Maybe have some functionality for summarizing this instead of clearing
@@ -124,7 +134,7 @@ class InstructionArgs(BaseModel):
     # NOTE: We don't need to pass in the atomic blocks here for modify_atomic_blocks because we're using the state.atomic_blocks
 
 
-class TestCodeArgs(BaseModel):
+class GenerateTestCodeArgs(BaseModel):
     """Arguments for providing raw test code directly to the generate tool."""
 
     test_code: Annotated[str, Field(description="")]
@@ -200,9 +210,30 @@ class ModifyScenarioCommentArgs(BaseModel):
     comment: Annotated[str, Field(description="The new comment for the step.")]
 
 
+class ViewTestCodeArgs(BaseModel):
+    start_line: Annotated[int, Field(ge=1, description="1-based start line to slice the returned source.")]
+    end_line: Annotated[int, Field(ge=1, description="1-based end line to slice the returned source.")]
+
+
 class ModifyAtomicBlockNoteArgs(BaseModel):
     order: Annotated[int, Field(description="The order of the atomic block to update.")]
     note: Annotated[str, Field(description="The new note for the atomic block.")]
+
+
+class ExtractMethodCodeArgs(BaseModel):
+    qualified_class_name: Annotated[
+        str, Field(description="The fully qualified class name of the class containing the method.")]
+    method_signature: Annotated[str, Field(description="The method signature of the method whose code to extract.")]
+    start_line: Annotated[int, Field(ge=1, description="1-based start line to slice the returned source.")]
+    end_line: Annotated[int, Field(ge=1, description="1-based end line to slice the returned source.")]
+
+
+class NoArgs(BaseModel):
+    """Empty args schema for tools that take no arguments.
+
+    Intentionally contains no fields. Tools must not rely on defaults.
+    """
+    pass
 
 
 class CallAgentGherkinArgs(BaseModel):
@@ -229,16 +260,3 @@ class CallAgentGrammaticalArgs(BaseModel):
         str,
         Field(description="Actionable instructions for the delegated agent."),
     ]
-
-
-class AgentToolLog(BaseModel):
-    tool_counts: Dict[str, int]
-    tool_trajectories: List[List[str]]
-
-
-class ToolLog(BaseModel):
-    supervisor_tool_log: AgentToolLog
-    localization_tool_log: AgentToolLog
-    composition_tool_log: AgentToolLog
-
-# TODO: Get the trajectories

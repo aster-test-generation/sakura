@@ -139,6 +139,6 @@ class TestDescriptionGeneration(BaseTest2NL):
             "test2nl.csv", test2nl_entries, format="csv", mode="append"
         )
 
-        pretty_print(
+        print(
             f"Successfully saved {len(test_descriptions)} descriptions and {len(test2nl_entries)} Test2NL entries"
         )

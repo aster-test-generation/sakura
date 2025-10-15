@@ -3,5 +3,6 @@ Exceptions package
 """
 from .exceptions import ConfigurationException
 from .tool_exceptions import InvalidArgumentError, MethodNotFoundError, ClassNotFoundError, CallSiteNotFoundError, \
-    FormatError, ClassFileNotFound, CompilationUnitNotFound, BlockNotFoundError, FileDeletionError, PomXmlNotFoundError
+    FormatError, ClassFileNotFound, CompilationUnitNotFound, BlockNotFoundError, FileDeletionError, PomXmlNotFoundError, \
+    ProjectCompilationError
 from .exception_handlers import ToolExceptionHandler

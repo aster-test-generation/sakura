@@ -20,8 +20,8 @@ class LoadPrompt:
 
         try:
             template_str = prompt_file.read_text()
-        except:
-            raise FileNotFoundError(f"File {prompt_file} not found")
+        except Exception as exc:
+            raise FileNotFoundError(f"File {prompt_file} not found") from exc
 
         prompt_template = PromptTemplate.from_template(
             template_str,

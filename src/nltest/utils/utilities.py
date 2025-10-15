@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from nltest.test2nl.model.models import Test2NLEntry
-from nltest.nl2test.models.nl2test import NL2TestInput, AbstractionLevel as NL2Abs
+from nltest.utils.models import NL2TestInput, AbstractionLevel as NL2Abs
 
 
 def test2nl_entry_to_nl2test_input(entry: Test2NLEntry) -> NL2TestInput:
@@ -32,3 +32,6 @@ def test2nl_entry_to_nl2test_input(entry: Test2NLEntry) -> NL2TestInput:
         abstraction_level=abs_level,
         is_bdd=entry.is_bdd,
     )
+
+
+test2nl_entry_to_nl2test_input.__test__ = False

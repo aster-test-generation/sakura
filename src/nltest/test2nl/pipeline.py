@@ -4,7 +4,7 @@ from typing import List
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.utils.file_io import StructuredDataManager, TestFileManager, TestFileInfo
-from nltest.utils.models.model import Method
+from nltest.utils.models import Method
 from nltest.test2nl.evaluation import RoundTripEvaluator
 from nltest.test2nl.generation import DescriptionGenerator, RoundTripGenerator
 from nltest.test2nl.model.models import (

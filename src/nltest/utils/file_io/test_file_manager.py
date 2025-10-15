@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+import os
 import re
+import tempfile
+import time
 from pathlib import Path
 from typing import List, Tuple, Annotated, Optional, Union
 
 from pydantic import BaseModel
 from typing import TYPE_CHECKING
+
+from nltest.utils.exceptions.tool_exceptions import FileDeletionError
 
 if TYPE_CHECKING:
     from nltest.nl2test.models import NL2TestInput
@@ -55,6 +60,46 @@ class TestFileManager:
         project_root.mkdir(parents=True, exist_ok=True)
         self.project_root = project_root
         self.test_base_dir = project_root / Path(test_base_dir)
+
+    @staticmethod
+    def _atomic_write(target_path: Path, content: str) -> None:
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path: Optional[str] = None
+        fd: Optional[int] = None
+        try:
+            fd, tmp_path = tempfile.mkstemp(
+                dir=str(target_path.parent),
+                prefix=f".{target_path.name}.",
+                suffix=".tmp",
+            )
+            with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
+                tmp_file.write(content)
+                tmp_file.flush()
+                os.fsync(tmp_file.fileno())
+                fd = None  # fd handled by context manager
+            os.replace(tmp_path, target_path)
+            dir_fd: Optional[int] = None
+            if hasattr(os, "O_DIRECTORY"):
+                try:
+                    dir_fd = os.open(str(target_path.parent), os.O_DIRECTORY)
+                except OSError:
+                    dir_fd = None
+            if dir_fd is not None:
+                try:
+                    os.fsync(dir_fd)
+                finally:
+                    os.close(dir_fd)
+        finally:
+            if fd is not None:
+                try:
+                    os.close(fd)
+                except Exception:
+                    pass
+            if tmp_path and os.path.exists(tmp_path):
+                try:
+                    os.unlink(tmp_path)
+                except Exception:
+                    pass
 
     @staticmethod
     def _sanitize_generated_code(code: str) -> str:
@@ -180,10 +225,13 @@ class TestFileManager:
         sync_names: bool = False,
         encode_class_name: bool = False,
         sanitize_wrappers: bool = True,
+        allow_overwrite: bool = False,
     ) -> Tuple[str, Path]:
         """
         Save a single test file. If a conflict occurs, append a numeric suffix
-        to the class name (starting at 1) until a free filename is found.
+        to the class name (starting at 1) until a free filename is found unless
+        `allow_overwrite` is True, in which case the existing file is atomically
+        replaced.
         """
         # Determine package and base class name
         if encode_class_name:
@@ -201,14 +249,15 @@ class TestFileManager:
         )
         parent_dir.mkdir(parents=True, exist_ok=True)
 
-        # Add number to the end until a nonconflict
+        # Add number to the end until a nonconflict unless overwriting in place
         class_name = base_class_name
         file_path = parent_dir / f"{class_name}.java"
-        counter = 1
-        while file_path.exists():
-            class_name = f"{base_class_name}{counter}"
-            file_path = parent_dir / f"{class_name}.java"
-            counter += 1
+        if not allow_overwrite:
+            counter = 1
+            while file_path.exists():
+                class_name = f"{base_class_name}{counter}"
+                file_path = parent_dir / f"{class_name}.java"
+                counter += 1
 
         # Optionally sanitize wrapper noise before any processing
         content = (
@@ -223,8 +272,7 @@ class TestFileManager:
             content = self._rewrite_java_header(package, class_name, content)
 
         # Write file
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(content)
+        self._atomic_write(file_path, content)
 
         # Return the final qualified class name and path
         qualified_name = f"{package}.{class_name}" if package else class_name
@@ -251,7 +299,13 @@ class TestFileManager:
         return f"{package}.{class_name}" if package else class_name
 
     def delete_single(
-        self, test_info: TestFileInfo, *, encode_class_name: bool = False
+        self,
+        test_info: TestFileInfo,
+        *,
+        encode_class_name: bool = False,
+        strict: bool = False,
+        max_attempts: int = 2,
+        retry_delay: float = 0.05,
     ) -> bool:
         """
         Delete the test file at the location where it would have been saved.
@@ -261,12 +315,39 @@ class TestFileManager:
           qualified class name path.
 
         Returns True if the file existed and was successfully deleted, False otherwise.
+        When `strict` is True, an exception is raised if the file cannot be removed
+        after the configured retry attempts.
         """
         file_path = self.target_path(test_info, encode_class_name=encode_class_name)
         if not file_path.exists():
+            return True if strict else False
+
+        attempts = 0
+        last_error: Optional[Exception] = None
+        while attempts < max_attempts:
+            attempts += 1
+            try:
+                file_path.unlink()
+            except FileNotFoundError:
+                break
+            except Exception as exc:  # pragma: no cover - defensive
+                last_error = exc
+                if attempts >= max_attempts:
+                    break
+                time.sleep(max(retry_delay, 0.0))
+            else:
+                break
+
+        if file_path.exists():
+            if strict:
+                raise FileDeletionError(
+                    f"Failed to delete test file at {file_path}",
+                    extra_info={
+                        "path": str(file_path),
+                        "attempts": attempts,
+                        "error": str(last_error) if last_error else "",
+                    },
+                )
             return False
-        try:
-            file_path.unlink()
-            return True
-        except Exception:
-            return False
+
+        return True

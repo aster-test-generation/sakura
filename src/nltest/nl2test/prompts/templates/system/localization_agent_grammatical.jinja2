@@ -38,7 +38,7 @@ You may call the `finalize` tool to produce the final output only when:
 OR you have exhausted the allowed iterations.
 
 # REMINDERS
-- Avoid duplicate {tool, args} pairs.
+- Duplicate-call allowance: none. Never repeat identical {tool, args} pairs; adjust arguments if you need new evidence.
 - Use the `finalize` tool to output the final set of grammatical blocks with localized methods, argument bindings, and comments.
 - Always verify methods via tool calls before adding them to a block.
 - Do not call `finalize` immediately; gather sufficient evidence first, then finalize with the updated blocks and explanations.

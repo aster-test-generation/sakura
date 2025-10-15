@@ -12,7 +12,7 @@ from nltest.test2nl.pipeline import Pipeline as Test2NLPipeline
 from nltest.test2nl.model.models import AbstractionLevel
 from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
-from nltest.utils.models.model import Method
+from nltest.utils.models import Method
 
 
 @ray.remote

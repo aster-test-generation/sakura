@@ -8,6 +8,7 @@ SRC_DIR = "../src"
 BASE_PROJECT_DIR = "../tests/resources"
 BASE_ANALYSIS_DIR = "../tests/output/"
 OUTPUT_DIR = "../tests/output"
+# Test2NL CSV file path (must include the filename)
 CSV_FILE = "../tests/output/resources/test2nl/test2nl.csv"
 
 # CLI arguments

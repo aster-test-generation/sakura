@@ -26,7 +26,6 @@ from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.analysis import CommonAnalysis
 
 from tests._base_nl2test import BaseNL2Test
-from nltest.cli import evaluate_localization
 import os
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 

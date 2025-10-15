@@ -19,7 +19,7 @@ from hamster.code_analysis.test_statistics import (
     TestMethodAnalysisInfo,
 )
 
-from nltest.nl2test.models.nl2test import (
+from nltest.utils.models import (
     NL2TestCoverageEval,
     NL2TestInput,
     NL2TestMetadata,

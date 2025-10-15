@@ -706,8 +706,11 @@ def run_nl2test(
         raise Exception(f"Base analysis directory {base_analysis_dir} does not exist.")
 
     output_dir = Path(output_dir)
+    if output_dir.exists() and not output_dir.is_dir():
+        raise Exception(f"Output path {output_dir} is not a directory.")
     if not output_dir.exists():
-        raise Exception(f"Output directory {output_dir} does not exist.")
+        # Ensure output directory exists so results can be written.
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     # Load and prepare NL2Test inputs grouped by project
     nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(

@@ -7,9 +7,9 @@ from pathlib import Path
 SRC_DIR = "../src"
 BASE_PROJECT_DIR = "../tests/resources"
 BASE_ANALYSIS_DIR = "../tests/output/"
-OUTPUT_DIR = "../tests/output"
+OUTPUT_DIR = "../resources/output/"
 # Test2NL CSV file path (must include the filename)
-CSV_FILE = "../tests/output/resources/test2nl/test2nl.csv"
+CSV_FILE = "../resources/test2nl/partitioned_dataset/selected_from_subsets.csv"
 
 # CLI arguments
 MAX_ENTRIES = 0

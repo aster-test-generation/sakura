@@ -14,22 +14,22 @@ from nltest.utils.llm.model import Provider
 
 
 def init_config(
-    project_name: str,
-    *,
-    base_project_dir: str,
-    output_dir: str,
-    llm_model: str,
-    llm_provider: Provider = None,
-    emb_provider: Provider = None,
-    emb_model: str = None,
-    llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint
-    emb_api_url: str = None,
-    llm_api_key: str = None,
-    emb_api_key: str = None,
-    localization_max_iters: int = 40,
-    composition_max_iters: int = 40,
-    supervisor_max_iters: int = 5,
-    reuse_config: bool = False,
+        project_name: str,
+        *,
+        base_project_dir: str,
+        output_dir: str,
+        llm_model: str,
+        llm_provider: Provider = None,
+        emb_provider: Provider = None,
+        emb_model: str = None,
+        llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint
+        emb_api_url: str = None,
+        llm_api_key: str = None,
+        emb_api_key: str = None,
+        localization_max_iters: int = 40,
+        composition_max_iters: int = 40,
+        supervisor_max_iters: int = 5,
+        reuse_config: bool = False,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -39,7 +39,11 @@ def init_config(
     decision_temp = 0.3
     structured_temp = 0.3
 
-    config.set("llm", "provider", llm_provider.value)
+    if llm_provider is not None:
+        config.set("llm", "provider", llm_provider.value)
+    else:
+        config.set("llm", "provider", None)
+
     if emb_provider is not None:
         config.set("emb", "provider", emb_provider.value)
     else:
@@ -170,9 +174,9 @@ class Config:
             try:
                 current_modified = os.path.getmtime(self._conf_file)
                 if (
-                    self._last_modified is None
-                    or current_modified != self._last_modified
-                    or reuse is False
+                        self._last_modified is None
+                        or current_modified != self._last_modified
+                        or reuse is False
                 ):
                     self.config = toml.load(self._conf_file)
                     self.last_modified = current_modified

@@ -14,15 +14,17 @@ from ..config.config import Config
 from .model import Provider, LLMSettings, ClientType
 from ..constants import PARALLEL_TOOL_CALLABLE
 from ..exceptions import ConfigurationException
+from nltest.utils.pretty.color_logger import RichLog
+import traceback
 from .usage_tracker import UsageTracker
 
 
 class LLMClient:
     def __init__(
-        self,
-        client_type: ClientType,
-        *,
-        usage_tracker: UsageTracker | None = None,
+            self,
+            client_type: ClientType,
+            *,
+            usage_tracker: UsageTracker | None = None,
     ):
         config = Config()
 
@@ -49,7 +51,7 @@ class LLMClient:
         try:
             max_tokens = config.get("llm", "max_tokens")
         except ConfigurationException:
-            max_tokens = 10000
+            max_tokens = 20000
 
         try:
             timeout = config.get("llm", "timeout")
@@ -74,7 +76,7 @@ class LLMClient:
             if "parallel_tool_calls" not in model_kwargs:
                 # Set a sensible default based on known model capabilities
                 model_kwargs["parallel_tool_calls"] = (
-                    model in PARALLEL_TOOL_CALLABLE.get(True, set())
+                        model in PARALLEL_TOOL_CALLABLE.get(True, set())
                 )
 
             # if "reasoning" not in model_kwargs:
@@ -101,19 +103,24 @@ class LLMClient:
         except Exception:
             self._model_id = model
         self._usage_tracker = usage_tracker or UsageTracker()
+        # Save context for error logging
+        self._provider = provider
+        self._model = model
+        self._base_url = base_url
+        self._client_type = client_type
 
     def _build_runnable(
-        self,
-        *,
-        tools: Optional[Sequence[BaseTool]] = None,
-        tool_choice: Union[str, dict, None] = "auto",
-        response_format: Optional[Dict[str, Any]] = None,
-        extra_model_kwargs: Optional[Dict[str, Any]] = None,
-        schema: Any = None,
-        strict: bool = True,
-        method: Optional[
-            Literal["json_schema", "function_calling", "json_mode"]
-        ] = "json_schema",
+            self,
+            *,
+            tools: Optional[Sequence[BaseTool]] = None,
+            tool_choice: Union[str, dict, None] = "auto",
+            response_format: Optional[Dict[str, Any]] = None,
+            extra_model_kwargs: Optional[Dict[str, Any]] = None,
+            schema: Any = None,
+            strict: bool = True,
+            method: Optional[
+                Literal["json_schema", "function_calling", "json_mode"]
+            ] = "json_schema",
     ) -> RunnableSerializable:
         runnable: RunnableSerializable = self._chat
 
@@ -121,7 +128,7 @@ class LLMClient:
             runnable = runnable.bind_tools(tools, tool_choice=tool_choice)
 
         if (
-            response_format is not None and schema is None
+                response_format is not None and schema is None
         ):  # NOTE: If schema is provided, we don't need to bind the response format
             runnable = runnable.bind(response_format=response_format)
 
@@ -162,18 +169,18 @@ class LLMClient:
         return ai_msg
 
     def invoke_messages(
-        self,
-        messages: Sequence[BaseMessage],
-        *,
-        tools: Optional[Sequence[BaseTool]] = None,
-        tool_choice: Union[str, dict, None] = "auto",
-        response_format: Optional[Dict[str, Any]] = None,
-        extra_model_kwargs: Optional[Dict[str, Any]] = None,
-        schema: Any = None,
-        strict: bool = True,
-        method: Optional[
-            Literal["json_schema", "function_calling", "json_mode"]
-        ] = "json_schema",
+            self,
+            messages: Sequence[BaseMessage],
+            *,
+            tools: Optional[Sequence[BaseTool]] = None,
+            tool_choice: Union[str, dict, None] = "auto",
+            response_format: Optional[Dict[str, Any]] = None,
+            extra_model_kwargs: Optional[Dict[str, Any]] = None,
+            schema: Any = None,
+            strict: bool = True,
+            method: Optional[
+                Literal["json_schema", "function_calling", "json_mode"]
+            ] = "json_schema",
     ) -> Any:
         runnable = self._build_runnable(
             tools=tools,
@@ -184,7 +191,29 @@ class LLMClient:
             strict=strict,
             method=method,
         )
-        out = runnable.invoke(list(messages))
+        try:
+            out = runnable.invoke(list(messages))
+        except Exception as e:
+            err_type = type(e).__name__
+            RichLog.error(
+                f"[LLMClient] {err_type} during invoke (provider={getattr(self._provider, 'value', self._provider)}, "
+                f"model={self._model}, base_url={self._base_url}, client={self._client_type.value}): {e}"
+            )
+            # Traceback helps pinpoint issues inside LangChain/OpenAI stack.
+            RichLog.debug(traceback.format_exc())
+
+            # Log options used for this call (debug only to avoid noise).
+            RichLog.debug(
+                f"opts: tool_choice={tool_choice}, "
+                f"schema={'yes' if schema is not None else 'no'}, "
+                f"response_format={'yes' if response_format is not None else 'no'}, "
+                f"extra_model_kwargs={str(extra_model_kwargs)[:500]}"
+            )
+            # Summarize message types for quick inspection
+            msg_types = [type(m).__name__ for m in messages]
+            RichLog.debug(f"messages: {','.join(msg_types)}")
+
+            raise
 
         # Record usage if we have token information
         if hasattr(out, "usage_metadata") and out.usage_metadata:
@@ -196,17 +225,17 @@ class LLMClient:
         return self._normalize_tool_call_ids(out) if isinstance(out, AIMessage) else out
 
     def invoke_prompts(
-        self,
-        system: str,
-        chat: str,
-        *,
-        response_format: Optional[Dict[str, Any]] = None,
-        extra_model_kwargs: Optional[Dict[str, Any]] = None,
-        schema: Any = None,
-        strict: bool = True,
-        method: Optional[
-            Literal["json_schema", "function_calling", "json_mode"]
-        ] = "json_schema",
+            self,
+            system: str,
+            chat: str,
+            *,
+            response_format: Optional[Dict[str, Any]] = None,
+            extra_model_kwargs: Optional[Dict[str, Any]] = None,
+            schema: Any = None,
+            strict: bool = True,
+            method: Optional[
+                Literal["json_schema", "function_calling", "json_mode"]
+            ] = "json_schema",
     ) -> Any:
         messages: Sequence[BaseMessage] = [
             SystemMessage(content=system),

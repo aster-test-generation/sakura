@@ -8,6 +8,8 @@ SRC_DIR = "../src"
 BASE_PROJECT_DIR = "../resources/datasets/"
 BASE_ANALYSIS_DIR = "../resources/analysis/"
 OUTPUT_DIR = "../resources/output/"
+# Log file name to write under OUTPUT_DIR
+LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 # Test2NL CSV file path (must include the filename)
 CSV_FILE = "../resources/test2nl/partitioned_dataset/selected_from_subsets.csv"
 
@@ -15,6 +17,7 @@ CSV_FILE = "../resources/test2nl/partitioned_dataset/selected_from_subsets.csv"
 MAX_ENTRIES = 0
 # Note: 0 = unlimited
 CLEAR_OUTPUT = True
+DEBUG = True
 
 LLM_MODEL = "Azure/gpt-5-2025-08-07"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
@@ -46,6 +49,7 @@ def main() -> None:
     src_dir = (script_dir / SRC_DIR).resolve()
     base_project_dir = (script_dir / BASE_PROJECT_DIR).resolve()
     output_dir = (script_dir / OUTPUT_DIR).resolve()
+    log_file_name = LOG_FILE_NAME  # Name only; CLI saves under output_dir
     test2nl_file = (script_dir / CSV_FILE).resolve()
     base_analysis_dir = (
         (script_dir / BASE_ANALYSIS_DIR).resolve() if BASE_ANALYSIS_DIR else None
@@ -118,6 +122,10 @@ def main() -> None:
 
     if CLEAR_OUTPUT:
         cmd.append("--clear-output")
+    if DEBUG:
+        cmd.append("--debug")
+    if log_file_name:
+        cmd.extend(["--log-file", log_file_name])
 
     # Optional caps
     if MAX_ENTRIES and MAX_ENTRIES > 0:

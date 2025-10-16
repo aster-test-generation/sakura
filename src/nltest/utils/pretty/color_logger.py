@@ -1,10 +1,15 @@
 """
-The RichLog class is a wrapper around the Python logging module that 
-provides additional features such as color formatting and markup support.
+RichLog is a thin wrapper around the Python logging module that
+adds convenient helpers and a Rich console handler by default.
+
+Notes
+- By default, logs go to the console only (via Rich).
+- Use add_file_handler() to also write logs to a file.
 """
 
 import logging
 from rich.logging import RichHandler
+from pathlib import Path
 
 FORMAT = "%(message)s"
 logging.basicConfig(
@@ -49,3 +54,36 @@ class RichLog:
     def activate_debug():
         """Sets the logging level to DEBUG"""
         RichLog.log.setLevel(logging.DEBUG)
+
+    @staticmethod
+    def set_level(level: int | str) -> None:
+        """Set log level on both this logger and the root logger.
+
+        This helps when third-party libraries emit useful debug logs.
+        """
+        logging.getLogger().setLevel(level)
+        RichLog.log.setLevel(level)
+
+    @staticmethod
+    def add_file_handler(file_path: str, *, overwrite: bool = False, level: int | str | None = None) -> None:
+        """Add a file handler so logs are also written to disk.
+
+        Parameters
+        - file_path: destination log file path (created if missing).
+        - overwrite: when True, truncates the file; otherwise appends.
+        - level: optional log level for this handler (defaults to logger level).
+        """
+        # Ensure parent directory exists
+        try:
+            Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            # Do not fail logging setup if directory creation fails
+            pass
+
+        mode = "w" if overwrite else "a"
+        handler = logging.FileHandler(file_path, mode=mode, encoding="utf-8")
+        # Use a simple timestamped format for files; avoid Rich formatting
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+        if level is not None:
+            handler.setLevel(level)
+        RichLog.log.addHandler(handler)

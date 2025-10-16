@@ -53,7 +53,7 @@ TEARDOWN_ANNOTATIONS = {  # Also check `tearDown()` method for JUnit 3
     "@AfterGroups",
 }
 
-# Experimentally found through OpenRouter
+# Experimentally found
 PARALLEL_TOOL_CALLABLE: Dict[bool, set[str]] = {
     False: {
         # Mistral models
@@ -68,11 +68,13 @@ PARALLEL_TOOL_CALLABLE: Dict[bool, set[str]] = {
         "openai/gpt-4o-mini",
         "openai/gpt-4.1-mini",
         "Azure/gpt-5-2025-08-07",
-        "Azure/gpt-4.1"
+        "Azure/gpt-4.1",
         # XAI models,
         "x-ai/grok-code-fast-1",
         # Google models
         "google/gemini-2.5-flash",
+        "GCP/gemini-2.5-flash",
+        "GCP/gemini-2.5-flash-lite",
         # Anthopic models
         "GCP/claude-4-sonnet",
     },

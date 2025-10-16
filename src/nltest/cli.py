@@ -393,7 +393,7 @@ def generate_descriptions(
             sep = "=" * 60
             RichLog.info(f"\n{sep}")
             RichLog.info(f"Starting Test2NL actor for project: {project_name}")
-            RichLog.info(sep)
+            RichLog.info(str(sep))
 
             actor = Test2NLActor.options(
                 max_concurrency=max(1, int(per_proj_concurrency))
@@ -812,7 +812,7 @@ def run_nl2test(
             sep = "=" * 60
             RichLog.info(f"\n{sep}")
             RichLog.info(f"Starting NL2Test actor for project: {project_name}")
-            RichLog.info(sep)
+            RichLog.info(str(sep))
 
             project_manager = get_project_data_manager(project_name)
             if clear_output and project_name not in cleared_projects:

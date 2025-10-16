@@ -53,7 +53,7 @@ class LocalizationActor:
         init_config(
             project_name=self.project_name,
             base_project_dir=str(self.project_root),
-            output_dir=str(self.project_output_dir),
+            project_output_dir=str(self.project_output_dir),
             llm_provider=llm_provider,
             llm_model=self.llm_model,
             emb_provider=emb_provider,

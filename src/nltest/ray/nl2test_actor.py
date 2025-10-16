@@ -40,6 +40,8 @@ class NL2TestActor:
         supervisor_max_iters: int,
         localization_max_iters: int,
         composition_max_iters: int,
+        can_parallel_tool: bool = True,
+        use_stored_index: bool = True,
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -55,13 +57,13 @@ class NL2TestActor:
         )
 
         # Ensure output dir exists (per-project)
-        # self.project_output_dir.mkdir(parents=True, exist_ok=True)
+        self.project_output_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize shared config for this project
         init_config(
             project_name=self.project_name,
             base_project_dir=str(self.project_root),
-            output_dir=str(self.project_output_dir),
+            project_output_dir=str(self.project_output_dir),
             llm_provider=llm_provider,
             llm_model=self.llm_model,
             emb_provider=emb_provider,
@@ -73,6 +75,8 @@ class NL2TestActor:
             localization_max_iters=(localization_max_iters or 40),
             composition_max_iters=(composition_max_iters or 30),
             supervisor_max_iters=(supervisor_max_iters or 10),
+            can_parallel_tool=can_parallel_tool,
+            use_stored_index=use_stored_index,
         )
 
         # Load analysis from precomputed JSON for this project

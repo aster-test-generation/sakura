@@ -41,7 +41,7 @@ class BaseTest2NL(TestCase):
         self.config = init_config(
             project_name=self.project_name,
             base_project_dir=str(project_root),
-            output_dir=str(output_dir),
+            project_output_dir=str(output_dir),
             llm_provider=Provider.OPENROUTER,
             llm_model=llm_model,
             emb_provider=Provider.VLLM,

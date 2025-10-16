@@ -17,7 +17,8 @@ def init_config(
         project_name: str,
         *,
         base_project_dir: str,
-        output_dir: str,
+        project_output_dir: str,
+        use_stored_index: bool = True,
         llm_model: str,
         llm_provider: Provider = None,
         emb_provider: Provider = None,
@@ -29,6 +30,7 @@ def init_config(
         localization_max_iters: int = 40,
         composition_max_iters: int = 40,
         supervisor_max_iters: int = 5,
+        can_parallel_tool: bool = True,
         reuse_config: bool = False,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
@@ -50,6 +52,7 @@ def init_config(
         config.set("emb", "provider", None)
 
     config.set("llm", "model", llm_model)
+    config.set("llm", "can_parallel_tool", can_parallel_tool)
     config.set("llm", "summarization_temp", summarization_temp)
     config.set("llm", "code_gen_temp", code_gen_temp)
     config.set("llm", "decision_temp", decision_temp)
@@ -94,7 +97,8 @@ def init_config(
 
     # Assign project settings
     config.set("project", "base_project_dir", val=base_project_dir)
-    config.set("project", "output_dir", val=output_dir)
+    config.set("project", "project_output_dir", val=project_output_dir)
+    config.set("project", "use_stored_index", val=use_stored_index)
 
     return config
 

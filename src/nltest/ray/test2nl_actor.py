@@ -47,7 +47,7 @@ class Test2NLActor:
         init_config(
             project_name=self.project_name,
             base_project_dir=str(self.base_project_dir),
-            output_dir=str(self.output_dir),
+            project_output_dir=str(self.output_dir),
             llm_provider=llm_provider,
             llm_model=self.llm_model,
             emb_provider=None,

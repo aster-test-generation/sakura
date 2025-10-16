@@ -67,7 +67,7 @@ def init_config(
     elif llm_provider == Provider.VLLM:
         config.set("llm", "api_url", val="http://localhost:8000/v1")
     elif llm_provider == Provider.GCP:
-        config.set("llm", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
+        config.set("llm", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com/v1")
 
     config.set("llm", "api_key", val=llm_api_key)
 
@@ -78,7 +78,7 @@ def init_config(
     elif emb_provider == Provider.VLLM:
         config.set("emb", "api_url", val="http://localhost:8000/v1")
     elif emb_provider == Provider.GCP:
-        config.set("emb", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
+        config.set("emb", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com/v1")
 
     config.set("emb", "api_key", val=emb_api_key)
 

@@ -1,4 +1,5 @@
 import random
+import logging
 from pathlib import Path
 from collections import deque
 from dotenv import load_dotenv
@@ -660,6 +661,20 @@ def run_nl2test(
                 show_default=False,
             ),
         ] = None,
+        debug: Annotated[
+            bool,
+            typer.Option(
+                help="Enable debug logging for more verbose output.",
+                show_default=True,
+            ),
+        ] = False,
+        log_file: Annotated[
+            str | None,
+            typer.Option(
+                help="Optional log file name to write under --output-dir.",
+                show_default=False,
+            ),
+        ] = None,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -715,6 +730,26 @@ def run_nl2test(
     # Load and prepare NL2Test inputs grouped by project
     nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(
         test2nl_file, max_entries
+    )
+
+    # Configure logging
+    if debug:
+        RichLog.set_level(logging.DEBUG)
+        RichLog.debug("Debug logging enabled.")
+    if log_file:
+        try:
+            # Always save the log file under the provided output_dir.
+            file_name = Path(log_file).name
+            file_path = output_dir / file_name
+            RichLog.add_file_handler(str(file_path), overwrite=True)
+            RichLog.info(f"Writing logs to file: {file_path}")
+        except Exception as exc:
+            RichLog.warn(f"Failed to add file handler at {log_file}: {exc}")
+
+    RichLog.info(
+        "NL2Test run configuration: "
+        f"llm_model={llm_model}, emb_model={emb_model}, provider={llm_provider}, emb_provider={emb_provider}, "
+        f"projects_dir={base_project_dir}, analysis_dir={base_analysis_dir}, out={output_dir}, max_inflight={max_inflight or num_proj_parallel}"
     )
 
     # Build pending projects, ensuring both project dir and analysis.json exist
@@ -854,6 +889,19 @@ def run_nl2test(
                         batch_to_save.append(res)
                     project_success += 1
                 else:
+                    # Log details to help pinpoint failing inputs
+                    err = item.get("error")
+                    err_type = item.get("error_type") or "Exception"
+                    payload = item.get("input") or {}
+                    RichLog.error(
+                        f"[{project_name}] Failed input id={payload.get('id')} "
+                        f"{payload.get('qualified_class_name')}::{payload.get('method_signature')} "
+                        f"-> {err_type}: {err}"
+                    )
+                    tb = item.get("traceback")
+                    if tb:
+                        # Tracebacks can be long; emit only at debug level unless debug is off.
+                        RichLog.debug(tb)
                     project_failed += 1
 
             if batch_to_save:

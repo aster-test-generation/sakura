@@ -13,6 +13,8 @@ from nltest.nl2test.models import NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
+from nltest.utils.pretty.color_logger import RichLog
+import traceback
 
 
 @ray.remote
@@ -53,7 +55,7 @@ class NL2TestActor:
         )
 
         # Ensure output dir exists (per-project)
-        self.project_output_dir.mkdir(parents=True, exist_ok=True)
+        # self.project_output_dir.mkdir(parents=True, exist_ok=True)
 
         # Initialize shared config for this project
         init_config(
@@ -92,17 +94,44 @@ class NL2TestActor:
         self.pipeline.run_preprocessing()
 
     def run_nl2test_one(self, input_payload: dict[str, Any]) -> dict[str, Any]:
+        """Run NL2Test for a single input payload.
+
+        Returns a dict with either {success: True, result: NL2TestEval}
+        or {success: False, error: str, error_type: str, traceback: str, input: dict}.
+        """
         try:
             nl2_input = NL2TestInput(**input_payload)
             result = self.pipeline.run_nl2test(nl2_input)
             return {"success": True, "result": result}
         except Exception as e:
-            return {"success": False, "error": str(e), "input": input_payload}
+            # Capture full traceback for easier debugging back on the driver.
+            tb = traceback.format_exc()
+            # Also log in the worker process so Ray log files contain details.
+            RichLog.error(
+                f"[NL2TestActor:{self.project_name}] Failed for input id={input_payload.get('id')} "
+                f"({input_payload.get('qualified_class_name')}::{input_payload.get('method_signature')}): {e}\n{tb}"
+            )
+            return {
+                "success": False,
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "traceback": tb,
+                "input": input_payload,
+            }
 
     def run_nl2test_batch(
         self, input_payloads: list[dict[str, Any]]
     ) -> list[dict[str, Any]]:
+        """Process a list of inputs sequentially within this actor.
+
+        Ray handles parallelism across actors; this method keeps per-actor
+        behavior simple and logs basic progress.
+        """
         results: list[dict[str, Any]] = []
-        for payload in input_payloads:
+        for idx, payload in enumerate(input_payloads, start=1):
+            RichLog.debug(
+                f"[NL2TestActor:{self.project_name}] Running {idx}/{len(input_payloads)}: "
+                f"{payload.get('qualified_class_name')}::{payload.get('method_signature')} (id={payload.get('id')})"
+            )
             results.append(self.run_nl2test_one(payload))
         return results

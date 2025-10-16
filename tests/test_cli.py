@@ -72,7 +72,7 @@ class TestCLI(TestCase):
                 base_project_dir=base_project_dir,
                 base_analysis_dir=base_analysis_dir,
                 output_dir=output_dir,
-                clear_output=True,
+                reset_evaluation_results=True,
                 test2nl_file=test2nl_file,
                 llm_model="google/gemini-2.5-flash",
                 emb_model="nomic-embed-text:v1.5",

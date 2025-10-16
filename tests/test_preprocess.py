@@ -33,7 +33,7 @@ class TestPreprocess(unittest.TestCase):
         init_config(
             project_name="dummy-project",
             base_project_dir="/tmp",
-            output_dir="/tmp",
+            project_output_dir="/tmp",
             llm_provider=self.LLM_PROVIDER,
             llm_model=self.LLM_MODEL,
             emb_provider=self.EMB_PROVIDER,

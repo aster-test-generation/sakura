@@ -16,10 +16,11 @@ CSV_FILE = "../resources/test2nl/partitioned_dataset/selected_from_subsets.csv"
 # CLI arguments
 MAX_ENTRIES = 0
 # Note: 0 = unlimited
-CLEAR_OUTPUT = True
 DEBUG = True
+USE_STORED_INDEX = True
+RESET_EVALUATION_RESULTS = True
 
-LLM_MODEL = "Azure/gpt-5-2025-08-07"
+LLM_MODEL = "GCP/claude-3-7-sonnet"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = "gcp"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
@@ -31,6 +32,9 @@ EMB_API_URL: str | None = None
 
 # Decomposition mode
 DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
+
+# Parallel tool call behavior for the LLM
+CAN_PARALLEL_TOOL_CALL: bool = True
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 10
@@ -100,6 +104,7 @@ def main() -> None:
         str(test2nl_file),
         "--llm-model",
         LLM_MODEL,
+        "--can-parallel-tool" if CAN_PARALLEL_TOOL_CALL else "--no-can-parallel-tool",
         "--emb-model",
         EMB_MODEL,
         "--decomposition-mode",
@@ -120,8 +125,15 @@ def main() -> None:
     if EMB_API_URL:
         cmd.extend(["--emb-api-url", EMB_API_URL])
 
-    if CLEAR_OUTPUT:
-        cmd.append("--clear-output")
+    if RESET_EVALUATION_RESULTS:
+        cmd.append("--reset-evaluation-results")
+    else:
+        cmd.append("--no-reset-evaluation-results")
+
+    if USE_STORED_INDEX:
+        cmd.append("--use-stored-index")
+    else:
+        cmd.append("--no-use-stored-index")
     if DEBUG:
         cmd.append("--debug")
     if log_file_name:

@@ -556,10 +556,17 @@ def run_nl2test(
                 show_default=False,
             ),
         ] = None,
-        clear_output: Annotated[
+        reset_evaluation_results: Annotated[
             bool,
             typer.Option(
                 help="Whether to remove existing NL2Test evaluation results before running.",
+                show_default=True,
+            ),
+        ] = True,
+        use_stored_index: Annotated[
+            bool,
+            typer.Option(
+                help="Reuse cached FAISS indexes when available instead of rebuilding them.",
                 show_default=True,
             ),
         ] = True,
@@ -577,6 +584,13 @@ def run_nl2test(
                 show_default=False,
             ),
         ] = "mistralai/devstral-small",
+        can_parallel_tool: Annotated[
+            bool,
+            typer.Option(
+                help="Whether the LLM client may issue parallel tool calls.",
+                show_default=True,
+            ),
+        ] = True,
         emb_model: Annotated[
             str,
             typer.Option(
@@ -815,7 +829,7 @@ def run_nl2test(
             RichLog.info(str(sep))
 
             project_manager = get_project_data_manager(project_name)
-            if clear_output and project_name not in cleared_projects:
+            if reset_evaluation_results and project_name not in cleared_projects:
                 cleared = project_manager.delete(results_filename)
                 if cleared:
                     RichLog.info(
@@ -830,6 +844,7 @@ def run_nl2test(
                 base_analysis_dir=str(base_analysis_dir),
                 output_dir=str(output_dir),
                 llm_model=llm_model,
+                can_parallel_tool=can_parallel_tool,
                 emb_model=emb_model,
                 llm_provider=llm_provider,
                 llm_api_url=llm_api_url,
@@ -839,6 +854,7 @@ def run_nl2test(
                 supervisor_max_iters=supervisor_max_iters,
                 localization_max_iters=localization_max_iters,
                 composition_max_iters=composition_max_iters,
+                use_stored_index=use_stored_index,
             )
 
             payloads = [

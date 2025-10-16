@@ -70,8 +70,8 @@ class BaseCompositionOrchestrator:
         chat_prompt, system_prompt = self._init_prompts()
         self.chat_prompt = chat_prompt
 
-        # Determine if the model supports parallel tool calls and pass max_iters to the system prompt
-        parallelizable: bool = decision_llm.can_parallel_tool_call()
+        # Determine if the model supports parallel tool calls from configuration
+        parallelizable: bool = bool(Config().get("llm", "can_parallel_tool"))
         max_iters = Config().get("composition", "max_iters")
         duplicate_tools_str = (
             ", ".join(f"`{t.name}`" for t in allow_duplicate_tools)

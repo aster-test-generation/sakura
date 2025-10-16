@@ -12,7 +12,6 @@ from langchain_core.runnables import RunnableSerializable
 
 from ..config.config import Config
 from .model import Provider, LLMSettings, ClientType
-from ..constants import PARALLEL_TOOL_CALLABLE
 from ..exceptions import ConfigurationException
 from nltest.utils.pretty.color_logger import RichLog
 import traceback
@@ -72,12 +71,15 @@ class LLMClient:
             default_headers = {} if default_headers is None else default_headers
             default_headers.setdefault("HTTP-Referer", "http://localhost")
             default_headers.setdefault("X-Title", "NL2Test LLM Client")
-            # Defer parallel tool call enablement to can_parallel_tool_call()
+            # Configure parallel tool call behavior from Config
+            try:
+                can_parallel_tool = config.get("llm", "can_parallel_tool")
+            except ConfigurationException:
+                can_parallel_tool = False
+
+            # Only set if not explicitly provided in model_kwargs.
             if "parallel_tool_calls" not in model_kwargs:
-                # Set a sensible default based on known model capabilities
-                model_kwargs["parallel_tool_calls"] = (
-                        model in PARALLEL_TOOL_CALLABLE.get(True, set())
-                )
+                model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
 
             # if "reasoning" not in model_kwargs:
             #    model_kwargs["reasoning"] = {"enabled": True}
@@ -145,17 +147,6 @@ class LLMClient:
     @property
     def chat(self) -> ChatOpenAI:
         return self._chat
-
-    def can_parallel_tool_call(self) -> bool:
-        """
-        Return True if the current model supports parallel tool calls.
-        """
-        model_id = getattr(self, "_model_id", None) or self._chat.model_name
-        if model_id in PARALLEL_TOOL_CALLABLE.get(True, set()):
-            return True
-        if model_id in PARALLEL_TOOL_CALLABLE.get(False, set()):
-            return False
-        return False
 
     def _normalize_tool_call_ids(self, ai_msg: AIMessage) -> AIMessage:
         """Ensure tool call IDs are always present by generating unique IDs if missing."""

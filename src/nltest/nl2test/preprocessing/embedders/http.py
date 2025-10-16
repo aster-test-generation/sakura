@@ -1,5 +1,4 @@
 from typing import List
-from urllib.parse import urlparse, urlunparse
 
 import requests
 
@@ -26,19 +25,8 @@ class HttpEmbedder(BaseEmbedder):
 
     @staticmethod
     def _normalize_api_url(api_url: str) -> str:
-        """Append '/embeddings' when given a base '/v1' URL; else leave as-is."""
-        try:
-            parsed = urlparse(api_url)
-            path = (parsed.path or "").rstrip("/")
-            is_v1_base = path.endswith("/v1")
-            already_embeddings = path.endswith("/embeddings")
-            if is_v1_base and not already_embeddings:
-                new_path = f"{path}/embeddings"
-                parsed = parsed._replace(path=new_path)
-                return urlunparse(parsed)
-            return api_url
-        except Exception:
-            return api_url
+        """Always append '/embeddings' to the provided API URL."""
+        return f"{(api_url or '').rstrip('/')}/embeddings"
 
     def _embed(self, text: str) -> List[float]:
         if not text:

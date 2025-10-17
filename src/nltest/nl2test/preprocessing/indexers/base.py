@@ -20,7 +20,7 @@ class BaseIndexer(ABC):
         try:
             provider = Provider(raw_provider)
         except ValueError:
-            raise ValueError(f"Invalid embedding provider: {raw_provider}")
+            provider = None
 
         if provider == Provider.OLLAMA:
             return OllamaEmbedder(model_id=emb_model)

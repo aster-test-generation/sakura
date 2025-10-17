@@ -10,6 +10,7 @@ class Provider(Enum):
     OPENAI = "openai"
     GCP = "gcp"
 
+
 @dataclass
 class LLMSettings:
     provider: Provider
@@ -24,6 +25,7 @@ class LLMSettings:
     default_headers: Dict[str, str] = field(default_factory=dict)
     # Arbitrary model-specific kwargs (passed through to API)
     model_kwargs: Dict[str, Any] = field(default_factory=dict)
+
 
 class ClientType(Enum):
     CODE_GEN = "code_gen"

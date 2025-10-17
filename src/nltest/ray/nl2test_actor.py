@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 from typing import Any
+import logging
+import traceback
 
 import ray
 from cldk import CLDK
@@ -14,7 +16,6 @@ from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
-import traceback
 
 
 @ray.remote
@@ -42,6 +43,8 @@ class NL2TestActor:
         composition_max_iters: int,
         can_parallel_tool: bool = True,
         use_stored_index: bool = True,
+        debug: bool = False,
+        log_file_name: str | None = None,
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -58,6 +61,20 @@ class NL2TestActor:
 
         # Ensure output dir exists (per-project)
         self.project_output_dir.mkdir(parents=True, exist_ok=True)
+
+        if debug:
+            RichLog.set_level(logging.DEBUG)
+        if log_file_name:
+            actor_log_path = self.project_output_dir / log_file_name
+            try:
+                RichLog.add_file_handler(str(actor_log_path), overwrite=True)
+                RichLog.info(
+                    f"[NL2TestActor:{self.project_name}] Writing logs to file: {actor_log_path}"
+                )
+            except Exception as exc:
+                RichLog.warn(
+                    f"[NL2TestActor:{self.project_name}] Failed to add log file handler at {actor_log_path}: {exc}"
+                )
 
         # Initialize shared config for this project
         init_config(

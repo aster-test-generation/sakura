@@ -747,13 +747,15 @@ def run_nl2test(
     )
 
     # Configure logging
+    actor_log_file_name: str | None = None
     if debug:
         RichLog.set_level(logging.DEBUG)
         RichLog.debug("Debug logging enabled.")
     if log_file:
+        file_name = Path(log_file).name
+        actor_log_file_name = file_name
         try:
             # Always save the log file under the provided output_dir.
-            file_name = Path(log_file).name
             file_path = output_dir / file_name
             RichLog.add_file_handler(str(file_path), overwrite=True)
             RichLog.info(f"Writing logs to file: {file_path}")
@@ -855,6 +857,8 @@ def run_nl2test(
                 localization_max_iters=localization_max_iters,
                 composition_max_iters=composition_max_iters,
                 use_stored_index=use_stored_index,
+                debug=bool(debug),
+                log_file_name=actor_log_file_name,
             )
 
             payloads = [

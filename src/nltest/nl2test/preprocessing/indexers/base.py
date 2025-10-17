@@ -22,17 +22,14 @@ class BaseIndexer(ABC):
         except ValueError:
             raise ValueError(f"Invalid embedding provider: {raw_provider}")
 
-        if provider == Provider.VLLM or provider == Provider.GCP:
+        if provider == Provider.OLLAMA:
+            return OllamaEmbedder(model_id=emb_model)
+
+        else:
             api_url = self.config.get("emb", "api_url")
             if not api_url:
                 raise ValueError(f"API URL is missing in config for HTTP provider {provider.name}")
             return HttpEmbedder(model_id=emb_model, api_url=api_url)
-
-        elif provider == Provider.OLLAMA:
-            return OllamaEmbedder(model_id=emb_model)
-
-        else:
-            raise ValueError(f"Unsupported embedding provider: {provider}")
 
     @abstractmethod
     def build_index(self):

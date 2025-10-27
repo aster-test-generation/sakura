@@ -436,7 +436,7 @@ class CommonAnalysis:
 
             for method_signature in test_class_map[test_class]:
                 try:
-                    focal_class_method = FocalClassMethod(self.analysis, testing_frameworks, application_classes)
+                    focal_class_method = FocalClassMethod(self.analysis, application_classes)
                     focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
                         test_class, method_signature, setup_method_signatures
                     )

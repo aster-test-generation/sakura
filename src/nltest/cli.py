@@ -15,8 +15,8 @@ from nltest.nl2test.models import NL2TestInput, NL2TestEval
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.dataset_creation.model import NL2TestDataset, Test as DatasetTest
-from nltest.ray.nl2test_actor import NL2TestActor
-from nltest.ray.test2nl_actor import Test2NLActor
+from nltest.ray_utils.nl2test_actor import NL2TestActor
+from nltest.ray_utils.test2nl_actor import Test2NLActor
 
 app = typer.Typer(
     help="ASTER-NLTest: [A]utomated Te[s][t] Cas[e] Generato[r] from Natural Language",

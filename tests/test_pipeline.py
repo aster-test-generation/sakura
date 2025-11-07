@@ -187,7 +187,7 @@ class TestNL2TestPipeline(BaseNL2Test):
         project_name = nl2_input.project_name
         base_project_dir = Path(self.config.get("project", "base_project_dir"))
         project_root = base_project_dir / project_name
-        output_dir = Path(self.config.get("project", "output_dir"))
+        output_dir = Path(self.config.get("project", "project_output_dir"))
 
         pipeline = NL2TestPipeline(
             self.analysis,

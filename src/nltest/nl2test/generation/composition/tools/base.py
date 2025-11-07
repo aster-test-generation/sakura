@@ -146,6 +146,13 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
     # For mocking dependencies or imports in test file
     def _make_get_class_imports_tool(self) -> StructuredTool:
         def _get_class_imports(qualified_class_name: str) -> List[str]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             return CommonAnalysis(self.analysis).get_imports_for_class(
                 qualified_class_name
             )
@@ -210,6 +217,13 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_getters_and_setters_tool(self) -> StructuredTool:
         def _get_getters_and_setters(qualified_class_name: str) -> List[str]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             getters_and_setters: List[str] = []
             for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
                 method_details = self.analysis.get_method(

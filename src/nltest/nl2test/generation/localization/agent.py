@@ -39,45 +39,21 @@ class LocalizationReActAgent(ReActAgent):
         )
         self.decomposition_mode = decomposition_mode
 
-    def _prepare_tool_args(
+    def prepare_tool_args(
             self, tool_name: str, raw_args: Dict, state: AgentState
     ) -> Tuple[str, Dict]:
         return tool_name, raw_args
 
-    def _process_tool_output(
+    def process_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        # Finalize and end based on decomposition mode; avoid per-type isinstance checks
         tool_name = tool_call["name"]
+        handler = {
+            "finalize": self.process_finalize_tool_output,
+        }.get(tool_name, self.process_generic_tool_output)
+
         try:
-            if tool_name == "finalize":
-                blocks, comments = result
-                state.final_comments = str(comments)
-                state.finalize_called = True
-                state.force_end_attempts = 0
-
-                if self.decomposition_mode == DecompositionMode.GHERKIN:
-                    blocks.enforce_candidate_limits()
-                    state.localized_scenario = blocks  # Expected LocalizedScenario
-                else:
-                    blocks.enforce_candidate_limits()
-                    state.atomic_blocks = blocks  # Expected AtomicBlockList
-
-                outputs.append(
-                    ToolMessage(
-                        content=format_tool_ok({"comments": str(comments)}),
-                        tool_call_id=tool_call["id"],
-                    )
-                )
-                setattr(self, "_end_now", True)
-                return
-
-            outputs.append(
-                ToolMessage(
-                    content=format_tool_ok(result),
-                    tool_call_id=tool_call["id"],
-                )
-            )
+            handler(tool_call, result, state, outputs)
         except Exception as exc:  # pragma: no cover - defensive
             outputs.append(
                 ToolMessage(
@@ -92,3 +68,36 @@ class LocalizationReActAgent(ReActAgent):
                     tool_call_id=tool_call["id"],
                 )
             )
+
+    def process_finalize_tool_output(
+            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+    ) -> None:
+        blocks, comments = result
+        state.final_comments = str(comments)
+        state.finalize_called = True
+        state.force_end_attempts = 0
+
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            blocks.enforce_candidate_limits()
+            state.localized_scenario = blocks  # Expected LocalizedScenario
+        else:
+            blocks.enforce_candidate_limits()
+            state.atomic_blocks = blocks  # Expected AtomicBlockList
+
+        outputs.append(
+            ToolMessage(
+                content=format_tool_ok({"comments": str(comments)}),
+                tool_call_id=tool_call["id"],
+            )
+        )
+        setattr(self, "_end_now", True)
+
+    def process_generic_tool_output(
+            self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
+    ) -> None:
+        outputs.append(
+            ToolMessage(
+                content=format_tool_ok(result),
+                tool_call_id=tool_call["id"],
+            )
+        )

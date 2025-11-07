@@ -54,7 +54,6 @@ class ReActAgent:
         if self.strict_finalize:
             has_finalize = any(getattr(t, "name", None) == "finalize" for t in self.tools)
             if not has_finalize:
-                # Defer import to avoid cycles
                 from nltest.utils.exceptions import ConfigurationException
 
                 raise ConfigurationException(
@@ -70,14 +69,15 @@ class ReActAgent:
         """Reset internal termination flag so the agent can continue running."""
         self._end_now = False
 
-    # Subclass hooks
-    def _prepare_tool_args(
+    # Subclass hook
+    def prepare_tool_args(
             self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
-        """Allow subclasses to inject arguments before tool call."""
+        """Hook for subclasses to inject or transform tool arguments before execution."""
         return tool_name, raw_args
 
-    def _process_tool_output(
+    # Subclass hook
+    def process_tool_output(
             self,
             tool_call: ToolCall,
             result: Any,
@@ -106,6 +106,12 @@ class ReActAgent:
                     tool_call_id=tool_call["id"],
                 )
             )
+
+    # Subclass hook
+    def process_llm_output(
+            self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
+    ) -> None:
+        pass
 
     def _should_end_after_tools(self, state: AgentState) -> bool:
         """Hook for subclasses to request ending immediately after tools."""
@@ -193,7 +199,7 @@ class ReActAgent:
                 name: str = tc["name"]
                 args: Dict[str, Any] = self.llm.parse_tool_args(tc.get("args"))
 
-                name, args = self._prepare_tool_args(name, args, state)
+                name, args = self.prepare_tool_args(name, args, state)
 
                 tool: BaseTool | None = self.tool_map.get(name)
                 if tool is None:
@@ -256,7 +262,8 @@ class ReActAgent:
                     continue
 
                 # Let subclasses interpret results + possibly update state
-                self._process_tool_output(tc, result, state, tool_msgs)
+                self.process_tool_output(tc, result, state, tool_msgs)
+                self.process_llm_output(name, args, state)
 
             for skipped_tc in skipped_tool_calls:
                 skipped_args = self.llm.parse_tool_args(skipped_tc.get("args"))
@@ -450,13 +457,21 @@ class ReActAgent:
 
             effective.messages.append(HumanMessage(content=input_msg))
 
+        min_recursion_limit = 3 * self.max_iters
+        if config is None:
+            final_config: Dict[str, Any] = {
+                "configurable": {"thread_id": "default"},
+                "recursion_limit": min_recursion_limit,
+            }
+        else:
+            final_config = dict(config)
+            current_limit = final_config.get("recursion_limit")
+            if current_limit is None or current_limit < min_recursion_limit:
+                final_config["recursion_limit"] = min_recursion_limit
+
         result = self.graph.invoke(
             effective,
-            config=config
-                   or {
-                       "configurable": {"thread_id": "default"},
-                       "recursion_limit": 3 * self.max_iters,
-                   },
+            config=final_config,
         )
 
         # Convert dictionary result back to AgentState if needed

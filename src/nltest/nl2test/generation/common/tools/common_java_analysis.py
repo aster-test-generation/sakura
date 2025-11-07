@@ -9,7 +9,7 @@ from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.exceptions import (
     ToolExceptionHandler,
     MethodNotFoundError,
-    CallSiteNotFoundError,
+    CallSiteNotFoundError, ClassNotFoundError,
 )
 from nltest.nl2test.generation.common.tool_descriptions import (
     EXTRACT_CODE_DESC,
@@ -39,6 +39,13 @@ class CommonJavaAnalysisTools:
                 end_line: int,
         ) -> Dict[str, Any]:
             # Look up method; fail clearly if not found
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             method_details = self.analysis.get_method(
                 qualified_class_name, method_signature
             )
@@ -93,6 +100,13 @@ class CommonJavaAnalysisTools:
         def _get_method_details(
                 qualified_class_name: str, method_signature: str
         ) -> Dict[str, any]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             method_details = self.analysis.get_method(
                 qualified_class_name, method_signature
             )
@@ -131,11 +145,18 @@ class CommonJavaAnalysisTools:
         def _get_call_site_details(
                 qualified_class_name: str, method_signature: str
         ) -> List[Dict[str, Union[str, List[str]]]]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             method_details = self.analysis.get_method(
                 qualified_class_name, method_signature
             )
             if not method_details:
-                raise CallSiteNotFoundError(
+                raise MethodNotFoundError(
                     f"Call sites could not be found because method {method_signature} not found in class {qualified_class_name}.",
                     extra_info={
                         "qualified_class_name": qualified_class_name,

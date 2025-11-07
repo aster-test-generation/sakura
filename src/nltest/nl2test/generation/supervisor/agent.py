@@ -15,6 +15,7 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
 )
 from nltest.nl2test.models import AgentState
 from nltest.nl2test.models import LocalizedScenario, AtomicBlockList
+from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.execution import JavaCompilation
@@ -55,6 +56,12 @@ class SupervisorReActAgent(ReActAgent):
         self.localization_state: Optional[AgentState] = None
         self.composition_state: Optional[AgentState] = None
 
+    def prepare_tool_args(
+            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+    ) -> Tuple[str, Dict[str, Any]]:
+        # Note: No need to normalize method sig to account for CLDK constructor calls since no static analysis tools
+        return tool_name, raw_args
+
     def _clean_agent(
             self,
             state: Optional[AgentState],
@@ -67,11 +74,6 @@ class SupervisorReActAgent(ReActAgent):
         cleaned.reset_message_history()
         # TODO: Extend message cleaning to maybe use summaries of past history
         return cleaned
-
-    def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict, state: AgentState
-    ) -> Tuple[str, Dict]:
-        return tool_name, raw_args
 
     def process_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List

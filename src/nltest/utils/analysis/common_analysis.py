@@ -510,3 +510,14 @@ class CommonAnalysis:
 
         # Reconstruct the string with simplified elements
         return f"{callee_signature[:start]}{', '.join(simplified_elements)}{callee_signature[end:]}"
+
+    @staticmethod
+    def get_cldk_method_sig(qualified_class_name: str, method_signature: str) -> str:
+        """
+        Normalize constructor signatures for CLDK lookups, since CLDK expects constructors with name '<init>'.
+        """
+        simple_class_name = qualified_class_name.split(".")[-1]
+        constructor_prefix = f"{simple_class_name}("
+        if constructor_prefix not in method_signature:
+            return method_signature
+        return method_signature.replace(constructor_prefix, "<init>(", 1)

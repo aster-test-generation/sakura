@@ -14,6 +14,7 @@ from nltest.nl2test.models import (
     LocalizedScenario,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.llm import LLMClient
 from nltest.utils.tool_messages import format_tool_ok, format_tool_error
 
@@ -40,8 +41,20 @@ class LocalizationReActAgent(ReActAgent):
         self.decomposition_mode = decomposition_mode
 
     def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict, state: AgentState
-    ) -> Tuple[str, Dict]:
+            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+    ) -> Tuple[str, Dict[str, Any]]:
+        # Normalize method sig for CLDK constructor methods
+        normalize_method_sig = {"get_call_site_details", "get_method_details"}
+        if tool_name in normalize_method_sig:
+            qualified_class_name = raw_args.get("qualified_class_name")
+            method_signature = raw_args.get("method_signature")
+            normalized_sig = CommonAnalysis.get_cldk_method_sig(
+                qualified_class_name, method_signature
+            )
+            if normalized_sig != method_signature:
+                updated_args = dict(raw_args)
+                updated_args["method_signature"] = normalized_sig
+                return tool_name, updated_args
         return tool_name, raw_args
 
     def process_tool_output(

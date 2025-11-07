@@ -9,6 +9,7 @@ from langchain_core.tools import BaseTool
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.models import AgentState, DecompositionMode
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.execution import JavaCompilation
@@ -56,9 +57,19 @@ class CompositionReActAgent(ReActAgent):
             current = current.parent
 
     def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict, state: AgentState
-    ) -> Tuple[str, Dict]:
-        """Implementation for preparing tool call arguments."""
+            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+    ) -> Tuple[str, Dict[str, Any]]:
+        normalize_method_sig = {"get_call_site_details", "get_method_details"}
+        if tool_name in normalize_method_sig:
+            qualified_class_name = raw_args.get("qualified_class_name")
+            method_signature = raw_args.get("method_signature")
+            normalized_sig = CommonAnalysis.get_cldk_method_sig(
+                qualified_class_name, method_signature
+            )
+            if normalized_sig != method_signature:
+                updated_args = dict(raw_args)
+                updated_args["method_signature"] = normalized_sig
+                return tool_name, updated_args
         return tool_name, raw_args
 
     def process_tool_output(

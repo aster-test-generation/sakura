@@ -90,7 +90,7 @@ class BaseSupervisorOrchestrator:
                 project_root=base_project_dir or "",
                 usage_tracker=self.usage_tracker,
             )
-        else:  # pragma: no cover - defensive
+        else:  
             tool_builder = GrammaticalSupervisorTools(
                 llm=decision_llm,
                 project_root=base_project_dir,

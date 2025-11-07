@@ -45,7 +45,7 @@ class LocalizationGrader:
     @singledispatchmethod
     def grade(
         self, obj, nl2_input: NL2TestInput
-    ) -> LocalizationEval:  # pragma: no cover - dispatched
+    ) -> LocalizationEval:  
         raise TypeError("Unsupported input type for grade().")
 
     @grade.register
@@ -122,7 +122,7 @@ class LocalizationGrader:
                     focal_methods.add((focal_class.focal_class, method_name))
 
             return focal_methods
-        except Exception as exc:  # pragma: no cover - diagnostic path
+        except Exception as exc:  
             pretty_print(
                 "Error getting focal methods",
                 {

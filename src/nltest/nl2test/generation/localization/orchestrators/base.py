@@ -94,5 +94,5 @@ class BaseLocalizationOrchestrator:
         self.agent.reset_agent()
 
     # Shared signature implemented by subclasses. Intentionally untyped for blocks/output.
-    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None):  # pragma: no cover - interface
+    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None):
         raise NotImplementedError

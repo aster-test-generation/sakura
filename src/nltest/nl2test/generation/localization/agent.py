@@ -82,7 +82,7 @@ class LocalizationReActAgent(ReActAgent):
 
         try:
             handler(tool_call, result, state, outputs)
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(

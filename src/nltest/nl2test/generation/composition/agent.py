@@ -106,7 +106,7 @@ class CompositionReActAgent(ReActAgent):
             handler(tool_call, result, state, outputs)
         except ProjectCompilationError:
             raise
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(

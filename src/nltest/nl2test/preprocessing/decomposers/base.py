@@ -40,7 +40,7 @@ class BaseDecomposer(ABC):
                 )
 
             try:
-                # Should through with strict=True
+                # Should throw exception with strict=True
                 return client.invoke_prompts(
                     system=system_prompt,
                     chat=augmented_chat,

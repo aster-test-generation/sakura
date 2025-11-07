@@ -81,41 +81,7 @@ class SupervisorReActAgent(ReActAgent):
         try:
             # Delegate calls: Supervisor triggers underlying agents and returns normalized payload
             if tool_name == "call_localization_agent":
-                # Be robust to non-dict tool results
-                if isinstance(result, dict):
-                    instructions = result.get("instructions")
-                else:
-                    outputs.append(
-                        ToolMessage(
-                            content=format_tool_error(
-                                code="unexpected_result_type",
-                                message="call_localization_agent expected a dict payload.",
-                                details={
-                                    "tool": tool_name,
-                                    "tool_call_id": tool_call["id"],
-                                    "received_type": type(result).__name__,
-                                },
-                            ),
-                            tool_call_id=tool_call["id"],
-                        )
-                    )
-                    return
-
-                if instructions is None:
-                    outputs.append(
-                        ToolMessage(
-                            content=format_tool_error(
-                                code="missing_instructions",
-                                message="call_localization_agent requires `instructions`.",
-                                details={
-                                    "tool": tool_name,
-                                    "tool_call_id": tool_call["id"],
-                                },
-                            ),
-                            tool_call_id=tool_call["id"],
-                        )
-                    )
-                    return
+                instructions = result.get("instructions")
 
                 orchestrator = self.localization_agent
                 if orchestrator is None:
@@ -216,40 +182,7 @@ class SupervisorReActAgent(ReActAgent):
                 return
 
             if tool_name == "call_composition_agent":
-                if isinstance(result, dict):
-                    instructions = result.get("instructions")
-                else:
-                    outputs.append(
-                        ToolMessage(
-                            content=format_tool_error(
-                                code="unexpected_result_type",
-                                message="call_composition_agent expected a dict payload.",
-                                details={
-                                    "tool": tool_name,
-                                    "tool_call_id": tool_call["id"],
-                                    "received_type": type(result).__name__,
-                                },
-                            ),
-                            tool_call_id=tool_call["id"],
-                        )
-                    )
-                    return
-
-                if instructions is None:
-                    outputs.append(
-                        ToolMessage(
-                            content=format_tool_error(
-                                code="missing_instructions",
-                                message="call_composition_agent requires `instructions`.",
-                                details={
-                                    "tool": tool_name,
-                                    "tool_call_id": tool_call["id"],
-                                },
-                            ),
-                            tool_call_id=tool_call["id"],
-                        )
-                    )
-                    return
+                instructions = result.get("instructions")
 
                 orchestrator = self.composition_agent
                 if orchestrator is None:
@@ -371,6 +304,9 @@ class SupervisorReActAgent(ReActAgent):
                     )
                     return
 
+                start_line = result.get("start_line")
+                end_line = result.get("end_line")
+
                 qcn = (
                     f"{state.package}.{state.class_name}"
                     if state.package
@@ -397,11 +333,36 @@ class SupervisorReActAgent(ReActAgent):
                     )
                     return
 
-                total_lines = len(raw_code.splitlines())
+                code_lines = raw_code.splitlines()
+                total_lines = len(code_lines)
+                if start_line > total_lines:
+                    outputs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="invalid_line_range",
+                                message="start_line is beyond the end of the file.",
+                                details={
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call["id"],
+                                    "start_line": start_line,
+                                    "total_lines": total_lines,
+                                },
+                            ),
+                            tool_call_id=tool_call["id"],
+                        )
+                    )
+                    return
+
+                applied_end_line = min(end_line, total_lines)
+                sliced_source = "\n".join(
+                    code_lines[start_line - 1:applied_end_line]
+                )
                 payload = {
                     "qualified_class_name": qcn,
-                    "source": raw_code,
+                    "source": sliced_source,
                     "total_lines": total_lines,
+                    "start_line": start_line,
+                    "end_line": applied_end_line,
                 }
 
                 outputs.append(

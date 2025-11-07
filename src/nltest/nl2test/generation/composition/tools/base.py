@@ -16,6 +16,7 @@ from nltest.nl2test.models import (
     AtomicBlockList,
     FinalizeCommentsArgs,
     NoArgs,
+    ViewTestCodeArgs,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
@@ -246,16 +247,18 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         )
 
     def _make_view_test_code_tool(self) -> StructuredTool:
-        def _view_test_code() -> dict:
-            # NOTE: Work is done by the agent hook for state injection
-            # Returning an empty dict satisfies the tool pipeline.
-            return {}
+        def _view_test_code(start_line: int, end_line: int) -> dict:
+            if start_line <= 1 or end_line <= 1:
+                raise ValueError("start_line and end_line must be greater than 1.")
+            if end_line < start_line:
+                raise ValueError("end_line must be greater than or equal to start_line.")
+            return {"start_line": start_line, "end_line": end_line}
 
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
             description=VIEW_TEST_CODE_DESC,
-            args_schema=NoArgs,
+            args_schema=ViewTestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 

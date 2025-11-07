@@ -6,7 +6,7 @@ from typing import List, Tuple, Union
 from langchain_core.tools import BaseTool, StructuredTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
-from nltest.nl2test.models import NoArgs
+from nltest.nl2test.models import NoArgs, ViewTestCodeArgs
 from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.supervisor.tool_descriptions import (
     FINALIZE_DESC,
@@ -42,15 +42,18 @@ class BaseSupervisorTools:
 
     # The following tools are simple stubs; behavior is implemented in the Supervisor agent
     def _make_view_test_code_tool(self) -> StructuredTool:
-        def _view_test_code() -> dict:
-            # Supervisor agent will inject full test code; no args required.
-            return {}
+        def _view_test_code(start_line: int, end_line: int) -> dict:
+            if start_line <= 1 or end_line <= 1:
+                raise ValueError("start_line and end_line must be greater than 1.")
+            if end_line < start_line:
+                raise ValueError("end_line must be greater than or equal to start_line.")
+            return {"start_line": start_line, "end_line": end_line}
 
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
             description=VIEW_TEST_CODE_DESC,
-            args_schema=NoArgs,
+            args_schema=ViewTestCodeArgs,
         )
 
     def _make_compile_and_execute_code_tool(self) -> StructuredTool:

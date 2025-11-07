@@ -68,36 +68,9 @@ class CompositionReActAgent(ReActAgent):
         tool_name = tool_call["name"]
         try:
             if tool_name == "generate_test_code":
-                if not isinstance(result, dict):
-                    outputs.append(
-                        ToolMessage(
-                            content=format_tool_error(
-                                code="invalid_tool_output",
-                                message="generate_test_code returned a non-dict payload.",
-                                details={"tool": tool_name, "tool_call_id": tool_call["id"]},
-                            ),
-                            tool_call_id=tool_call["id"],
-                        )
-                    )
-                    return
-
                 test_code = result.get("test_code")
                 qualified_class_name = result.get("qualified_class_name")
                 method_signature = result.get("method_signature")
-
-                if not isinstance(test_code, str) or not isinstance(qualified_class_name, str) or not isinstance(
-                        method_signature, str):
-                    outputs.append(
-                        ToolMessage(
-                            content=format_tool_error(
-                                code="invalid_tool_output",
-                                message="generate_test_code returned malformed fields.",
-                                details={"tool": tool_name, "tool_call_id": tool_call["id"]},
-                            ),
-                            tool_call_id=tool_call["id"],
-                        )
-                    )
-                    return
 
                 fm = TestFileManager(self.project_root)
 
@@ -165,6 +138,9 @@ class CompositionReActAgent(ReActAgent):
                     )
                     return
 
+                start_line = result.get("start_line")
+                end_line = result.get("end_line")
+
                 qcn = f"{state.package}.{state.class_name}" if state.package else state.class_name
                 fm = TestFileManager(self.project_root)
                 info = TestFileInfo(qualified_class_name=qcn)
@@ -187,11 +163,36 @@ class CompositionReActAgent(ReActAgent):
                     )
                     return
 
-                total_lines = len(raw_code.splitlines())
+                code_lines = raw_code.splitlines()
+                total_lines = len(code_lines)
+                if start_line > total_lines:
+                    outputs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="invalid_line_range",
+                                message="start_line is beyond the end of the file.",
+                                details={
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call["id"],
+                                    "start_line": start_line,
+                                    "total_lines": total_lines,
+                                },
+                            ),
+                            tool_call_id=tool_call["id"],
+                        )
+                    )
+                    return
+
+                applied_end_line = min(end_line, total_lines)
+                sliced_source = "\n".join(
+                    code_lines[start_line - 1:applied_end_line]
+                )
                 payload = {
                     "qualified_class_name": qcn,
-                    "source": raw_code,
+                    "source": sliced_source,
                     "total_lines": total_lines,
+                    "start_line": start_line,
+                    "end_line": applied_end_line,
                 }
 
                 outputs.append(

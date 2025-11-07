@@ -42,19 +42,6 @@ class LocalizationReActAgent(ReActAgent):
     def _prepare_tool_args(
             self, tool_name: str, raw_args: Dict, state: AgentState
     ) -> Tuple[str, Dict]:
-        # Stopped injecting from state to reduce tool complexity
-
-        # if tool_name == "modify_atomic_blocks":
-        #    raw_args = dict(raw_args)
-        #    raw_args.setdefault("current_blocks", getattr(state, "atomic_blocks", AtomicBlockList(atomic_blocks=[])))
-        # elif tool_name == "finalize":
-        #    raw_args = dict(raw_args)
-        #    # Support either Gherkin Scenario or AtomicBlockList depending on the flow
-        #    if "scenario" not in raw_args and getattr(state, "scenario", None) is not None:
-        #        raw_args.setdefault("scenario", state.scenario)
-        #    else:
-        #        raw_args.setdefault("current_blocks", getattr(state, "atomic_blocks", AtomicBlockList(atomic_blocks=[])))
-
         return tool_name, raw_args
 
     def _process_tool_output(

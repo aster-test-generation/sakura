@@ -83,7 +83,6 @@ class SupervisorReActAgent(ReActAgent):
             if tool_name == "call_localization_agent":
                 # Be robust to non-dict tool results
                 if isinstance(result, dict):
-                    incoming_blocks = result.get("blocks")
                     instructions = result.get("instructions")
                 else:
                     outputs.append(
@@ -95,6 +94,22 @@ class SupervisorReActAgent(ReActAgent):
                                     "tool": tool_name,
                                     "tool_call_id": tool_call["id"],
                                     "received_type": type(result).__name__,
+                                },
+                            ),
+                            tool_call_id=tool_call["id"],
+                        )
+                    )
+                    return
+
+                if instructions is None:
+                    outputs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="missing_instructions",
+                                message="call_localization_agent requires `instructions`.",
+                                details={
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call["id"],
                                 },
                             ),
                             tool_call_id=tool_call["id"],
@@ -120,18 +135,32 @@ class SupervisorReActAgent(ReActAgent):
                     return
 
                 prev_state = self._clean_agent(self.localization_state, orchestrator)
-                try:
-                    # Choose canonical blocks from state; ignore model-provided blocks except for first bootstrap
-                    canonical_blocks = None
-                    if self.localization_state and self.localization_state.localized_scenario is not None:
-                        canonical_blocks = self.localization_state.localized_scenario
-                    elif state.localized_scenario is not None:
-                        canonical_blocks = state.localized_scenario
-                    elif getattr(state, "atomic_blocks", None) is not None:
-                        canonical_blocks = state.atomic_blocks
-                    else:
-                        canonical_blocks = incoming_blocks
 
+                canonical_blocks = None
+                if state.localized_scenario is not None:
+                    canonical_blocks = state.localized_scenario
+                elif state.atomic_blocks is not None:
+                    canonical_blocks = state.atomic_blocks
+
+                if canonical_blocks is None:
+                    outputs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="missing_blocks",
+                                message=(
+                                    "Supervisor has no blocks to inject into "
+                                    "call_localization_agent. Ensure the supervisor state is initialized."
+                                ),
+                                details={
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call["id"],
+                                },
+                            ),
+                            tool_call_id=tool_call["id"],
+                        )
+                    )
+                    return
+                try:
                     updated_state: AgentState = orchestrator.assign_task(
                         canonical_blocks, instructions=instructions, agent_state=prev_state
                     )
@@ -188,7 +217,6 @@ class SupervisorReActAgent(ReActAgent):
 
             if tool_name == "call_composition_agent":
                 if isinstance(result, dict):
-                    incoming_blocks = result.get("blocks")
                     instructions = result.get("instructions")
                 else:
                     outputs.append(
@@ -200,6 +228,22 @@ class SupervisorReActAgent(ReActAgent):
                                     "tool": tool_name,
                                     "tool_call_id": tool_call["id"],
                                     "received_type": type(result).__name__,
+                                },
+                            ),
+                            tool_call_id=tool_call["id"],
+                        )
+                    )
+                    return
+
+                if instructions is None:
+                    outputs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="missing_instructions",
+                                message="call_composition_agent requires `instructions`.",
+                                details={
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call["id"],
                                 },
                             ),
                             tool_call_id=tool_call["id"],
@@ -225,18 +269,32 @@ class SupervisorReActAgent(ReActAgent):
                     return
 
                 prev_state = self._clean_agent(self.composition_state, orchestrator)
-                try:
-                    # Choose canonical blocks from state; ignore model-provided blocks except for first bootstrap
-                    canonical_blocks = None
-                    if self.composition_state and self.composition_state.localized_scenario is not None:
-                        canonical_blocks = self.composition_state.localized_scenario
-                    elif state.localized_scenario is not None:
-                        canonical_blocks = state.localized_scenario
-                    elif getattr(state, "atomic_blocks", None) is not None:
-                        canonical_blocks = state.atomic_blocks
-                    else:
-                        canonical_blocks = incoming_blocks
 
+                canonical_blocks = None
+                if state.localized_scenario is not None:
+                    canonical_blocks = state.localized_scenario
+                elif state.atomic_blocks is not None:
+                    canonical_blocks = state.atomic_blocks
+
+                if canonical_blocks is None:
+                    outputs.append(
+                        ToolMessage(
+                            content=format_tool_error(
+                                code="missing_blocks",
+                                message=(
+                                    "Supervisor has no blocks to inject into "
+                                    "call_composition_agent. Ensure the supervisor state is initialized."
+                                ),
+                                details={
+                                    "tool": tool_name,
+                                    "tool_call_id": tool_call["id"],
+                                },
+                            ),
+                            tool_call_id=tool_call["id"],
+                        )
+                    )
+                    return
+                try:
                     updated_state: AgentState = orchestrator.assign_task(
                         canonical_blocks, instructions=instructions, agent_state=prev_state
                     )
@@ -272,6 +330,7 @@ class SupervisorReActAgent(ReActAgent):
                 if updated_state.localized_scenario is not None:
                     updated_state.localized_scenario.enforce_candidate_limits()
                     state.localized_scenario = updated_state.localized_scenario
+
                 state.package = updated_state.package
                 state.class_name = updated_state.class_name
                 state.method_signature = updated_state.method_signature

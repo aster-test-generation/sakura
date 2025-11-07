@@ -316,8 +316,6 @@ class Pipeline:
         if self.decomposition_mode == DecompositionMode.GHERKIN:
             if isinstance(blocks, Scenario):
                 sup_blocks = LocalizedScenario.from_scenario(blocks)
-            elif isinstance(blocks, LocalizedScenario):
-                sup_blocks = blocks
             else:
                 raise TypeError("Unexpected blocks type for GHERKIN mode.")
             supervisor = GherkinSupervisorOrchestrator(
@@ -336,8 +334,6 @@ class Pipeline:
                         for gb in blocks.grammatical_blocks
                     ]
                 )
-            elif isinstance(blocks, AtomicBlockList):
-                sup_blocks = blocks
             else:
                 raise TypeError("Unexpected blocks type for GRAMMATICAL mode.")
             supervisor = GrammaticalSupervisorOrchestrator(

@@ -151,6 +151,13 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
         reachability = Reachability(self.analysis)
 
         def _get_inherited_library_classes(qualified_class_name: str) -> List[str]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             inherited = reachability.get_inherited_classes_and_interfaces(
                 qualified_class_name
             )

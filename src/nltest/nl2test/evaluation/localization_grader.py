@@ -108,7 +108,7 @@ class LocalizationGrader:
             setup_signatures = [method.signature for method in setup_methods]
 
             focal_finder = FocalClassMethod(
-                self.analysis, testing_frameworks, self.application_classes
+                self.analysis, self.application_classes
             )
             focal_classes, _, _, _ = focal_finder.identify_focal_class_and_ui_api_test(
                 nl2_input.qualified_class_name,

@@ -28,17 +28,7 @@ class AgentState(BaseModel):
     curr_tool_trajectory: List[str] = Field(default_factory=list)
     tool_trajectories: List[List[str]] = Field(default_factory=list)
 
-    # Inputs
-    grammatical_blocks: Annotated[
-        Optional[GrammaticalBlockList],
-        "Input grammatical blocks when using grammatical mode",
-    ] = None
-    scenario: Annotated[
-        Optional[Scenario],
-        "Input Scenario when using Gherkin mode",
-    ] = None
-
-    # For test packaging
+    # For test packaging **Could be brittle
     package: Annotated[
         Optional[str], "The package selected by the agent for the test code."
     ] = None
@@ -211,8 +201,8 @@ class ModifyScenarioCommentArgs(BaseModel):
 
 
 class ViewTestCodeArgs(BaseModel):
-    start_line: Annotated[int, Field(ge=1, description="1-based start line to slice the returned source.")]
-    end_line: Annotated[int, Field(ge=1, description="1-based end line to slice the returned source.")]
+    start_line: Annotated[int, Field(description="1-based start line to slice the returned source.")]
+    end_line: Annotated[int, Field(description="1-based end line to slice the returned source.")]
 
 
 class ModifyAtomicBlockNoteArgs(BaseModel):
@@ -236,13 +226,10 @@ class NoArgs(BaseModel):
     pass
 
 
+# Note: blocks are provided via agent states
 class CallAgentGherkinArgs(BaseModel):
     """Arguments for delegating from Supervisor to agents in Gherkin mode."""
 
-    blocks: Annotated[
-        LocalizedScenario,
-        Field(description="The current LocalizedScenario to operate on."),
-    ]
     instructions: Annotated[
         str,
         Field(description="Actionable instructions for the delegated agent."),
@@ -252,10 +239,6 @@ class CallAgentGherkinArgs(BaseModel):
 class CallAgentGrammaticalArgs(BaseModel):
     """Arguments for delegating from Supervisor to agents in Grammatical mode."""
 
-    blocks: Annotated[
-        AtomicBlockList,
-        Field(description="The current AtomicBlockList to operate on."),
-    ]
     instructions: Annotated[
         str,
         Field(description="Actionable instructions for the delegated agent."),

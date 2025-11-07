@@ -28,9 +28,10 @@ class BaseNL2Test(TestCase):
         # llm_model = "openai/gpt-4.1-mini"
         # llm_model = "z-ai/glm-4.5v" -> does not work
         # llm_model = "openai/gpt-4o-mini"
-        # llm_model = "google/gemini-2.5-flash"
+        llm_model = "google/gemini-2.5-flash"
         # llm_model = "x-ai/grok-code-fast-1"
-        llm_model = "openai/gpt-4.1-mini"
+        # llm_model = "x-ai/grok-4-fast"
+        # llm_model = "openai/gpt-4.1-mini"
         emb_model = "nomic-embed-text:v1.5"
 
         # Make paths relative to the tests directory
@@ -49,13 +50,15 @@ class BaseNL2Test(TestCase):
             project_name=project_name,
             base_project_dir=str(resources_dir),
             project_output_dir=str(output_dir),
+            use_stored_index=False,
             llm_provider=Provider.OPENROUTER,
             llm_model=llm_model,
             emb_provider=Provider.OLLAMA,
             emb_model=emb_model,
             llm_api_key=os.getenv("LLM_API_KEY"),
             emb_api_key=None,
-            localization_max_iters=5,
+            # Set max iters in test case
+            can_parallel_tool=True,
         )
 
         # Generate analysis of the current project

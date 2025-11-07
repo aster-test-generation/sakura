@@ -436,7 +436,7 @@ class CommonAnalysis:
 
             for method_signature in test_class_map[test_class]:
                 try:
-                    focal_class_method = FocalClassMethod(self.analysis, testing_frameworks, application_classes)
+                    focal_class_method = FocalClassMethod(self.analysis, application_classes)
                     focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
                         test_class, method_signature, setup_method_signatures
                     )
@@ -510,3 +510,23 @@ class CommonAnalysis:
 
         # Reconstruct the string with simplified elements
         return f"{callee_signature[:start]}{', '.join(simplified_elements)}{callee_signature[end:]}"
+
+    @staticmethod
+    def get_cldk_class_name(qualified_class_name: str) -> str:
+        """
+        Normalize inner class separators for CLDK lookups.
+        """
+        if "$" not in qualified_class_name:
+            return qualified_class_name
+        return qualified_class_name.replace("$", ".")
+
+    @staticmethod
+    def get_cldk_method_sig(qualified_class_name: str, method_signature: str) -> str:
+        """
+        Normalize constructor signatures for CLDK lookups, since CLDK expects constructors with name '<init>'.
+        """
+        simple_class_name = qualified_class_name.split(".")[-1]
+        constructor_prefix = f"{simple_class_name}("
+        if constructor_prefix not in method_signature:
+            return method_signature
+        return method_signature.replace(constructor_prefix, "<init>(", 1)

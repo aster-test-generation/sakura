@@ -6,6 +6,7 @@ import subprocess
 from pathlib import Path
 from typing import List, Tuple, Union, Dict
 
+
 import ray
 from bs4 import BeautifulSoup
 from tqdm import tqdm

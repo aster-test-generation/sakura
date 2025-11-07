@@ -61,7 +61,7 @@ class TestFocalAnalysis(BaseTest2NL):
         )
 
         focal_class_method = FocalClassMethod(
-            self.analysis, testing_frameworks, application_classes
+            self.analysis, application_classes
         )
 
         # Get focal classes and methods

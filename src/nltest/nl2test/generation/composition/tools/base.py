@@ -16,6 +16,7 @@ from nltest.nl2test.models import (
     AtomicBlockList,
     FinalizeCommentsArgs,
     NoArgs,
+    ViewTestCodeArgs,
 )
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
@@ -145,6 +146,13 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
     # For mocking dependencies or imports in test file
     def _make_get_class_imports_tool(self) -> StructuredTool:
         def _get_class_imports(qualified_class_name: str) -> List[str]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             return CommonAnalysis(self.analysis).get_imports_for_class(
                 qualified_class_name
             )
@@ -209,6 +217,13 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_getters_and_setters_tool(self) -> StructuredTool:
         def _get_getters_and_setters(qualified_class_name: str) -> List[str]:
+            class_details = self.analysis.get_class(qualified_class_name)
+            if not class_details:
+                raise ClassNotFoundError(
+                    f"Class {qualified_class_name} not found.",
+                    extra_info={"qualified_class_name": qualified_class_name},
+                )
+
             getters_and_setters: List[str] = []
             for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
                 method_details = self.analysis.get_method(
@@ -246,16 +261,18 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         )
 
     def _make_view_test_code_tool(self) -> StructuredTool:
-        def _view_test_code() -> dict:
-            # NOTE: Work is done by the agent hook for state injection
-            # Returning an empty dict satisfies the tool pipeline.
-            return {}
+        def _view_test_code(start_line: int, end_line: int) -> dict:
+            if start_line <= 1 or end_line <= 1:
+                raise ValueError("start_line and end_line must be greater than 1.")
+            if end_line < start_line:
+                raise ValueError("end_line must be greater than or equal to start_line.")
+            return {"start_line": start_line, "end_line": end_line}
 
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
             description=VIEW_TEST_CODE_DESC,
-            args_schema=NoArgs,
+            args_schema=ViewTestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 

@@ -3,7 +3,7 @@ Delegate to the localization agent to begin localization or refine an already lo
 Args:
   instructions: Concrete, strict, and explicit guidance describing which steps to adjust and what to inspect. If modifications are to certain steps only, list the steps by `id` and explicitly mention to not make other changes. You can be more high-level when asking for localization for all steps, like on the first tool call.
 Notes:
-  The Supervisor supplies the latest LocalizedScenario from its own state; any `blocks` argument is optional and ignored after the first bootstrap.
+  The Supervisor automatically injects the current LocalizedScenario from its own state; you must not supply `blocks`.
 Use when:
   You need 1 to 3 candidate methods per step (best-first), updated argument bindings, re-scoring or replacement of candidates, step split/merge, or improved notes and provenance for Gherkin-style steps.
   This should be used to first localize the steps to any relevant methods, and also to make any localization changes based on execution feedback as iterations progress.
@@ -16,7 +16,7 @@ Delegate to the Localization agent to refine AtomicBlocks.
 Args:
   instructions: Actionable guidance describing what to modify or inspect.
 Notes:
-  The Supervisor supplies the latest AtomicBlockList from its own state; any `blocks` argument is optional and ignored after the first bootstrap.
+  The Supervisor automatically injects the current AtomicBlockList from its own state; you must not supply `blocks`.
 Use when:
   You need the localization agent to re-score candidate methods, adjust bindings, or improve notes for grammatical blocks.
 Returns:
@@ -28,7 +28,7 @@ Delegate to the composition agent to progress test generation from a localized s
 Args:
   instructions: Concrete, informative guidance on test generation and specific implementation details.
 Notes:
-  The Supervisor supplies the current LocalizedScenario from its own state; any `blocks` argument is optional and ignored after the first bootstrap.
+  The Supervisor automatically injects the current LocalizedScenario from its own state; do not supply `blocks`.
 Use when:
   Generating the code for the test scenario, using the localized test description decomposition.
   Selecting or revising the test package/class, integrating localized step bindings, adding imports and test annotations, aligning the method body with scenario order, or rewriting code to address diagnostics tied to specific steps.
@@ -41,7 +41,7 @@ Delegate to the Composition agent to progress test generation from AtomicBlocks.
 Args:
   instructions: Actionable guidance describing the next composition step.
 Notes:
-  The Supervisor supplies the latest AtomicBlockList from its state; any `blocks` argument is optional and ignored after the first bootstrap.
+  The Supervisor automatically injects the latest AtomicBlockList from its state; do not supply `blocks`.
 Use when:
   Iterating on package/class selection or rewriting test code to match the blocks.
 Returns:

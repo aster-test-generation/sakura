@@ -14,6 +14,7 @@ from nltest.nl2test.models import (
     LocalizedScenario,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.llm import LLMClient
 from nltest.utils.tool_messages import format_tool_ok, format_tool_error
 
@@ -39,58 +40,48 @@ class LocalizationReActAgent(ReActAgent):
         )
         self.decomposition_mode = decomposition_mode
 
-    def _prepare_tool_args(
-            self, tool_name: str, raw_args: Dict, state: AgentState
-    ) -> Tuple[str, Dict]:
-        # Stopped injecting from state to reduce tool complexity
+    def prepare_tool_args(
+            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+    ) -> Tuple[str, Dict[str, Any]]:
+        updated_args: Dict[str, Any] = raw_args
 
-        # if tool_name == "modify_atomic_blocks":
-        #    raw_args = dict(raw_args)
-        #    raw_args.setdefault("current_blocks", getattr(state, "atomic_blocks", AtomicBlockList(atomic_blocks=[])))
-        # elif tool_name == "finalize":
-        #    raw_args = dict(raw_args)
-        #    # Support either Gherkin Scenario or AtomicBlockList depending on the flow
-        #    if "scenario" not in raw_args and getattr(state, "scenario", None) is not None:
-        #        raw_args.setdefault("scenario", state.scenario)
-        #    else:
-        #        raw_args.setdefault("current_blocks", getattr(state, "atomic_blocks", AtomicBlockList(atomic_blocks=[])))
+        # Normalize class name for CLDK inner classes
+        normalize_class = {"get_method_details", "get_reachable_methods_in_class", "get_class_details",
+                           "get_inherited_library_classes", "extract_method_code", "get_call_site_details"}
+        if tool_name in normalize_class:
+            qualified_class_name = raw_args.get("qualified_class_name")
+            if isinstance(qualified_class_name, str):
+                normalized_class = CommonAnalysis.get_cldk_class_name(qualified_class_name)
+                if normalized_class != qualified_class_name:
+                    if updated_args is raw_args:
+                        updated_args = dict(updated_args)
+                    updated_args["qualified_class_name"] = normalized_class
 
-        return tool_name, raw_args
+        # Normalize method sig for CLDK constructor methods
+        normalize_method_sig = {"get_call_site_details", "get_method_details", "extract_method_code"}
+        if tool_name in normalize_method_sig:
+            qualified_class_name = updated_args.get("qualified_class_name")
+            method_signature = updated_args.get("method_signature")
+            normalized_sig = CommonAnalysis.get_cldk_method_sig(
+                qualified_class_name, method_signature
+            )
+            if normalized_sig != method_signature:
+                if updated_args is raw_args:
+                    updated_args = dict(updated_args)
+                updated_args["method_signature"] = normalized_sig
 
-    def _process_tool_output(
+        return tool_name, updated_args
+
+    def process_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        # Finalize and end based on decomposition mode; avoid per-type isinstance checks
         tool_name = tool_call["name"]
+        handler = {
+            "finalize": self.process_finalize_tool_output,
+        }.get(tool_name, self.process_generic_tool_output)
+
         try:
-            if tool_name == "finalize":
-                blocks, comments = result
-                state.final_comments = str(comments)
-                state.finalize_called = True
-                state.force_end_attempts = 0
-
-                if self.decomposition_mode == DecompositionMode.GHERKIN:
-                    blocks.enforce_candidate_limits()
-                    state.localized_scenario = blocks  # Expected LocalizedScenario
-                else:
-                    blocks.enforce_candidate_limits()
-                    state.atomic_blocks = blocks  # Expected AtomicBlockList
-
-                outputs.append(
-                    ToolMessage(
-                        content=format_tool_ok({"comments": str(comments)}),
-                        tool_call_id=tool_call["id"],
-                    )
-                )
-                setattr(self, "_end_now", True)
-                return
-
-            outputs.append(
-                ToolMessage(
-                    content=format_tool_ok(result),
-                    tool_call_id=tool_call["id"],
-                )
-            )
+            handler(tool_call, result, state, outputs)
         except Exception as exc:  # pragma: no cover - defensive
             outputs.append(
                 ToolMessage(
@@ -105,3 +96,36 @@ class LocalizationReActAgent(ReActAgent):
                     tool_call_id=tool_call["id"],
                 )
             )
+
+    def process_finalize_tool_output(
+            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+    ) -> None:
+        blocks, comments = result
+        state.final_comments = str(comments)
+        state.finalize_called = True
+        state.force_end_attempts = 0
+
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            blocks.enforce_candidate_limits()
+            state.localized_scenario = blocks  # Expected LocalizedScenario
+        else:
+            blocks.enforce_candidate_limits()
+            state.atomic_blocks = blocks  # Expected AtomicBlockList
+
+        outputs.append(
+            ToolMessage(
+                content=format_tool_ok({"comments": str(comments)}),
+                tool_call_id=tool_call["id"],
+            )
+        )
+        setattr(self, "_end_now", True)
+
+    def process_generic_tool_output(
+            self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
+    ) -> None:
+        outputs.append(
+            ToolMessage(
+                content=format_tool_ok(result),
+                tool_call_id=tool_call["id"],
+            )
+        )

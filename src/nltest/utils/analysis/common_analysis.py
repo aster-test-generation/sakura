@@ -512,6 +512,15 @@ class CommonAnalysis:
         return f"{callee_signature[:start]}{', '.join(simplified_elements)}{callee_signature[end:]}"
 
     @staticmethod
+    def get_cldk_class_name(qualified_class_name: str) -> str:
+        """
+        Normalize inner class separators for CLDK lookups.
+        """
+        if "$" not in qualified_class_name:
+            return qualified_class_name
+        return qualified_class_name.replace("$", ".")
+
+    @staticmethod
     def get_cldk_method_sig(qualified_class_name: str, method_signature: str) -> str:
         """
         Normalize constructor signatures for CLDK lookups, since CLDK expects constructors with name '<init>'.

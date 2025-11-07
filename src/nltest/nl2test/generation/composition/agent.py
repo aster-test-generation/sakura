@@ -59,18 +59,34 @@ class CompositionReActAgent(ReActAgent):
     def prepare_tool_args(
             self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
-        normalize_method_sig = {"get_call_site_details", "get_method_details"}
-        if tool_name in normalize_method_sig:
+        updated_args: Dict[str, Any] = raw_args
+
+        # Normalize class name for CLDK inner classes
+        normalize_class = {"get_method_details", "get_class_fields", "get_class_imports",
+                           "get_class_constructors_and_factories", "get_getters_and_setters", "extract_method_code",
+                           "get_call_site_details"}
+        if tool_name in normalize_class:
             qualified_class_name = raw_args.get("qualified_class_name")
-            method_signature = raw_args.get("method_signature")
+            normalized_class = CommonAnalysis.get_cldk_class_name(qualified_class_name)
+            if normalized_class != qualified_class_name:
+                # Clone only if diff
+                if updated_args is raw_args:
+                    updated_args = dict(updated_args)
+                updated_args["qualified_class_name"] = normalized_class
+
+        normalize_method_sig = {"get_call_site_details", "get_method_details", "extract_method_code"}
+        if tool_name in normalize_method_sig:
+            qualified_class_name = updated_args.get("qualified_class_name")
+            method_signature = updated_args.get("method_signature")
             normalized_sig = CommonAnalysis.get_cldk_method_sig(
                 qualified_class_name, method_signature
             )
             if normalized_sig != method_signature:
-                updated_args = dict(raw_args)
+                if updated_args is raw_args:
+                    updated_args = dict(updated_args)
                 updated_args["method_signature"] = normalized_sig
-                return tool_name, updated_args
-        return tool_name, raw_args
+
+        return tool_name, updated_args
 
     def process_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List

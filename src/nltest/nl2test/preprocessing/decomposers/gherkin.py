@@ -23,9 +23,10 @@ class GherkinDecomposer(BaseDecomposer):
             "gherkin_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="chat"
         ).format(input=nl_description)
 
-        scenario: Scenario = self.structured.invoke_prompts(
-            system=system_prompt,
-            chat=chat_prompt,
+        scenario: Scenario = self.invoke_with_retries(
+            client=self.structured,
+            system_prompt=system_prompt,
+            base_chat_prompt=chat_prompt,
             schema=Scenario,
             strict=True,
         )

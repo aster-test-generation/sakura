@@ -330,7 +330,7 @@ class TestFileManager:
                 file_path.unlink()
             except FileNotFoundError:
                 break
-            except Exception as exc:  # pragma: no cover - defensive
+            except Exception as exc:  
                 last_error = exc
                 if attempts >= max_attempts:
                     break

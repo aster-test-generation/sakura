@@ -92,7 +92,7 @@ class SupervisorReActAgent(ReActAgent):
             handler(tool_call, result, state, outputs)
         except ProjectCompilationError:
             raise
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(
@@ -160,7 +160,7 @@ class SupervisorReActAgent(ReActAgent):
             updated_state: AgentState = orchestrator.assign_task(
                 canonical_blocks, instructions=instructions, agent_state=prev_state
             )
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(
@@ -261,7 +261,7 @@ class SupervisorReActAgent(ReActAgent):
             updated_state: AgentState = orchestrator.assign_task(
                 canonical_blocks, instructions=instructions, agent_state=prev_state
             )
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:  
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(

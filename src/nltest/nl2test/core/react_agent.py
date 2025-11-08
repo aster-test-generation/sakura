@@ -20,6 +20,7 @@ from nltest.utils.tool_messages import (
     format_tool_error,
     format_tool_ok,
 )
+from nltest.utils.pretty.color_logger import RichLog
 
 
 class ReActAgent:
@@ -92,7 +93,7 @@ class ReActAgent:
                     tool_call_id=tool_call["id"],
                 )
             )
-        except Exception as exc:  # pragma: no cover - defensive
+        except Exception as exc:
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(
@@ -126,6 +127,81 @@ class ReActAgent:
         except Exception:
             args_json = str(args)
         return f"{tool_name}|{args_json}"
+
+    # For debugging
+    def _log_tool_error(self, tool_msg: ToolMessage, llm_message: AIMessage) -> None:
+        """Emit a RichLog debug entry containing the tool error and triggering LLM turn."""
+        content = getattr(tool_msg, "content", "")
+
+        if isinstance(content, str):
+            try:
+                payload = json.loads(content)
+            except json.JSONDecodeError:
+                return
+        elif isinstance(content, dict):
+            payload = content
+        else:
+            return
+
+        if payload.get("status") != "error":
+            return
+
+        error_info = payload.get("error") or {}
+        details = error_info.get("details") or {}
+        tool_name = details.get("tool") or "unknown_tool"
+        tool_call_id = details.get("tool_call_id") or getattr(tool_msg, "tool_call_id", "unknown_call")
+        error_code = error_info.get("code") or "unknown_error"
+        error_msg = error_info.get("message") or ""
+
+        matching_call: ToolCall | None = None
+        tool_calls = llm_message.tool_calls
+        for tc in tool_calls:
+            if tc.get("id") == tool_call_id:
+                matching_call = tc
+                break
+
+        if matching_call:
+            llm_info_label = "llm_tool_args"
+            tool_name = matching_call.get("name") or tool_name
+            raw_args = matching_call.get("args")
+            parsed_args = self.llm.parse_tool_args(raw_args)
+            try:
+                if parsed_args:
+                    llm_info_value = json.dumps(parsed_args, ensure_ascii=False)
+                elif isinstance(raw_args, str):
+                    llm_info_value = raw_args
+                else:
+                    llm_info_value = str(raw_args)
+            except Exception:
+                llm_info_value = str(parsed_args or raw_args)
+        else:  # Fallback is generic LLM content message (if tool can't be matched)
+            llm_info_label = "llm_content"
+            llm_content = llm_message.content
+            if isinstance(llm_content, str):
+                llm_text = llm_content
+            elif isinstance(llm_content, list):
+                segments = []
+                for chunk in llm_content:
+                    if isinstance(chunk, dict):
+                        segments.append(str(chunk.get("text") or chunk.get("content") or chunk))
+                    else:
+                        segments.append(str(chunk))
+                llm_text = "\n".join(segments)
+            else:
+                llm_text = str(llm_content)
+
+            try:
+                sanitized = self.llm.sanitize(llm_text)
+            except Exception:
+                sanitized = llm_text
+
+            llm_info_value = sanitized
+
+        llm_preview = (llm_info_value or "")[:500]
+        RichLog.debug(
+            f"[ReActAgent] tool_error name={tool_name} call_id={tool_call_id} "
+            f"code={error_code} message={error_msg} | {llm_info_label}={llm_preview}"
+        )
 
     def _build_graph(self):
         """Organize the graph into nodes and edges. Typical react workflow with model call, tool call, and ending."""
@@ -189,7 +265,7 @@ class ReActAgent:
                 m for m in reversed(state.messages) if isinstance(m, AIMessage)
             )
             tool_msgs: List[ToolMessage] = []
-            tool_calls = list(getattr(last_ai, "tool_calls", []))
+            tool_calls = last_ai.tool_calls
             skipped_tool_calls: List[ToolCall] = []
             if not self.allow_parallelize and len(tool_calls) > 1:
                 skipped_tool_calls = tool_calls[1:]
@@ -244,7 +320,7 @@ class ReActAgent:
 
                 try:
                     result = tool.invoke(args)
-                except Exception as exc:  # pragma: no cover - defensive
+                except Exception as exc:
                     tool_msgs.append(
                         ToolMessage(
                             content=format_tool_error(
@@ -284,6 +360,9 @@ class ReActAgent:
                         tool_call_id=skipped_tc["id"],
                     )
                 )
+
+            for msg in tool_msgs:
+                self._log_tool_error(msg, last_ai)
 
             state.messages.extend(tool_msgs)
             return state

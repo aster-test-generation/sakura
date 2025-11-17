@@ -40,7 +40,7 @@ class Scenario(BaseModel):
 
 
 class CandidateMethod(BaseModel):
-    implementing_class_name: str  # The class that directly implements the method
+    declaring_class_name: str  # The class that directly implements the method
     containing_class_name: (
         str  # The class that inherits/contains the method (class under analysis)
     )
@@ -53,13 +53,13 @@ def _is_valid_candidate(candidate: CandidateMethod | None) -> bool:
         return False
     return any(
         getattr(candidate, attr, "").strip()
-        for attr in ("implementing_class_name", "containing_class_name", "method_signature")
+        for attr in ("declaring_class_name", "containing_class_name", "method_signature")
     )
 
 
 def _candidate_key(candidate: CandidateMethod) -> Tuple[str, str, str, str]:
     return (
-        (candidate.implementing_class_name or "").strip(),
+        (candidate.declaring_class_name or "").strip(),
         (candidate.containing_class_name or "").strip(),
         (candidate.method_signature or "").strip(),
         (candidate.return_type or "").strip(),
@@ -142,7 +142,7 @@ class LocalizedScenario(Scenario):
         def _to_localized_step(s: Step) -> LocalizedStep:
             # Initialize required fields with empty defaults
             empty_candidate = CandidateMethod(
-                implementing_class_name="",
+                declaring_class_name="",
                 containing_class_name="",
                 method_signature="",
                 return_type="",
@@ -216,7 +216,7 @@ class AtomicBlock(GrammaticalBlock):
     candidate_methods: List[CandidateMethod]
     best_candidate: CandidateMethod = Field(
         default_factory=lambda: CandidateMethod(
-            implementing_class_name="",
+            declaring_class_name="",
             containing_class_name="",
             method_signature="",
             return_type="",
@@ -248,7 +248,7 @@ class AtomicBlock(GrammaticalBlock):
             best_candidate
             if best_candidate is not None
             else CandidateMethod(
-                implementing_class_name="",
+                declaring_class_name="",
                 containing_class_name="",
                 method_signature="",
                 return_type="",

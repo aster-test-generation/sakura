@@ -32,6 +32,7 @@ from nltest.nl2test.models import (
     NL2TestCoverageEval,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
 from nltest.utils.models import AgentToolLog, ToolLog, NL2TestEval
 from nltest.nl2test.preprocessing.indexers import ClassIndexer
 from nltest.nl2test.preprocessing.indexers import MethodIndexer
@@ -41,7 +42,6 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.compilation import JavaCompilation
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
@@ -398,7 +398,8 @@ class Pipeline:
             self.localization_grader.set_analysis(new_analysis)
 
             # Gather erroneous files and pass to grader
-            erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
+            compilation_errors: List[CompilationError] = JavaMavenCompilation(self.project_root).get_compilation_errors()
+            erroneous_files = [compilation_error.file for compilation_error in compilation_errors]
             self.test_grader.set_project_erroneous_files(erroneous_files)
 
             # Build NL2TestMetadata for the predicted class; code filled after grading

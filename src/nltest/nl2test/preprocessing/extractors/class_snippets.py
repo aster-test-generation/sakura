@@ -27,7 +27,7 @@ class ClassSnippetExtractor:
             class_snippets.append(
                 ClassSnippet(
                     simple_class_name=qualified_class_name.split(".")[-1],
-                    implementing_class_name=qualified_class_name,
+                    declaring_class_name=qualified_class_name,
                 )
             )
         return class_snippets

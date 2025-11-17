@@ -16,10 +16,15 @@ from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.llm import UsageTracker
 
-from tests._base_nl2test import BaseNL2Test
+import pytest
 
 
-class TestSupervisorAgent(BaseNL2Test):
+class TestSupervisorAgent:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+        self.config = nl2test_context.config
+
     def test_supervisor_end_to_end(self):
         tracker = UsageTracker()
         # Load dataset entries from CSV relative to this test file
@@ -27,7 +32,7 @@ class TestSupervisorAgent(BaseNL2Test):
         data_dir = test_dir / "output" / "resources" / "test2nl"
         sdm = StructuredDataManager(data_dir)
         entries = sdm.load("test2nl.csv", Test2NLEntry, format="csv")
-        self.assertTrue(len(entries) > 0, "No Test2NL entries loaded from CSV")
+        assert len(entries) > 0, "No Test2NL entries loaded from CSV"
 
         # Tighten iteration limits for this test
         self.config.set("localization", "max_iters", 40)
@@ -42,7 +47,7 @@ class TestSupervisorAgent(BaseNL2Test):
         project_name = nl2_input.project_name
         base_project_dir = Path(self.config.get("project", "base_project_dir"))
         project_root = base_project_dir / project_name
-        self.assertTrue(project_root.exists(), "Project root does not exist")
+        assert project_root.exists(), "Project root does not exist"
 
         # Decompose NL into Gherkin Scenario and wrap as LocalizedScenario
         decomposer = NLDecomposer(mode=DecompositionMode.GHERKIN, usage_tracker=tracker)
@@ -72,8 +77,8 @@ class TestSupervisorAgent(BaseNL2Test):
         pretty_print("Updated state", supervisor_state)
 
         # Validate updated AgentState includes selected package/class
-        self.assertIsNotNone(supervisor_state.package)
-        self.assertIsNotNone(supervisor_state.class_name)
+        assert supervisor_state.package is not None
+        assert supervisor_state.class_name is not None
 
         prices = tracker.totals()
         pretty_print("Token usage", prices)

@@ -1,3 +1,4 @@
+import textwrap
 from typing import Tuple
 from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
@@ -47,7 +48,7 @@ class GrammaticalLocalizationTools(BaseLocalizationTools):
         return StructuredTool.from_function(
             func=_finalize,
             name="finalize",
-            description=FINALIZE_ATOMIC_BLOCKS_DESC,
+            description=textwrap.dedent(FINALIZE_ATOMIC_BLOCKS_DESC).strip(),
             args_schema=FinalizeAtomicBlockArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

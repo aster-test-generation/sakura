@@ -70,7 +70,7 @@ class MethodSnippetExtractor:
             containing_class = qualified_class_name
         code = self._format_code(qualified_class_name, method_signature, containing_class)
         return MethodSnippet(
-            implementing_class_name=qualified_class_name,
+            declaring_class_name=qualified_class_name,
             # NOTE: This is the class that contains the method, not the class that the method is in
             method_signature=method_signature,
             code=code,  # NOTE: This contains the class of the containing class for retrieval

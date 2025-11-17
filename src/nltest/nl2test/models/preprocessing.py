@@ -10,7 +10,7 @@ class SnippetType(Enum):
 
 
 class Snippet(BaseModel):
-    implementing_class_name: str  # The class that directly implements the method
+    declaring_class_name: str  # The class that directly implements the method
 
 
 class MethodSnippet(Snippet):

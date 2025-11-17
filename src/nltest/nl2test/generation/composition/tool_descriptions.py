@@ -1,4 +1,4 @@
-GET_CLASS_FIELDS_DESC = """
+GET_CLASS_FIELDS_DESC_OLD = """
 List declared fields for a class.
 Args:
   qualified_class_name: Fully qualified class to inspect.
@@ -16,7 +16,11 @@ Returns:
   Or a structured error dict on failure.
 """
 
-GET_CLASS_IMPORTS_DESC = """
+GET_CLASS_FIELDS_DESC = """
+List the variable name, type, and modifiers of declared fields for a class.
+"""
+
+GET_CLASS_IMPORTS_DESC_OLD = """
 Get import statements for a class's compilation unit.
 Args:
   qualified_class_name: Fully qualified class to inspect.
@@ -31,7 +35,11 @@ Returns:
   Or a structured error dict on failure.
 """
 
-GET_MAVEN_DEPENDENCIES_DESC = """
+GET_CLASS_IMPORTS_DESC = """
+Get the fully qualified import names for a class's compilation unit.
+"""
+
+GET_MAVEN_DEPENDENCIES_DESC_OLD = """
 List direct Maven dependencies declared in the project's root pom.xml.
 Use when:
   Detecting external libraries to align imports, mocks, or test utilities.
@@ -46,7 +54,11 @@ Returns:
   Or a structured error dict on failure.
 """
 
-GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC = """
+GET_MAVEN_DEPENDENCIES_DESC = """
+List direct group and artifact ID of Maven dependencies declared in the project's root pom.xml.
+"""
+
+GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC_OLD = """
 List constructors and obvious factory methods for a class.
 Args:
   qualified_class_name: Fully qualified class to inspect.
@@ -64,7 +76,11 @@ Returns:
   Or a structured error dict on failure.
 """
 
-GET_GETTERS_AND_SETTERS_DESC = """
+GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC = """
+List the method signatures of constructors and obvious factory methods for a class.
+"""
+
+GET_GETTERS_AND_SETTERS_DESC_OLD = """
 Find simple getters and setters within a class.
 Args:
   qualified_class_name: Fully qualified class to analyze.
@@ -78,7 +94,11 @@ Returns:
   Or a structured error dict on failure.
 """
 
-GENERATE_TEST_CODE_DESC = """
+GET_GETTERS_AND_SETTERS_DESC = """
+Find the method signatures of simple getters and setters within a class.
+"""
+
+GENERATE_TEST_CODE_DESC_OLD = """
 Create or overwrite the test file with newly generated code and set the active test class.
 Args:
   test_code: Complete Java test code including package, imports, class, and methods. This will replace all previous test code in the file.
@@ -101,7 +121,11 @@ Returns:
   Dict echoing { test_code, qualified_class_name, method_signature } and the persisted save location.
 """
 
-FINALIZE_DESC = """
+GENERATE_TEST_CODE_DESC = """
+Create or overwrite the test file with newly generated code.
+"""
+
+FINALIZE_DESC_OLD = """
 End composition with a concise status comment.
 Args:
   comments: 1–4 sentences on selected package/class, key fixes, any excluded steps, and unresolved items.
@@ -111,7 +135,11 @@ Returns:
   String echoing the final comments.
 """
 
-MODIFY_SCENARIO_COMMENT_DESC = """
+FINALIZE_DESC = """
+End composition with a concise 1–4 sentence status note summarizing key fixes, excluded steps, and unresolved issues, stated directly and bluntly. 
+"""
+
+MODIFY_SCENARIO_COMMENT_DESC_OLD = """
 Update the comment for a localized step.
 Args:
   id: Step identifier to update.
@@ -124,6 +152,11 @@ Returns:
   Tuple (id, comment).
 """
 
+MODIFY_SCENARIO_COMMENT_DESC = """
+Update the comment for a localized step to capture decisions or clarifications tied to individual steps.
+"""
+
+# DEPRECATED
 MODIFY_ATOMIC_BLOCKS_DESC = """
 Replace the working AtomicBlock list to reflect composition-oriented refinements.
 Args:
@@ -136,7 +169,7 @@ Returns:
   The updated AtomicBlock list.
 """
 
-MODIFY_ATOMIC_BLOCK_NOTE_DESC = """
+MODIFY_ATOMIC_BLOCK_NOTE_DESC_OLD = """
 Update the note for a specific atomic block by order.
 Args:
   order: Atomic block order identifier.
@@ -145,4 +178,8 @@ Use when:
   Recording per-block guidance during the composition loop.
 Returns:
   Tuple (order, note).
+"""
+
+MODIFY_ATOMIC_BLOCK_NOTE_DESC = """
+Update the note for a specific atomic block to capture decisions or clarifications tied to individual blocks.
 """

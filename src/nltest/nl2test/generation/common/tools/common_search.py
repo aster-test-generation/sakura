@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 from typing import List, Dict
 
 from langchain_core.tools import StructuredTool
@@ -32,7 +33,7 @@ class CommonSearchTools:
         return StructuredTool.from_function(
             func=_query_class_db,
             name="query_class_db",
-            description=QUERY_CLASS_DESC,
+            description=textwrap.dedent(QUERY_CLASS_DESC).strip(),
             args_schema=QueryVectorDataArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

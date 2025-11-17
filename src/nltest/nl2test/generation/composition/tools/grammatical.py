@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import textwrap
 from typing import Union
 from langchain_core.tools import StructuredTool
 
@@ -42,9 +43,9 @@ class GrammaticalCompositionTools(BaseCompositionTools):
             nl2_input=nl2_input,
         )
         # Add grammatical-mode-specific tool(s)
-        self.tools.append(self._make_modify_atomic_blocks_tool())
         self.tools.append(self._make_modify_scenario_comment_tool())
 
+    # DEPRECATED
     def _make_modify_atomic_blocks_tool(self) -> StructuredTool:
         def _modify_atomic_blocks(atomic_blocks: AtomicBlockList) -> AtomicBlockList:
             # Simply return the atomic blocks as-is per requirements
@@ -53,7 +54,7 @@ class GrammaticalCompositionTools(BaseCompositionTools):
         return StructuredTool.from_function(
             func=_modify_atomic_blocks,
             name="modify_atomic_blocks",
-            description=MODIFY_ATOMIC_BLOCKS_DESC,
+            description=textwrap.dedent(MODIFY_ATOMIC_BLOCKS_DESC).strip(),
             args_schema=ModifyAtomicBlocksArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -66,7 +67,7 @@ class GrammaticalCompositionTools(BaseCompositionTools):
         return StructuredTool.from_function(
             func=_modify_scenario_comment,
             name="modify_scenario_comment",
-            description=MODIFY_ATOMIC_BLOCK_NOTE_DESC,
+            description=textwrap.dedent(MODIFY_ATOMIC_BLOCK_NOTE_DESC).strip(),
             args_schema=ModifyAtomicBlockNoteArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

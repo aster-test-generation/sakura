@@ -1,7 +1,7 @@
-EXTRACT_CODE_DESC = """
+EXTRACT_CODE_DESC_OLD = """
 Get full source code (declaration + body) for a specific method.
 Args:
-  qualified_class_name: Fully qualified implementing class.
+  qualified_class_name: Fully qualified declaring class.
   method_signature: Exact method signature of the method to analyze, including any qualified parameter types.
   start_line: 1-based inclusive start line.
   end_line: 1-based inclusive end line.
@@ -16,10 +16,14 @@ Returns:
   Object with { source, start_line, end_line, total_lines, note } summarizing the requested slice, or a structured error dict on failure.
 """
 
-METHOD_DETAILS_DESC = """
+EXTRACT_CODE_DESC = """
+Get the spliced source code for a specific method. Prefer other light-weight metadata tools for quick checks; only use this tool when behavior or parameter meaning is unclear.
+"""
+
+METHOD_DETAILS_DESC_OLD = """
 Fetch declaration-site metadata for a method.
 Args:
-  qualified_class_name: Fully qualified implementing class.
+  qualified_class_name: Fully qualified declaring class.
   method_signature: Exact method signature of the method to analyze, including any qualified parameter types.
 Use when:
   Selecting overloads, confirming parameter/return types, visibility, and static/instance modifiers.
@@ -40,10 +44,14 @@ Returns:
   Or a structured error dict on failure.
 """
 
-CALL_SITE_DETAILS_DESC = """
+METHOD_DETAILS_DESC = """
+Fetch the method signature, modifiers, return type, parameter types, comments, and visibility (e.g., public, same package) for a specific method.
+"""
+
+CALL_SITE_DETAILS_DESC_OLD = """
 List callees invoked inside a specific method through static analysis.
 Args:
-  qualified_class_name: Fully qualified implementing class.
+  qualified_class_name: Fully qualified declaring class.
   method_signature: Exact method signature of the method to analyze, including any qualified parameter types.
 Use when:
   Tracing downstream effects to design assertions or mocks, or to confirm that a facade method delegates as expected.
@@ -61,7 +69,11 @@ Returns:
   Or a structured error dict on failure.
 """
 
-QUERY_CLASS_DESC = """
+CALL_SITE_DETAILS_DESC = """
+List the qualified class name, method signature, return type, parameter types, modifiers, and number of times called for each callee invoked inside a specific method.
+"""
+
+QUERY_CLASS_DESC_OLD = """
 Semantic search over application classes (vector index).
 Args:
   query: Natural language or code-like phrase describing the class you want or the likely class name.
@@ -71,11 +83,15 @@ Use when:
 Limitations:
   Application classes only; library classes are not indexed.
 Returns:
-  List of dicts with implementing_class_name.
+  List of dicts with declaring_class_name.
   On failure, a structured error dict is returned.
 """
 
-VIEW_TEST_CODE_DESC = """
+QUERY_CLASS_DESC = """
+Semantic search over application classes (vector index).
+"""
+
+VIEW_TEST_CODE_DESC_OLD = """
 View the entire current test file for the active test class.
 Args:
   None
@@ -88,7 +104,11 @@ Returns:
   On failure, a structured error dict is returned.
 """
 
-COMPILE_AND_EXECUTE_TEST_DESC = """
+VIEW_TEST_CODE_DESC = """
+View the spliced source code for the active test file.
+"""
+
+COMPILE_AND_EXECUTE_TEST_DESC_OLD = """
 Compile the Maven project and execute the active test class.
 Args:
   None
@@ -129,4 +149,8 @@ Returns:
       status: 'compilation_errors'
       message: reason to fix compilation
     }
+"""
+
+COMPILE_AND_EXECUTE_TEST_DESC = """
+Compile the Maven project and execute the currently active test class. Returns compiler results and, if compilation succeeds, the test execution results.
 """

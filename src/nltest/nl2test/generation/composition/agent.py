@@ -138,8 +138,6 @@ class CompositionReActAgent(ReActAgent):
             pass
 
     def _process_generate_test_code_llm(self, tool_call: ToolCall, state: AgentState) -> None:
-        tool_name = tool_call["name"]
-
         placeholder = "(test_code redacted for token reduction)"
         raw_args = tool_call.get("args")
         parsed_args = self.llm.parse_tool_args(raw_args)

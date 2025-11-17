@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import textwrap
 from typing import Union
 from langchain_core.tools import StructuredTool
 
@@ -45,7 +46,7 @@ class GherkinCompositionTools(BaseCompositionTools):
         return StructuredTool.from_function(
             func=_modify_scenario_comment,
             name="modify_scenario_comment",
-            description=MODIFY_SCENARIO_COMMENT_DESC,
+            description=textwrap.dedent(MODIFY_SCENARIO_COMMENT_DESC).strip(),
             args_schema=ModifyScenarioCommentArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

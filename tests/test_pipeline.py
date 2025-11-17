@@ -1,6 +1,8 @@
 from pathlib import Path
 import random
 
+import pytest
+
 from nltest.nl2test.models import (
     AtomicBlock,
     AtomicBlockList,
@@ -23,17 +25,31 @@ from nltest.utils.pretty.prints import pretty_print
 from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
 
 from nltest.utils.utilities import test2nl_entry_to_nl2test_input
-from tests._base_nl2test import BaseNL2Test
-from tests._base_test2nl import BaseTest2NL
 
 
-class TestTest2NLPipeline(BaseTest2NL):
+class TestTest2NLPipeline:
+    @pytest.fixture(autouse=True)
+    def _inject(self, test2nl_context):
+        self.pipeline = test2nl_context.pipeline
+        self.analysis = test2nl_context.analysis
+        self.data_manager = test2nl_context.data_manager
+        self.project_name = test2nl_context.project_name
+        self.project_root = test2nl_context.project_root
+        self.output_dir = test2nl_context.output_dir
     def test_all_low_abs(self):
         self.pipeline.reset_dataset()
         self.pipeline.run_descriptions_of_project(AbstractionLevel.LOW)
 
 
-class TestNL2TestPipeline(BaseNL2Test):
+class TestNL2TestPipeline:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+        self.config = nl2test_context.config
+        self.project_root = nl2test_context.project_root
+        self.project_name = nl2test_context.project_name
+        self.output_dir = nl2test_context.output_dir
+
     def test_pipeline_run_localization_pipeline_grammatical(self):
         """Test the pipeline's run_localization_agent method with a petclinic-based test case."""
 
@@ -45,37 +61,34 @@ class TestNL2TestPipeline(BaseNL2Test):
             abstraction_level="low",
         )
 
-        # Initialize pipeline
-        test_dir = Path(__file__).resolve().parent
-        project_root = (test_dir / "resources" / "spring-petclinic").resolve()
-        pipeline = Test2NLPipeline(self.analysis, project_root)
+        pipeline = Test2NLPipeline(self.analysis, self.project_root)
 
         # Run preprocessing
         method_searcher, class_searcher = pipeline.run_preprocessing()
-        self.assertIsNotNone(method_searcher)
-        self.assertIsNotNone(class_searcher)
+        assert method_searcher is not None
+        assert class_searcher is not None
 
         # Decompose natural language (Pipeline returns GrammaticalBlockList in grammatical mode)
         blocks = pipeline.decompose_natural_language(nl2_input.description)
-        self.assertIsInstance(blocks, GrammaticalBlockList)
-        self.assertGreater(len(blocks.grammatical_blocks), 0)
+        assert isinstance(blocks, GrammaticalBlockList)
+        assert len(blocks.grammatical_blocks) > 0
 
         # Run localization agent directly with decomposed blocks
         localized_blocks, comments = pipeline.run_localization_agent(nl2_input, blocks)
         prices = {"input_tokens": 0, "output_tokens": 0, "calls": 0}
 
         # Verify outputs
-        self.assertIsInstance(localized_blocks, AtomicBlockList)
-        self.assertIsInstance(comments, str)
-        self.assertEqual(
-            len(localized_blocks.atomic_blocks), len(blocks.grammatical_blocks)
+        assert isinstance(localized_blocks, AtomicBlockList)
+        assert isinstance(comments, str)
+        assert len(localized_blocks.atomic_blocks) == len(
+            blocks.grammatical_blocks
         )
 
         # Verify that atomic blocks have been enhanced with candidate methods
         for i, block in enumerate(localized_blocks.atomic_blocks):
-            self.assertIsInstance(block, AtomicBlock)
-            self.assertEqual(block.order, i)
-            self.assertIsInstance(block.candidate_methods, list)
+            assert isinstance(block, AtomicBlock)
+            assert block.order == i
+            assert isinstance(block.candidate_methods, list)
 
         pretty_print("Localized blocks", localized_blocks)
         pretty_print("Comments", comments)
@@ -92,11 +105,8 @@ class TestNL2TestPipeline(BaseNL2Test):
             abstraction_level=NL2AbstractionLevel("low"),
         )
 
-        # Initialize pipeline
-        test_dir = Path(__file__).resolve().parent
-        project_root = (test_dir / "resources" / "spring-petclinic").resolve()
         pipeline = NL2TestPipeline(
-            self.analysis, project_root, decomposition_mode=DecompositionMode.GHERKIN
+            self.analysis, self.project_root, decomposition_mode=DecompositionMode.GHERKIN
         )
 
         # Tighten iteration limits for this test
@@ -109,13 +119,12 @@ class TestNL2TestPipeline(BaseNL2Test):
         prices = {"input_tokens": 0, "output_tokens": 0, "calls": 0}
 
         # Verify output container and fields
-        self.assertIsInstance(output, NL2LocalizationOutput)
-        self.assertIsInstance(output.localized_blocks, LocalizedScenario)
-        self.assertIsNotNone(output.evaluation_results)
-        self.assertIsInstance(output.evaluation_results, LocalizationEval)
-        self.assertIsInstance(output.evaluation_results.localization_recall, float)
-        self.assertGreaterEqual(output.evaluation_results.localization_recall, 0.0)
-        self.assertLessEqual(output.evaluation_results.localization_recall, 1.0)
+        assert isinstance(output, NL2LocalizationOutput)
+        assert isinstance(output.localized_blocks, LocalizedScenario)
+        assert output.evaluation_results is not None
+        assert isinstance(output.evaluation_results, LocalizationEval)
+        assert isinstance(output.evaluation_results.localization_recall, float)
+        assert 0.0 <= output.evaluation_results.localization_recall <= 1.0
 
         pretty_print(
             "Localized blocks from evaluation pipeline", output.localized_blocks
@@ -135,10 +144,8 @@ class TestNL2TestPipeline(BaseNL2Test):
             abstraction_level=NL2AbstractionLevel("low"),
         )
 
-        test_dir = Path(__file__).resolve().parent
-        project_root = (test_dir / "resources" / "spring-petclinic").resolve()
         pipeline = NL2TestPipeline(
-            self.analysis, project_root, decomposition_mode=DecompositionMode.GHERKIN
+            self.analysis, self.project_root, decomposition_mode=DecompositionMode.GHERKIN
         )
         pipeline.run_preprocessing()
 
@@ -154,17 +161,17 @@ class TestNL2TestPipeline(BaseNL2Test):
             "calls": eval_result.llm_calls,
         }
 
-        self.assertIsInstance(eval_result, NL2TestEval)
-        self.assertEqual(eval_result.nl2test_input, nl2_input)
-        self.assertIsInstance(eval_result.compiles, bool)
-        self.assertIsInstance(
+        assert isinstance(eval_result, NL2TestEval)
+        assert eval_result.nl2test_input == nl2_input
+        assert isinstance(eval_result.compiles, bool)
+        assert isinstance(
             eval_result.nl2test_metadata.qualified_test_class_name, str
         )
 
-        self.assertIsNotNone(eval_result.localization_eval)
-        self.assertIsInstance(eval_result.localization_eval, LocalizationEval)
-        self.assertIsNotNone(eval_result.tool_log)
-        self.assertIsInstance(
+        assert eval_result.localization_eval is not None
+        assert isinstance(eval_result.localization_eval, LocalizationEval)
+        assert eval_result.tool_log is not None
+        assert isinstance(
             eval_result.tool_log.supervisor_tool_log.tool_counts, dict
         )
 
@@ -177,7 +184,7 @@ class TestNL2TestPipeline(BaseNL2Test):
         data_dir = test_dir / "output" / "resources" / "test2nl"
         sdm = StructuredDataManager(data_dir)
         entries = sdm.load("test2nl.csv", Test2NLEntry, format="csv")
-        self.assertTrue(len(entries) > 0, "No Test2NL entries loaded from CSV")
+        assert len(entries) > 0, "No Test2NL entries loaded from CSV"
 
         # Pick a random entry and convert to NL2TestInput
         entry = random.choice(entries)
@@ -209,36 +216,24 @@ class TestNL2TestPipeline(BaseNL2Test):
         pretty_print("NL2 test evaluation results", result)
 
         # Basic sanity assertions for NL2TestOutput
-        self.assertIsNotNone(result)
-        self.assertEqual(result.nl2test_input, nl2_input)
-        self.assertIsInstance(result.compiles, bool)
-        self.assertIsInstance(result.nl2test_metadata.qualified_test_class_name, str)
-        self.assertIsInstance(result.nl2test_metadata.method_signature, str)
+        assert result is not None
+        assert result.nl2test_input == nl2_input
+        assert isinstance(result.compiles, bool)
+        assert isinstance(result.nl2test_metadata.qualified_test_class_name, str)
+        assert isinstance(result.nl2test_metadata.method_signature, str)
         # Structured eval fields
         se = result.structured_eval
-        self.assertGreaterEqual(se.assertion_recall, 0.0)
-        self.assertLessEqual(se.assertion_recall, 1.0)
-        self.assertGreaterEqual(se.assertion_precision, 0.0)
-        self.assertLessEqual(se.assertion_precision, 1.0)
-        self.assertGreaterEqual(se.obj_creation_recall, 0.0)
-        self.assertLessEqual(se.obj_creation_recall, 1.0)
-        self.assertGreaterEqual(se.obj_creation_precision, 0.0)
-        self.assertLessEqual(se.obj_creation_precision, 1.0)
-        self.assertGreaterEqual(se.callable_recall, 0.0)
-        self.assertLessEqual(se.callable_recall, 1.0)
-        self.assertGreaterEqual(se.callable_precision, 0.0)
-        self.assertLessEqual(se.callable_precision, 1.0)
-        self.assertGreaterEqual(se.focal_recall, 0.0)
-        self.assertLessEqual(se.focal_recall, 1.0)
-        self.assertGreaterEqual(se.focal_precision, 0.0)
-        self.assertLessEqual(se.focal_precision, 1.0)
+        assert 0.0 <= se.assertion_recall <= 1.0
+        assert 0.0 <= se.assertion_precision <= 1.0
+        assert 0.0 <= se.obj_creation_recall <= 1.0
+        assert 0.0 <= se.obj_creation_precision <= 1.0
+        assert 0.0 <= se.callable_recall <= 1.0
+        assert 0.0 <= se.callable_precision <= 1.0
+        assert 0.0 <= se.focal_recall <= 1.0
+        assert 0.0 <= se.focal_precision <= 1.0
         # Coverage eval fields are in percent [0, 100]
         cv = result.coverage_eval
-        self.assertGreaterEqual(cv.class_coverage, 0.0)
-        self.assertLessEqual(cv.class_coverage, 100.0)
-        self.assertGreaterEqual(cv.method_coverage, 0.0)
-        self.assertLessEqual(cv.method_coverage, 100.0)
-        self.assertGreaterEqual(cv.line_coverage, 0.0)
-        self.assertLessEqual(cv.line_coverage, 100.0)
-        self.assertGreaterEqual(cv.branch_coverage, 0.0)
-        self.assertLessEqual(cv.branch_coverage, 100.0)
+        assert 0.0 <= cv.class_coverage <= 100.0
+        assert 0.0 <= cv.method_coverage <= 100.0
+        assert 0.0 <= cv.line_coverage <= 100.0
+        assert 0.0 <= cv.branch_coverage <= 100.0

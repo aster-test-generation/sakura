@@ -57,7 +57,7 @@ class ProjectFAISSVectorStore(BaseVectorStore):
                 page_content=snippet.code,
                 metadata={
                     "snippet_type": "method",
-                    "implementing_class_name": snippet.implementing_class_name,
+                    "declaring_class_name": snippet.declaring_class_name,
                     "containing_class_name": snippet.containing_class_name,
                     "method_signature": snippet.method_signature,
                 },
@@ -68,7 +68,7 @@ class ProjectFAISSVectorStore(BaseVectorStore):
                 page_content=snippet.simple_class_name,
                 metadata={
                     "snippet_type": "class",
-                    "implementing_class_name": snippet.implementing_class_name,
+                    "declaring_class_name": snippet.declaring_class_name,
                 },
             )
 

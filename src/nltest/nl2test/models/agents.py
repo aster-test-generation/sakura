@@ -191,7 +191,7 @@ class ModifyAtomicBlocksArgs(BaseModel):
 
 
 class ModifyScenarioCommentArgs(BaseModel):
-    id: Annotated[int, Field(description="The id of the localized step to update.")]
+    id: Annotated[int, Field(ge=0, description="The id of the localized step to update.")]
     comment: Annotated[str, Field(description="The new comment for the step.")]
 
 
@@ -217,11 +217,13 @@ class NoArgs(BaseModel):
     """Empty args schema for tools that take no arguments."""
     pass
 
+
 _CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC = """
 Actionable instructions for the localization agent, with concrete and explicit guidance on what to adjust and inspect for the scenario. 
 If changes apply only to specific steps in the scenario, list their IDs and state that no other steps should be modified. 
 You may be higher-level only when requesting localization for all steps.
 """
+
 
 # Note: blocks are provided via agent states
 class CallLocalizationAgentGherkinArgs(BaseModel):
@@ -231,13 +233,16 @@ class CallLocalizationAgentGherkinArgs(BaseModel):
         Field(description=_CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC),
     ]
 
+
 _CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC = """
+Actionable instructions for the composition agent, with concrete and explicit guidance on what to be aware of for test code generation. 
 """
+
 
 class CallCompositionAgentGherkinArgs(BaseModel):
     """Arguments for delegating from Supervisor to agents in Gherkin mode."""
     instructions: Annotated[
-        str,
+        str, Field(description=_CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC)
     ]
 
 

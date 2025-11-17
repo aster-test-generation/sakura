@@ -6,7 +6,7 @@ from typing import Union
 from langchain_core.tools import StructuredTool
 
 from .base import BaseSupervisorTools
-from nltest.nl2test.models import CallAgentGherkinArgs
+from nltest.nl2test.models import CallLocalizationAgentGherkinArgs, CallCompositionAgentGherkinArgs
 from nltest.nl2test.generation.supervisor.tool_descriptions import (
     CALL_LOCALIZATION_AGENT_GHERKIN_DESC,
     CALL_COMPOSITION_AGENT_GHERKIN_DESC,
@@ -31,7 +31,7 @@ class GherkinSupervisorTools(BaseSupervisorTools):
             func=_call_localization_agent,
             name="call_localization_agent",
             description=textwrap.dedent(CALL_LOCALIZATION_AGENT_GHERKIN_DESC).strip(),
-            args_schema=CallAgentGherkinArgs,
+            args_schema=CallLocalizationAgentGherkinArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
@@ -44,6 +44,6 @@ class GherkinSupervisorTools(BaseSupervisorTools):
             func=_call_composition_agent,
             name="call_composition_agent",
             description=textwrap.dedent(CALL_COMPOSITION_AGENT_GHERKIN_DESC).strip(),
-            args_schema=CallAgentGherkinArgs,
+            args_schema=CallCompositionAgentGherkinArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

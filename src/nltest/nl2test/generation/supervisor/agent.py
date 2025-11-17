@@ -80,11 +80,11 @@ class SupervisorReActAgent(ReActAgent):
     ) -> None:
         tool_name = tool_call["name"]
         handler_map = {
-            "call_localization_agent": self.process_call_localization_agent_output,
-            "call_composition_agent": self.process_call_composition_agent_output,
-            "view_test_code": self.process_view_test_code_output,
-            "compile_and_execute_test": self.process_compile_and_execute_test_output,
-            "finalize": self.process_finalize_tool_output,
+            "call_localization_agent": self._process_call_localization_agent_output,
+            "call_composition_agent": self._process_call_composition_agent_output,
+            "view_test_code": self._process_view_test_code_output,
+            "compile_and_execute_test": self._process_compile_and_execute_test_output,
+            "finalize": self._process_finalize_tool_output,
         }
         handler = handler_map.get(tool_name, self.process_generic_tool_output)
 
@@ -107,7 +107,7 @@ class SupervisorReActAgent(ReActAgent):
                 )
             )
 
-    def process_call_localization_agent_output(
+    def _process_call_localization_agent_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -208,7 +208,7 @@ class SupervisorReActAgent(ReActAgent):
             )
         )
 
-    def process_call_composition_agent_output(
+    def _process_call_composition_agent_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -314,7 +314,7 @@ class SupervisorReActAgent(ReActAgent):
             )
         )
 
-    def process_view_test_code_output(
+    def _process_view_test_code_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -435,7 +435,7 @@ class SupervisorReActAgent(ReActAgent):
             f"Stack Trace:\n{stack_trace}"
         )
 
-    def process_compile_and_execute_test_output(
+    def _process_compile_and_execute_test_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -517,7 +517,7 @@ class SupervisorReActAgent(ReActAgent):
             )
         )
 
-    def process_finalize_tool_output(
+    def _process_finalize_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         state.final_comments = (

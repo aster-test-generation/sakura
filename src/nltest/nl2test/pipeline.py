@@ -89,10 +89,18 @@ class Pipeline:
             application_classes=_application_classes,
         )
 
-    def run_preprocessing(self) -> Tuple[MethodSearcher, ClassSearcher]:
-        # Build search indices
-        self.method_searcher = self.method_indexer.build_index()
-        self.class_searcher = self.class_indexer.build_index()
+    def run_preprocessing(
+            self,
+            *,
+            exclude_test_dirs: bool = False,
+    ) -> Tuple[MethodSearcher, ClassSearcher]:
+        # Build search indices with optional filtering of test sources
+        self.method_searcher = self.method_indexer.build_index(
+            exclude_test_dirs=exclude_test_dirs
+        )
+        self.class_searcher = self.class_indexer.build_index(
+            exclude_test_dirs=exclude_test_dirs
+        )
 
         return self.method_searcher, self.class_searcher
 

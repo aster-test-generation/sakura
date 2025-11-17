@@ -108,9 +108,7 @@ class ReActAgent:
             )
 
     # Subclass hook
-    def process_llm_output(
-            self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
-    ) -> None:
+    def process_llm_output(self, tool_call: ToolCall, state: AgentState) -> None:
         pass
 
     def _should_end_after_tools(self, state: AgentState) -> bool:
@@ -249,7 +247,7 @@ class ReActAgent:
                 tool_calls = tool_calls[:1]
 
             for tc in tool_calls:
-                name: str = tc["name"]
+                name: str = tc.get("name")
                 args: Dict[str, Any] = self.llm.parse_tool_args(tc.get("args"))
 
                 name, args = self.prepare_tool_args(name, args, state)
@@ -316,7 +314,7 @@ class ReActAgent:
 
                 # Let subclasses interpret results + possibly update state
                 self.process_tool_output(tc, result, state, tool_msgs)
-                self.process_llm_output(name, args, state)
+                self.process_llm_output(tc, state)
 
             for skipped_tc in skipped_tool_calls:
                 skipped_args = self.llm.parse_tool_args(skipped_tc.get("args"))

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
 from typing import Any, Dict, List, Tuple, Optional
 from pathlib import Path
 
-from langchain_core.messages import ToolMessage, ToolCall
+from langchain_core.messages import AIMessage, ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
@@ -15,6 +16,7 @@ from nltest.utils.execution.maven import ExecutionIssue, JavaMavenExecution
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
+from nltest.utils.pretty import RichLog
 from nltest.utils.tool_messages import format_tool_error, format_tool_ok
 
 
@@ -92,15 +94,15 @@ class CompositionReActAgent(ReActAgent):
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         """Process tool output and mutate state when appropriate."""
-        tool_name = tool_call["name"]
+        tool_name = tool_call.get("name")
         handler_map = {
-            "generate_test_code": self.process_generate_test_code_output,
-            "view_test_code": self.process_view_test_code_output,
-            "compile_and_execute_test": self.process_compile_and_execute_test_output,
-            "finalize": self.process_finalize_tool_output,
-            "modify_scenario_comment": self.process_modify_scenario_comment_output,
+            "generate_test_code": self._process_generate_test_code_tool,
+            "view_test_code": self._process_view_test_code_output,
+            "compile_and_execute_test": self._process_compile_and_execute_test_output,
+            "finalize": self._process_finalize_tool_output,
+            "modify_scenario_comment": self._process_modify_scenario_comment_output,
         }
-        handler = handler_map.get(tool_name, self.process_generic_tool_output)
+        handler = handler_map.get(tool_name, self._process_generic_tool_output)
 
         try:
             handler(tool_call, result, state, outputs)
@@ -121,7 +123,67 @@ class CompositionReActAgent(ReActAgent):
                 )
             )
 
-    def process_generate_test_code_output(
+    # Subclass hook
+    def process_llm_output(self, tool_call: ToolCall, state: AgentState) -> None:
+        tool_name = tool_call.get("name")
+        handler_map = {
+            "generate_test_code": self._process_generate_test_code_llm,
+        }
+        handler = handler_map.get(tool_name, self._process_generate_test_code_llm)
+
+        try:
+            handler(tool_call, state)
+        except Exception as exc:
+            RichLog.error(f"Error on altering LLM output for {tool_name}: {exc}")
+            pass
+
+    def _process_generate_test_code_llm(self, tool_call: ToolCall, state: AgentState) -> None:
+        tool_name = tool_call["name"]
+
+        placeholder = "(test_code redacted for token reduction)"
+        raw_args = tool_call.get("args")
+        parsed_args = self.llm.parse_tool_args(raw_args)
+
+        if isinstance(parsed_args, dict):
+            sanitized_args = dict(parsed_args)
+        elif isinstance(raw_args, dict):
+            sanitized_args = dict(parsed_args)
+        else:
+            sanitized_args = {}
+
+        sanitized_args["test_code"] = placeholder
+
+        try:
+            if isinstance(raw_args, str):
+                tool_call["args"] = json.dumps(sanitized_args, ensure_ascii=True, sort_keys=True)
+            else:
+                tool_call["args"] = sanitized_args
+        except Exception:
+            tool_call["args"] = sanitized_args
+
+        call_id = tool_call.get("id")
+        if not call_id:
+            return
+
+        for message in reversed(state.messages):
+            if not isinstance(message, AIMessage):
+                continue
+
+            tool_calls = message.tool_calls
+            for idx, call in enumerate(tool_calls):
+                if call.get("id") != call_id:
+                    continue
+                tool_calls[idx] = tool_call
+
+                # Raw provider metadata
+                additional_kwargs = message.additional_kwargs
+                if isinstance(additional_kwargs, dict):
+                    kw_calls = additional_kwargs.get("tool_calls")
+                    if isinstance(kw_calls, list) and idx < len(kw_calls):
+                        kw_calls[idx] = tool_call
+                return
+
+    def _process_generate_test_code_tool(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
         test_code = result.get("test_code")
@@ -179,7 +241,7 @@ class CompositionReActAgent(ReActAgent):
             state.class_name = saved_qcn
         state.method_signature = method_signature.strip() if method_signature.strip() else None
 
-    def process_view_test_code_output(
+    def _process_view_test_code_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -293,7 +355,7 @@ class CompositionReActAgent(ReActAgent):
             f"Stack Trace:\n{stack_trace}"
         )
 
-    def process_compile_and_execute_test_output(
+    def _process_compile_and_execute_test_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -375,7 +437,7 @@ class CompositionReActAgent(ReActAgent):
             )
         )
 
-    def process_finalize_tool_output(
+    def _process_finalize_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         comments = result
@@ -390,7 +452,7 @@ class CompositionReActAgent(ReActAgent):
         )
         setattr(self, "_end_now", True)
 
-    def process_modify_scenario_comment_output(
+    def _process_modify_scenario_comment_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
@@ -546,7 +608,7 @@ class CompositionReActAgent(ReActAgent):
             )
         )
 
-    def process_generic_tool_output(
+    def _process_generic_tool_output(
             self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
     ) -> None:
         outputs.append(

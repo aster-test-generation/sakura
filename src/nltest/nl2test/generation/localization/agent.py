@@ -77,8 +77,8 @@ class LocalizationReActAgent(ReActAgent):
     ) -> None:
         tool_name = tool_call["name"]
         handler = {
-            "finalize": self.process_finalize_tool_output,
-        }.get(tool_name, self.process_generic_tool_output)
+            "finalize": self._process_finalize_tool_output,
+        }.get(tool_name, self._process_generic_tool_output)
 
         try:
             handler(tool_call, result, state, outputs)
@@ -97,7 +97,7 @@ class LocalizationReActAgent(ReActAgent):
                 )
             )
 
-    def process_finalize_tool_output(
+    def _process_finalize_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         blocks, comments = result
@@ -120,7 +120,7 @@ class LocalizationReActAgent(ReActAgent):
         )
         setattr(self, "_end_now", True)
 
-    def process_generic_tool_output(
+    def _process_generic_tool_output(
             self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
     ) -> None:
         outputs.append(

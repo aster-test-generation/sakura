@@ -45,6 +45,7 @@ class NL2TestActor:
         use_stored_index: bool = True,
         debug: bool = False,
         log_file_name: str | None = None,
+        exclude_test_dirs: bool = False,
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -112,7 +113,7 @@ class NL2TestActor:
             decomposition_mode=self.decomposition_mode,
             analysis_dir=self.analysis_dir,
         )
-        self.pipeline.run_preprocessing()
+        self.pipeline.run_preprocessing(exclude_test_dirs=exclude_test_dirs)
 
     def run_nl2test_one(self, input_payload: dict[str, Any]) -> dict[str, Any]:
         """Run NL2Test for a single input payload.

@@ -27,9 +27,11 @@ class ClassIndexer(BaseIndexer):
             classes.append(qualified_class_name)
         return classes
 
-    def build_index(self) -> ClassSearcher:
+    def build_index(self, *, exclude_test_dirs: bool = False) -> ClassSearcher:
         """Extract snippets, embed them, add to vector store, and return searchers."""
-        snippets: List[ClassSnippet] = self.extractor.get_project_snippets()
+        snippets: List[ClassSnippet] = self.extractor.get_project_snippets(
+            exclude_test_dirs=exclude_test_dirs
+        )
         vector_store = ClassVectorStore(self.embedder)
         vector_store.add_snippets(snippets)
         return ClassSearcher(vector_store)

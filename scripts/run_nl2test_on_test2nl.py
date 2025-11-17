@@ -19,6 +19,7 @@ MAX_ENTRIES = 0
 DEBUG = True
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
+EXCLUDE_TEST_DIRS = False
 
 LLM_MODEL = "GCP/claude-3-7-sonnet"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
@@ -114,6 +115,11 @@ def main() -> None:
         "--max-inflight",
         str(MAX_INFLIGHT),
     ]
+
+    if EXCLUDE_TEST_DIRS:
+        cmd.append("--exclude-test-dirs")
+    else:
+        cmd.append("--no-exclude-test-dirs")
 
     # Optional connectivity flags
     if LLM_PROVIDER:

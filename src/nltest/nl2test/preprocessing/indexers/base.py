@@ -32,6 +32,6 @@ class BaseIndexer(ABC):
             return HttpEmbedder(model_id=emb_model, api_url=api_url)
 
     @abstractmethod
-    def build_index(self):
+    def build_index(self, *, exclude_test_dirs: bool = False):
         """Each subclass must implement its own indexing logic."""
         pass

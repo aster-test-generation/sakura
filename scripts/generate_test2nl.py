@@ -11,7 +11,7 @@ OUTPUT_DIR = "../tests/output/resources/test2nl"
 ORGANIZED_METHODS_FILE_NAME = "nl2test.json"
 
 # CLI arguments
-LLM_MODEL = "deepseek/deepseek-chat-v3.1"
+LLM_MODEL = "x-ai/grok-4-fast"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama", "gcp"
 LLM_API_URL: str | None = None  # must be OpenAI API compatible

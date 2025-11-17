@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from unittest import TestCase
 
@@ -11,7 +10,7 @@ from cldk.analysis import AnalysisLevel
 
 from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.evaluation import TestGrader
-from nltest.utils.execution.compilation import JavaCompilation
+from nltest.utils.compilation.compilation_old import JavaCompilation
 from nltest.utils.models import NL2TestInput, NL2TestMetadata
 from nltest.utils.pretty.prints import pretty_print
 

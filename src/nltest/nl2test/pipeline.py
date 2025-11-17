@@ -41,7 +41,7 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.execution import JavaCompilation
+from nltest.utils.compilation import JavaCompilation
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError

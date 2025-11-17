@@ -310,13 +310,6 @@ class JavaCompilation:
         list of .java filenames with compilation errors, not FQCNs.
 
         Example:
-            >>> text = "
-            ... [INFO] COMPILATION ERROR :
-            ... [ERROR] /path/to/project/src/test/java/com/acme/MyTest.java:[12,8] cannot find symbol
-            ... [ERROR]   symbol:   class Foo
-            ... [ERROR]   location: class com.acme.MyTest
-            ... "
-            >>> JavaCompilation.parse_compilation_errors(text, "/path/to/project")
             (['MyTest.java'], [CompilationError(file='src/test/java/com/acme/MyTest.java', line=12, column=8, message='cannot find symbol', details=['symbol:   class Foo', 'location: class com.acme.MyTest'])])
         """
         lines = JavaCompilation._iter_lines(text_or_lines)

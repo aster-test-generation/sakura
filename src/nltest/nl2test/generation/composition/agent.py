@@ -10,10 +10,10 @@ from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.models import AgentState, DecompositionMode
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis.common_analysis import CommonAnalysis
+from nltest.utils.compilation.maven import JavaMavenCompilation, CompilationError
+from nltest.utils.execution.maven import ExecutionIssue, JavaMavenExecution
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from nltest.utils.execution import JavaCompilation
-from nltest.utils.execution.execution import JavaExecution
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.tool_messages import format_tool_error, format_tool_ok
 
@@ -106,7 +106,7 @@ class CompositionReActAgent(ReActAgent):
             handler(tool_call, result, state, outputs)
         except ProjectCompilationError:
             raise
-        except Exception as exc:  
+        except Exception as exc:
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(
@@ -260,11 +260,44 @@ class CompositionReActAgent(ReActAgent):
             )
         )
 
+    def _format_compilation_error(self, compilation_error: CompilationError) -> str:
+        line = compilation_error.line if compilation_error.line is not None else "Unknown"
+
+        if compilation_error.details:
+            details_text = "\n".join(compilation_error.details)
+        else:
+            details_text = "No compiler details were provided."
+
+        return (
+            f"Line: {line}\n"
+            f"Error Message: {compilation_error.message}\n"
+            f"Error Details:\n{details_text}"
+        )
+
+    def _format_execution_issue(self, execution_issue: ExecutionIssue) -> str:
+        class_name = execution_issue.class_name
+        test_name = execution_issue.test_name
+        test_case = f"{class_name}.{test_name}" if class_name and test_name else None
+
+        line = execution_issue.line if execution_issue.line is not None else "Unknown"
+
+        issue_type = execution_issue.kind or "Unknown"
+        message = execution_issue.message or "No execution message was provided."
+        stack_trace = execution_issue.stack_trace.strip() if execution_issue.stack_trace else "No stack trace was captured."
+
+        return (
+            f"Test Case: {test_case}\n"
+            f"Issue Kind: {issue_type}\n"
+            f"Message: {message}\n"
+            f"Line: {line}\n"
+            f"Stack Trace:\n{stack_trace}"
+        )
+
     def process_compile_and_execute_test_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
-        if not state.class_name:
+        if not state.class_name or not state.method_signature:
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(
@@ -277,92 +310,60 @@ class CompositionReActAgent(ReActAgent):
             )
             return
 
-        erroneous_files, compilation_errors = (
-            JavaCompilation.get_erroneous_files_and_errors(self.project_root)
-        )
+        compilation_errors: List[CompilationError] = JavaMavenCompilation(self.project_root).get_compilation_errors()
         file_key = f"{state.class_name}.java"
-        has_error = any(ef == file_key for ef in erroneous_files)
+        has_error_for_project = len(compilation_errors) > 0
+        has_error_for_target = any(ef.file.endswith(file_key) for ef in compilation_errors)
 
-        comp_errors_dicts: List[Dict[str, Any]] = [entry.model_dump() for entry in compilation_errors]
-        target_errors: List[Dict[str, Any]] = [
-            entry for entry in comp_errors_dicts if entry.get("file", "").endswith(file_key)
-        ]
-
-        error_counts_by_file: Dict[str, int] = {}
-        for entry in comp_errors_dicts:
-            file_name = (entry.get("file") or "").strip()
-            if file_name:
-                error_counts_by_file[file_name] = error_counts_by_file.get(file_name, 0) + 1
-
-        any_compilation_errors = bool(erroneous_files)
+        target_errors: List[str] = [self._format_compilation_error(compilation_error) for compilation_error in
+                                    compilation_errors if compilation_error.file.endswith(file_key)]
 
         result_payload: Dict[str, Any] = {
             "compilation": {
+                "status": "success" if not has_error_for_project else "compilation_error",
                 "target_class_file": file_key,
-                "has_errors_for_target": has_error,
-                "any_compilation_errors": any_compilation_errors,
-                "errors_for_target_class": target_errors,
-                "error_summary": {
-                    "total_errors": len(comp_errors_dicts),
-                    "files_with_errors": sorted(error_counts_by_file.keys()),
-                    "error_counts_by_file": error_counts_by_file,
-                },
+                "has_errors_for_project": has_error_for_project,
+                "has_errors_for_target": has_error_for_target,
+                "error_details_for_target_class": target_errors,
             }
         }
 
-        if any_compilation_errors and not has_error:
+        if has_error_for_project and not has_error_for_target:
+            files_with_errors = [compilation_error.file for compilation_error in compilation_errors]
+            error_details = [self._format_compilation_error(compilation_error) for compilation_error in
+                             compilation_errors]
             raise ProjectCompilationError(
                 "Unrelated project files failed to compile.",
                 extra_info={
-                    "files_with_errors": sorted(error_counts_by_file.keys()),
-                    "error_counts_by_file": error_counts_by_file,
+                    "files_with_errors": sorted(files_with_errors),
+                    "error_details": error_details
                 },
             )
 
-        if not has_error:
-            test_fqn = f"{state.package}.{state.class_name}" if state.package else state.class_name
-            execution_feedback = JavaExecution.execute(str(self.project_root), test_fqn)
+        if not has_error_for_target:
+            qualified_class_name = f"{state.package}.{state.class_name}" if state.package else state.class_name
+            method_signature = state.method_signature
+            execution_issues: List[ExecutionIssue] = JavaMavenExecution(self.project_root).get_execution_errors(
+                qualified_class_name,
+                method_signature)
+            has_exec_error = len(execution_issues) > 0
+            execution_failures: List[ExecutionIssue] = [execution_issue for execution_issue in execution_issues if
+                                                        execution_issue.kind == "failure"]
+            execution_errors: List[ExecutionIssue] = [execution_issue for execution_issue in execution_issues if
+                                                      execution_issue.kind == "error"]
 
-            issues: List[Dict[str, Any]] = [issue.model_dump() for issue in execution_feedback.issues]
-            if execution_feedback.passed:
-                result_payload["execution"] = {
-                    "executed": True,
-                    "status": "tests_passed",
-                    "message": "All tests in class passed.",
-                    "num_tests_run": execution_feedback.tests_run,
-                    "num_failures": execution_feedback.failures,
-                    "num_errors": execution_feedback.errors,
-                }
-            else:
-                status = execution_feedback.failure_reason_code or (
-                    "test_has_failures_or_errors"
-                    if (execution_feedback.failures or execution_feedback.errors)
-                    else "execution_failed"
-                )
-                reason = execution_feedback.failure_reason or "Test execution failed"
-                top_issues: List[str] = []
-                for issue in issues[:10]:
-                    name = f"{issue.get('class_name', '')}.{issue.get('test_name', '')}".strip(".")
-                    kind = issue.get("kind")
-                    message_text = issue.get("message") or issue.get("error_type") or ""
-                    location = (
-                        f" @ {issue.get('file')}:{issue.get('line')}"
-                        if issue.get("file") and issue.get("line")
-                        else ""
-                    )
-                    top_issues.append(f"{kind}: {name}{location} -> {message_text}")
-                result_payload["execution"] = {
-                    "executed": True,
-                    "status": status,
-                    "message": reason,
-                    "num_tests_run": execution_feedback.tests_run,
-                    "num_failures": execution_feedback.failures,
-                    "num_errors": execution_feedback.errors,
-                    "issues": top_issues,
-                }
+            result_payload["execution"] = {
+                "status": "success" if not has_exec_error else "execution_error",
+                "num_failures": len(execution_failures),
+                "num_errors": len(execution_errors),
+                "execution_failures": [self._format_execution_issue(execution_issue) for execution_issue in
+                                       execution_failures],
+                "execution_errors": [self._format_execution_issue(execution_issue) for execution_issue in
+                                     execution_errors],
+            }
+
         else:
             result_payload["execution"] = {
-                "executed": False,
                 "status": "compilation_errors",
                 "message": "Fix compilation errors in target test class before execution.",
             }

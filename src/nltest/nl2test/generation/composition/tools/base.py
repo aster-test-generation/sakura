@@ -27,8 +27,8 @@ from nltest.utils.exceptions import (
     MethodNotFoundError,
     ToolExceptionHandler,
 )
-from nltest.utils.execution import JavaCompilation
-from nltest.utils.execution.execution import JavaExecution
+from nltest.utils.compilation import JavaCompilation
+from nltest.utils.execution.execution_old import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import FormatValidator, LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (

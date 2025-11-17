@@ -21,6 +21,7 @@ from nltest.utils.tool_messages import (
     format_tool_ok,
 )
 from nltest.utils.pretty.color_logger import RichLog
+from nltest.utils.exceptions import ConfigurationException
 
 
 class ReActAgent:
@@ -53,10 +54,8 @@ class ReActAgent:
 
         # Validate finalize tool presence when strict finalize is enabled
         if self.strict_finalize:
-            has_finalize = any(getattr(t, "name", None) == "finalize" for t in self.tools)
+            has_finalize = any(tool.name == "finalize" for tool in self.tools)
             if not has_finalize:
-                from nltest.utils.exceptions import ConfigurationException
-
                 raise ConfigurationException(
                     "finalize_tool_missing",
                     message=(
@@ -116,7 +115,7 @@ class ReActAgent:
 
     def _should_end_after_tools(self, state: AgentState) -> bool:
         """Hook for subclasses to request ending immediately after tools."""
-        return getattr(self, "_end_now", False)
+        return self._end_now
 
     # Graph construction
     def _encode_tool_call(self, tool_name: str, args: Dict[str, Any]) -> str:
@@ -131,8 +130,8 @@ class ReActAgent:
     # For debugging
     def _log_tool_error(self, tool_msg: ToolMessage, llm_message: AIMessage) -> None:
         """Emit a RichLog debug entry containing the tool error and triggering LLM turn."""
-        content = getattr(tool_msg, "content", "")
 
+        content = tool_msg.content
         if isinstance(content, str):
             try:
                 payload = json.loads(content)
@@ -236,28 +235,6 @@ class ReActAgent:
             state.messages.append(out)
             state.iterations += 1
             return state
-
-        # Conditional edge to determine if the agent should continue
-        def should_continue(state: AgentState) -> str:
-            # If the last AI message has tool calls, always resolve them first
-            last_ai: Optional[AIMessage] = None
-            for msg in reversed(state.messages):
-                if isinstance(msg, AIMessage):
-                    last_ai = msg
-                    break
-
-            # If the last message is an AI message and it has tool calls, continue
-            if last_ai and getattr(last_ai, "tool_calls", None):
-                return "use_tools"
-
-            # No tool calls: enforce finalize when required and guard iteration limit
-            if self.strict_finalize and not getattr(state, "finalize_called", False):
-                return "force_end"
-
-            if state.iterations >= self.max_iters:
-                return "force_end"
-
-            return "end"
 
         # Execute tools if any
         def call_tools(state: AgentState) -> AgentState:
@@ -369,12 +346,7 @@ class ReActAgent:
 
         # Force the model to end if remaining iterations is 0
         def force_end(state: AgentState) -> AgentState:
-            # Ensure a system message starts the conversation
-            assert state.messages and isinstance(
-                state.messages[0], SystemMessage
-            ), "First message must be a SystemMessage"
-
-            state.force_end_attempts = getattr(state, "force_end_attempts", 0) + 1
+            state.force_end_attempts += 1
             attempt = state.force_end_attempts
 
             # Nudge the model explicitly to call finalize with the available context
@@ -407,15 +379,13 @@ class ReActAgent:
                 state.messages,
                 tools=tools_to_bind,
                 tool_choice=tool_choice,
-                extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
+                extra_model_kwargs={"parallel_tool_calls": False},  # No parallel tool call; force end
             )
             state.messages.append(out)
 
             last_ai: Optional[AIMessage] = out
-            tool_calls = list(getattr(last_ai, "tool_calls", []) or [])
+            tool_calls: List[ToolCall] = last_ai.tool_calls
             requested_finalize = any(tc.get("name") == "finalize" for tc in tool_calls)
-
-            from nltest.utils.exceptions import ConfigurationException
 
             if self.strict_finalize:
                 if not tool_calls or not requested_finalize:
@@ -450,24 +420,46 @@ class ReActAgent:
                 if isinstance(msg, AIMessage):
                     last_ai = msg
                     break
-            if last_ai and getattr(last_ai, "tool_calls", None):
+            if last_ai and last_ai.tool_calls:
                 return "use_tools"
             if (
-                    not getattr(state, "finalize_called", False)
+                    not state.finalize_called
                     and not self.strict_finalize
-                    and getattr(state, "force_end_attempts", 0) < 2
+                    and state.force_end_attempts < 2
             ):
                 return "force_end"
             return "end"
 
         # Decide whether to end after tools or continue/force end
         def should_continue_after_tools(state: AgentState) -> str:
-            if self._should_end_after_tools(state):
+            if self._should_end_after_tools(state):  # If the end_now is called from finalize tool
                 return "end"
             # If we've consumed the final allowed model step already, switch to force_end
             if state.iterations >= self.max_iters:
                 return "force_end"
             return "continue"
+
+        # Conditional edge to determine if the agent should continue
+        def should_continue_after_llm(state: AgentState) -> str:
+            # If the last AI message has tool calls, always resolve them first
+            last_ai: Optional[AIMessage] = None
+            for msg in reversed(state.messages):
+                if isinstance(msg, AIMessage):
+                    last_ai = msg
+                    break
+
+            # If the last message is an AI message and it has tool calls, continue
+            if last_ai and last_ai.tool_calls:
+                return "use_tools"
+
+            # No tool calls: enforce finalize when required and guard iteration limit
+            if self.strict_finalize and not state.finalize_called:
+                return "force_end"
+
+            if state.iterations >= self.max_iters:
+                return "force_end"
+
+            return "end"
 
         # Assemble graph: define all nodes and edges together for readability
         workflow.add_node("call_model", call_model)
@@ -477,7 +469,7 @@ class ReActAgent:
         workflow.set_entry_point("call_model")
         workflow.add_conditional_edges(
             "call_model",
-            should_continue,
+            should_continue_after_llm,
             {
                 "use_tools": "call_tools",
                 "force_end": "force_end",
@@ -503,7 +495,7 @@ class ReActAgent:
         )
 
         # Standard in-memory checkpointer (configurable)
-        checkpointer = MemorySaver() if getattr(self, "use_checkpointer", True) else None
+        checkpointer = MemorySaver() if self.use_checkpointer else None
 
         return workflow.compile(checkpointer=checkpointer)
 

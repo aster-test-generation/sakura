@@ -13,7 +13,7 @@ from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.compilation.maven import JavaMavenCompilation, CompilationError
 from nltest.utils.execution.maven import ExecutionIssue, JavaMavenExecution
-from nltest.utils.llm import LLMClient
+from nltest.utils.llm import LLMClient, FormatValidator
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.pretty import RichLog
@@ -185,6 +185,8 @@ class CompositionReActAgent(ReActAgent):
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
         test_code = result.get("test_code")
+        if isinstance(test_code, str):
+            test_code = FormatValidator.sanitize_code_block(test_code)
         qualified_class_name = result.get("qualified_class_name")
         method_signature = result.get("method_signature")
 

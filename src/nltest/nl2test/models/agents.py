@@ -115,12 +115,12 @@ class InstructionArgs(BaseModel):
 _TEST_CODE_DESC = """
 The full Java test file contents as raw Java source code. 
 Requirements:
-  - It must be plain Java only. Do NOT include Markdown fences, JSON, XML, comments-as-markup, or any other wrapper/annotations.
-  - Newlines must be literal (no escaped newline sequences). The string must be valid JSON.
-  - The code must contain exactly one test method annotated with a test annotation.
-  - Package declarations must mirror the SUT's package to access package-private members.
-  - Use explicit imports (no wildcards).
-  - Helper, setup, or teardown methods are allowed, but must not be annotated as additional tests.
+- It must be plain Java only. Do NOT include Markdown fences, JSON, XML, comments-as-markup, or any other wrapper/annotations.
+- Newlines must be literal (no escaped newline sequences). The string must be valid JSON.
+- The code must contain exactly one test method annotated with a test annotation.
+- Package declarations must mirror the SUT's package to access package-private members.
+- Use explicit imports (no wildcards).
+- Helper, setup, or teardown methods are allowed, but must not be annotated as additional tests.
 """
 
 _TEST_QUALIFIED_CLASS_DESC = """
@@ -128,7 +128,7 @@ The fully qualified name (package + class) of the generated test class.
 """
 
 _TEST_METHOD_SIG_DESC = """
-Exact header of the single test method annotated as a test within the generated code.
+The exact Java method signature (e.g., "testFindById()" or "findById(java.lang.Integer)") of the single test method annotated as a test in the generated code.
 """
 
 

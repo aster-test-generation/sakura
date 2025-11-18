@@ -31,7 +31,7 @@ from nltest.utils.exceptions import (
 from nltest.utils.compilation import JavaCompilation
 from nltest.utils.execution.execution_old import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from nltest.utils.llm import FormatValidator, LLMClient
+from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
     GET_CLASS_FIELDS_DESC,
     GET_CLASS_IMPORTS_DESC,

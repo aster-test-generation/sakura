@@ -1,63 +1,93 @@
-import re, json, ast
-from typing import Type, TypeVar, get_origin, get_args, List, Union
-
-T = TypeVar("T")
+import re
+from typing import Optional
 
 
 class FormatValidator:
-    @staticmethod
-    def _strip_json_fences(raw: str) -> str:
-        """Remove ```json ...``` or ```...``` fences."""
-        return re.sub(r'```(?:json)?\s*([\s\S]*?)\s*```', r'\1', raw).strip()
+    """Utility helpers for massaging formatter-related LLM responses."""
+
+    _FENCE_LANGUAGE_HINTS = {
+        "java", "javascript", "js", "typescript", "ts", "python", "py",
+        "c", "c++", "cpp", "csharp", "c#", "cs",
+        "go", "golang", "kotlin", "swift", "scala", "groovy",
+        "ruby", "php", "bash", "sh", "shell", "powershell", "ps", "ps1",
+        "sql", "json", "yaml", "yml", "xml", "html", "css",
+        "text", "plain", "plaintext", "markdown", "md",
+    }
 
     @staticmethod
-    def _tuples_to_lists(obj):
-        """Recursively convert tuples from ast.literal_eval to lists so that the resulting data structure is JSON‑serializable."""
-        if isinstance(obj, tuple):
-            return [FormatValidator._tuples_to_lists(x) for x in obj]
-        if isinstance(obj, list):
-            return [FormatValidator._tuples_to_lists(x) for x in obj]
-        if isinstance(obj, dict):
-            return {k: FormatValidator._tuples_to_lists(v) for k, v in obj.items()}
-        return obj
+    def sanitize_code_block(code: str) -> str:
+        """
+        Strip markdown or quote wrappers like ```java ... ``` or ''' ... '''.
+        """
+        if not isinstance(code, str):
+            return code
+
+        stripped = code.strip()
+        if not stripped:
+            return stripped
+
+        # Fenced blocks: ``` ... ``` or ~~~ ... ~~~
+        for fence in ("```", "~~~"):
+            sanitized = FormatValidator._strip_fenced_block(stripped, fence)
+            if sanitized is not None:
+                return sanitized
+
+        # Simple quote wrappers: '''...''' or """..."""
+        for quote in ("'''", '"""'):
+            sanitized = FormatValidator._strip_simple_wrapper(stripped, quote)
+            if sanitized is not None:
+                return sanitized
+
+        return stripped
 
     @staticmethod
-    def strip_java_block(raw: str) -> str | None:
-        pattern = r'```java\n(.*?)\n```'
-        matches = re.findall(pattern, raw, re.DOTALL)
-        return matches[0] if matches else None
+    def _strip_fenced_block(text: str, fence: str) -> Optional[str]:
+        if not text.startswith(fence):
+            return None
+
+        last = text.rfind(fence)
+        if last <= len(fence):
+            return None
+
+        inner = text[len(fence):last]
+        inner = FormatValidator._strip_language_hint(inner)
+        return inner.strip()
 
     @staticmethod
-    def validate(text: str, output_type: Type[T]) -> Union[T, List[T]]:
-        cleaned = FormatValidator._strip_json_fences(text)
+    def _strip_language_hint(inner: str) -> str:
+        # Drop leading CRs (Windows newlines)
+        trimmed = inner.lstrip("\r")
 
-        # First try strict JSON
-        try:
-            parsed = json.loads(cleaned)
-        except json.JSONDecodeError as je:
-            # Fall back to python‑literal syntax for tuples, single quotes, etc.
-            try:
-                parsed = ast.literal_eval(cleaned)
-                parsed = FormatValidator._tuples_to_lists(parsed)
-            except (ValueError, SyntaxError):
-                # Last‑chance list wrapper fallback
-                m = re.fullmatch(r'\s*(\[[\s\S]*\])\s*', cleaned)
-                if m:
-                    parsed = json.loads(m.group(1))
-                else:
-                    raise ValueError(
-                        f"Failed to parse output as JSON or Python literal. "
-                        f"json error was: {je}"
-                    ) from je
+        # Plain fenced block with immediate newline:
+        # ```\ncode\n``` -> "code\n"
+        if trimmed.startswith("\n"):
+            return trimmed.lstrip("\r\n")
 
-        origin = get_origin(output_type)
-        if origin in (list, List):
-            elem_t = get_args(output_type)[0]
-            if not isinstance(parsed, list):
-                raise ValueError(f"Expected a JSON array, got {type(parsed).__name__}")
-            return [elem_t(**item) for item in parsed]
+        # Allow and ignore leading horizontal whitespace before a language tag:
+        # ```   java\ncode``` or ``` java code```
+        candidate = trimmed.lstrip(" \t")
 
-        if not isinstance(parsed, dict):
-            raise ValueError(f"Expected a JSON object, got {type(parsed).__name__}")
+        # Look for "<token><space/newline>" at the very start
+        match = re.match(r"([A-Za-z0-9_+\-#.]+)([\t ]+|\r?\n)", candidate)
+        if match and FormatValidator._looks_like_language_hint(match.group(1)):
+            # Strip the language token + following whitespace/newline
+            return candidate[match.end():]
 
-        return output_type(**parsed)
+        # No language tag detected; keep original (with leading spaces)
+        return trimmed
+
+    @staticmethod
+    def _looks_like_language_hint(token: str) -> bool:
+        normalized = token.strip().lower()
+        if not normalized:
+            return False
+        normalized = normalized.replace("language-", "")
+        return normalized in FormatValidator._FENCE_LANGUAGE_HINTS
+
+    @staticmethod
+    def _strip_simple_wrapper(text: str, wrapper: str) -> Optional[str]:
+        if text.startswith(wrapper) and text.endswith(wrapper):
+            inner = text[len(wrapper):-len(wrapper)]
+            inner = FormatValidator._strip_language_hint(inner)
+            return inner.strip()
+        return None

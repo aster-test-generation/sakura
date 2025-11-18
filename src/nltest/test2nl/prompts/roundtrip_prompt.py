@@ -7,7 +7,7 @@ from nltest.test2nl.model.models import ReferencedClass
 from nltest.test2nl.extractors import ReferencedClassExtractor
 from nltest.test2nl.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.llm import LLMClient, ClientType, FormatValidator
+from nltest.utils.llm import LLMClient, ClientType
 
 
 class RoundTripPrompt:
@@ -52,7 +52,8 @@ class RoundTripPrompt:
         # Call the LLM
         test_case = self.llm.generate(rendered_prompt, sanitize=True)
         # Strip the ```java ```
-        test_block = FormatValidator.strip_java_block(test_case)
+        # test_block = FormatValidator.strip_java_block(test_case)
+        test_block = test_case.strip()
         if test_block:
             return test_block, rendered_prompt, True
         return None, rendered_prompt, False

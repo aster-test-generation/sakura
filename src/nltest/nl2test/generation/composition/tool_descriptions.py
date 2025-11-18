@@ -123,6 +123,7 @@ Returns:
 
 GENERATE_TEST_CODE_DESC = """
 Create or overwrite the test file with newly generated code.
+Strictly follow the field description for test code generation requirements.
 """
 
 FINALIZE_DESC_OLD = """

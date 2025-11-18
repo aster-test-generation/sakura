@@ -18,7 +18,7 @@ Given a natural language description of a test case, additional instructions, a 
 {% endif %}
 
 # ITERATION LIMIT
-- You must complete within at most {{ max_iters }} model step(s) (iterations). If you reach the limit, finalize immediately with your best compilable artifact or best-effort code and clear comments describing gaps.
+- You must complete within at most {{ max_iters }} model step(s) (iterations). You will be warned when you are close to the limit. If you reach the limit, finalize immediately with your best compilable artifact or best-effort code and clear comments describing gaps and challenges.
 
 # GUIDELINES AND TIPS
 - Follow the instructions provided faithfully. Treat them as if they were provided by a very knowledgeable source.
@@ -30,6 +30,8 @@ Given a natural language description of a test case, additional instructions, a 
 - Use any testing framework, mocking framework, or assertion library specified in the instructions. If nothing is specified, default to JUnit assertions and Mockito if available.
 - Use the available code intelligence tools to understand the application structure and method signatures for test composition.
 - If compilation errors suggest a step is unfixable, or there is consistent errors with a non-critical step (e.g., for descriptive annotation declarations), exclude the step and regenerate the code. Include the reason for exclusion in the step comment through `modify_scenario_comment`, and return it as feedback when calling `finalize`.
+- When calling `generate_test_code`, follow all parameter restrictions: provide only raw Java source with no Markdown fences, quotes, or extra formatting; include any helpers or fixtures as needed, but produce exactly one annotated test method. Return the fully qualified class name (package + class name) of the generated test class and the exact method signature (e.g., "testFindById()" or "findById(java.lang.Integer)") of that sole annotated test method.
+- Use token-efficient metadata tools like `get_method_details` to understand the application structure, and only use heavy tools like `extract_method_code` when necessary.
 
 # END CONDITIONS
 Your task is complete when:
@@ -37,3 +39,4 @@ Your task is complete when:
 - Steps are implemented in step-id order, with reasonable assertions aligned with the THEN steps.
 - Execution ran successfully, and results align with expectations (e.g., assertions pass or failures are intentional).
 OR you have run out of iterations.
+To complete the task, call `finalize` with targeted comments on the test generation process. In the comments, include any errors explicitly, and if specific steps need localization adjustment, replacement, or removal, reference them directly by their IDs. The most recently generated test code is automatically taken as your solution.

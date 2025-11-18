@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import textwrap
 from typing import List, Tuple, Union
 
 from langchain_core.tools import BaseTool, StructuredTool
@@ -52,7 +53,7 @@ class BaseSupervisorTools:
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
-            description=VIEW_TEST_CODE_DESC,
+            description=textwrap.dedent(VIEW_TEST_CODE_DESC).strip(),
             args_schema=ViewTestCodeArgs,
         )
 
@@ -63,7 +64,7 @@ class BaseSupervisorTools:
         return StructuredTool.from_function(
             func=_compile_and_execute_test,
             name="compile_and_execute_test",
-            description=COMPILE_AND_EXECUTE_TEST_DESC,
+            description=textwrap.dedent(COMPILE_AND_EXECUTE_TEST_DESC).strip(),
             args_schema=NoArgs,
         )
 
@@ -75,6 +76,6 @@ class BaseSupervisorTools:
         return StructuredTool.from_function(
             func=_finalize,
             name="finalize",
-            description=FINALIZE_DESC,
+            description=textwrap.dedent(FINALIZE_DESC).strip(),
             args_schema=NoArgs,
         )

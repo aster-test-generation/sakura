@@ -1,5 +1,7 @@
-from unittest.mock import MagicMock
 from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
 
 from nltest.nl2test.generation.localization import (
     GrammaticalLocalizationOrchestrator,
@@ -7,12 +9,7 @@ from nltest.nl2test.generation.localization import (
     LocalizationTools,
 )
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
-from nltest.nl2test.models import (
-    AtomicBlock,
-    NL2TestInput,
-    CandidateMethod,
-    LocalizedScenario,
-)
+from nltest.nl2test.models import AtomicBlock, NL2TestInput, LocalizedScenario
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
     Scenario,
@@ -21,16 +18,18 @@ from nltest.nl2test.models.decomposition import (
 )
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.llm import UsageTracker
 from nltest.utils.pretty.prints import pretty_print
-from nltest.utils.analysis import CommonAnalysis
-
-from tests._base_nl2test import BaseNL2Test
-import os
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 
 
-class TestLocalizationAgent(BaseNL2Test):
+class TestLocalizationAgent:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+        self.config = nl2test_context.config
+
     def test_gherkin_localization_system_prompt_formatting(self):
         """Ensure the system prompt renders with correct Jinja2 placeholders."""
         prompt = LoadPrompt.load_prompt(
@@ -46,11 +45,10 @@ class TestLocalizationAgent(BaseNL2Test):
         expected_cap_parallel = (
             f"You must complete within at most {max_iters_parallel} tool invocation(s)."
         )
-        self.assertIn(expected_cap_parallel, rendered_parallel)
-        self.assertIn("You may parallelize tool calls", rendered_parallel)
-        self.assertNotIn("You must call tools sequentially", rendered_parallel)
-        # Literal braces should remain intact
-        self.assertIn("Never repeat the same {tool, args} pair.", rendered_parallel)
+        assert expected_cap_parallel in rendered_parallel
+        assert "You may parallelize tool calls" in rendered_parallel
+        assert "You must call tools sequentially" not in rendered_parallel
+        assert "Never repeat the same {tool, args} pair." in rendered_parallel
 
         # Case 2: parallelizable False
         max_iters_sequential = 7
@@ -59,9 +57,9 @@ class TestLocalizationAgent(BaseNL2Test):
         )
         pretty_print("Not parallelizable", rendered_sequential)
         expected_cap_sequential = f"You must complete within at most {max_iters_sequential} tool invocation(s)."
-        self.assertIn(expected_cap_sequential, rendered_sequential)
-        self.assertIn("You must call tools sequentially", rendered_sequential)
-        self.assertNotIn("You may parallelize tool calls", rendered_sequential)
+        assert expected_cap_sequential in rendered_sequential
+        assert "You must call tools sequentially" in rendered_sequential
+        assert "You may parallelize tool calls" not in rendered_sequential
 
     def test_gherkin_localization_chat_prompt_formatting(self):
         """Ensure the chat prompt renders with required placeholders and includes a preview."""
@@ -83,11 +81,11 @@ class TestLocalizationAgent(BaseNL2Test):
         pretty_print("Chat prompt (gherkin localization)", rendered)
 
         # Assertions
-        self.assertIn(nl_description, rendered)
-        self.assertIn(instructions, rendered)
-        self.assertIn("Given", rendered)
-        self.assertIn("When", rendered)
-        self.assertIn("Then", rendered)
+        assert nl_description in rendered
+        assert instructions in rendered
+        assert "Given" in rendered
+        assert "When" in rendered
+        assert "Then" in rendered
 
     def test_localization_agent_simple_grammatical(self):
         nl_description = "Ensure pet is added to owner and ID is generated."
@@ -182,8 +180,8 @@ class TestLocalizationAgent(BaseNL2Test):
         prices = tracker.totals()
 
         # Assertions and output
-        self.assertIsInstance(localized_scenario, LocalizedScenario)
-        self.assertIsInstance(comments, str)
+        assert isinstance(localized_scenario, LocalizedScenario)
+        assert isinstance(comments, str)
         pretty_print("Localized scenario", localized_scenario)
         pretty_print("Comments", comments)
         pretty_print("Token usage", prices)
@@ -236,14 +234,20 @@ class TestLocalizationAgent(BaseNL2Test):
         prices = tracker.totals()
 
         # Assertions and output
-        self.assertIsInstance(localized_scenario, LocalizedScenario)
-        self.assertIsInstance(comments, str)
+        assert isinstance(localized_scenario, LocalizedScenario)
+        assert isinstance(comments, str)
         pretty_print("Localized scenario", localized_scenario)
         pretty_print("Comments", comments)
         pretty_print("Token usage", prices)
 
 
-class TestLocalizationGrader(BaseNL2Test):
+class TestLocalizationGrader:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+        self.config = nl2test_context.config
+        self.project_root = nl2test_context.project_root
+
     def _petcontroller_localized_scenario_payload(self) -> dict:
         return {
             "testing_framework": "junit",
@@ -254,12 +258,6 @@ class TestLocalizationGrader(BaseNL2Test):
                     "uses": "",
                     "produces": "mock_mvc_context",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "@WebMvcTest is an annotation, not a method.",
                     "external": False,
@@ -270,12 +268,6 @@ class TestLocalizationGrader(BaseNL2Test):
                     "uses": "mock_mvc_context",
                     "produces": "",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "Disabled annotations are not methods.",
                     "external": False,
@@ -286,12 +278,6 @@ class TestLocalizationGrader(BaseNL2Test):
                     "uses": "mocked_owner_repository",
                     "produces": "pet_types",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "java.util.List<org.springframework.samples.petclinic.owner.PetType>",
-                    },
                     "arg_bindings": [],
                     "comments": "Mockito stubbing for findPetTypes.",
                     "external": False,
@@ -301,13 +287,14 @@ class TestLocalizationGrader(BaseNL2Test):
                     "task": "Mock OwnerRepository.findById to return an Owner",
                     "uses": "mocked_owner_repository, TEST_OWNER_ID",
                     "produces": "owner_with_pets",
-                    "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "method_signature": "findById(java.lang.Integer)",
-                        "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
-                    },
+                    "candidate_methods": [
+                        {
+                            "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                            "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                            "method_signature": "findById(java.lang.Integer)",
+                            "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
+                        }
+                    ],
                     "arg_bindings": [{"arg_name": "id", "arg_value": "TEST_OWNER_ID"}],
                     "comments": "Mockito stubbing for findById.",
                     "external": False,
@@ -318,12 +305,6 @@ class TestLocalizationGrader(BaseNL2Test):
                     "uses": "owner_with_pets, pet_types",
                     "produces": "owner_with_pet_to_update",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "Data preparation, no direct method.",
                     "external": False,
@@ -334,12 +315,6 @@ class TestLocalizationGrader(BaseNL2Test):
                     "uses": "owner_with_pet_to_update",
                     "produces": "pet_details",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "Setup data.",
                     "external": False,
@@ -362,12 +337,6 @@ class TestLocalizationGrader(BaseNL2Test):
                                     "return_type": "java.lang.String",
                                 }
                             ],
-                            "best_candidate": {
-                                "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
-                                "return_type": "java.lang.String",
-                            },
                             "arg_bindings": [
                                 {"arg_name": "owner", "arg_value": "owner_with_pets"},
                                 {"arg_name": "pet", "arg_value": "pet_details"},
@@ -391,12 +360,6 @@ class TestLocalizationGrader(BaseNL2Test):
                             "uses": "http_response",
                             "produces": "",
                             "candidate_methods": [],
-                            "best_candidate": {
-                                "implementing_class_name": "",
-                                "containing_class_name": "",
-                                "method_signature": "",
-                                "return_type": "",
-                            },
                             "arg_bindings": [],
                             "comments": "Assertion helper; not a method under test.",
                             "external": False,
@@ -407,12 +370,6 @@ class TestLocalizationGrader(BaseNL2Test):
                             "uses": "http_response",
                             "produces": "",
                             "candidate_methods": [],
-                            "best_candidate": {
-                                "implementing_class_name": "",
-                                "containing_class_name": "",
-                                "method_signature": "",
-                                "return_type": "",
-                            },
                             "arg_bindings": [],
                             "comments": "Assertion helper; not a method under test.",
                             "external": False,
@@ -422,123 +379,6 @@ class TestLocalizationGrader(BaseNL2Test):
             ],
             "teardown": [],
         }
-
-    def test_localization_grader_old(self):
-        nl2_input = NL2TestInput(
-            qualified_class_name="org.springframework.samples.petclinic.owner.OwnerControllerTests",
-            method_signature="testProcessCreationFormSuccess()",
-            description="Test that the owner creation form processes successfully when valid data is submitted.",
-            project_name="spring-petclinic",
-        )
-
-        candidate = CandidateMethod(
-            implementing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
-            containing_class_name="org.springframework.samples.petclinic.owner.OwnerController",
-            method_signature="processCreationForm(Owner, BindingResult, ModelMap)",
-            return_type="void",
-        )
-
-        atomic_blocks = AtomicBlockList(
-            atomic_blocks=[
-                AtomicBlock(
-                    order=0,
-                    subjects=["form"],
-                    verbs=["process"],
-                    past_participles=[],
-                    direct_objs=["creation"],
-                    indirect_objs=[],
-                    prep_phrases=[],
-                    polarity="positive",
-                    conditions=[],
-                    simplified="form processes creation",
-                    candidate_methods=[candidate],
-                    best_candidate=candidate,
-                    notes="",
-                )
-            ]
-        )
-
-        grader = LocalizationGraderOld(
-            nl2_input, self.analysis, self.config.get("project", "base_project_dir")
-        )
-
-        # Test basic grading
-        coverage_score, detailed_results = grader.grade(
-            atomic_blocks, detailed_output=False
-        )
-        self.assertIsInstance(coverage_score, float)
-        self.assertGreaterEqual(coverage_score, 0.0)
-        self.assertLessEqual(coverage_score, 1.0)
-        self.assertIsNone(detailed_results)
-
-        # Test detailed grading
-        coverage_score, detailed_results = grader.grade(
-            atomic_blocks, detailed_output=True
-        )
-        self.assertIsInstance(coverage_score, float)
-        self.assertGreaterEqual(coverage_score, 0.0)
-        self.assertLessEqual(coverage_score, 1.0)
-        self.assertIsNotNone(detailed_results)
-        self.assertIsInstance(detailed_results, dict)
-
-        expected_keys = [
-            "test_class",
-            "test_method",
-            "total_focal_methods",
-            "covered_focal_methods",
-            "uncovered_focal_methods",
-            "coverage_score",
-            "focal_methods",
-            "covered_methods",
-            "uncovered_methods",
-            "evaluation_algorithm",
-            # New metrics
-            "tp",
-            "fp",
-            "fn",
-        ]
-        for key in expected_keys:
-            self.assertIn(key, detailed_results)
-
-        self.assertEqual(
-            detailed_results["evaluation_algorithm"], "optimal_coverage_one_to_one"
-        )
-
-        # Basic sanity checks on new metrics
-        self.assertIsInstance(detailed_results["tp"], int)
-        self.assertIsInstance(detailed_results["fp"], int)
-        self.assertIsInstance(detailed_results["fn"], int)
-
-    def test_localization_grader_scenario_old(self):
-        nl2_input = NL2TestInput(
-            qualified_class_name="org.springframework.samples.petclinic.owner.PetControllerTests",
-            method_signature="testProcessUpdateFormSuccess()",
-            description=(
-                "Validate successful processing of a pet update form via PetController."
-            ),
-            project_name="spring-petclinic",
-        )
-
-        localized_scenario_data = self._petcontroller_localized_scenario_payload()
-
-        localized_scenario = LocalizedScenario(**localized_scenario_data)
-
-        grader = LocalizationGraderOld(
-            nl2_input, self.analysis, self.config.get("project", "base_project_dir")
-        )
-
-        coverage_score, detailed_results = grader.grade(
-            localized_scenario, detailed_output=True
-        )
-
-        pretty_print("detailed_results", detailed_results)
-
-        self.assertIsInstance(coverage_score, float)
-        self.assertGreater(coverage_score, 0.0)
-        self.assertIsInstance(detailed_results, dict)
-
-        self.assertGreaterEqual(detailed_results["tp"], 1)
-        self.assertEqual(detailed_results["fp"], 1)
 
     def test_localization_grader_localized_scenario(self):
         nl2_input = NL2TestInput(
@@ -569,18 +409,20 @@ class TestLocalizationGrader(BaseNL2Test):
 
         pretty_print("Localization Results", results)
 
-        self.assertEqual(results.qualified_class_name, nl2_input.qualified_class_name)
-        self.assertEqual(results.method_signature, nl2_input.method_signature)
-        self.assertGreaterEqual(results.tp, 1)
-        self.assertGreaterEqual(results.localization_recall, 0.0)
-        self.assertLessEqual(results.localization_recall, 1.0)
-        self.assertEqual(
-            len(results.covered_focal_methods) + len(results.uncovered_focal_methods),
-            len(results.all_focal_methods),
-        )
+        assert results.qualified_class_name == nl2_input.qualified_class_name
+        assert results.method_signature == nl2_input.method_signature
+        assert results.tp >= 1
+        assert 0.0 <= results.localization_recall <= 1.0
+        assert (
+            len(results.covered_focal_methods) + len(results.uncovered_focal_methods)
+        ) == len(results.all_focal_methods)
 
 
-class TestLocalizationTools(BaseNL2Test):
+class TestLocalizationTools:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+
     def test_localization_call_site_tool(self):
         qualified_class_name = (
             "org.springframework.samples.petclinic.service.ClinicServiceTests"

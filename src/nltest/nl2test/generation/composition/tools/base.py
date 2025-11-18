@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import textwrap
 from typing import List, Any, Dict, Union, Tuple
 
 from cldk.analysis.java import JavaAnalysis
@@ -27,10 +28,10 @@ from nltest.utils.exceptions import (
     MethodNotFoundError,
     ToolExceptionHandler,
 )
-from nltest.utils.execution import JavaCompilation
-from nltest.utils.execution.execution import JavaExecution
+from nltest.utils.compilation import JavaCompilation
+from nltest.utils.execution.execution_old import JavaExecution
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from nltest.utils.llm import FormatValidator, LLMClient
+from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
     GET_CLASS_FIELDS_DESC,
     GET_CLASS_IMPORTS_DESC,
@@ -138,7 +139,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_class_fields,
             name="get_class_fields",
-            description=GET_CLASS_FIELDS_DESC,
+            description=textwrap.dedent(GET_CLASS_FIELDS_DESC).strip(),
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -160,7 +161,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_class_imports,
             name="get_class_imports",
-            description=GET_CLASS_IMPORTS_DESC,
+            description=textwrap.dedent(GET_CLASS_IMPORTS_DESC).strip(),
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -210,7 +211,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_class_constructors_and_factories,
             name="get_class_constructors_and_factories",
-            description=GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
+            description=textwrap.dedent(
+                GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC
+            ).strip(),
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -240,7 +243,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_getters_and_setters,
             name="get_getters_and_setters",
-            description=GET_GETTERS_AND_SETTERS_DESC,
+            description=textwrap.dedent(GET_GETTERS_AND_SETTERS_DESC).strip(),
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -255,7 +258,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_maven_dependencies,
             name="get_maven_dependencies",
-            description=GET_MAVEN_DEPENDENCIES_DESC,
+            description=textwrap.dedent(GET_MAVEN_DEPENDENCIES_DESC).strip(),
             args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -271,7 +274,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_view_test_code,
             name="view_test_code",
-            description=VIEW_TEST_CODE_DESC,
+            description=textwrap.dedent(VIEW_TEST_CODE_DESC).strip(),
             args_schema=ViewTestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -290,7 +293,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_generate_test_code,
             name="generate_test_code",
-            description=GENERATE_TEST_CODE_DESC,
+            description=textwrap.dedent(GENERATE_TEST_CODE_DESC).strip(),
             args_schema=GenerateTestCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -317,7 +320,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_compile_test_code,
             name="compile_test_code",
-            description="",
+            description=textwrap.dedent("").strip(),
             args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -330,7 +333,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_compile_and_execute_test,
             name="compile_and_execute_test",
-            description=COMPILE_AND_EXECUTE_TEST_DESC,
+            description=textwrap.dedent(COMPILE_AND_EXECUTE_TEST_DESC).strip(),
             args_schema=NoArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -343,7 +346,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_finalize,
             name="finalize",
-            description=FINALIZE_DESC,
+            description=textwrap.dedent(FINALIZE_DESC).strip(),
             args_schema=FinalizeCommentsArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

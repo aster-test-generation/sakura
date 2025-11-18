@@ -1,3 +1,4 @@
+import textwrap
 from typing import List, Dict, Any, Union, Tuple
 
 from cldk.analysis.java import JavaAnalysis
@@ -84,7 +85,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_query_method_db,
             name="query_method_db",
-            description=QUERY_METHOD_DESC,
+            description=textwrap.dedent(QUERY_METHOD_DESC).strip(),
             args_schema=QueryVectorDataArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -113,7 +114,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_reachable_methods_in_class,
             name="get_reachable_methods_in_class",
-            description=REACHABLE_METHODS_DESC,
+            description=textwrap.dedent(REACHABLE_METHODS_DESC).strip(),
             args_schema=ReachableMethodsArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -141,7 +142,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_class_details,
             name="get_class_details",
-            description=CLASS_DETAILS_DESC,
+            description=textwrap.dedent(CLASS_DETAILS_DESC).strip(),
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -178,7 +179,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
         return StructuredTool.from_function(
             func=_get_inherited_library_classes,
             name="get_inherited_library_classes",
-            description=INHERITED_LIBRARY_CLASSES_DESC,
+            description=textwrap.dedent(INHERITED_LIBRARY_CLASSES_DESC).strip(),
             args_schema=QueryClassArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

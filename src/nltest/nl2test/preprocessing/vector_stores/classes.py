@@ -13,7 +13,7 @@ def _class_to_doc(snippet: ClassSnippet) -> Document:
     return Document(
         page_content=snippet.simple_class_name,
         metadata={
-            "implementing_class_name": snippet.implementing_class_name
+            "declaring_class_name": snippet.declaring_class_name
         },
     )
 

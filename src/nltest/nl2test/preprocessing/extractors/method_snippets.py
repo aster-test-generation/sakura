@@ -4,6 +4,7 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.models import MethodSnippet
 from nltest.utils.analysis import CommonAnalysis, Reachability
+from nltest.utils.constants import TEST_DIR
 
 
 class MethodSnippetExtractor:
@@ -69,14 +70,18 @@ class MethodSnippetExtractor:
             containing_class = qualified_class_name
         code = self._format_code(qualified_class_name, method_signature, containing_class)
         return MethodSnippet(
-            implementing_class_name=qualified_class_name, # NOTE: This is the class that contains the method, not the class that the method is in
+            declaring_class_name=qualified_class_name,
+            # NOTE: This is the class that contains the method, not the class that the method is in
             method_signature=method_signature,
-            code=code, # NOTE: This contains the class of the containing class for retrieval
+            code=code,  # NOTE: This contains the class of the containing class for retrieval
             containing_class_name=containing_class,
         )
 
-    def get_class_snippets(self, qualified_class_name: str) -> List[MethodSnippet]:
+    def get_class_snippets(self, qualified_class_name: str, exclude_test_dirs: bool = False) -> List[MethodSnippet]:
         if not self.analysis.get_class(qualified_class_name):
+            return []
+
+        if exclude_test_dirs and TEST_DIR in self.analysis.get_java_file(qualified_class_name):
             return []
 
         method_snippets: List[MethodSnippet] = []
@@ -98,9 +103,9 @@ class MethodSnippetExtractor:
 
         return method_snippets
 
-    def get_project_snippets(self) -> List[MethodSnippet]:
+    def get_project_snippets(self, exclude_test_dirs: bool = False) -> List[MethodSnippet]:
         """Collect all non-test method snippets from the project."""
         method_snippets: List[MethodSnippet] = []
         for qualified_class in self.analysis.get_classes():
-            method_snippets.extend(self.get_class_snippets(qualified_class))
+            method_snippets.extend(self.get_class_snippets(qualified_class, exclude_test_dirs))
         return method_snippets

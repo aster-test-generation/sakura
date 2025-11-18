@@ -23,9 +23,9 @@ class TestFileInfo(BaseModel):
     """
 
     qualified_class_name: Annotated[
-        str, "The qualified class name of the developer-written test"
+        str, "The qualified class name of the test"
     ]
-    test_code: Annotated[str, "The test code of the autonomously generated test"] = ""
+    test_code: Annotated[str, "The test code of the test"] = ""
     id: Annotated[Optional[int], "The ID from NL2TestInput"] = -1
 
     @classmethod

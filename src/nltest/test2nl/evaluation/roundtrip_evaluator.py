@@ -7,7 +7,7 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.test2nl.model.models import RoundTripTest
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.execution import JavaCompilation
+from nltest.utils.compilation import JavaCompilation
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.file_io import TestFileManager

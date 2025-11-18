@@ -13,10 +13,15 @@ from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
 from nltest.nl2test.preprocessing.extractors import MethodSnippetExtractor
 from nltest.utils.pretty.prints import pretty_print
 
-from tests._base_nl2test import BaseNL2Test
+import pytest
 
 
-class TestMethodSearch(BaseNL2Test):
+class TestMethodSearch:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+        self.config = nl2test_context.config
+
     def test_method_vector_store_single_method_ollama(self):
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
         method_signature = "getPet(java.lang.Integer)"
@@ -24,7 +29,7 @@ class TestMethodSearch(BaseNL2Test):
         method_details = self.analysis.get_method(
             qualified_class_name, method_signature
         )
-        self.assertIsNotNone(method_details)
+        assert method_details is not None
 
         emb_model = self.config.get("emb", "model")
 
@@ -57,7 +62,7 @@ class TestMethodSearch(BaseNL2Test):
         method_details = self.analysis.get_method(
             qualified_class_name, method_signature
         )
-        self.assertIsNotNone(method_details)
+        assert method_details is not None
 
         emb_model = self.config.get("emb", "model")
         api_url = self.config.get("emb", "api_url")
@@ -84,7 +89,7 @@ class TestMethodSearch(BaseNL2Test):
         num_similar = 1
         search_results = searcher.find_similar(desc_str, k=num_similar)
         pretty_print("Search results", search_results)
-        self.assertEqual(len(search_results), num_similar)
+        assert len(search_results) == num_similar
 
     def test_method_vector_store(self):
         qualified_class_name = (
@@ -104,7 +109,7 @@ class TestMethodSearch(BaseNL2Test):
         num_similar = 5
         search_results = method_searcher.find_similar(desc_str, k=num_similar)
         pretty_print("Most similar to complete description", search_results)
-        self.assertEqual(len(search_results), num_similar)
+        assert len(search_results) == num_similar
 
         num_similar = 3
         desc_substr = "Get the owner from repository with ID 6 and make sure it exists."
@@ -173,7 +178,12 @@ class TestMethodSearch(BaseNL2Test):
         pretty_print("Get pet id", f"FOUND: {search_results}\nACTUAL: Pet.getId")
 
 
-class TestProjectSearch(BaseNL2Test):
+class TestProjectSearch:
+    @pytest.fixture(autouse=True)
+    def _inject(self, nl2test_context):
+        self.analysis = nl2test_context.analysis
+        self.config = nl2test_context.config
+
     def test_proj_vector_store_single_search(self):
         proj_searcher: ProjectSearcher = ProjectIndexer(self.analysis).build_index()
         class_searcher: ClassSearcher = ClassIndexer(self.analysis).build_index()

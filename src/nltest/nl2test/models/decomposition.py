@@ -40,7 +40,7 @@ class Scenario(BaseModel):
 
 
 class CandidateMethod(BaseModel):
-    implementing_class_name: str  # The class that directly implements the method
+    declaring_class_name: str  # The class that directly implements the method
     containing_class_name: (
         str  # The class that inherits/contains the method (class under analysis)
     )
@@ -53,13 +53,13 @@ def _is_valid_candidate(candidate: CandidateMethod | None) -> bool:
         return False
     return any(
         getattr(candidate, attr, "").strip()
-        for attr in ("implementing_class_name", "containing_class_name", "method_signature")
+        for attr in ("declaring_class_name", "containing_class_name", "method_signature")
     )
 
 
 def _candidate_key(candidate: CandidateMethod) -> Tuple[str, str, str, str]:
     return (
-        (candidate.implementing_class_name or "").strip(),
+        (candidate.declaring_class_name or "").strip(),
         (candidate.containing_class_name or "").strip(),
         (candidate.method_signature or "").strip(),
         (candidate.return_type or "").strip(),
@@ -68,9 +68,9 @@ def _candidate_key(candidate: CandidateMethod) -> Tuple[str, str, str, str]:
 
 def _normalize_candidates(
     candidates: List[CandidateMethod],
-    best_candidate: CandidateMethod,
+    best_candidate: CandidateMethod | None = None,
     limit: int = 3,
-) -> Tuple[List[CandidateMethod], CandidateMethod]:
+) -> Tuple[List[CandidateMethod], CandidateMethod | None]:
     if limit <= 0:
         return [], best_candidate
 
@@ -80,11 +80,12 @@ def _normalize_candidates(
     def _add(candidate: CandidateMethod | None) -> None:
         if not _is_valid_candidate(candidate):
             return
-        key = _candidate_key(candidate)  # type: ignore[arg-type]
+        assert candidate is not None
+        key = _candidate_key(candidate)
         if key in seen:
             return
         seen.add(key)
-        ordered.append(candidate)  # type: ignore[arg-type]
+        ordered.append(candidate)
 
     _add(best_candidate)
     for c in candidates:
@@ -103,20 +104,15 @@ class ArgBinding(BaseModel):
 
 class LocalizedStep(Step):
     candidate_methods: List[CandidateMethod]
-    best_candidate: CandidateMethod
     arg_bindings: List[ArgBinding]
     comments: str
     external: bool
 
     def enforce_candidate_limit(self, limit: int = 3) -> None:
-        truncated, new_best = _normalize_candidates(
-            self.candidate_methods, self.best_candidate, limit
+        truncated, _ = _normalize_candidates(
+            self.candidate_methods, limit=limit
         )
         self.candidate_methods = truncated
-        if truncated:
-            self.best_candidate = truncated[0]
-        else:
-            self.best_candidate = new_best
 
 
 class LocalizedGherkinStep(BaseModel):
@@ -141,19 +137,12 @@ class LocalizedScenario(Scenario):
 
         def _to_localized_step(s: Step) -> LocalizedStep:
             # Initialize required fields with empty defaults
-            empty_candidate = CandidateMethod(
-                implementing_class_name="",
-                containing_class_name="",
-                method_signature="",
-                return_type="",
-            )
             return LocalizedStep(
                 id=s.id,
                 task=s.task,
                 uses=s.uses,
                 produces=s.produces,
                 candidate_methods=[],
-                best_candidate=empty_candidate,
                 arg_bindings=[],
                 comments="",
                 external=False,
@@ -216,7 +205,7 @@ class AtomicBlock(GrammaticalBlock):
     candidate_methods: List[CandidateMethod]
     best_candidate: CandidateMethod = Field(
         default_factory=lambda: CandidateMethod(
-            implementing_class_name="",
+            declaring_class_name="",
             containing_class_name="",
             method_signature="",
             return_type="",
@@ -231,7 +220,7 @@ class AtomicBlock(GrammaticalBlock):
         self.candidate_methods = truncated
         if truncated:
             self.best_candidate = truncated[0]
-        else:
+        elif new_best is not None:
             self.best_candidate = new_best
 
     @classmethod
@@ -248,7 +237,7 @@ class AtomicBlock(GrammaticalBlock):
             best_candidate
             if best_candidate is not None
             else CandidateMethod(
-                implementing_class_name="",
+                declaring_class_name="",
                 containing_class_name="",
                 method_signature="",
                 return_type="",

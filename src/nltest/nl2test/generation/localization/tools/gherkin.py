@@ -1,3 +1,4 @@
+import textwrap
 from typing import Tuple
 from cldk.analysis.java import JavaAnalysis
 from nltest.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
@@ -46,7 +47,7 @@ class GherkinLocalizationTools(BaseLocalizationTools):
         return StructuredTool.from_function(
             func=_finalize,
             name="finalize",
-            description=FINALIZE_LOCALIZED_SCENARIO_DESC,
+            description=textwrap.dedent(FINALIZE_LOCALIZED_SCENARIO_DESC).strip(),
             args_schema=FinalizeScenarioArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

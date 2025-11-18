@@ -5,7 +5,6 @@ from typing import Annotated, Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
 class AbstractionLevel(Enum):
     HIGH = "high"
     MEDIUM = "medium"

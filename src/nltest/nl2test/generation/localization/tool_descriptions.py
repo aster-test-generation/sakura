@@ -1,4 +1,4 @@
-QUERY_METHOD_DESC = """
+QUERY_METHOD_DESC_OLD = """
 Semantic search over application methods (vector index).
 Args:
   query: Natural language or code-like phrase describing the desired behavior or the likely method name.
@@ -8,11 +8,16 @@ Use when:
 Limitations:
   Application code only; excludes inherited methods from external libraries.
 Returns:
-  List of dicts with method_signature, implementing_class_name (class that directly implements the method), and containing_class_name (class that inherits/contains the method).
+  List of dicts with method_signature, declaring_class_name (class that directly implements the method), and containing_class_name (class that inherits/contains the method).
   On failure, a structured error dict is returned.
 """
 
-REACHABLE_METHODS_DESC = """
+QUERY_METHOD_DESC = """
+Semantic search over application methods (vector index). 
+Returns the method signature, declaring class name (class that directly implement the method), and containing class name (the relevant class that inherits/contains the method) for each method matching the query.
+"""
+
+REACHABLE_METHODS_DESC_OLD = """
 List methods visible from a class with metadata, honoring Java access rules and going through the inheritance chain.
 Args:
   qualified_class_name: Fully qualified class to inspect.
@@ -22,11 +27,16 @@ Use when:
 Limitations:
   Includes inherited methods from application classes only; external library parents are excluded.
 Returns:
-  Dict mapping implementing_class_name (class that directly implements the method) -> list of method metadata dicts (e.g., signature, modifiers, and other details) that are reachable from the qualified_class_name used in the query.
+  Dict mapping declaring_class_name (class that directly implements the method) -> list of method metadata dicts (e.g., signature, modifiers, and other details) that are reachable from the qualified_class_name used in the query.
   On failure, a structured error dict is returned.
 """
 
-CLASS_DETAILS_DESC = """
+REACHABLE_METHODS_DESC = """
+List all application methods visible from a class, honoring Java access rules and going through the inheritance chain. 
+Returns the method signature, declaring class name, modifiers, and visibility details for each method.
+"""
+
+CLASS_DETAILS_DESC_OLD = """
 Fetch structural info for a class (no inheritance traversal).
 Args:
   qualified_class_name: Fully qualified class.
@@ -39,30 +49,11 @@ Returns:
   On failure, a structured error dict is returned.
 """
 
-
-FINALIZE_ATOMIC_BLOCKS_DESC = """
-End localization by returning the final AtomicBlockList and brief comments.
-Args:
-  current_blocks: The finalized AtomicBlockList.
-  comments: Short notes on selection rationale and any non-localized tasks retained.
-Use when:
-  The blocks are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
-Returns:
-  Tuple (AtomicBlockList, comments).
+CLASS_DETAILS_DESC = """
+Fetch class-level metadata, including its modifiers, superclass, implemented interfaces, and annotations.
 """
 
-FINALIZE_LOCALIZED_SCENARIO_DESC = """
-End localization by returning the final LocalizedScenario and brief comments.
-Args:
-  scenario: The finalized LocalizedScenario (setup + steps + teardown).
-  comments: Short notes on choices, alternates, and any non-localized tasks retained.
-Use when:
-  Steps are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
-Returns:
-  Tuple (LocalizedScenario, comments).
-"""
-
-INHERITED_LIBRARY_CLASSES_DESC = """
+INHERITED_LIBRARY_CLASSES_DESC_OLD = """
 Identify external superclasses/interfaces inherited by a class that are not part of the application codebase.
 Args:
   qualified_class_name: Fully qualified class to inspect.
@@ -73,4 +64,38 @@ Limitations:
 Returns:
   List of fully qualified class/interface names for inherited library types.
   On failure, a structured error dict is returned.
+"""
+
+INHERITED_LIBRARY_CLASSES_DESC = """
+Identify all inherited types for a class by traversing its inheritance chain in order.
+"""
+
+FINALIZE_ATOMIC_BLOCKS_DESC_OLD = """
+End localization by returning the final AtomicBlockList and brief comments.
+Args:
+  current_blocks: The finalized AtomicBlockList.
+  comments: Short notes on selection rationale and any non-localized tasks retained.
+Use when:
+  The blocks are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
+Returns:
+  Tuple (AtomicBlockList, comments).
+"""
+
+FINALIZE_ATOMIC_BLOCKS_DESC = """
+End localization by returning the final atomic block list with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly. 
+"""
+
+FINALIZE_LOCALIZED_SCENARIO_DESC_OLD = """
+End localization by returning the final LocalizedScenario and brief comments.
+Args:
+  scenario: The finalized LocalizedScenario (setup + steps + teardown).
+  comments: Short notes on choices, alternates, and any non-localized tasks retained.
+Use when:
+  Steps are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
+Returns:
+  Tuple (LocalizedScenario, comments).
+"""
+
+FINALIZE_LOCALIZED_SCENARIO_DESC = """
+End localization by returning the final localized scenario with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly.
 """

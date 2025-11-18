@@ -1,18 +1,15 @@
-from pathlib import Path
+from langchain_core.tools import StructuredTool
 
 from nltest.nl2test.generation.composition.orchestrators import (
     GherkinCompositionOrchestrator,
 )
 from nltest.nl2test.models import NL2TestInput, LocalizedScenario, AbstractionLevel
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
-
-from nltest.utils.pretty.prints import pretty_print
-from tests._base_nl2test import BaseNL2Test
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from langchain_core.tools import StructuredTool
+from nltest.utils.pretty.prints import pretty_print
 
 
-class TestCompositionAgent(BaseNL2Test):
+class TestCompositionAgent:
     def test_composition_system_prompt_formatting(self):
         """Verify system prompt formatting for composition Gherkin with placeholders."""
         prompt = LoadPrompt.load_prompt(
@@ -23,23 +20,23 @@ class TestCompositionAgent(BaseNL2Test):
         iters_true = 4
         rendered_true = prompt.format(parallelizable=True, max_iters=iters_true)
         pretty_print("Parallelizable prompt", rendered_true)
-        self.assertIn(
-            f"You must complete within at most {iters_true} tool invocation(s).",
-            rendered_true,
+        expected_true = (
+            f"You must complete within at most {iters_true} tool invocation(s)."
         )
-        self.assertIn("You may parallelize metadata lookups", rendered_true)
-        self.assertNotIn("Use sequential calls.", rendered_true)
+        assert expected_true in rendered_true
+        assert "You may parallelize metadata lookups" in rendered_true
+        assert "Use sequential calls." not in rendered_true
 
         # parallelizable False path
         iters_false = 6
         rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
-        pretty_print("Not parallelizable prompt", rendered_true)
-        self.assertIn(
-            f"You must complete within at most {iters_false} tool invocation(s).",
-            rendered_false,
+        pretty_print("Not parallelizable prompt", rendered_false)
+        expected_false = (
+            f"You must complete within at most {iters_false} tool invocation(s)."
         )
-        self.assertIn("Use sequential calls.", rendered_false)
-        self.assertNotIn("You may parallelize metadata lookups", rendered_false)
+        assert expected_false in rendered_false
+        assert "Use sequential calls." in rendered_false
+        assert "You may parallelize metadata lookups" not in rendered_false
 
         # duplicate_tools path — mirror orchestrator formatting
         # Create simple tools using LangChain's StructuredTool (a BaseTool subclass)
@@ -62,17 +59,12 @@ class TestCompositionAgent(BaseNL2Test):
         )
         pretty_print("With duplicate_tools", rendered_with_dups)
 
-        # When duplicate_tools is provided, the template uses the conditional branch
-        self.assertIn(
-            "You are only allowed to repeat the `view_test_code`, `compile_and_execute_tests` tools",
-            rendered_with_dups,
+        assert (
+            "You are only allowed to repeat the `view_test_code`, `compile_and_execute_tests` tools"
+            in rendered_with_dups
         )
-        # The strict "never repeat" bullet (else-branch) should not appear verbatim
-        self.assertNotIn(
-            "- Never repeat the same {tool, args} pair", rendered_with_dups
-        )
-        # And the default (no-duplicates) branch should not claim duplicates are allowed
-        self.assertNotIn("You are only allowed to repeat", rendered_true)
+        assert "- Never repeat the same {tool, args} pair" not in rendered_with_dups
+        assert "You are only allowed to repeat" not in rendered_true
 
     def test_composition_chat_prompt_formatting(self):
         """Verify chat prompt formatting for composition Gherkin with placeholders."""
@@ -90,21 +82,18 @@ class TestCompositionAgent(BaseNL2Test):
             localized_scenario=localized_scenario,
         )
 
-        # Assertions
-        self.assertIn(nl_description, rendered)
-        self.assertIn(instructions, rendered)
-        self.assertIn("CURRENT LOCALIZED SCENARIO", rendered)
-        self.assertIn("Compose a compilable and runnable Java test", rendered)
+        assert nl_description in rendered
+        assert instructions in rendered
+        assert "CURRENT LOCALIZED SCENARIO" in rendered
+        assert "Compose a compilable and runnable Java test" in rendered
 
-    def test_composition_agent_gherkin(self):
-        method_searcher = MethodIndexer(self.analysis).build_index()
-        class_searcher = ClassIndexer(self.analysis).build_index()
+    def test_composition_agent_gherkin(self, nl2test_context):
+        analysis = nl2test_context.analysis
+        method_searcher = MethodIndexer(analysis).build_index()
+        class_searcher = ClassIndexer(analysis).build_index()
 
-        # Base project dir = project_root from _base_nl2test (base_project_dir/project_name)
-        # Retrieve base_project_dir from config and combine with project_name
-        project_name = "spring-petclinic"
-        base_project_dir = Path(self.config.get("project", "base_project_dir"))
-        project_root = base_project_dir / project_name
+        project_name = nl2test_context.project_name
+        project_root = nl2test_context.resources_dir / project_name
 
         nl2_input = NL2TestInput(
             id=-1,
@@ -125,7 +114,7 @@ class TestCompositionAgent(BaseNL2Test):
                 "Mockito are used for structuring the test and mocking dependencies, while Spring's `MockMvc` and its "
                 "associated matchers are used for simulating and asserting on the web layer."
             ),
-            project_name="spring-petclinic",
+            project_name=project_name,
             qualified_class_name="org.springframework.samples.petclinic.owner.PetControllerTests",
             method_signature="testProcessUpdateFormSuccess()",
             abstraction_level=AbstractionLevel.LOW,
@@ -133,7 +122,7 @@ class TestCompositionAgent(BaseNL2Test):
         )
 
         composition_agent = GherkinCompositionOrchestrator(
-            analysis=self.analysis,
+            analysis=analysis,
             method_searcher=method_searcher,
             class_searcher=class_searcher,
             nl2_input=nl2_input,
@@ -149,12 +138,6 @@ class TestCompositionAgent(BaseNL2Test):
                     "uses": "",
                     "produces": "mock_mvc_context",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "@WebMvcTest is an annotation, not a method. It's used at the class level to configure the Spring application context for testing a Spring MVC controller.",
                     "external": False,
@@ -165,12 +148,6 @@ class TestCompositionAgent(BaseNL2Test):
                     "uses": "mock_mvc_context",
                     "produces": "",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "@DisabledInNativeImage and @DisabledInAotMode are annotations used at the class level to disable tests in specific Spring Boot modes. They are not methods.",
                     "external": False,
@@ -181,12 +158,6 @@ class TestCompositionAgent(BaseNL2Test):
                     "uses": "mock_mvc_context",
                     "produces": "mock_owner_repository",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "@MockitoBean is an annotation used to add Mockito mocks to the Spring application context. It's not a method call but a declaration.",
                     "external": False,
@@ -197,12 +168,6 @@ class TestCompositionAgent(BaseNL2Test):
                     "uses": "mock_mvc_context",
                     "produces": "mock_mvc",
                     "candidate_methods": [],
-                    "best_candidate": {
-                        "implementing_class_name": "",
-                        "containing_class_name": "",
-                        "method_signature": "",
-                        "return_type": "",
-                    },
                     "arg_bindings": [],
                     "comments": "@Autowired is an annotation used for dependency injection. MockMvc is typically injected into the test class, not called as a method.",
                     "external": False,
@@ -220,12 +185,6 @@ class TestCompositionAgent(BaseNL2Test):
                             "return_type": "java.util.List<org.springframework.samples.petclinic.owner.PetType>",
                         }
                     ],
-                    "best_candidate": {
-                        "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "method_signature": "findPetTypes()",
-                        "return_type": "java.util.List<org.springframework.samples.petclinic.owner.PetType>",
-                    },
                     "arg_bindings": [],
                     "comments": "This step involves Mockito's `when().thenReturn()` syntax to stub the `findPetTypes` method.",
                     "external": False,
@@ -243,12 +202,6 @@ class TestCompositionAgent(BaseNL2Test):
                             "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
                         }
                     ],
-                    "best_candidate": {
-                        "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
-                        "method_signature": "findById(java.lang.Integer)",
-                        "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
-                    },
                     "arg_bindings": [{"arg_name": "id", "arg_value": "TEST_OWNER_ID"}],
                     "comments": "This step involves Mockito's `when().thenReturn()` syntax to stub the `findById` method.",
                     "external": False,
@@ -271,12 +224,6 @@ class TestCompositionAgent(BaseNL2Test):
                                     "return_type": "java.lang.String",
                                 }
                             ],
-                            "best_candidate": {
-                                "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
-                                "return_type": "java.lang.String",
-                            },
                             "arg_bindings": [
                                 {"arg_name": "owner", "arg_value": "owner_with_pets"},
                                 {"arg_name": "pet", "arg_value": "pet_details"},
@@ -300,12 +247,6 @@ class TestCompositionAgent(BaseNL2Test):
                             "uses": "http_response",
                             "produces": "",
                             "candidate_methods": [],
-                            "best_candidate": {
-                                "implementing_class_name": "",
-                                "containing_class_name": "",
-                                "method_signature": "",
-                                "return_type": "",
-                            },
                             "arg_bindings": [],
                             "comments": "This step will use MockMvcResultMatchers.status().is3xxRedirection(). This is a static method from Spring Test.",
                             "external": False,
@@ -316,12 +257,6 @@ class TestCompositionAgent(BaseNL2Test):
                             "uses": "http_response",
                             "produces": "",
                             "candidate_methods": [],
-                            "best_candidate": {
-                                "implementing_class_name": "",
-                                "containing_class_name": "",
-                                "method_signature": "",
-                                "return_type": "",
-                            },
                             "arg_bindings": [],
                             "comments": "This step will use MockMvcResultMatchers.view().name(). This is a static method from Spring Test.",
                             "external": False,
@@ -339,16 +274,16 @@ class TestCompositionAgent(BaseNL2Test):
             composition_agent.assign_task(localized_scenario, instructions=instructions)
         )
 
-        self.assertIsInstance(updated_scenario, LocalizedScenario)
-        self.assertIsInstance(final_comments, str)
+        assert isinstance(updated_scenario, LocalizedScenario)
+        assert isinstance(final_comments, str)
 
         # Pretty print selected package and class name before assertions
         pretty_print("Selected package", package)
         pretty_print("Selected test class", class_name)
 
         # Ensure package and class name were selected
-        self.assertIsNotNone(package)
-        self.assertIsNotNone(class_name)
+        assert package is not None
+        assert class_name is not None
 
         pretty_print("Updated scenario", updated_scenario)
         pretty_print("Final comments", final_comments)

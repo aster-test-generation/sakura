@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 from typing import Any, Dict, List, Union
 
 from cldk.models.java.models import JMethodDetail, JCallable
@@ -90,7 +91,7 @@ class CommonJavaAnalysisTools:
         return StructuredTool.from_function(
             func=_extract_method_code,
             name="extract_method_code",
-            description=EXTRACT_CODE_DESC,
+            description=textwrap.dedent(EXTRACT_CODE_DESC).strip(),
             args_schema=ExtractMethodCodeArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -136,7 +137,7 @@ class CommonJavaAnalysisTools:
         return StructuredTool.from_function(
             func=_get_method_details,
             name="get_method_details",
-            description=METHOD_DETAILS_DESC,
+            description=textwrap.dedent(METHOD_DETAILS_DESC).strip(),
             args_schema=QueryMethodArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -191,7 +192,7 @@ class CommonJavaAnalysisTools:
         return StructuredTool.from_function(
             func=_get_call_site_details,
             name="get_call_site_details",
-            description=CALL_SITE_DETAILS_DESC,
+            description=textwrap.dedent(CALL_SITE_DETAILS_DESC).strip(),
             args_schema=QueryMethodArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

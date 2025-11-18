@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 from typing import Annotated, List, Literal, Dict, Optional, Union, Tuple
 
 from pydantic import BaseModel, Field
@@ -21,10 +22,14 @@ class AgentState(BaseModel):
     iterations: Annotated[int, "The current iteration number of the agent"] = 0
 
     # Tool logging
-    tool_calls: Annotated[
-        Dict[str, Dict[str, int]],
-        "Mapping: tool name -> encoded argument -> count of calls",
-    ] = Field(default_factory=dict)
+    curr_tool_calls: Dict[str, Dict[str, int]] = Field(
+        default_factory=dict,
+        description="Mapping: tool name -> encoded argument -> count of calls for current invocation",
+    )
+    total_tool_calls: Dict[str, Dict[str, int]] = Field(
+        default_factory=dict,
+        description="Mapping: tool name -> encoded argument -> cumulative count across invocations",
+    )
     curr_tool_trajectory: List[str] = Field(default_factory=list)
     tool_trajectories: List[List[str]] = Field(default_factory=list)
 
@@ -69,32 +74,23 @@ class AgentState(BaseModel):
         self.messages = (
             []
         )  # TODO: Maybe have some functionality for summarizing this instead of clearing
-        self.tool_calls = {}
+        self.curr_tool_calls = {}
         self.curr_tool_trajectory.clear()
-        self.tool_trajectories.clear()
 
 
 class QueryMethodArgs(BaseModel):
     qualified_class_name: Annotated[
-        str,
-        Field(
-            description="The qualified class name of the class implementing the method."
-        ),
-    ]
-    method_signature: Annotated[
-        str, Field(description="The method signature of the method to query.")
-    ]
+        str, Field(description="The qualified class name of the class declaring the method.")]
+    method_signature: Annotated[str, Field(description="The method signature of the method to query.")]
 
 
 class QueryClassArgs(BaseModel):
-    qualified_class_name: Annotated[
-        str, Field(description="The qualified class name of the class to query.")
-    ]
+    qualified_class_name: Annotated[str, Field(description="The qualified class name of the class to query.")]
 
 
 class QueryVectorDataArgs(BaseModel):
     query: Annotated[str, Field(description="The query string to search for.")]
-    i: Annotated[int, Field(gt=0, description="1-based start rank, must be > 0.")]
+    i: Annotated[int, Field(ge=1, description="1-based start rank.")]
     j: Annotated[
         int,
         Field(ge=1, description="1-based end rank (inclusive), must be >= i."),
@@ -115,35 +111,47 @@ class ReachableMethodsArgs(BaseModel):
 
 
 class InstructionArgs(BaseModel):
-    instructions: Annotated[
-        str, Field(description="The instructions for the modification.")
-    ]
-    current_blocks: Annotated[
-        AtomicBlockList, Field(description="The current state of the AtomicBlocks.")
-    ]
+    instructions: Annotated[str, Field(description="The instructions for the modification.")]
+    current_blocks: Annotated[AtomicBlockList, Field(description="The current state of the AtomicBlocks.")]
     # NOTE: We don't need to pass in the atomic blocks here for modify_atomic_blocks because we're using the state.atomic_blocks
+
+
+_TEST_CODE_DESC = """
+The full Java test file contents as raw Java source code. 
+Requirements:
+- It must be plain Java only. Do NOT include Markdown fences, JSON, XML, comments-as-markup, or any other wrapper/annotations.
+- Newlines must be literal (no escaped newline sequences). The string must be valid JSON.
+- The code must contain exactly one test method annotated with a test annotation.
+- Package declarations must mirror the SUT's package to access package-private members.
+- Use explicit imports (no wildcards).
+- Helper, setup, or teardown methods are allowed, but must not be annotated as additional tests.
+"""
+
+_TEST_QUALIFIED_CLASS_DESC = """
+The fully qualified name (package + class) of the generated test class.
+"""
+
+_TEST_METHOD_SIG_DESC = """
+The exact Java method signature (e.g., "testFindById()" or "findById(java.lang.Integer)") of the single test method annotated as a test in the generated code.
+"""
 
 
 class GenerateTestCodeArgs(BaseModel):
     """Arguments for providing raw test code directly to the generate tool."""
-
-    test_code: Annotated[str, Field(description="")]
+    test_code: Annotated[
+        str, Field(description=textwrap.dedent(_TEST_CODE_DESC).strip())
+    ]
     qualified_class_name: Annotated[
-        str, Field(description="The fully qualified class name for the test class.")
+        str,
+        Field(description=textwrap.dedent(_TEST_QUALIFIED_CLASS_DESC).strip()),
     ]
     method_signature: Annotated[
-        str,
-        Field(
-            description=(
-                "The single test method signature annotated as a test within the generated code."
-            )
-        ),
+        str, Field(description=textwrap.dedent(_TEST_METHOD_SIG_DESC).strip())
     ]
 
 
 class FinalizeCommentsArgs(BaseModel):
     """Arguments for finalizing the composition process with comments only."""
-
     comments: Annotated[
         str,
         Field(
@@ -166,43 +174,48 @@ class FinalizeAtomicBlockArgs(BaseModel):
 
 
 class ModifyAtomicBlockNotesArgs(BaseModel):
-    order: Annotated[int, Field(description="The order of the atomic block to modify.")]
+    order: Annotated[int, Field(description="The order number of the atomic block to modify.")]
     new_notes: Annotated[str, Field(description="The new notes for the atomic block.")]
+
+
+_FINALIZE_LOCALIZED_SCENARIO_DESC = """
+The completed localized scenario, with each step either mapped to a relevant method or justified as non-localizable (e.g., variable initialization). 
+List candidate methods in best-first order from left to right. A maximum of three candidates per step is allowed.
+For every selected method, provide argument bindings by inspecting its parameters and supplying plausible values, using ${...} to reference prior returns.
+"""
 
 
 class FinalizeScenarioArgs(BaseModel):
     scenario: Annotated[
         LocalizedScenario,
-        Field(description="The current LocalizedScenario to finalize."),
+        Field(description=textwrap.dedent(_FINALIZE_LOCALIZED_SCENARIO_DESC).strip()),
     ]
     comments: Annotated[
         str,
         Field(
-            description="Comments about any problems with the procedure or concerns."
+            description="Concise 1–2 sentence comments describing any issues with the step or design considerations."
         ),
     ]
 
 
 class ModifyScenarioArgs(BaseModel):
     """Arguments for modifying a localized scenario in composition tools."""
-
     scenario: Annotated[LocalizedScenario, Field(description="")]
 
 
 class ModifyAtomicBlocksArgs(BaseModel):
     """Arguments for modifying atomic blocks in composition tools."""
-
     atomic_blocks: Annotated[AtomicBlockList, Field(description="")]
 
 
 class ModifyScenarioCommentArgs(BaseModel):
-    id: Annotated[int, Field(description="The id of the localized step to update.")]
+    id: Annotated[int, Field(ge=0, description="The id of the localized step to update.")]
     comment: Annotated[str, Field(description="The new comment for the step.")]
 
 
 class ViewTestCodeArgs(BaseModel):
-    start_line: Annotated[int, Field(description="1-based start line to slice the returned source.")]
-    end_line: Annotated[int, Field(description="1-based end line to slice the returned source.")]
+    start_line: Annotated[int, Field(ge=1, description="1-based start line to slice the returned source.")]
+    end_line: Annotated[int, Field(ge=1, description="1-based end line to slice the returned source.")]
 
 
 class ModifyAtomicBlockNoteArgs(BaseModel):
@@ -219,26 +232,45 @@ class ExtractMethodCodeArgs(BaseModel):
 
 
 class NoArgs(BaseModel):
-    """Empty args schema for tools that take no arguments.
-
-    Intentionally contains no fields. Tools must not rely on defaults.
-    """
+    """Empty args schema for tools that take no arguments."""
     pass
 
 
-# Note: blocks are provided via agent states
-class CallAgentGherkinArgs(BaseModel):
-    """Arguments for delegating from Supervisor to agents in Gherkin mode."""
+_CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC = """
+Actionable instructions for the localization agent, with concrete and explicit guidance on what to adjust and inspect for the scenario. 
+If changes apply only to specific steps in the scenario, list their IDs and state that no other steps should be modified. 
+You may be higher-level only when requesting localization for all steps.
+"""
 
+
+# Note: blocks are provided via agent states
+class CallLocalizationAgentGherkinArgs(BaseModel):
+    """Arguments for delegating from Supervisor to agents in Gherkin mode."""
     instructions: Annotated[
         str,
-        Field(description="Actionable instructions for the delegated agent."),
+        Field(
+            description=textwrap.dedent(
+                _CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC
+            ).strip()
+        ),
+    ]
+
+
+_CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC = """
+Actionable instructions for the composition agent, with concrete and explicit guidance on what to be aware of for test code generation. 
+"""
+
+
+class CallCompositionAgentGherkinArgs(BaseModel):
+    """Arguments for delegating from Supervisor to agents in Gherkin mode."""
+    instructions: Annotated[
+        str,
+        Field(description=textwrap.dedent(_CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC).strip()),
     ]
 
 
 class CallAgentGrammaticalArgs(BaseModel):
     """Arguments for delegating from Supervisor to agents in Grammatical mode."""
-
     instructions: Annotated[
         str,
         Field(description="Actionable instructions for the delegated agent."),

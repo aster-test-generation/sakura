@@ -35,3 +35,19 @@ def test2nl_entry_to_nl2test_input(entry: Test2NLEntry) -> NL2TestInput:
 
 
 test2nl_entry_to_nl2test_input.__test__ = False
+
+
+def as_int(val: Optional[str]) -> int:
+    """Convert stringified integers that may be missing or malformed."""
+    try:
+        return int(val) if val is not None else 0
+    except (TypeError, ValueError):
+        return 0
+
+
+def as_float(val: Optional[str]) -> float:
+    """Convert stringified floats that may be missing or malformed."""
+    try:
+        return float(val) if val is not None else 0.0
+    except (TypeError, ValueError):
+        return 0.0

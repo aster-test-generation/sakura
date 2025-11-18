@@ -1,5 +1,7 @@
+import os
 import re
 from collections import deque
+from pathlib import Path
 from typing import List, Set, Tuple, Dict, Literal, Optional
 
 from cldk.analysis.java import JavaAnalysis
@@ -487,6 +489,18 @@ class CommonAnalysis:
         return qualified_class_name[:i] if i != -1 else ""
 
     @staticmethod
+    def get_simple_class_name(qualified_class_name: str) -> str:
+        i = qualified_class_name.rfind(".")
+        return qualified_class_name[i + 1:] if i != -1 else qualified_class_name
+
+    @staticmethod
+    def get_simple_method_name(method_signature: str) -> str:
+        paren_index = method_signature.find("(")
+        name_part = method_signature[:paren_index] if paren_index != -1 else method_signature
+        dot_index = name_part.rfind(".")
+        return name_part[dot_index + 1:] if dot_index != -1 else name_part
+
+    @staticmethod
     def process_callee_signature(callee_signature: str) -> str:
         """
         Processes callee signature
@@ -530,3 +544,21 @@ class CommonAnalysis:
         if constructor_prefix not in method_signature:
             return method_signature
         return method_signature.replace(constructor_prefix, "<init>(", 1)
+
+    @staticmethod
+    def normalize_path_in_project(filepath: str, project_root: Optional[str]) -> str:
+        """
+        Normalize absolute compiler paths so that reports focus on project-relative locations.
+        """
+        if not filepath:
+            return filepath
+        normalized = filepath.replace("\\", "/")
+        if project_root:
+            root = str(Path(project_root).expanduser().resolve()).replace("\\", "/")
+            root_with_sep = f"{root}/"
+            if normalized.lower().startswith(root_with_sep.lower()):
+                return normalized[len(root_with_sep):]
+        src_idx = normalized.find("/src/")
+        if src_idx != -1:
+            return normalized[src_idx + 1:]
+        return os.path.basename(normalized)

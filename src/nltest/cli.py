@@ -690,6 +690,13 @@ def run_nl2test(
                 show_default=False,
             ),
         ] = None,
+        exclude_test_dirs: Annotated[
+            bool,
+            typer.Option(
+                help="Skip files under Maven test directories when preparing indexes.",
+                show_default=True,
+            ),
+        ] = False,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -863,6 +870,7 @@ def run_nl2test(
                 use_stored_index=use_stored_index,
                 debug=bool(debug),
                 log_file_name=actor_log_file_name,
+                exclude_test_dirs=exclude_test_dirs,
             )
 
             payloads = [

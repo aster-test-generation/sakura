@@ -32,6 +32,7 @@ from nltest.nl2test.models import (
     NL2TestCoverageEval,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
 from nltest.utils.models import AgentToolLog, ToolLog, NL2TestEval
 from nltest.nl2test.preprocessing.indexers import ClassIndexer
 from nltest.nl2test.preprocessing.indexers import MethodIndexer
@@ -41,7 +42,6 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.utils.llm import LLMClient, ClientType, UsageTracker
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.execution import JavaCompilation
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
@@ -89,10 +89,18 @@ class Pipeline:
             application_classes=_application_classes,
         )
 
-    def run_preprocessing(self) -> Tuple[MethodSearcher, ClassSearcher]:
-        # Build search indices
-        self.method_searcher = self.method_indexer.build_index()
-        self.class_searcher = self.class_indexer.build_index()
+    def run_preprocessing(
+            self,
+            *,
+            exclude_test_dirs: bool = False,
+    ) -> Tuple[MethodSearcher, ClassSearcher]:
+        # Build search indices with optional filtering of test sources
+        self.method_searcher = self.method_indexer.build_index(
+            exclude_test_dirs=exclude_test_dirs
+        )
+        self.class_searcher = self.class_indexer.build_index(
+            exclude_test_dirs=exclude_test_dirs
+        )
 
         return self.method_searcher, self.class_searcher
 
@@ -220,7 +228,7 @@ class Pipeline:
 
         tool_counts = {
             tool_name: sum(arg_counts.values())
-            for tool_name, arg_counts in state.tool_calls.items()
+            for tool_name, arg_counts in state.total_tool_calls.items()
         }
         tool_trajectories = [trajectory.copy() for trajectory in state.tool_trajectories]
         return AgentToolLog(
@@ -245,8 +253,6 @@ class Pipeline:
 
         try:
             return self.localization_grader.grade(localization_target, nl2_input)
-        except (NotImplementedError, TypeError):
-            return localization_eval
         except Exception:
             return localization_eval
 
@@ -390,7 +396,8 @@ class Pipeline:
             self.localization_grader.set_analysis(new_analysis)
 
             # Gather erroneous files and pass to grader
-            erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
+            compilation_errors: List[CompilationError] = JavaMavenCompilation(self.project_root).get_compilation_errors()
+            erroneous_files = [compilation_error.file for compilation_error in compilation_errors]
             self.test_grader.set_project_erroneous_files(erroneous_files)
 
             # Build NL2TestMetadata for the predicted class; code filled after grading
@@ -404,7 +411,7 @@ class Pipeline:
                 nl2_input, nl2_metadata
             )
 
-            localization_eval = self._localization_eval_from_state(
+            localization_eval: LocalizationEval = self._localization_eval_from_state(
                 supervisor_state, nl2_input
             )
 

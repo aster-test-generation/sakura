@@ -22,7 +22,7 @@ class ProjectSearcher(BaseSearcher[ProjectFAISSVectorStore]):
         if snippet_type == SnippetType.METHOD:
             return {
                 "type": "method",
-                "implementing_class_name": doc.metadata["implementing_class_name"],
+                "declaring_class_name": doc.metadata["declaring_class_name"],
                 "containing_class_name": doc.metadata["containing_class_name"],
                 "method_signature": doc.metadata["method_signature"],
             }
@@ -30,7 +30,7 @@ class ProjectSearcher(BaseSearcher[ProjectFAISSVectorStore]):
         if snippet_type == SnippetType.CLASS:
             return {
                 "type": "class",
-                "implementing_class_name": doc.metadata["implementing_class_name"],
+                "declaring_class_name": doc.metadata["declaring_class_name"],
             }
 
         raise Exception("Unknown snippet type: " + snippet_type.value)

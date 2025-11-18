@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import textwrap
 from typing import Union
 from langchain_core.tools import StructuredTool
 
@@ -29,7 +30,9 @@ class GrammaticalSupervisorTools(BaseSupervisorTools):
         return StructuredTool.from_function(
             func=_call_localization_agent,
             name="call_localization_agent",
-            description=CALL_LOCALIZATION_AGENT_GRAMMATICAL_DESC,
+            description=textwrap.dedent(
+                CALL_LOCALIZATION_AGENT_GRAMMATICAL_DESC
+            ).strip(),
             args_schema=CallAgentGrammaticalArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
@@ -42,7 +45,9 @@ class GrammaticalSupervisorTools(BaseSupervisorTools):
         return StructuredTool.from_function(
             func=_call_composition_agent,
             name="call_composition_agent",
-            description=CALL_COMPOSITION_AGENT_GRAMMATICAL_DESC,
+            description=textwrap.dedent(
+                CALL_COMPOSITION_AGENT_GRAMMATICAL_DESC
+            ).strip(),
             args_schema=CallAgentGrammaticalArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )

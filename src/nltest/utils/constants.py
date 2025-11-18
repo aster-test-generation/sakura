@@ -24,6 +24,8 @@ DEFAULT_ANALYSIS_DIR = "resources/output"
 HAMSTER_MODEL_DIR = "resources/hamster_models"
 NL2TEST_DIR = "resources/nl2test"
 
+TEST_DIR = "src/test/java"
+
 # directories for storing prompts and telemetry io
 DEBUG_DIR = "nl2test_log"
 AZURE_API_VERSION = "2024-12-01-preview"

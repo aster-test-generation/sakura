@@ -271,9 +271,13 @@ class ReActAgent:
 
                 # Duplicate detection and counting per tool/args
                 encoding = self._encode_tool_call(name, args)
-                tool_history = state.tool_calls.setdefault(name, {})
-                prev_count = tool_history.get(encoding, 0)
-                tool_history[encoding] = prev_count + 1
+                curr_history = state.curr_tool_calls.setdefault(name, {})
+                prev_count = curr_history.get(encoding, 0)
+                curr_history[encoding] = prev_count + 1
+
+                total_history = state.total_tool_calls.setdefault(name, {})
+                total_prev_count = total_history.get(encoding, 0)
+                total_history[encoding] = total_prev_count + 1
                 state.curr_tool_trajectory.append(name)
 
                 if prev_count > 0 and name not in self._allow_duplicate_tool_names:

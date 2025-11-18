@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from functools import singledispatchmethod
 from pathlib import Path
-from typing import Iterable, List, Sequence, Set, Tuple
+from typing import Iterable, List, Sequence, Set, Tuple, Dict
 
 from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.focal_class_method.focal_class_method import (
     FocalClassMethod,
+)
+from hamster.code_analysis.test_statistics import (
+    SetupAnalysisInfo,
 )
 
 from nltest.nl2test.models import AtomicBlockList, LocalizedScenario, NL2TestInput
@@ -102,10 +105,9 @@ class LocalizationGrader:
             testing_frameworks = self.common_analysis.get_testing_frameworks_for_class(
                 nl2_input.qualified_class_name
             )
-            setup_methods = self.common_analysis.get_setup_methods(
+            setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(self.analysis).get_setup_methods(
                 nl2_input.qualified_class_name
             )
-            setup_signatures = [method.signature for method in setup_methods]
 
             focal_finder = FocalClassMethod(
                 self.analysis, self.application_classes
@@ -113,7 +115,7 @@ class LocalizationGrader:
             focal_classes, _, _, _ = focal_finder.identify_focal_class_and_ui_api_test(
                 nl2_input.qualified_class_name,
                 nl2_input.method_signature,
-                setup_signatures,
+                setup_methods,
             )
 
             focal_methods: Set[FocalMethod] = set()
@@ -148,7 +150,7 @@ class LocalizationGrader:
         results: Set[FocalMethod] = set()
         for candidate in step.candidate_methods or []:
             self._maybe_add_candidate(results, candidate)
-        self._maybe_add_candidate(results, step.best_candidate)
+        # self._maybe_add_candidate(results, step.best_candidate)
         return results
 
     def _maybe_add_candidate(

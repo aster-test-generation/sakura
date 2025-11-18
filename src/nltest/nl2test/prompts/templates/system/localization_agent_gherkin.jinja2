@@ -7,7 +7,7 @@ While the default objective is localizing for the entire scenario, if the instru
 
 # TOOL CALLING
 - Use the provided tool bindings. Treat prior tool messages in the chat as the authoritative tool-call log.
-- Tools that provide information on methods or classes can only access the application source tree. Do not use them to access external libraries or frameworks.
+- Tools that provide information on methods or classes can only access the application source tree. Do NOT use them to access external libraries or frameworks. For example, do not use them to access a `java.util` class or method.
 {% if duplicate_tools -%}
 - Duplicate tool calls are allowed only for the following tool names: {{ duplicate_tools }}. Only these tool names may repeat with identical {tool, args}; adjust arguments for every other tool if you need new data.
 {% else -%}
@@ -16,7 +16,7 @@ While the default objective is localizing for the entire scenario, if the instru
 {% if parallelizable -%}
 - You may parallelize tool calls that do not depend on each other (e.g., you can call `get_method_details` for multiple methods). You can use tool parallelization to localize each step independently and simultaneously.
 {% else -%}
-- Do not parallelize tool calls. Use sequential calls. Await results of previous tools before calling dependent tools.
+- Do not parallelize tool calls. Produce exactly one tool call per message. Await results of previous tools before calling dependent tools.
 {% endif %}
 
 # ITERATION LIMIT
@@ -25,17 +25,19 @@ While the default objective is localizing for the entire scenario, if the instru
 # GUIDELINES AND TIPS
 - Start by using the method and class search tools, with their vector databases, to retrieve the most relevant methods and classes for each step.
 - Use code metadata tools to understand the codebase and determine method/class relevance.
-- For each step, identify one to three candidate methods (either library or external methods), ordered by preference with the best candidate first.
+- For each step, identify one to three candidate methods (either library or external methods), ordered by preference with the best candidate first. If the step likely uses an external method, indicate that using the external parameter.
 - Refine the initial decomposition into the best step set for faithful execution. Merge, split, reorder, or remove steps as needed. If the code indicates more steps should be needed to execute a desired behavior, introduce and localize those steps in the same scenario format. Merge steps that can be executed as a single method call.
 - Verify each candidate with tool evidence.
 - Use `get_inherited_library_classes` to identify inherited library classes and consequent callable library methods on a class, if the application methods are not sufficient.
-- Aim for each step to map cleanly to 1 concrete best method when possible.
+- Aim for each step to map cleanly to one concrete best method when possible.
 - If a step cannot be localized and has no clear justification, remove it from the scenario. An example of a valid non-localized step to remain in the scenario, with a note explaining why it is not localized, is a step that instantiates a primitive variable.
 - Avoid testing private methods, and watch for package mismatches. Running reachability checks before selecting a candidate is recommended.
+- For each selected method, inspect its signature and supply argument bindings by listing each parameter name with its value. Values may be literals or ${...} placeholders referencing earlier returns.
 
 # END CONDITIONS
 Your task is complete when:
-- You understand the application code and have sufficient tool evidence to localize all steps.
-- Each step in the description has one to three candidate methods available, are removed, or are marked as non-localized through notes.
+- You have sufficient understanding of the application code and tool evidence to localize all steps.
+- Each step is either assigned one to three candidate methods in best-first order, removed, or explicitly marked as non-localized with notes.
+- Each localized step has argument bindings and relevant, succinct comments justifying the decision.
 OR you have run out of iterations.
 To complete the task, call `finalize` with the fully localized scenario and specific comments on the localization process. Use your tool-call log to produce the best localized scenario, and use the comments to note any issues or key design considerations.

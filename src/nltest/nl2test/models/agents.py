@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 from typing import Annotated, List, Literal, Dict, Optional, Union, Tuple
 
 from pydantic import BaseModel, Field
@@ -21,10 +22,14 @@ class AgentState(BaseModel):
     iterations: Annotated[int, "The current iteration number of the agent"] = 0
 
     # Tool logging
-    tool_calls: Annotated[
-        Dict[str, Dict[str, int]],
-        "Mapping: tool name -> encoded argument -> count of calls",
-    ] = Field(default_factory=dict)
+    curr_tool_calls: Dict[str, Dict[str, int]] = Field(
+        default_factory=dict,
+        description="Mapping: tool name -> encoded argument -> count of calls for current invocation",
+    )
+    total_tool_calls: Dict[str, Dict[str, int]] = Field(
+        default_factory=dict,
+        description="Mapping: tool name -> encoded argument -> cumulative count across invocations",
+    )
     curr_tool_trajectory: List[str] = Field(default_factory=list)
     tool_trajectories: List[List[str]] = Field(default_factory=list)
 
@@ -69,9 +74,8 @@ class AgentState(BaseModel):
         self.messages = (
             []
         )  # TODO: Maybe have some functionality for summarizing this instead of clearing
-        self.tool_calls = {}
+        self.curr_tool_calls = {}
         self.curr_tool_trajectory.clear()
-        self.tool_trajectories.clear()
 
 
 class QueryMethodArgs(BaseModel):
@@ -134,9 +138,16 @@ The exact Java method signature (e.g., "testFindById()" or "findById(java.lang.I
 
 class GenerateTestCodeArgs(BaseModel):
     """Arguments for providing raw test code directly to the generate tool."""
-    test_code: Annotated[str, Field(description=_TEST_CODE_DESC)]
-    qualified_class_name: Annotated[str, Field(description=_TEST_QUALIFIED_CLASS_DESC)]
-    method_signature: Annotated[str, Field(description=_TEST_METHOD_SIG_DESC)]
+    test_code: Annotated[
+        str, Field(description=textwrap.dedent(_TEST_CODE_DESC).strip())
+    ]
+    qualified_class_name: Annotated[
+        str,
+        Field(description=textwrap.dedent(_TEST_QUALIFIED_CLASS_DESC).strip()),
+    ]
+    method_signature: Annotated[
+        str, Field(description=textwrap.dedent(_TEST_METHOD_SIG_DESC).strip())
+    ]
 
 
 class FinalizeCommentsArgs(BaseModel):
@@ -167,15 +178,22 @@ class ModifyAtomicBlockNotesArgs(BaseModel):
     new_notes: Annotated[str, Field(description="The new notes for the atomic block.")]
 
 
+_FINALIZE_LOCALIZED_SCENARIO_DESC = """
+The completed localized scenario, with each step either mapped to a relevant method or justified as non-localizable (e.g., variable initialization). 
+List candidate methods in best-first order from left to right. A maximum of three candidates per step is allowed.
+For every selected method, provide argument bindings by inspecting its parameters and supplying plausible values, using ${...} to reference prior returns.
+"""
+
+
 class FinalizeScenarioArgs(BaseModel):
     scenario: Annotated[
         LocalizedScenario,
-        Field(description="The current localized scenario to finalize."),
+        Field(description=textwrap.dedent(_FINALIZE_LOCALIZED_SCENARIO_DESC).strip()),
     ]
     comments: Annotated[
         str,
         Field(
-            description="Comments about any problems with the procedure or concerns."
+            description="Concise 1–2 sentence comments describing any issues with the step or design considerations."
         ),
     ]
 
@@ -230,7 +248,11 @@ class CallLocalizationAgentGherkinArgs(BaseModel):
     """Arguments for delegating from Supervisor to agents in Gherkin mode."""
     instructions: Annotated[
         str,
-        Field(description=_CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC),
+        Field(
+            description=textwrap.dedent(
+                _CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC
+            ).strip()
+        ),
     ]
 
 
@@ -242,7 +264,8 @@ Actionable instructions for the composition agent, with concrete and explicit gu
 class CallCompositionAgentGherkinArgs(BaseModel):
     """Arguments for delegating from Supervisor to agents in Gherkin mode."""
     instructions: Annotated[
-        str, Field(description=_CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC)
+        str,
+        Field(description=textwrap.dedent(_CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC).strip()),
     ]
 
 

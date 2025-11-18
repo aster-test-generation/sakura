@@ -228,7 +228,7 @@ class Pipeline:
 
         tool_counts = {
             tool_name: sum(arg_counts.values())
-            for tool_name, arg_counts in state.tool_calls.items()
+            for tool_name, arg_counts in state.total_tool_calls.items()
         }
         tool_trajectories = [trajectory.copy() for trajectory in state.tool_trajectories]
         return AgentToolLog(
@@ -253,8 +253,6 @@ class Pipeline:
 
         try:
             return self.localization_grader.grade(localization_target, nl2_input)
-        except (NotImplementedError, TypeError):
-            return localization_eval
         except Exception:
             return localization_eval
 
@@ -413,7 +411,7 @@ class Pipeline:
                 nl2_input, nl2_metadata
             )
 
-            localization_eval = self._localization_eval_from_state(
+            localization_eval: LocalizationEval = self._localization_eval_from_state(
                 supervisor_state, nl2_input
             )
 

@@ -14,7 +14,7 @@ Given a natural language description of a test case, additional instructions, a 
 {% if parallelizable -%}
 - You may parallelize tool calls that do not depend on each other (e.g., `get_method_details` for multiple methods). For example, do not call `generate_test_code` and `compile_and_execute_test` in parallel, as they depend on each other.
 {% else -%}
-- Do not parallelize tool calls. Use sequential calls. Await results of previous tools before calling dependent tools.
+- Do not parallelize tool calls. Produce exactly one tool call per message. Await results of previous tools before calling dependent tools.
 {% endif %}
 
 # ITERATION LIMIT
@@ -23,6 +23,7 @@ Given a natural language description of a test case, additional instructions, a 
 # GUIDELINES AND TIPS
 - Follow the instructions provided faithfully. Treat them as if they were provided by a very knowledgeable source.
 - Compose the localized steps strictly in ascending step-id order.
+- For each localized step, treat the candidate methods as ordered from highest to lowest confidence, left to right.
 - Ensure the package mirrors the classes under test.
 - Use `get_maven_dependencies` to understand the available libraries and modules that can be imported into the test.
 - Maintain brief, useful comments, and record adjustments (e.g., preferred candidate due to signature mismatch) in the scenario comments using `modify_scenario_comment`.
@@ -31,6 +32,7 @@ Given a natural language description of a test case, additional instructions, a 
 - Use the available code intelligence tools to understand the application structure and method signatures for test composition.
 - If compilation errors suggest a step is unfixable, or there is consistent errors with a non-critical step (e.g., for descriptive annotation declarations), exclude the step and regenerate the code. Include the reason for exclusion in the step comment through `modify_scenario_comment`, and return it as feedback when calling `finalize`.
 - When calling `generate_test_code`, follow all parameter restrictions: provide only raw Java source with no Markdown fences, quotes, or extra formatting; include any helpers or fixtures as needed, but produce exactly one annotated test method. Return the fully qualified class name (package + class name) of the generated test class and the exact method signature (e.g., "testFindById()" or "findById(java.lang.Integer)") of that sole annotated test method.
+- After calling `generate_test_code`, it is recommended to immediately call `compile_and_execute_test` to ensure the test compiles and runs successfully.
 - Use token-efficient metadata tools like `get_method_details` to understand the application structure, and only use heavy tools like `extract_method_code` when necessary.
 
 # END CONDITIONS

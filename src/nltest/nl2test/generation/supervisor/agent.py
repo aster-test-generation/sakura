@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
 from typing import List, Any, Dict, Tuple, Optional
 from pathlib import Path
 
-from langchain_core.messages import ToolMessage, ToolCall
+from langchain_core.messages import AIMessage, ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
@@ -107,6 +108,70 @@ class SupervisorReActAgent(ReActAgent):
                 )
             )
 
+    def _load_tool_payload(self, content: Any) -> Tuple[Optional[Dict[str, Any]], str]:
+        if isinstance(content, str):
+            try:
+                return json.loads(content), "str"
+            except json.JSONDecodeError:
+                return None, "str"
+        if isinstance(content, dict):
+            return content, "dict"
+        return None, "other"
+
+    def _store_tool_payload(self, message: ToolMessage, payload: Dict[str, Any], payload_type: str) -> None:
+        if payload_type == "str":
+            message.content = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+        else:
+            message.content = payload
+
+    def _clean_previous_block_output(self, state: AgentState) -> None:
+        """Redact stale block/scenario payloads when new results are saved."""
+        call_lookup: Dict[str, str] = {}
+
+        for message in state.messages:
+            # ToolMessage only optionally has tool name so backtrack to the Toolcall to get the name just in acse
+            if isinstance(message, AIMessage):
+                tool_calls = message.tool_calls or []
+                for tc in tool_calls:
+                    tc_id = tc.get("id")
+                    tc_name = tc.get("name")
+                    if tc_id and tc_name:
+                        call_lookup[tc_id] = tc_name
+                continue
+
+            if not isinstance(message, ToolMessage):
+                continue
+
+            # message should only be ToolMessage
+            tool_call_id = message.tool_call_id
+            tool_name = message.name
+            if not tool_name and tool_call_id:
+                tool_name = call_lookup.get(tool_call_id)
+
+            if tool_name not in {"call_localization_agent", "call_composition_agent"}:
+                continue
+
+            payload, payload_type = self._load_tool_payload(message.content)
+            if not isinstance(payload, dict) or payload.get("status") != "ok":
+                continue
+
+            data = payload.get("data")
+            if not isinstance(data, dict):
+                continue
+
+            updated = False
+            if "blocks" in data:
+                data["blocks"] = "(redacted due to updated blocks)"
+                updated = True
+            if "scenario" in data:
+                data["scenario"] = "(redacted due to updated scenario)"
+                updated = True
+
+            if not updated:
+                continue
+
+            self._store_tool_payload(message, payload, payload_type)
+
     def _process_call_localization_agent_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
@@ -199,7 +264,9 @@ class SupervisorReActAgent(ReActAgent):
         if updated_state.atomic_blocks is not None:
             payload["blocks"] = updated_state.atomic_blocks.model_dump()
         elif updated_state.localized_scenario is not None:
-            payload["blocks"] = updated_state.localized_scenario.model_dump()
+            payload["scenario"] = updated_state.localized_scenario.model_dump()
+
+        self._clean_previous_block_output(state)
 
         outputs.append(
             ToolMessage(
@@ -207,6 +274,69 @@ class SupervisorReActAgent(ReActAgent):
                 tool_call_id=tool_call["id"],
             )
         )
+
+    def _clear_previous_test_code_results(self, state: AgentState) -> None:
+        """Redact outdated tool outputs when new composition results arrive."""
+        call_lookup: Dict[str, str] = {}
+        redacted = "(redacted since new code generated)"
+
+        for message in state.messages:
+            # ToolMessage only optionally has tool name so backtrack to the Toolcall to get the name just in acse
+            if isinstance(message, AIMessage):
+                tool_calls = message.tool_calls or []
+                for tc in tool_calls:
+                    tc_id = tc.get("id")
+                    tc_name = tc.get("name")
+                    if tc_id and tc_name:
+                        call_lookup[tc_id] = tc_name
+                continue
+
+            if not isinstance(message, ToolMessage):
+                continue
+
+            # message should only be ToolMessage
+            tool_call_id = message.tool_call_id
+            tool_name = message.name
+            if not tool_name and tool_call_id:
+                tool_name = call_lookup.get(tool_call_id)
+
+            if tool_name not in {"view_test_code", "compile_and_execute_test", "call_composition_agent"}:
+                continue
+
+            payload, payload_type = self._load_tool_payload(message.content)
+            if not isinstance(payload, dict):
+                continue
+
+            # Skip errors
+            if payload.get("status") != "ok":
+                continue
+
+            data = payload.get("data")
+            if not isinstance(data, dict):
+                continue
+
+            updated = False
+            if tool_name == "view_test_code":
+                if "source" in data:
+                    data["source"] = redacted
+                    updated = True
+            elif tool_name == "compile_and_execute_test":
+                if "compilation" in data:
+                    data["compilation"] = redacted
+                    updated = True
+                if "execution" in data:
+                    data["execution"] = redacted
+                    updated = True
+            else:
+                for key in ("package", "class_name", "method_signature"):
+                    if key in data:
+                        data[key] = redacted
+                        updated = True
+
+            if not updated:
+                continue
+
+            self._store_tool_payload(message, payload, payload_type)
 
     def _process_call_composition_agent_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
@@ -245,7 +375,7 @@ class SupervisorReActAgent(ReActAgent):
                     content=format_tool_error(
                         code="missing_blocks",
                         message=(
-                            "Supervisor has no blocks to inject into "
+                            "Supervisor has no scenario to inject into "
                             "call_composition_agent. Ensure the supervisor state is initialized."
                         ),
                         details={
@@ -305,7 +435,10 @@ class SupervisorReActAgent(ReActAgent):
         if updated_state.atomic_blocks is not None:
             payload["blocks"] = updated_state.atomic_blocks.model_dump()
         elif updated_state.localized_scenario is not None:
-            payload["blocks"] = updated_state.localized_scenario.model_dump()
+            payload["scenario"] = updated_state.localized_scenario.model_dump()
+
+        self._clean_previous_block_output(state)
+        self._clear_previous_test_code_results(state)
 
         outputs.append(
             ToolMessage(

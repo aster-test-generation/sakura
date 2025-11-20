@@ -149,27 +149,17 @@ class LocalizationGrader:
     def _collect_candidates(self, step: LocalizedStep) -> Set[FocalMethod]:
         results: Set[FocalMethod] = set()
         for candidate in step.candidate_methods or []:
-            self._maybe_add_candidate(results, candidate)
-        # self._maybe_add_candidate(results, step.best_candidate)
+            if candidate.containing_class_name and candidate.method_signature:
+                results.add((candidate.containing_class_name, candidate.method_signature))
         return results
 
-    def _maybe_add_candidate(
-        self, results: Set[FocalMethod], candidate: CandidateMethod | None
-    ) -> None:
-        if candidate is None:
-            return
-        containing_class = getattr(candidate, "containing_class_name", "")
-        method_signature = getattr(candidate, "method_signature", "")
-        if containing_class and method_signature:
-            results.add((containing_class, method_signature))
-
     def _iter_steps(self, scenario: LocalizedScenario) -> Iterable[LocalizedStep]:
-        yield from scenario.setup or []
-        for group in scenario.steps or []:
-            yield from group.given or []
-            yield from group.when or []
-            yield from group.then or []
-        yield from scenario.teardown or []
+        yield from scenario.setup_steps or []
+        for group in scenario.gherkin_steps or []:
+            yield from group.given_steps or []
+            yield from group.when_steps or []
+            yield from group.then_steps or []
+        yield from scenario.teardown_steps or []
 
     def _format_methods(self, methods: Set[FocalMethod]) -> List[str]:
         return sorted(

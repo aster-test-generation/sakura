@@ -84,14 +84,14 @@ def test_test_grader_petclinic(project_paths):
 
     assert analysis.get_class(qualified_class_name) is not None
     assert (
-        analysis.get_method(qualified_class_name, method_signature) is not None
+            analysis.get_method(qualified_class_name, method_signature) is not None
     )
     assert analysis.get_class(second_qualified_class_name) is not None
     assert (
-        analysis.get_method(
-            second_qualified_class_name, second_method_signature
-        )
-        is not None
+            analysis.get_method(
+                second_qualified_class_name, second_method_signature
+            )
+            is not None
     )
 
     grader = _build_grader(analysis, project_paths.project_root)

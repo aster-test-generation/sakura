@@ -11,7 +11,6 @@ from nltest.nl2test.models.decomposition import DecompositionMode, LocalizedScen
 from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
     GherkinSupervisorOrchestrator,
 )
-from nltest.nl2test.pipeline import Pipeline as NL2Pipeline
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.utils.pretty.prints import pretty_print
 from nltest.utils.llm import UsageTracker

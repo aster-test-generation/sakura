@@ -127,16 +127,18 @@ class CompositionReActAgent(ReActAgent):
     def process_llm_output(self, tool_call: ToolCall, state: AgentState) -> None:
         tool_name = tool_call.get("name")
         handler_map = {
-            "generate_test_code": self._process_generate_test_code_llm,
+            # "generate_test_code": self._process_generate_test_code_llm,
         }
-        handler = handler_map.get(tool_name, self._process_generate_test_code_llm)
+        handler = handler_map.get(tool_name)
 
-        try:
-            handler(tool_call, state)
-        except Exception as exc:
-            RichLog.error(f"Error on altering LLM output for {tool_name}: {exc}")
-            pass
+        # Only process if handler exists
+        if handler:
+            try:
+                handler(tool_call, state)
+            except Exception as exc:
+                RichLog.error(f"Error on altering LLM output for {tool_name}: {exc}")
 
+    # DEPRECATED
     def _process_generate_test_code_llm(self, tool_call: ToolCall, state: AgentState) -> None:
         placeholder = "(test_code redacted for token reduction)"
         raw_args = tool_call.get("args")
@@ -181,6 +183,141 @@ class CompositionReActAgent(ReActAgent):
                         kw_calls[idx] = tool_call
                 return
 
+    def _clear_previous_test_code_results(self, state: AgentState) -> None:
+        """Redact stale tool outputs whenever new test code is generated."""
+        # Note: Used for view_test_code and compile_and_execute_test, which would have outdated test code data
+        call_lookup: Dict[str, str] = {}
+        redacted = "(redacted since new code generated)"
+
+        def _load_payload(content: Any) -> Tuple[Optional[Dict[str, Any]], str]:
+            if isinstance(content, str):
+                try:
+                    return json.loads(content), "str"
+                except json.JSONDecodeError:
+                    return None, "str"
+            if isinstance(content, dict):
+                return content, "dict"
+            return None, "other"
+
+        for message in state.messages:
+            # ToolMessage only optionally has tool name so backtrack to the Toolcall to get the name just in acse
+            if isinstance(message, AIMessage):
+                tool_calls = message.tool_calls or []
+                for tc in tool_calls:
+                    tc_id = tc.get("id")
+                    tc_name = tc.get("name")
+                    if tc_id and tc_name:
+                        call_lookup[tc_id] = tc_name
+                continue
+
+            if not isinstance(message, ToolMessage):
+                continue
+
+            # message should only be ToolMessage
+            tool_call_id = message.tool_call_id
+            tool_name = message.name
+            if not tool_name and tool_call_id:
+                tool_name = call_lookup.get(tool_call_id)
+
+            if tool_name not in {"view_test_code", "compile_and_execute_test"}:
+                continue
+
+            payload, payload_type = _load_payload(message.content)
+            if not isinstance(payload, dict):
+                continue
+
+            # Skip errors
+            if payload.get("status") != "ok":
+                continue
+
+            data = payload.get("data")
+            if not isinstance(data, dict):
+                continue
+
+            updated = False
+            if tool_name == "view_test_code":
+                if "source" in data:
+                    data["source"] = redacted
+                    updated = True
+            elif tool_name == "compile_and_execute_test":
+                if "compilation" in data:
+                    data["compilation"] = redacted
+                    updated = True
+                if "execution" in data:
+                    data["execution"] = redacted
+                    updated = True
+
+            if not updated:
+                continue
+
+            # Type safe but should always be a str
+            if payload_type == "str":
+                message.content = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+            else:
+                message.content = payload
+
+    def _clear_previous_test_code_input(self, state: AgentState) -> None:
+        """Redact older generate_test_code inputs when new code is saved."""
+        # Call on generate_test_code tool calls
+        redacted = "(redacted since new code generated)"
+        latest_call_id: Optional[str] = None
+
+        # Identify the most recent generate_test_code call id
+        for message in reversed(state.messages):
+            if not isinstance(message, AIMessage):
+                continue
+            tool_calls = message.tool_calls or []
+            for call in reversed(tool_calls):
+                if call.get("name") == "generate_test_code":
+                    latest_call_id = call.get("id")
+                    break
+            if latest_call_id:
+                break
+
+        if not latest_call_id:
+            return
+
+        for message in state.messages:
+            if not isinstance(message, AIMessage):
+                continue
+
+            tool_calls = message.tool_calls or []
+            for idx, call in enumerate(tool_calls):
+                if call.get("name") != "generate_test_code":
+                    continue
+                if call.get("id") == latest_call_id:
+                    continue
+
+                raw_args = call.get("args")
+                parsed_args = self.llm.parse_tool_args(raw_args)
+
+                if isinstance(parsed_args, dict):
+                    sanitized_args = dict(parsed_args)
+                elif isinstance(raw_args, dict):
+                    sanitized_args = dict(raw_args)
+                else:
+                    sanitized_args = {}
+
+                sanitized_args["test_code"] = redacted
+
+                try:
+                    if isinstance(raw_args, str):
+                        call["args"] = json.dumps(sanitized_args, ensure_ascii=True, sort_keys=True)
+                    else:
+                        call["args"] = sanitized_args
+                except Exception:
+                    call["args"] = sanitized_args
+
+                tool_calls[idx] = call
+
+                additional_kwargs = message.additional_kwargs
+                if isinstance(additional_kwargs, dict):
+                    kw_calls = additional_kwargs.get("tool_calls")
+                    if isinstance(kw_calls, list) and idx < len(kw_calls):
+                        kw_calls[idx] = call
+
+            message.tool_calls = tool_calls
+
     def _process_generate_test_code_tool(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
     ) -> None:
@@ -218,6 +355,9 @@ class CompositionReActAgent(ReActAgent):
                 self._cleanup_empty_dirs(fm.test_base_dir, old_path.parent)
 
             saved_qcn, saved_path = fm.save_single(new_info, encode_class_name=False)
+
+        self._clear_previous_test_code_results(state)
+        self._clear_previous_test_code_input(state)
 
         outputs.append(
             ToolMessage(
@@ -542,15 +682,19 @@ class CompositionReActAgent(ReActAgent):
                 return
 
             found = False
-            for entry in state.localized_scenario.setup:
+            for entry in state.localized_scenario.setup_steps:
                 if entry.id == int(step_id):
                     entry.comments = str(comment)
                     found = True
                     break
 
             if not found:
-                for grouped in state.localized_scenario.steps:
-                    for cluster in (grouped.given, grouped.when, grouped.then):
+                for grouped in state.localized_scenario.gherkin_steps:
+                    for cluster in (
+                        grouped.given_steps,
+                        grouped.when_steps,
+                        grouped.then_steps,
+                    ):
                         for entry in cluster:
                             if entry.id == int(step_id):
                                 entry.comments = str(comment)
@@ -562,7 +706,7 @@ class CompositionReActAgent(ReActAgent):
                         break
 
             if not found:
-                for entry in state.localized_scenario.teardown:
+                for entry in state.localized_scenario.teardown_steps:
                     if entry.id == int(step_id):
                         entry.comments = str(comment)
                         found = True

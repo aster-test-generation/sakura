@@ -109,9 +109,9 @@ class NL2TestActor:
         # Instantiate the NL2Test pipeline
         self.pipeline = NL2TestPipeline(
             self.analysis,
-            self.project_root,
-            decomposition_mode=self.decomposition_mode,
+            project_root=self.project_root,
             analysis_dir=self.analysis_dir,
+            decomposition_mode=self.decomposition_mode,
         )
         self.pipeline.run_preprocessing(exclude_test_dirs=exclude_test_dirs)
 

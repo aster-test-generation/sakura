@@ -21,22 +21,22 @@ class TestCompositionAgent:
         rendered_true = prompt.format(parallelizable=True, max_iters=iters_true)
         pretty_print("Parallelizable prompt", rendered_true)
         expected_true = (
-            f"You must complete within at most {iters_true} tool invocation(s)."
+            f"You must complete within at most {iters_true} model step(s) (iterations)."
         )
         assert expected_true in rendered_true
-        assert "You may parallelize metadata lookups" in rendered_true
-        assert "Use sequential calls." not in rendered_true
+        assert "You may parallelize tool calls that do not depend on each other" in rendered_true
+        assert "Do not parallelize tool calls" not in rendered_true
 
         # parallelizable False path
         iters_false = 6
         rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
         pretty_print("Not parallelizable prompt", rendered_false)
         expected_false = (
-            f"You must complete within at most {iters_false} tool invocation(s)."
+            f"You must complete within at most {iters_false} model step(s) (iterations)."
         )
         assert expected_false in rendered_false
-        assert "Use sequential calls." in rendered_false
-        assert "You may parallelize metadata lookups" not in rendered_false
+        assert "Do not parallelize tool calls" in rendered_false
+        assert "You may parallelize tool calls that do not depend on each other" not in rendered_false
 
         # duplicate_tools path — mirror orchestrator formatting
         # Create simple tools using LangChain's StructuredTool (a BaseTool subclass)
@@ -60,11 +60,11 @@ class TestCompositionAgent:
         pretty_print("With duplicate_tools", rendered_with_dups)
 
         assert (
-            "You are only allowed to repeat the `view_test_code`, `compile_and_execute_tests` tools"
+            f"Duplicate tool calls are allowed only for the following tool names: {duplicate_tools_str}"
             in rendered_with_dups
         )
-        assert "- Never repeat the same {tool, args} pair" not in rendered_with_dups
-        assert "You are only allowed to repeat" not in rendered_true
+        assert "Never repeat an identical {tool, args} pair" not in rendered_with_dups
+        assert "Duplicate tool calls are allowed only for the following tool names" not in rendered_true
 
     def test_composition_chat_prompt_formatting(self):
         """Verify chat prompt formatting for composition Gherkin with placeholders."""
@@ -131,7 +131,7 @@ class TestCompositionAgent:
 
         localized_scenario_data = {
             "testing_framework": "junit",
-            "setup": [
+            "setup_steps": [
                 {
                     "id": 0,
                     "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
@@ -207,10 +207,10 @@ class TestCompositionAgent:
                     "external": False,
                 },
             ],
-            "steps": [
+            "gherkin_steps": [
                 {
-                    "given": [],
-                    "when": [
+                    "given_steps": [],
+                    "when_steps": [
                         {
                             "id": 6,
                             "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
@@ -240,7 +240,7 @@ class TestCompositionAgent:
                             "external": False,
                         }
                     ],
-                    "then": [
+                    "then_steps": [
                         {
                             "id": 7,
                             "task": "Verify response has 3xx redirection status code",
@@ -264,7 +264,7 @@ class TestCompositionAgent:
                     ],
                 }
             ],
-            "teardown": [],
+            "teardown_steps": [],
         }
 
         localized_scenario = LocalizedScenario(**localized_scenario_data)

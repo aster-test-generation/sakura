@@ -51,17 +51,15 @@ class Pipeline:
     def __init__(
             self,
             analysis: JavaAnalysis,
-            project_root: Path,
             *,
+            project_root: Path,
+            analysis_dir: Path,
             decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
-            analysis_dir: Path | None = None,
     ):
         self.analysis = analysis
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
-        self.analysis_dir = (
-            Path(analysis_dir) if analysis_dir is not None else self.project_root
-        )
+        self.analysis_dir = Path(analysis_dir)
 
         self.method_indexer = MethodIndexer(analysis)
         self.class_indexer = ClassIndexer(analysis)

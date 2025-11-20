@@ -36,6 +36,7 @@ class TestTest2NLPipeline:
         self.project_name = test2nl_context.project_name
         self.project_root = test2nl_context.project_root
         self.output_dir = test2nl_context.output_dir
+
     def test_all_low_abs(self):
         self.pipeline.reset_dataset()
         self.pipeline.run_descriptions_of_project(AbstractionLevel.LOW)
@@ -106,7 +107,8 @@ class TestNL2TestPipeline:
         )
 
         pipeline = NL2TestPipeline(
-            self.analysis, self.project_root, decomposition_mode=DecompositionMode.GHERKIN
+            self.analysis, project_root=self.project_root, analysis_dir=self.output_dir,
+            decomposition_mode=DecompositionMode.GHERKIN
         )
 
         # Tighten iteration limits for this test
@@ -145,14 +147,15 @@ class TestNL2TestPipeline:
         )
 
         pipeline = NL2TestPipeline(
-            self.analysis, self.project_root, decomposition_mode=DecompositionMode.GHERKIN
+            self.analysis, project_root=self.project_root, analysis_dir=self.output_dir,
+            decomposition_mode=DecompositionMode.GHERKIN
         )
         pipeline.run_preprocessing()
 
         # Tighten iteration limits for this test
-        self.config.set("localization", "max_iters", 10)
-        self.config.set("composition", "max_iters", 6)
-        self.config.set("supervisor", "max_iters", 4)
+        self.config.set("localization", "max_iters", 12)
+        self.config.set("composition", "max_iters", 10)
+        self.config.set("supervisor", "max_iters", 6)
 
         eval_result = pipeline.run_nl2test(nl2_input)
         prices = {
@@ -197,16 +200,14 @@ class TestNL2TestPipeline:
         output_dir = Path(self.config.get("project", "project_output_dir"))
 
         pipeline = NL2TestPipeline(
-            self.analysis,
-            project_root,
-            decomposition_mode=DecompositionMode.GHERKIN,
-            analysis_dir=output_dir,
+            self.analysis, project_root=self.project_root, analysis_dir=self.output_dir,
+            decomposition_mode=DecompositionMode.GHERKIN
         )
 
         # Tighten iteration limits for this test
-        self.config.set("localization", "max_iters", 5)
-        self.config.set("composition", "max_iters", 10)
-        self.config.set("supervisor", "max_iters", 5)
+        self.config.set("localization", "max_iters", 12)
+        self.config.set("composition", "max_iters", 16)
+        self.config.set("supervisor", "max_iters", 8)
 
         # Run end-to-end NL2Test
         pipeline.run_preprocessing()

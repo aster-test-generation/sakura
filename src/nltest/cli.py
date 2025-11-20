@@ -542,21 +542,21 @@ def run_nl2test(
                 help="Path to the base directory containing all project directories.",
                 show_default=False,
             ),
-        ] = "./resources",
+        ],
         base_analysis_dir: Annotated[
             str,
             typer.Option(
                 help="Path to the base directory containing per-project analysis.json directories.",
                 show_default=False,
             ),
-        ] = None,
+        ],
         output_dir: Annotated[
             str,
             typer.Option(
                 help="Path to the output directory for saving NL2Test generation results.",
                 show_default=False,
             ),
-        ] = None,
+        ],
         reset_evaluation_results: Annotated[
             bool,
             typer.Option(
@@ -736,10 +736,8 @@ def run_nl2test(
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
-    base_analysis_dir = Path(base_analysis_dir) if base_analysis_dir else None
-    if base_analysis_dir is None or not (
-            base_analysis_dir.exists() and base_analysis_dir.is_dir()
-    ):
+    base_analysis_dir = Path(base_analysis_dir)
+    if not (base_analysis_dir.exists() and base_analysis_dir.is_dir()):
         raise Exception(f"Base analysis directory {base_analysis_dir} does not exist.")
 
     output_dir = Path(output_dir)

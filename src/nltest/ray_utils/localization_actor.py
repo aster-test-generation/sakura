@@ -75,9 +75,9 @@ class LocalizationActor:
         # Pipeline should be immutable on calls to localize
         self.pipeline = NL2TestPipeline(
             self.analysis,
-            self.project_root,
-            decomposition_mode=self.decomposition_mode,
+            project_root=self.project_root,
             analysis_dir=self.project_output_dir,
+            decomposition_mode=self.decomposition_mode,
         )
         self.pipeline.run_preprocessing()
 

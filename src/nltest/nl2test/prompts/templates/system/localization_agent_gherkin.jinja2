@@ -7,7 +7,7 @@ While the default objective is localizing for the entire scenario, if the instru
 
 # TOOL CALLING
 - Use the provided tool bindings. Treat prior tool messages in the chat as the authoritative tool-call log.
-- Tools that provide information on methods or classes can only access the application source tree. Do NOT use them to access external libraries or frameworks. For example, do not use them to access a `java.util` class or method.
+- Tools that provide information on methods or classes can only access the application source tree. Do NOT use them to access external libraries or frameworks. For example, do not use them to access a `java.util` class or method. Do NOT use them to access test code.
 {% if duplicate_tools -%}
 - Duplicate tool calls are allowed only for the following tool names: {{ duplicate_tools }}. Only these tool names may repeat with identical {tool, args}; adjust arguments for every other tool if you need new data.
 {% else -%}
@@ -33,6 +33,7 @@ While the default objective is localizing for the entire scenario, if the instru
 - If a step cannot be localized and has no clear justification, remove it from the scenario. An example of a valid non-localized step to remain in the scenario, with a note explaining why it is not localized, is a step that instantiates a primitive variable.
 - Avoid testing private methods, and watch for package mismatches. Running reachability checks before selecting a candidate is recommended.
 - For each selected method, inspect its signature and supply argument bindings by listing each parameter name with its value. Values may be literals or ${...} placeholders referencing earlier returns.
+- Do not rely solely on vector-index similarity when searching for relevant methods; also identify relevant classes and explore their reachable application methods, or use class metadata to retrieve inherited methods from external classes.
 
 # END CONDITIONS
 Your task is complete when:

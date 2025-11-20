@@ -43,12 +43,12 @@ class TestLocalizationAgent:
         )
         pretty_print("Parallelizable prompt", rendered_parallel)
         expected_cap_parallel = (
-            f"You must complete within at most {max_iters_parallel} tool invocation(s)."
+            f"You must complete within at most {max_iters_parallel} model step(s) (iterations)."
         )
         assert expected_cap_parallel in rendered_parallel
         assert "You may parallelize tool calls" in rendered_parallel
-        assert "You must call tools sequentially" not in rendered_parallel
-        assert "Never repeat the same {tool, args} pair." in rendered_parallel
+        assert "Do not parallelize tool calls" not in rendered_parallel
+        assert "Never repeat an identical {tool, args} pair" not in rendered_parallel
 
         # Case 2: parallelizable False
         max_iters_sequential = 7
@@ -56,10 +56,11 @@ class TestLocalizationAgent:
             parallelizable=False, max_iters=max_iters_sequential
         )
         pretty_print("Not parallelizable", rendered_sequential)
-        expected_cap_sequential = f"You must complete within at most {max_iters_sequential} tool invocation(s)."
+        expected_cap_sequential = f"You must complete within at most {max_iters_sequential} model step(s) (iterations)."
         assert expected_cap_sequential in rendered_sequential
-        assert "You must call tools sequentially" in rendered_sequential
+        assert "Do not parallelize tool calls" in rendered_sequential
         assert "You may parallelize tool calls" not in rendered_sequential
+        assert "Never repeat an identical {tool, args} pair" in rendered_sequential
 
     def test_gherkin_localization_chat_prompt_formatting(self):
         """Ensure the chat prompt renders with required placeholders and includes a preview."""
@@ -251,7 +252,7 @@ class TestLocalizationGrader:
     def _petcontroller_localized_scenario_payload(self) -> dict:
         return {
             "testing_framework": "junit",
-            "setup": [
+            "setup_steps": [
                 {
                     "id": 0,
                     "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
@@ -320,10 +321,10 @@ class TestLocalizationGrader:
                     "external": False,
                 },
             ],
-            "steps": [
+            "gherkin_steps": [
                 {
-                    "given": [],
-                    "when": [
+                    "given_steps": [],
+                    "when_steps": [
                         {
                             "id": 6,
                             "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
@@ -353,7 +354,7 @@ class TestLocalizationGrader:
                             "external": False,
                         }
                     ],
-                    "then": [
+                    "then_steps": [
                         {
                             "id": 7,
                             "task": "Verify response has 3xx redirection status code",
@@ -377,7 +378,7 @@ class TestLocalizationGrader:
                     ],
                 }
             ],
-            "teardown": [],
+            "teardown_steps": [],
         }
 
     def test_localization_grader_localized_scenario(self):

@@ -154,12 +154,12 @@ class LocalizationGrader:
         return results
 
     def _iter_steps(self, scenario: LocalizedScenario) -> Iterable[LocalizedStep]:
-        yield from scenario.setup_steps or []
-        for group in scenario.gherkin_steps or []:
-            yield from group.given_steps or []
-            yield from group.when_steps or []
-            yield from group.then_steps or []
-        yield from scenario.teardown_steps or []
+        yield from scenario.setup or []
+        for group in scenario.gherkin_groups or []:
+            yield from group.given or []
+            yield from group.when or []
+            yield from group.then or []
+        yield from scenario.teardown or []
 
     def _format_methods(self, methods: Set[FocalMethod]) -> List[str]:
         return sorted(

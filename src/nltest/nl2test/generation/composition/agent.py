@@ -682,18 +682,18 @@ class CompositionReActAgent(ReActAgent):
                 return
 
             found = False
-            for entry in state.localized_scenario.setup_steps:
+            for entry in state.localized_scenario.setup:
                 if entry.id == int(step_id):
                     entry.comments = str(comment)
                     found = True
                     break
 
             if not found:
-                for grouped in state.localized_scenario.gherkin_steps:
+                for grouped in state.localized_scenario.gherkin_groups:
                     for cluster in (
-                        grouped.given_steps,
-                        grouped.when_steps,
-                        grouped.then_steps,
+                        grouped.given,
+                        grouped.when,
+                        grouped.then,
                     ):
                         for entry in cluster:
                             if entry.id == int(step_id):
@@ -706,7 +706,7 @@ class CompositionReActAgent(ReActAgent):
                         break
 
             if not found:
-                for entry in state.localized_scenario.teardown_steps:
+                for entry in state.localized_scenario.teardown:
                     if entry.id == int(step_id):
                         entry.comments = str(comment)
                         found = True

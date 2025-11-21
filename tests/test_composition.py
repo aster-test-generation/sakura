@@ -131,7 +131,7 @@ class TestCompositionAgent:
 
         localized_scenario_data = {
             "testing_framework": "junit",
-            "setup_steps": [
+            "setup": [
                 {
                     "id": 0,
                     "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
@@ -207,10 +207,10 @@ class TestCompositionAgent:
                     "external": False,
                 },
             ],
-            "gherkin_steps": [
+            "gherkin_groups": [
                 {
-                    "given_steps": [],
-                    "when_steps": [
+                    "given": [],
+                    "when": [
                         {
                             "id": 6,
                             "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
@@ -240,7 +240,7 @@ class TestCompositionAgent:
                             "external": False,
                         }
                     ],
-                    "then_steps": [
+                    "then": [
                         {
                             "id": 7,
                             "task": "Verify response has 3xx redirection status code",
@@ -264,7 +264,7 @@ class TestCompositionAgent:
                     ],
                 }
             ],
-            "teardown_steps": [],
+            "teardown": [],
         }
 
         localized_scenario = LocalizedScenario(**localized_scenario_data)

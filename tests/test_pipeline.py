@@ -205,9 +205,9 @@ class TestNL2TestPipeline:
         )
 
         # Tighten iteration limits for this test
-        self.config.set("localization", "max_iters", 12)
-        self.config.set("composition", "max_iters", 16)
-        self.config.set("supervisor", "max_iters", 8)
+        self.config.set("localization", "max_iters", 12) # Best so far is 12
+        self.config.set("composition", "max_iters", 16) # 16
+        self.config.set("supervisor", "max_iters", 8) # 8
 
         # Run end-to-end NL2Test
         pipeline.run_preprocessing()

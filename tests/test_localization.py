@@ -252,7 +252,7 @@ class TestLocalizationGrader:
     def _petcontroller_localized_scenario_payload(self) -> dict:
         return {
             "testing_framework": "junit",
-            "setup_steps": [
+            "setup": [
                 {
                     "id": 0,
                     "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
@@ -321,10 +321,10 @@ class TestLocalizationGrader:
                     "external": False,
                 },
             ],
-            "gherkin_steps": [
+            "gherkin_groups": [
                 {
-                    "given_steps": [],
-                    "when_steps": [
+                    "given": [],
+                    "when": [
                         {
                             "id": 6,
                             "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
@@ -354,7 +354,7 @@ class TestLocalizationGrader:
                             "external": False,
                         }
                     ],
-                    "then_steps": [
+                    "then": [
                         {
                             "id": 7,
                             "task": "Verify response has 3xx redirection status code",
@@ -378,7 +378,7 @@ class TestLocalizationGrader:
                     ],
                 }
             ],
-            "teardown_steps": [],
+            "teardown": [],
         }
 
     def test_localization_grader_localized_scenario(self):

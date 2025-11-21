@@ -34,6 +34,7 @@ While the default objective is localizing for the entire scenario, if the instru
 - Avoid testing private methods, and watch for package mismatches. Running reachability checks before selecting a candidate is recommended.
 - For each selected method, inspect its signature and supply argument bindings by listing each parameter name with its value. Values may be literals or ${...} placeholders referencing earlier returns.
 - Do not rely solely on vector-index similarity when searching for relevant methods; also identify relevant classes and explore their reachable application methods, or use class metadata to retrieve inherited methods from external classes.
+- Do not assume application behavior or code. Use tool evidence to verify relevant application methods when localizing each step.
 
 # END CONDITIONS
 Your task is complete when:

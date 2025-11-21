@@ -26,15 +26,15 @@ class Step(BaseModel):
 
 class GherkinStep(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-    given_steps: List[Step] = Field(alias="given")
-    when_steps: List[Step] = Field(alias="when")
-    then_steps: List[Step] = Field(alias="then")
+    given: List[Step]
+    when: List[Step]
+    then: List[Step]
 
 
 _GHERKIN_STEPS_DESC = textwrap.dedent(
     """
-    Ordered Gherkin-style step groups (given_steps, when_steps, then_steps) that capture distinct behaviors or paths.
-    Ids must be unique and increase across setup_steps, each Gherkin group in order, and teardown_steps. Each group has at least one When and one Then.
+    Ordered Gherkin-style step groups (given, when, then) that capture distinct behaviors or paths.
+    Ids must be unique and increase across setup, each Gherkin group in order, and teardown. Each group has at least one When and one Then.
     """
 ).strip()
 
@@ -42,12 +42,12 @@ _GHERKIN_STEPS_DESC = textwrap.dedent(
 class Scenario(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     testing_framework: str
-    setup_steps: List[Step] = Field(alias="setup")
-    gherkin_steps: Annotated[
+    setup: List[Step]
+    gherkin_groups: Annotated[
         List[GherkinStep],
-        Field(alias="steps", description=_GHERKIN_STEPS_DESC),
+        Field(description=_GHERKIN_STEPS_DESC),
     ]
-    teardown_steps: List[Step] = Field(alias="teardown")
+    teardown: List[Step]
 
 
 # ---- Localized Gherkin Task Decomposition ----
@@ -131,20 +131,20 @@ class LocalizedStep(Step):
 
 class LocalizedGherkinStep(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
-    given_steps: List[LocalizedStep] = Field(alias="given")
-    when_steps: List[LocalizedStep] = Field(alias="when")
-    then_steps: List[LocalizedStep] = Field(alias="then")
+    given: List[LocalizedStep]
+    when: List[LocalizedStep]
+    then: List[LocalizedStep]
 
 
 class LocalizedScenario(Scenario):
     model_config = ConfigDict(populate_by_name=True)
     testing_framework: str
-    setup_steps: List[LocalizedStep] = Field(alias="setup")
-    gherkin_steps: Annotated[
+    setup: List[LocalizedStep]
+    gherkin_groups: Annotated[
         List[LocalizedGherkinStep],
-        Field(alias="steps", description=_GHERKIN_STEPS_DESC),
+        Field(description=_GHERKIN_STEPS_DESC),
     ]
-    teardown_steps: List[LocalizedStep] = Field(alias="teardown")
+    teardown: List[LocalizedStep]
 
     @classmethod
     def from_scenario(cls, scenario: Scenario) -> "LocalizedScenario":
@@ -168,34 +168,34 @@ class LocalizedScenario(Scenario):
             )
 
         localized_steps: List[LocalizedGherkinStep] = []
-        for gstep in scenario.gherkin_steps:
+        for gstep in scenario.gherkin_groups:
             localized_steps.append(
                 LocalizedGherkinStep(
-                    given_steps=[_to_localized_step(s) for s in gstep.given_steps],
-                    when_steps=[_to_localized_step(s) for s in gstep.when_steps],
-                    then_steps=[_to_localized_step(s) for s in gstep.then_steps],
+                    given=[_to_localized_step(s) for s in gstep.given],
+                    when=[_to_localized_step(s) for s in gstep.when],
+                    then=[_to_localized_step(s) for s in gstep.then],
                 )
             )
 
         return cls(
             testing_framework=scenario.testing_framework,
-            setup_steps=[_to_localized_step(s) for s in scenario.setup_steps],
-            gherkin_steps=localized_steps,
-            teardown_steps=[_to_localized_step(s) for s in scenario.teardown_steps],
+            setup=[_to_localized_step(s) for s in scenario.setup],
+            gherkin_groups=localized_steps,
+            teardown=[_to_localized_step(s) for s in scenario.teardown],
         )
 
     def enforce_candidate_limits(self, limit: int = 3) -> None:
-        for step in self.setup_steps:
+        for step in self.setup:
             step.enforce_candidate_limit(limit)
-        for grouped in self.gherkin_steps:
+        for grouped in self.gherkin_groups:
             for collection in (
-                grouped.given_steps,
-                grouped.when_steps,
-                grouped.then_steps,
+                grouped.given,
+                grouped.when,
+                grouped.then,
             ):
                 for step in collection:
                     step.enforce_candidate_limit(limit)
-        for step in self.teardown_steps:
+        for step in self.teardown:
             step.enforce_candidate_limit(limit)
 
 

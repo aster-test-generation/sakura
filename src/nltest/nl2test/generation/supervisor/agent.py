@@ -38,6 +38,7 @@ class SupervisorReActAgent(ReActAgent):
             max_iters: int = 10,
             localization_agent: BaseLocalizationOrchestrator | None = None,
             composition_agent: BaseCompositionOrchestrator | None = None,
+            parallelizable: bool = True,
             **kwargs,
     ) -> None:
         super().__init__(
@@ -45,7 +46,7 @@ class SupervisorReActAgent(ReActAgent):
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            allow_parallelize=True,
+            allow_parallelize=parallelizable,
             max_iters=max_iters,
             **kwargs,
         )

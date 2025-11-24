@@ -97,6 +97,7 @@ class BaseCompositionOrchestrator:
             system_message=system_message,
             project_root=Path(project_root or "."),
             max_iters=max_iters,
+            parallelizable=parallelizable,
         )
 
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:

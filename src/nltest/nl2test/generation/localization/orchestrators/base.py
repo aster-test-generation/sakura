@@ -72,6 +72,7 @@ class BaseLocalizationOrchestrator:
             max_iters=max_iters,
             system_message=system_message,
             decomposition_mode=decomposition_mode,
+            parallelizable=parallelizable,
         )
 
     def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:

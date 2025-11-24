@@ -30,6 +30,7 @@ class CompositionReActAgent(ReActAgent):
             system_message: str,
             project_root: Path,
             max_iters: int = 30,
+            parallelizable: bool = True,
     ):
         # Allow caller to inject system_message for parity with localization
 
@@ -38,7 +39,7 @@ class CompositionReActAgent(ReActAgent):
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            allow_parallelize=True,
+            allow_parallelize=parallelizable,
             max_iters=max_iters,
         )
         self.project_root = Path(project_root)

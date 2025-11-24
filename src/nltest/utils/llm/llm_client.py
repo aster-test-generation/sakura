@@ -72,22 +72,16 @@ class LLMClient:
             default_headers = {} if default_headers is None else default_headers
             default_headers.setdefault("HTTP-Referer", "http://localhost")
             default_headers.setdefault("X-Title", "NL2Test LLM Client")
-            # Configure parallel tool call behavior from Config
-            try:
-                can_parallel_tool = config.get("llm", "can_parallel_tool")
-            except ConfigurationException:
-                can_parallel_tool = False
 
-            # Only set if not explicitly provided in model_kwargs.
-            if "parallel_tool_calls" not in model_kwargs:
-                model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
+        # Configure parallel tool call behavior from Config
+        try:
+            can_parallel_tool = config.get("llm", "can_parallel_tool")
+        except ConfigurationException:
+            can_parallel_tool = False
 
-            # if "reasoning" not in model_kwargs:
-            #    model_kwargs["reasoning"] = {"enabled": True}
-            #    model_kwargs["reasoning"]["effort"] = "medium"
-
-            # if "include_reasoning" not in model_kwargs:
-            #    model_kwargs["include_reasoning"] = True
+        # Only set if not explicitly provided in model_kwargs.
+        if "parallel_tool_calls" not in model_kwargs:
+            model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
 
         self._chat = ChatOpenAI(
             model=model,

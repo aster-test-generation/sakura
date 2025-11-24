@@ -119,6 +119,7 @@ class BaseSupervisorOrchestrator:
         self.chat_prompt = chat_prompt
 
         # System prompt variables
+        parallelizable: bool = bool(Config().get("llm", "can_parallel_tool"))
         max_iters = Config().get("supervisor", "max_iters")
         duplicate_tools_str = (
             ", ".join(f"`{t.name}`" for t in allow_duplicate_tools)
@@ -141,6 +142,7 @@ class BaseSupervisorOrchestrator:
             max_iters=max_iters,
             localization_agent=localization_agent,
             composition_agent=composition_agent,
+            parallelizable=parallelizable,
         )
 
     def assign_task(self, *args: Any, **kwargs: Any):

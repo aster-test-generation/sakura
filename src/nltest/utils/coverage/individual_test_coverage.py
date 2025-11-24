@@ -197,11 +197,6 @@ class IndividualTestCoverage:
         #                         "coverage_details": test_coverage,
         #                     }
         #                 ]
-        #         else:
-        #             failing_exec_files.append(f"{test[0]}__{test[1]}.exec")
-        #         pbar.update(1)
-        # ray.shutdown()
-        coverage = {}
         for test in executed_tests:
             class_name = test[0]
             method_name = test[1].split('(')[0]

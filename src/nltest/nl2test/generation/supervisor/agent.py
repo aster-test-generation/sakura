@@ -45,7 +45,7 @@ class SupervisorReActAgent(ReActAgent):
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            allow_parallelize=False,
+            allow_parallelize=True,
             max_iters=max_iters,
             **kwargs,
         )

@@ -29,7 +29,7 @@ JACOCO_TEST_FOLDER = "target/jacoco-tests"
 @ray.remote
 def _collect_coverage_task(project_root: Path, source_root: str, test: Tuple[str, str]):
     class_name = test[0].replace("$", "\$")
-    method_name = test[1]
+    method_name = test[1].split('(')[0].strip()
     jacococli_command = (
         f"java -jar {JACOCO_CLI_JAR} report "
         f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
@@ -407,12 +407,12 @@ class IndividualTestCoverage:
             for test_class in test_by_class:
                 if len(test_by_class[test_class]) == 1:
                     target_tests += (
-                            test_class + "#" + test_by_class[test_class][0] + ","
+                            test_class + "#" + test_by_class[test_class][0].split('(')[0] + ","
                     )
                 else:
-                    target_tests += test_class + "#" + test_by_class[test_class][0]
+                    target_tests += test_class + "#" + test_by_class[test_class][0].split('(')[0]
                     for i in range(1, len(test_by_class[test_class])):
-                        target_tests += "+" + test_by_class[test_class][i]
+                        target_tests += "+" + test_by_class[test_class][i].split('(')[0]
                     target_tests += ","
             if target_tests.endswith(","):
                 target_tests = target_tests[:-1]
@@ -508,6 +508,7 @@ class IndividualTestCoverage:
                 test_class_content = self.__add_extends(
                     test_class_content, f"@RunWith({TEST_WATCHER_CLASS_NAME}.class)"
                 )
+            test_class_content = test_class_content.replace('@Disabled', '//@Disabled')
             with open(test_class, "w") as f:
                 f.write(test_class_content)
         return original_test_file, self.project_root.joinpath(

@@ -169,7 +169,10 @@ class IndividualTestCoverage:
     ) -> Tuple[Dict, List]:
         coverage = {}
         failing_exec_files = []
-        ray.init(num_cpus=100, ignore_reinit_error=True, include_dashboard=False)
+        started_ray = False
+        if not ray.is_initialized():
+            ray.init(num_cpus=100, ignore_reinit_error=True, include_dashboard=False)
+            started_ray = True
         ray_tasks = [
             _collect_coverage_task.remote(
                 self.project_root, self.source_root, executed_test
@@ -200,7 +203,8 @@ class IndividualTestCoverage:
                 else:
                     failing_exec_files.append(f"{test[0]}__{test[1]}.exec")
                 pbar.update(1)
-        ray.shutdown()
+        if started_ray:
+            ray.shutdown()
         # coverage = {}
         # for test in executed_tests:
         #     class_name = test[0]

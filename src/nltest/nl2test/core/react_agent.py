@@ -381,7 +381,7 @@ class ReActAgent:
                 state.messages,
                 tools=tools_to_bind,
                 tool_choice=tool_choice,
-                extra_model_kwargs={"parallel_tool_calls": False},  # No parallel tool call; force end
+                # extra_model_kwargs={"parallel_tool_calls": False},  # No parallel tool call; force end; DEFAULT TO MODEL BINDING, as this was causing errors
             )
             state.messages.append(out)
 

@@ -29,13 +29,14 @@ class LocalizationReActAgent(ReActAgent):
             system_message: str,
             max_iters: int = 30,
             decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
+            parallelizable: bool = True,
     ):
         super().__init__(
             llm=llm,
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            allow_parallelize=True,
+            allow_parallelize=parallelizable,
             max_iters=max_iters,
         )
         self.decomposition_mode = decomposition_mode

@@ -32,7 +32,7 @@ class ReActAgent:
             tools: List[BaseTool],
             allow_duplicate_tools: Optional[List[BaseTool]] = None,
             system_message: Optional[str] = None,
-            allow_parallelize: bool = False,
+            allow_parallelize: bool = True,
             max_iters: int = 20,
             strict_finalize: bool = True,
             use_checkpointer: bool = True,

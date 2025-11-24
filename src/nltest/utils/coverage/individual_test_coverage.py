@@ -169,72 +169,72 @@ class IndividualTestCoverage:
     ) -> Tuple[Dict, List]:
         coverage = {}
         failing_exec_files = []
-        ray.init(num_cpus=100, ignore_reinit_error=True, include_dashboard=False)
-        ray_tasks = [
-            _collect_coverage_task.remote(
-                self.project_root, self.source_root, executed_test
-            )
-            for executed_test in executed_tests
-        ]
-        with tqdm(total=len(ray_tasks), desc="Collecting test coverage") as pbar:
-            while ray_tasks:
-                done, ray_tasks = ray.wait(ray_tasks, num_returns=1)
-                test, test_coverage, success = ray.get(done[0])
-                if success:
-                    if test[0] in coverage:
-                        coverage[test[0]].append(
-                            {
-                                "test_class_name": test[0],
-                                "test_name": test[1],
-                                "coverage_details": test_coverage,
-                            }
-                        )
-                    else:
-                        coverage[test[0]] = [
-                            {
-                                "test_class_name": test[0],
-                                "test_name": test[1],
-                                "coverage_details": test_coverage,
-                            }
-                        ]
-                else:
-                    failing_exec_files.append(f"{test[0]}__{test[1]}.exec")
-                pbar.update(1)
-        ray.shutdown()
-        # coverage = {}
-        # for test in executed_tests:
-        #     class_name = test[0]
-        #     method_name = test[1]
-        #     jacococli_command = (f"java -jar {JACOCO_CLI_JAR} report "
-        #                          f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
-        #                          f"--classfiles target/classes --sourcefiles {self.source_root} --html "
-        #                          f"target{os.sep}{class_name}__{method_name}__report")
-        #     try:
-        #         RichLog.info(f"Running command: {jacococli_command}")
-        #         response = subprocess.run(
-        #             jacococli_command,
-        #             cwd=self.project_root,
-        #             shell=True,
-        #             check=True,
-        #             stdout=subprocess.PIPE,
-        #             stderr=subprocess.STDOUT,
-        #         )
-        #         coverage_details = self.extract_all_covered_lines(
-        #             self.project_root.joinpath("target", f"{class_name}__{method_name}__report")
-        #         )
-        #         if test[0] in coverage:
-        #             coverage[test[0]].append({
-        #                 "test_class_name": test[0],
-        #                 "test_name": method_name,
-        #                 "coverage_details": coverage_details})
+        # ray.init(num_cpus=100, ignore_reinit_error=True, include_dashboard=False)
+        # ray_tasks = [
+        #     _collect_coverage_task.remote(
+        #         self.project_root, self.source_root, executed_test
+        #     )
+        #     for executed_test in executed_tests
+        # ]
+        # with tqdm(total=len(ray_tasks), desc="Collecting test coverage") as pbar:
+        #     while ray_tasks:
+        #         done, ray_tasks = ray.wait(ray_tasks, num_returns=1)
+        #         test, test_coverage, success = ray.get(done[0])
+        #         if success:
+        #             if test[0] in coverage:
+        #                 coverage[test[0]].append(
+        #                     {
+        #                         "test_class_name": test[0],
+        #                         "test_name": test[1],
+        #                         "coverage_details": test_coverage,
+        #                     }
+        #                 )
+        #             else:
+        #                 coverage[test[0]] = [
+        #                     {
+        #                         "test_class_name": test[0],
+        #                         "test_name": test[1],
+        #                         "coverage_details": test_coverage,
+        #                     }
+        #                 ]
         #         else:
-        #             coverage[test[0]] = [{
-        #                 "test_class_name": test[0],
-        #                 "test_name": method_name,
-        #                 "coverage_details": coverage_details}]
-        #     except subprocess.CalledProcessError as e:
-        #         RichLog.error(f'Error running command "{e.cmd}"')
-        #         failing_exec_files.append(f"{class_name}__{method_name}.exec")
+        #             failing_exec_files.append(f"{test[0]}__{test[1]}.exec")
+        #         pbar.update(1)
+        # ray.shutdown()
+        coverage = {}
+        for test in executed_tests:
+            class_name = test[0]
+            method_name = test[1].split('(')[0]
+            jacococli_command = (f"java -jar {JACOCO_CLI_JAR} report "
+                                 f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
+                                 f"--classfiles target/classes --sourcefiles {self.source_root} --html "
+                                 f"target{os.sep}{class_name}__{method_name}__report")
+            try:
+                RichLog.info(f"Running command: {jacococli_command}")
+                response = subprocess.run(
+                    jacococli_command,
+                    cwd=self.project_root,
+                    shell=True,
+                    check=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                )
+                coverage_details = self.extract_all_covered_lines(
+                    self.project_root.joinpath("target", f"{class_name}__{method_name}__report")
+                )
+                if test[0] in coverage:
+                    coverage[test[0]].append({
+                        "test_class_name": test[0],
+                        "test_name": method_name,
+                        "coverage_details": coverage_details})
+                else:
+                    coverage[test[0]] = [{
+                        "test_class_name": test[0],
+                        "test_name": method_name,
+                        "coverage_details": coverage_details}]
+            except subprocess.CalledProcessError as e:
+                RichLog.error(f'Error running command "{e.cmd}"')
+                failing_exec_files.append(f"{class_name}__{method_name}.exec")
         RichLog.info(f"Coverage collected for {len(coverage.keys())} tests")
         return coverage, failing_exec_files
 

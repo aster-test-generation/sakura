@@ -8,8 +8,11 @@ from nltest.nl2test.generation.localization import (
     GherkinLocalizationOrchestrator,
     LocalizationTools,
 )
+from nltest.nl2test.generation.localization.tools.base import BaseLocalizationTools
+from nltest.nl2test.generation.localization.tools.gherkin import GherkinLocalizationTools
+from nltest.nl2test.generation.localization.tools.grammatical import GrammaticalLocalizationTools
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
-from nltest.nl2test.models import AtomicBlock, NL2TestInput, LocalizedScenario
+from nltest.nl2test.models import AgentState, AtomicBlock, AtomicBlockList, NL2TestInput, LocalizedScenario
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
     Scenario,
@@ -129,11 +132,18 @@ class TestLocalizationAgent:
             usage_tracker=tracker,
         )
 
-        refined_blocks, comments = localization_agent.assign_task(
+        agent_state = localization_agent.assign_task(
             atomic_blocks, instructions=supervisor_instructions
         )
+
+        assert isinstance(agent_state, AgentState)
+
+        # Extract results from AgentState
+        refined_blocks = agent_state.atomic_blocks
+        comments = agent_state.final_comments or ""
         prices = tracker.totals()
 
+        assert refined_blocks is not None
         pretty_print("Refined atomic blocks", refined_blocks)
         pretty_print("Comments", comments)
         pretty_print("Token usage", prices)
@@ -175,12 +185,19 @@ class TestLocalizationAgent:
 
         # Convert Scenario to LocalizedScenario with empty fields
         localized_input = LocalizedScenario.from_scenario(scenario)
-        localized_scenario, comments = localization_agent.assign_task(
+        agent_state = localization_agent.assign_task(
             localized_input, instructions=supervisor_instructions
         )
+
+        assert isinstance(agent_state, AgentState)
+
+        # Extract results from AgentState
+        localized_scenario = agent_state.localized_scenario
+        comments = agent_state.final_comments or ""
         prices = tracker.totals()
 
         # Assertions and output
+        assert localized_scenario is not None
         assert isinstance(localized_scenario, LocalizedScenario)
         assert isinstance(comments, str)
         pretty_print("Localized scenario", localized_scenario)
@@ -229,12 +246,19 @@ class TestLocalizationAgent:
 
         # Convert Scenario to LocalizedScenario with empty fields
         localized_input = LocalizedScenario.from_scenario(scenario)
-        localized_scenario, comments = localization_agent.assign_task(
+        agent_state = localization_agent.assign_task(
             localized_input, instructions=supervisor_instructions
         )
+
+        assert isinstance(agent_state, AgentState)
+
+        # Extract results from AgentState
+        localized_scenario = agent_state.localized_scenario
+        comments = agent_state.final_comments or ""
         prices = tracker.totals()
 
         # Assertions and output
+        assert localized_scenario is not None
         assert isinstance(localized_scenario, LocalizedScenario)
         assert isinstance(comments, str)
         pretty_print("Localized scenario", localized_scenario)
@@ -290,7 +314,7 @@ class TestLocalizationGrader:
                     "produces": "owner_with_pets",
                     "candidate_methods": [
                         {
-                            "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                            "declaring_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "method_signature": "findById(java.lang.Integer)",
                             "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
@@ -332,7 +356,7 @@ class TestLocalizationGrader:
                             "produces": "http_response",
                             "candidate_methods": [
                                 {
-                                    "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.PetController",
                                     "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
                                     "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
                                     "return_type": "java.lang.String",
@@ -445,3 +469,195 @@ class TestLocalizationTools:
 
         cleaned_call_sites = call_site_tool.func(qualified_class_name, method_signature)
         pretty_print("Cleaned call site details", cleaned_call_sites)
+
+
+class TestLocalizationToolInjection:
+    """Tests verifying tool injection after refactoring to shared utilities."""
+
+    @staticmethod
+    def _create_mock_dependencies():
+        """Create mock dependencies for tool builders."""
+        mock_analysis = MagicMock()
+        mock_analysis.get_class = MagicMock(return_value=None)
+        mock_analysis.get_method = MagicMock(return_value=None)
+        mock_method_searcher = MagicMock()
+        mock_class_searcher = MagicMock()
+
+        return {
+            "analysis": mock_analysis,
+            "method_searcher": mock_method_searcher,
+            "class_searcher": mock_class_searcher,
+        }
+
+    def test_base_localization_tools_contains_expected_tools(self):
+        """Verify BaseLocalizationTools creates expected base tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseLocalizationTools(**deps)
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_base_tools = {
+            "query_method_db",
+            "query_class_db",
+            "get_reachable_methods_in_class",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_details",
+            "get_inherited_library_classes",
+            "get_call_site_details",
+        }
+
+        assert expected_base_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_base_tools}, Got: {tool_names}"
+        )
+
+    def test_gherkin_localization_tools_contains_all_tools(self):
+        """Verify GherkinLocalizationTools includes base + Gherkin-specific tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GherkinLocalizationTools(**deps)
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_tools = {
+            "query_method_db",
+            "query_class_db",
+            "get_reachable_methods_in_class",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_details",
+            "get_inherited_library_classes",
+            "get_call_site_details",
+            "finalize",
+        }
+
+        assert expected_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        )
+
+    def test_grammatical_localization_tools_contains_all_tools(self):
+        """Verify GrammaticalLocalizationTools includes base + Grammatical-specific tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GrammaticalLocalizationTools(**deps)
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_tools = {
+            "query_method_db",
+            "query_class_db",
+            "get_reachable_methods_in_class",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_details",
+            "get_inherited_library_classes",
+            "get_call_site_details",
+            "finalize",
+        }
+
+        assert expected_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        )
+
+    def test_localization_allow_duplicate_tools_empty(self):
+        """Verify localization tools have no duplicate tools allowed."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GherkinLocalizationTools(**deps)
+        _, allow_duplicates = tool_builder.all()
+
+        assert len(allow_duplicates) == 0, (
+            f"Localization should have no duplicate tools, got: {[t.name for t in allow_duplicates]}"
+        )
+
+    def test_gherkin_finalize_tool_returns_scenario_and_comments(self):
+        """Verify Gherkin finalize tool returns scenario and comments."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GherkinLocalizationTools(**deps)
+        tools, _ = tool_builder.all()
+
+        finalize_tool = next(t for t in tools if t.name == "finalize")
+
+        scenario = LocalizedScenario(
+            testing_framework="junit",
+            setup=[],
+            gherkin_groups=[],
+            teardown=[],
+        )
+        result = finalize_tool.func(scenario=scenario, comments="Final comments")
+
+        assert result == (scenario, "Final comments")
+
+    def test_grammatical_finalize_tool_returns_blocks_and_comments(self):
+        """Verify Grammatical finalize tool returns blocks and comments."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GrammaticalLocalizationTools(**deps)
+        tools, _ = tool_builder.all()
+
+        finalize_tool = next(t for t in tools if t.name == "finalize")
+
+        blocks = AtomicBlockList(atomic_blocks=[])
+        result = finalize_tool.func(current_blocks=blocks, comments="Final comments")
+
+        assert result == (blocks, "Final comments")
+
+    def test_shared_tools_have_consistent_names_across_modes(self):
+        """Verify shared tools have same names in both modes."""
+        deps = self._create_mock_dependencies()
+
+        gherkin_builder = GherkinLocalizationTools(**deps)
+        grammatical_builder = GrammaticalLocalizationTools(**deps)
+
+        gherkin_tools, _ = gherkin_builder.all()
+        grammatical_tools, _ = grammatical_builder.all()
+
+        gherkin_names = {t.name for t in gherkin_tools}
+        grammatical_names = {t.name for t in grammatical_tools}
+
+        # All base tools should be in both
+        base_tools = {
+            "query_method_db",
+            "query_class_db",
+            "get_reachable_methods_in_class",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_details",
+            "get_inherited_library_classes",
+            "get_call_site_details",
+        }
+
+        assert base_tools.issubset(gherkin_names)
+        assert base_tools.issubset(grammatical_names)
+
+    def test_query_method_db_tool_validates_range(self):
+        """Verify query_method_db tool exists and has correct name."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseLocalizationTools(**deps)
+        tools, _ = tool_builder.all()
+
+        query_tool = next(t for t in tools if t.name == "query_method_db")
+        assert query_tool is not None
+
+    def test_get_reachable_methods_tool_exists(self):
+        """Verify get_reachable_methods_in_class tool exists."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseLocalizationTools(**deps)
+        tools, _ = tool_builder.all()
+
+        reachable_tool = next(t for t in tools if t.name == "get_reachable_methods_in_class")
+        assert reachable_tool is not None
+
+    def test_get_class_details_tool_exists(self):
+        """Verify get_class_details tool exists."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseLocalizationTools(**deps)
+        tools, _ = tool_builder.all()
+
+        class_details_tool = next(t for t in tools if t.name == "get_class_details")
+        assert class_details_tool is not None
+
+    def test_get_inherited_library_classes_tool_exists(self):
+        """Verify get_inherited_library_classes tool exists."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseLocalizationTools(**deps)
+        tools, _ = tool_builder.all()
+
+        inherited_tool = next(t for t in tools if t.name == "get_inherited_library_classes")
+        assert inherited_tool is not None

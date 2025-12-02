@@ -2,20 +2,32 @@ from __future__ import annotations
 
 import random
 from pathlib import Path
+from unittest.mock import MagicMock
 
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.test2nl.model.models import Test2NLEntry
-from nltest.utils.utilities import test2nl_entry_to_nl2test_input
-from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.nl2test.models.decomposition import DecompositionMode, LocalizedScenario
+import pytest
+from cldk import CLDK
+from cldk.analysis import AnalysisLevel
+
 from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
     GherkinSupervisorOrchestrator,
 )
+from nltest.nl2test.generation.supervisor.tools.base import BaseSupervisorTools
+from nltest.nl2test.generation.supervisor.tools.gherkin import GherkinSupervisorTools
+from nltest.nl2test.generation.supervisor.tools.grammatical import GrammaticalSupervisorTools
+from nltest.nl2test.models import AgentState
+from nltest.nl2test.models.decomposition import DecompositionMode, LocalizedScenario
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
-from nltest.utils.pretty.prints import pretty_print
+from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
+from nltest.test2nl.model.models import Test2NLEntry
+from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.compilation.maven import JavaMavenCompilation
+from nltest.utils.evaluation.test_grader import TestGrader
+from nltest.utils.file_io.structured_data_manager import StructuredDataManager
+from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import UsageTracker
-
-import pytest
+from nltest.utils.models import NL2TestMetadata
+from nltest.utils.pretty.prints import pretty_print
+from nltest.utils.utilities import test2nl_entry_to_nl2test_input
 
 
 class TestSupervisorAgent:
@@ -23,6 +35,8 @@ class TestSupervisorAgent:
     def _inject(self, nl2test_context):
         self.analysis = nl2test_context.analysis
         self.config = nl2test_context.config
+        self.project_root = nl2test_context.project_root
+        self.output_dir = nl2test_context.output_dir
 
     def test_supervisor_end_to_end(self):
         tracker = UsageTracker()
@@ -73,7 +87,14 @@ class TestSupervisorAgent:
             supervisor.assign_task(localized)
         )
 
-        pretty_print("Updated state", supervisor_state)
+        # Validate return types are AgentState
+        assert isinstance(supervisor_state, AgentState)
+        assert isinstance(localization_state, AgentState)
+        assert isinstance(composition_state, AgentState)
+
+        pretty_print("Supervisor state", supervisor_state)
+        pretty_print("Localization state", localization_state)
+        pretty_print("Composition state", composition_state)
 
         # Validate updated AgentState includes selected package/class
         assert supervisor_state.package is not None
@@ -81,3 +102,211 @@ class TestSupervisorAgent:
 
         prices = tracker.totals()
         pretty_print("Token usage", prices)
+
+        # Build qualified test class name
+        package = supervisor_state.package
+        class_name = supervisor_state.class_name
+        qualified_test_class_name = f"{package}.{class_name}" if package else class_name
+        method_signature = supervisor_state.method_signature or ""
+
+        # Regenerate analysis to pick up the new test class
+        new_analysis = CLDK(language="java").analysis(
+            project_path=project_root,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=self.output_dir,
+            eager=True,
+        )
+
+        # Get application classes for grading
+        cmn = CommonAnalysis(new_analysis)
+        _, application_classes = cmn.get_test_methods_classes_and_application_classes()
+
+        # Gather compilation errors
+        compilation_errors = JavaMavenCompilation(project_root).get_compilation_errors()
+        erroneous_files = [err.file for err in compilation_errors]
+
+        # Create grader and grade the test
+        test_grader = TestGrader(
+            analysis=new_analysis,
+            project_root=project_root,
+            project_erroneous_files=erroneous_files,
+            application_classes=application_classes,
+        )
+
+        nl2_metadata = NL2TestMetadata(
+            qualified_test_class_name=qualified_test_class_name,
+            code="",
+            method_signature=method_signature or None,
+        )
+
+        eval_result = test_grader.grade(nl2_input, nl2_metadata)
+
+        # Load and attach test code
+        fm = TestFileManager(project_root)
+        info = TestFileInfo(qualified_class_name=qualified_test_class_name)
+        try:
+            code = fm.load(info, encode_class_name=False)
+            eval_result.nl2test_metadata.code = code
+        except FileNotFoundError:
+            pass
+
+        # Print evaluation results
+        pretty_print("Evaluation result", eval_result)
+        pretty_print("Compiles", eval_result.compiles)
+        pretty_print("Structural eval", eval_result.structured_eval)
+        pretty_print("Coverage eval", eval_result.coverage_eval)
+
+        # Assert that the generated test compiles
+        assert eval_result.compiles, "Generated test should compile"
+
+        # Clean up generated test file
+        try:
+            fm.delete_single(info, encode_class_name=False)
+        except Exception:
+            pass
+
+
+class TestSupervisorToolInjection:
+    """Tests verifying tool injection after refactoring to shared utilities."""
+
+    def test_base_supervisor_tools_contains_expected_tools(self):
+        """Verify BaseSupervisorTools creates expected base tools."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_base_tools = {"view_test_code", "compile_and_execute_test", "finalize"}
+
+        assert expected_base_tools.issubset(tool_names), (
+            f"Missing base tools: {expected_base_tools - tool_names}"
+        )
+
+    def test_gherkin_supervisor_tools_contains_all_tools(self):
+        """Verify GherkinSupervisorTools includes base + Gherkin-specific tools."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = GherkinSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_tools = {
+            "view_test_code",
+            "compile_and_execute_test",
+            "finalize",
+            "call_localization_agent",
+            "call_composition_agent",
+        }
+
+        assert expected_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        )
+
+    def test_grammatical_supervisor_tools_contains_all_tools(self):
+        """Verify GrammaticalSupervisorTools includes base + Grammatical-specific tools."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = GrammaticalSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_tools = {
+            "view_test_code",
+            "compile_and_execute_test",
+            "finalize",
+            "call_localization_agent",
+            "call_composition_agent",
+        }
+
+        assert expected_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        )
+
+    def test_supervisor_allow_duplicate_tools_correct(self):
+        """Verify allow_duplicate_tools list contains expected tools."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = GherkinSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        _, allow_duplicates = tool_builder.all()
+
+        allow_dup_names = {t.name for t in allow_duplicates}
+        expected_duplicates = {"view_test_code", "compile_and_execute_test"}
+
+        assert expected_duplicates == allow_dup_names, (
+            f"Allow duplicates mismatch. Expected: {expected_duplicates}, Got: {allow_dup_names}"
+        )
+
+    def test_deferred_tool_call_localization_returns_instructions(self):
+        """Verify call_localization_agent returns instructions as expected."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = GherkinSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, _ = tool_builder.all()
+
+        call_loc_tool = next(t for t in tools if t.name == "call_localization_agent")
+        result = call_loc_tool.func(instructions="Find relevant methods")
+
+        assert result == {"instructions": "Find relevant methods"}
+
+    def test_deferred_tool_call_composition_returns_instructions(self):
+        """Verify call_composition_agent returns instructions as expected."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = GherkinSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, _ = tool_builder.all()
+
+        call_comp_tool = next(t for t in tools if t.name == "call_composition_agent")
+        result = call_comp_tool.func(instructions="Generate test code")
+
+        assert result == {"instructions": "Generate test code"}
+
+    def test_deferred_tool_finalize_returns_status(self):
+        """Verify finalize tool returns expected status dict."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, _ = tool_builder.all()
+
+        finalize_tool = next(t for t in tools if t.name == "finalize")
+        result = finalize_tool.func()
+
+        assert result == {"status": "finalize"}
+
+    def test_deferred_tool_view_test_code_returns_inputs(self):
+        """Verify view_test_code returns all input arguments."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, _ = tool_builder.all()
+
+        view_tool = next(t for t in tools if t.name == "view_test_code")
+        result = view_tool.func(
+            qualified_class_name="org.example.TestClass",
+            method_signature="testMethod()",
+        )
+
+        assert result["qualified_class_name"] == "org.example.TestClass"
+        assert result["method_signature"] == "testMethod()"
+
+    def test_deferred_tool_compile_and_execute_returns_empty(self):
+        """Verify compile_and_execute_test returns empty dict."""
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tool_builder = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tools, _ = tool_builder.all()
+
+        compile_tool = next(t for t in tools if t.name == "compile_and_execute_test")
+        result = compile_tool.func()
+
+        assert result == {}

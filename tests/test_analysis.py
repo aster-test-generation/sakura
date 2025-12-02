@@ -92,11 +92,10 @@ def test_focal_classes_and_methods_for_specific_test(nl2test_context):
 def test_compare_focal_classes_and_methods(nl2test_context):
     """Test that compares focal classes and methods between ground truth and prediction."""
 
-    # Easily adjustable parameters
-    gt_class = "org.springframework.samples.petclinic.owner.PetTypeFormatterTests"
-    gt_method = "shouldParse()"
-    pred_class = "org.springframework.samples.petclinic.owner.PetTypeFormatterTests"
-    pred_method = "shouldParse()"
+    gt_class = "org.apache.commons.cli.CommandLineTest"
+    gt_method = "testGetOptionPropertiesWithOption()"
+    pred_class = "org.apache.commons.cli.CommandLineParserTest"
+    pred_method = "testOptionPropertiesExtraction()"
 
     analysis = nl2test_context.analysis
 
@@ -174,6 +173,44 @@ def test_compare_focal_classes_and_methods(nl2test_context):
         },
     )
 
+    # Compute overlap scores
+    gt_focal_class_names = {fc.focal_class for fc in gt_focal_classes}
+    pred_focal_class_names = {fc.focal_class for fc in pred_focal_classes}
+
+    class_intersection = gt_focal_class_names & pred_focal_class_names
+    class_union = gt_focal_class_names | pred_focal_class_names
+    class_overlap = len(class_intersection) / len(class_union) if class_union else 1.0
+
+    method_intersection = gt_focal_methods & pred_focal_methods
+    method_union = gt_focal_methods | pred_focal_methods
+    method_overlap = len(method_intersection) / len(method_union) if method_union else 1.0
+
+    pretty_print(
+        "Overlap Scores",
+        {
+            "focal_classes": {
+                "intersection": sorted(class_intersection),
+                "gt_only": sorted(gt_focal_class_names - pred_focal_class_names),
+                "pred_only": sorted(pred_focal_class_names - gt_focal_class_names),
+                "overlap_score (IoU)": f"{class_overlap:.2%}",
+                "count": f"{len(class_intersection)}/{len(class_union)}",
+            },
+            "focal_methods": {
+                "intersection": sorted([
+                    f"{c}.{m}" for c, m in method_intersection
+                ]),
+                "gt_only": sorted([
+                    f"{c}.{m}" for c, m in (gt_focal_methods - pred_focal_methods)
+                ]),
+                "pred_only": sorted([
+                    f"{c}.{m}" for c, m in (pred_focal_methods - gt_focal_methods)
+                ]),
+                "overlap_score (IoU)": f"{method_overlap:.2%}",
+                "count": f"{len(method_intersection)}/{len(method_union)}",
+            },
+        },
+    )
+
     # Assert equality
     assert len(gt_focal_classes) == len(pred_focal_classes), (
         f"Number of focal classes differs: GT={len(gt_focal_classes)}, "
@@ -187,9 +224,6 @@ def test_compare_focal_classes_and_methods(nl2test_context):
     )
 
     # Compare focal classes in detail
-    gt_focal_class_names = {fc.focal_class for fc in gt_focal_classes}
-    pred_focal_class_names = {fc.focal_class for fc in pred_focal_classes}
-
     assert gt_focal_class_names == pred_focal_class_names, (
         f"Focal class names differ:\n"
         f"GT only: {gt_focal_class_names - pred_focal_class_names}\n"

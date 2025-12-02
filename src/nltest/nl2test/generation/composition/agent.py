@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from typing import Any, Dict, List, Tuple, Optional
 from pathlib import Path
 
@@ -8,19 +7,27 @@ from langchain_core.messages import AIMessage, ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
-from nltest.nl2test.models import AgentState, DecompositionMode
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.analysis.common_analysis import CommonAnalysis
-from nltest.utils.compilation.maven import JavaMavenCompilation, CompilationError
-from nltest.utils.execution.maven import ExecutionIssue, JavaMavenExecution
+from nltest.nl2test.core.message_redactor import MessageRedactor
+from nltest.nl2test.generation.common.cldk_normalizer import CLDKArgNormalizer
+from nltest.nl2test.generation.common.compilation_execution import CompilationExecutionMixin
+from nltest.nl2test.models import AgentState
 from nltest.utils.llm import LLMClient, FormatValidator
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
-from nltest.utils.pretty import RichLog
 from nltest.utils.tool_messages import format_tool_error, format_tool_ok
 
 
-class CompositionReActAgent(ReActAgent):
+class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
+    """
+    Composition agent that generates executable Java tests from localized scenarios.
+
+    Takes localized step sequences and generates compilable Java test code,
+    managing the test file lifecycle and validating compilation/execution.
+    """
+
+    # Redaction placeholder for token reduction
+    _CODE_REDACTED = "(redacted since new code generated)"
+
     def __init__(
             self,
             *,
@@ -32,8 +39,6 @@ class CompositionReActAgent(ReActAgent):
             max_iters: int = 30,
             parallelizable: bool = True,
     ):
-        # Allow caller to inject system_message for parity with localization
-
         super().__init__(
             llm=llm,
             tools=tools,
@@ -46,6 +51,7 @@ class CompositionReActAgent(ReActAgent):
 
     @staticmethod
     def _cleanup_empty_dirs(base_dir: Path, start_dir: Path) -> None:
+        """Remove empty directories up to base_dir after file deletion."""
         try:
             base = base_dir.resolve()
             current = start_dir.resolve()
@@ -62,33 +68,8 @@ class CompositionReActAgent(ReActAgent):
     def prepare_tool_args(
             self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
-        updated_args: Dict[str, Any] = raw_args
-
-        # Normalize class name for CLDK inner classes
-        normalize_class = {"get_method_details", "get_class_fields", "get_class_imports",
-                           "get_class_constructors_and_factories", "get_getters_and_setters", "extract_method_code",
-                           "get_call_site_details"}
-        if tool_name in normalize_class:
-            qualified_class_name = raw_args.get("qualified_class_name")
-            normalized_class = CommonAnalysis.get_cldk_class_name(qualified_class_name)
-            if normalized_class != qualified_class_name:
-                # Clone only if diff
-                if updated_args is raw_args:
-                    updated_args = dict(updated_args)
-                updated_args["qualified_class_name"] = normalized_class
-
-        normalize_method_sig = {"get_call_site_details", "get_method_details", "extract_method_code"}
-        if tool_name in normalize_method_sig:
-            qualified_class_name = updated_args.get("qualified_class_name")
-            method_signature = updated_args.get("method_signature")
-            normalized_sig = CommonAnalysis.get_cldk_method_sig(
-                qualified_class_name, method_signature
-            )
-            if normalized_sig != method_signature:
-                if updated_args is raw_args:
-                    updated_args = dict(updated_args)
-                updated_args["method_signature"] = normalized_sig
-
+        """Normalize tool arguments for CLDK compatibility."""
+        updated_args = CLDKArgNormalizer.normalize_args(tool_name, raw_args)
         return tool_name, updated_args
 
     def process_tool_output(
@@ -124,200 +105,42 @@ class CompositionReActAgent(ReActAgent):
                 )
             )
 
-    # Subclass hook
     def process_llm_output(self, tool_call: ToolCall, state: AgentState) -> None:
+        """Hook for processing LLM outputs (currently unused)."""
         tool_name = tool_call.get("name")
         handler_map = {
-            # "generate_test_code": self._process_generate_test_code_llm,
+            # "generate_test_code": self._process_generate_test_code_llm,  # DEPRECATED
         }
         handler = handler_map.get(tool_name)
 
-        # Only process if handler exists
         if handler:
             try:
                 handler(tool_call, state)
-            except Exception as exc:
-                RichLog.error(f"Error on altering LLM output for {tool_name}: {exc}")
+            except Exception:
+                pass  # Silently ignore LLM output processing errors
 
-    # DEPRECATED
-    def _process_generate_test_code_llm(self, tool_call: ToolCall, state: AgentState) -> None:
-        placeholder = "(test_code redacted for token reduction)"
-        raw_args = tool_call.get("args")
-        parsed_args = self.llm.parse_tool_args(raw_args)
-
-        if isinstance(parsed_args, dict):
-            sanitized_args = dict(parsed_args)
-        elif isinstance(raw_args, dict):
-            sanitized_args = dict(parsed_args)
-        else:
-            sanitized_args = {}
-
-        sanitized_args["test_code"] = placeholder
-
-        try:
-            if isinstance(raw_args, str):
-                tool_call["args"] = json.dumps(sanitized_args, ensure_ascii=True, sort_keys=True)
-            else:
-                tool_call["args"] = sanitized_args
-        except Exception:
-            tool_call["args"] = sanitized_args
-
-        call_id = tool_call.get("id")
-        if not call_id:
-            return
-
-        for message in reversed(state.messages):
-            if not isinstance(message, AIMessage):
-                continue
-
-            tool_calls = message.tool_calls
-            for idx, call in enumerate(tool_calls):
-                if call.get("id") != call_id:
-                    continue
-                tool_calls[idx] = tool_call
-
-                # Raw provider metadata
-                additional_kwargs = message.additional_kwargs
-                if isinstance(additional_kwargs, dict):
-                    kw_calls = additional_kwargs.get("tool_calls")
-                    if isinstance(kw_calls, list) and idx < len(kw_calls):
-                        kw_calls[idx] = tool_call
-                return
-
-    def _clear_previous_test_code_results(self, state: AgentState) -> None:
+    def _redact_previous_test_code_results(self, state: AgentState) -> None:
         """Redact stale tool outputs whenever new test code is generated."""
-        # Note: Used for view_test_code and compile_and_execute_test, which would have outdated test code data
-        call_lookup: Dict[str, str] = {}
-        redacted = "(redacted since new code generated)"
+        MessageRedactor.redact_tool_outputs_by_tool(
+            state,
+            tool_redactions={
+                "view_test_code": {"source": self._CODE_REDACTED},
+                "compile_and_execute_test": {
+                    "compilation": self._CODE_REDACTED,
+                    "execution": self._CODE_REDACTED,
+                },
+            },
+        )
 
-        def _load_payload(content: Any) -> Tuple[Optional[Dict[str, Any]], str]:
-            if isinstance(content, str):
-                try:
-                    return json.loads(content), "str"
-                except json.JSONDecodeError:
-                    return None, "str"
-            if isinstance(content, dict):
-                return content, "dict"
-            return None, "other"
-
-        for message in state.messages:
-            # ToolMessage only optionally has tool name so backtrack to the Toolcall to get the name just in acse
-            if isinstance(message, AIMessage):
-                tool_calls = message.tool_calls or []
-                for tc in tool_calls:
-                    tc_id = tc.get("id")
-                    tc_name = tc.get("name")
-                    if tc_id and tc_name:
-                        call_lookup[tc_id] = tc_name
-                continue
-
-            if not isinstance(message, ToolMessage):
-                continue
-
-            # message should only be ToolMessage
-            tool_call_id = message.tool_call_id
-            tool_name = message.name
-            if not tool_name and tool_call_id:
-                tool_name = call_lookup.get(tool_call_id)
-
-            if tool_name not in {"view_test_code", "compile_and_execute_test"}:
-                continue
-
-            payload, payload_type = _load_payload(message.content)
-            if not isinstance(payload, dict):
-                continue
-
-            # Skip errors
-            if payload.get("status") != "ok":
-                continue
-
-            data = payload.get("data")
-            if not isinstance(data, dict):
-                continue
-
-            updated = False
-            if tool_name == "view_test_code":
-                if "source" in data:
-                    data["source"] = redacted
-                    updated = True
-            elif tool_name == "compile_and_execute_test":
-                if "compilation" in data:
-                    data["compilation"] = redacted
-                    updated = True
-                if "execution" in data:
-                    data["execution"] = redacted
-                    updated = True
-
-            if not updated:
-                continue
-
-            # Type safe but should always be a str
-            if payload_type == "str":
-                message.content = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-            else:
-                message.content = payload
-
-    def _clear_previous_test_code_input(self, state: AgentState) -> None:
+    def _redact_previous_test_code_inputs(self, state: AgentState) -> None:
         """Redact older generate_test_code inputs when new code is saved."""
-        # Call on generate_test_code tool calls
-        redacted = "(redacted since new code generated)"
-        latest_call_id: Optional[str] = None
-
-        # Identify the most recent generate_test_code call id
-        for message in reversed(state.messages):
-            if not isinstance(message, AIMessage):
-                continue
-            tool_calls = message.tool_calls or []
-            for call in reversed(tool_calls):
-                if call.get("name") == "generate_test_code":
-                    latest_call_id = call.get("id")
-                    break
-            if latest_call_id:
-                break
-
-        if not latest_call_id:
-            return
-
-        for message in state.messages:
-            if not isinstance(message, AIMessage):
-                continue
-
-            tool_calls = message.tool_calls or []
-            for idx, call in enumerate(tool_calls):
-                if call.get("name") != "generate_test_code":
-                    continue
-                if call.get("id") == latest_call_id:
-                    continue
-
-                raw_args = call.get("args")
-                parsed_args = self.llm.parse_tool_args(raw_args)
-
-                if isinstance(parsed_args, dict):
-                    sanitized_args = dict(parsed_args)
-                elif isinstance(raw_args, dict):
-                    sanitized_args = dict(raw_args)
-                else:
-                    sanitized_args = {}
-
-                sanitized_args["test_code"] = redacted
-
-                try:
-                    if isinstance(raw_args, str):
-                        call["args"] = json.dumps(sanitized_args, ensure_ascii=True, sort_keys=True)
-                    else:
-                        call["args"] = sanitized_args
-                except Exception:
-                    call["args"] = sanitized_args
-
-                tool_calls[idx] = call
-
-                additional_kwargs = message.additional_kwargs
-                if isinstance(additional_kwargs, dict):
-                    kw_calls = additional_kwargs.get("tool_calls")
-                    if isinstance(kw_calls, list) and idx < len(kw_calls):
-                        kw_calls[idx] = call
-
-            message.tool_calls = tool_calls
+        MessageRedactor.redact_tool_inputs(
+            state,
+            tool_name="generate_test_code",
+            keys_to_redact={"test_code": self._CODE_REDACTED},
+            llm_client=self.llm,
+            exclude_latest=True,
+        )
 
     def _process_generate_test_code_tool(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
@@ -357,8 +180,8 @@ class CompositionReActAgent(ReActAgent):
 
             saved_qcn, saved_path = fm.save_single(new_info, encode_class_name=False)
 
-        self._clear_previous_test_code_results(state)
-        self._clear_previous_test_code_input(state)
+        self._redact_previous_test_code_results(state)
+        self._redact_previous_test_code_inputs(state)
 
         outputs.append(
             ToolMessage(
@@ -463,120 +286,11 @@ class CompositionReActAgent(ReActAgent):
             )
         )
 
-    def _format_compilation_error(self, compilation_error: CompilationError) -> str:
-        line = compilation_error.line if compilation_error.line is not None else "Unknown"
-
-        if compilation_error.details:
-            details_text = "\n".join(compilation_error.details)
-        else:
-            details_text = "No compiler details were provided."
-
-        return (
-            f"Line: {line}\n"
-            f"Error Message: {compilation_error.message}\n"
-            f"Error Details:\n{details_text}"
-        )
-
-    def _format_execution_issue(self, execution_issue: ExecutionIssue) -> str:
-        class_name = execution_issue.class_name
-        test_name = execution_issue.test_name
-        test_case = f"{class_name}.{test_name}" if class_name and test_name else None
-
-        line = execution_issue.line if execution_issue.line is not None else "Unknown"
-
-        issue_type = execution_issue.kind or "Unknown"
-        message = execution_issue.message or "No execution message was provided."
-        stack_trace = execution_issue.stack_trace.strip() if execution_issue.stack_trace else "No stack trace was captured."
-
-        return (
-            f"Test Case: {test_case}\n"
-            f"Issue Kind: {issue_type}\n"
-            f"Message: {message}\n"
-            f"Line: {line}\n"
-            f"Stack Trace:\n{stack_trace}"
-        )
-
     def _process_compile_and_execute_test_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        tool_name = tool_call["name"]
-        if not state.class_name or not state.method_signature:
-            outputs.append(
-                ToolMessage(
-                    content=format_tool_error(
-                        code="no_active_test",
-                        message="No test code has been generated or saved.",
-                        details={"tool": tool_name, "tool_call_id": tool_call["id"]},
-                    ),
-                    tool_call_id=tool_call["id"],
-                )
-            )
-            return
-
-        compilation_errors: List[CompilationError] = JavaMavenCompilation(self.project_root).get_compilation_errors()
-        file_key = f"{state.class_name}.java"
-        has_error_for_project = len(compilation_errors) > 0
-        has_error_for_target = any(ef.file.endswith(file_key) for ef in compilation_errors)
-
-        target_errors: List[str] = [self._format_compilation_error(compilation_error) for compilation_error in
-                                    compilation_errors if compilation_error.file.endswith(file_key)]
-
-        result_payload: Dict[str, Any] = {
-            "compilation": {
-                "status": "success" if not has_error_for_project else "compilation_error",
-                "target_class_file": file_key,
-                "has_errors_for_project": has_error_for_project,
-                "has_errors_for_target": has_error_for_target,
-                "error_details_for_target_class": target_errors,
-            }
-        }
-
-        if has_error_for_project and not has_error_for_target:
-            files_with_errors = [compilation_error.file for compilation_error in compilation_errors]
-            error_details = [self._format_compilation_error(compilation_error) for compilation_error in
-                             compilation_errors]
-            raise ProjectCompilationError(
-                "Unrelated project files failed to compile.",
-                extra_info={
-                    "files_with_errors": sorted(files_with_errors),
-                    "error_details": error_details
-                },
-            )
-
-        if not has_error_for_target:
-            qualified_class_name = f"{state.package}.{state.class_name}" if state.package else state.class_name
-            method_signature = state.method_signature
-            execution_issues: List[ExecutionIssue] = JavaMavenExecution(self.project_root).get_execution_errors(
-                qualified_class_name,
-                method_signature)
-            has_exec_error = len(execution_issues) > 0
-            execution_failures: List[ExecutionIssue] = [execution_issue for execution_issue in execution_issues if
-                                                        execution_issue.kind == "failure"]
-            execution_errors: List[ExecutionIssue] = [execution_issue for execution_issue in execution_issues if
-                                                      execution_issue.kind == "error"]
-
-            result_payload["execution"] = {
-                "status": "success" if not has_exec_error else "execution_error",
-                "num_failures": len(execution_failures),
-                "num_errors": len(execution_errors),
-                "execution_failures": [self._format_execution_issue(execution_issue) for execution_issue in
-                                       execution_failures],
-                "execution_errors": [self._format_execution_issue(execution_issue) for execution_issue in
-                                     execution_errors],
-            }
-
-        else:
-            result_payload["execution"] = {
-                "status": "compilation_errors",
-                "message": "Fix compilation errors in target test class before execution.",
-            }
-
-        outputs.append(
-            ToolMessage(
-                content=format_tool_ok(result_payload),
-                tool_call_id=tool_call["id"],
-            )
-        )
+        """Process compile_and_execute_test using shared mixin."""
+        self.process_compile_and_execute(tool_call, state, outputs)
 
     def _process_finalize_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
@@ -613,6 +327,7 @@ class CompositionReActAgent(ReActAgent):
             order = result.get("order")
             note = result.get("note")
 
+        # Handle GRAMMATICAL mode (atomic_blocks)
         if state.atomic_blocks is not None:
             if order is None or note is None:
                 outputs.append(
@@ -664,6 +379,7 @@ class CompositionReActAgent(ReActAgent):
                 )
             return
 
+        # Handle GHERKIN mode (localized_scenario)
         if state.localized_scenario is not None:
             if step_id is None or comment is None:
                 outputs.append(
@@ -683,19 +399,17 @@ class CompositionReActAgent(ReActAgent):
                 return
 
             found = False
+            # Check setup steps
             for entry in state.localized_scenario.setup:
                 if entry.id == int(step_id):
                     entry.comments = str(comment)
                     found = True
                     break
 
+            # Check gherkin groups
             if not found:
                 for grouped in state.localized_scenario.gherkin_groups:
-                    for cluster in (
-                        grouped.given,
-                        grouped.when,
-                        grouped.then,
-                    ):
+                    for cluster in (grouped.given, grouped.when, grouped.then):
                         for entry in cluster:
                             if entry.id == int(step_id):
                                 entry.comments = str(comment)
@@ -706,6 +420,7 @@ class CompositionReActAgent(ReActAgent):
                     if found:
                         break
 
+            # Check teardown steps
             if not found:
                 for entry in state.localized_scenario.teardown:
                     if entry.id == int(step_id):
@@ -739,6 +454,7 @@ class CompositionReActAgent(ReActAgent):
                 )
             return
 
+        # No scenario or atomic blocks present
         outputs.append(
             ToolMessage(
                 content=format_tool_error(

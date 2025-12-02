@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-import json
 from typing import List, Any, Dict, Tuple, Optional
 from pathlib import Path
 
-from langchain_core.messages import AIMessage, ToolMessage, ToolCall
+from langchain_core.messages import ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
+from nltest.nl2test.core.message_redactor import MessageRedactor
+from nltest.nl2test.generation.common.compilation_execution import CompilationExecutionMixin
 from nltest.nl2test.generation.composition.orchestrators.base import (
     BaseCompositionOrchestrator,
 )
@@ -15,17 +16,25 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
     BaseLocalizationOrchestrator,
 )
 from nltest.nl2test.models import AgentState
-from nltest.nl2test.models import LocalizedScenario, AtomicBlockList
-from nltest.utils.analysis.common_analysis import CommonAnalysis
-from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
-from nltest.utils.execution.maven import ExecutionIssue, JavaMavenExecution
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.tool_messages import format_tool_error, format_tool_ok
 
 
-class SupervisorReActAgent(ReActAgent):
+class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
+    """
+    Supervisor agent that orchestrates localization and composition sub-agents.
+
+    Coordinates the end-to-end conversion of natural language test descriptions
+    into executable Java tests by delegating to specialized sub-agents.
+    """
+
+    # Redaction placeholders for token reduction
+    _BLOCK_REDACTED = "(redacted due to updated blocks)"
+    _SCENARIO_REDACTED = "(redacted due to updated scenario)"
+    _CODE_REDACTED = "(redacted since new code generated)"
+
     def __init__(
             self,
             *,
@@ -61,7 +70,7 @@ class SupervisorReActAgent(ReActAgent):
     def prepare_tool_args(
             self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
-        # Note: No need to normalize method sig to account for CLDK constructor calls since no static analysis tools
+        # No CLDK normalization needed - supervisor doesn't use static analysis tools
         return tool_name, raw_args
 
     def _clean_agent(
@@ -69,6 +78,7 @@ class SupervisorReActAgent(ReActAgent):
             state: Optional[AgentState],
             orchestrator: BaseLocalizationOrchestrator | BaseCompositionOrchestrator,
     ) -> Optional[AgentState]:
+        """Reset sub-agent state for fresh invocation."""
         orchestrator.reset_agent()
         if state is None:
             return None
@@ -109,69 +119,34 @@ class SupervisorReActAgent(ReActAgent):
                 )
             )
 
-    def _load_tool_payload(self, content: Any) -> Tuple[Optional[Dict[str, Any]], str]:
-        if isinstance(content, str):
-            try:
-                return json.loads(content), "str"
-            except json.JSONDecodeError:
-                return None, "str"
-        if isinstance(content, dict):
-            return content, "dict"
-        return None, "other"
-
-    def _store_tool_payload(self, message: ToolMessage, payload: Dict[str, Any], payload_type: str) -> None:
-        if payload_type == "str":
-            message.content = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-        else:
-            message.content = payload
-
-    def _clean_previous_block_output(self, state: AgentState) -> None:
+    def _redact_previous_block_outputs(self, state: AgentState) -> None:
         """Redact stale block/scenario payloads when new results are saved."""
-        call_lookup: Dict[str, str] = {}
+        MessageRedactor.redact_tool_outputs(
+            state,
+            tool_names={"call_localization_agent", "call_composition_agent"},
+            keys_to_redact={
+                "blocks": self._BLOCK_REDACTED,
+                "scenario": self._SCENARIO_REDACTED,
+            },
+        )
 
-        for message in state.messages:
-            # ToolMessage only optionally has tool name so backtrack to the Toolcall to get the name just in acse
-            if isinstance(message, AIMessage):
-                tool_calls = message.tool_calls or []
-                for tc in tool_calls:
-                    tc_id = tc.get("id")
-                    tc_name = tc.get("name")
-                    if tc_id and tc_name:
-                        call_lookup[tc_id] = tc_name
-                continue
-
-            if not isinstance(message, ToolMessage):
-                continue
-
-            # message should only be ToolMessage
-            tool_call_id = message.tool_call_id
-            tool_name = message.name
-            if not tool_name and tool_call_id:
-                tool_name = call_lookup.get(tool_call_id)
-
-            if tool_name not in {"call_localization_agent", "call_composition_agent"}:
-                continue
-
-            payload, payload_type = self._load_tool_payload(message.content)
-            if not isinstance(payload, dict) or payload.get("status") != "ok":
-                continue
-
-            data = payload.get("data")
-            if not isinstance(data, dict):
-                continue
-
-            updated = False
-            if "blocks" in data:
-                data["blocks"] = "(redacted due to updated blocks)"
-                updated = True
-            if "scenario" in data:
-                data["scenario"] = "(redacted due to updated scenario)"
-                updated = True
-
-            if not updated:
-                continue
-
-            self._store_tool_payload(message, payload, payload_type)
+    def _redact_previous_test_code_results(self, state: AgentState) -> None:
+        """Redact outdated tool outputs when new composition results arrive."""
+        MessageRedactor.redact_tool_outputs_by_tool(
+            state,
+            tool_redactions={
+                "view_test_code": {"source": self._CODE_REDACTED},
+                "compile_and_execute_test": {
+                    "compilation": self._CODE_REDACTED,
+                    "execution": self._CODE_REDACTED,
+                },
+                "call_composition_agent": {
+                    "package": self._CODE_REDACTED,
+                    "class_name": self._CODE_REDACTED,
+                    "method_signature": self._CODE_REDACTED,
+                },
+            },
+        )
 
     def _process_call_localization_agent_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
@@ -198,12 +173,7 @@ class SupervisorReActAgent(ReActAgent):
 
         prev_state = self._clean_agent(self.localization_state, orchestrator)
 
-        canonical_blocks = None
-        if state.localized_scenario is not None:
-            canonical_blocks = state.localized_scenario
-        elif state.atomic_blocks is not None:
-            canonical_blocks = state.atomic_blocks
-
+        canonical_blocks = state.localized_scenario or state.atomic_blocks
         if canonical_blocks is None:
             outputs.append(
                 ToolMessage(
@@ -222,6 +192,7 @@ class SupervisorReActAgent(ReActAgent):
                 )
             )
             return
+
         try:
             updated_state: AgentState = orchestrator.assign_task(
                 canonical_blocks, instructions=instructions, agent_state=prev_state
@@ -267,7 +238,7 @@ class SupervisorReActAgent(ReActAgent):
         elif updated_state.localized_scenario is not None:
             payload["scenario"] = updated_state.localized_scenario.model_dump()
 
-        self._clean_previous_block_output(state)
+        self._redact_previous_block_outputs(state)
 
         outputs.append(
             ToolMessage(
@@ -275,69 +246,6 @@ class SupervisorReActAgent(ReActAgent):
                 tool_call_id=tool_call["id"],
             )
         )
-
-    def _clear_previous_test_code_results(self, state: AgentState) -> None:
-        """Redact outdated tool outputs when new composition results arrive."""
-        call_lookup: Dict[str, str] = {}
-        redacted = "(redacted since new code generated)"
-
-        for message in state.messages:
-            # ToolMessage only optionally has tool name so backtrack to the Toolcall to get the name just in acse
-            if isinstance(message, AIMessage):
-                tool_calls = message.tool_calls or []
-                for tc in tool_calls:
-                    tc_id = tc.get("id")
-                    tc_name = tc.get("name")
-                    if tc_id and tc_name:
-                        call_lookup[tc_id] = tc_name
-                continue
-
-            if not isinstance(message, ToolMessage):
-                continue
-
-            # message should only be ToolMessage
-            tool_call_id = message.tool_call_id
-            tool_name = message.name
-            if not tool_name and tool_call_id:
-                tool_name = call_lookup.get(tool_call_id)
-
-            if tool_name not in {"view_test_code", "compile_and_execute_test", "call_composition_agent"}:
-                continue
-
-            payload, payload_type = self._load_tool_payload(message.content)
-            if not isinstance(payload, dict):
-                continue
-
-            # Skip errors
-            if payload.get("status") != "ok":
-                continue
-
-            data = payload.get("data")
-            if not isinstance(data, dict):
-                continue
-
-            updated = False
-            if tool_name == "view_test_code":
-                if "source" in data:
-                    data["source"] = redacted
-                    updated = True
-            elif tool_name == "compile_and_execute_test":
-                if "compilation" in data:
-                    data["compilation"] = redacted
-                    updated = True
-                if "execution" in data:
-                    data["execution"] = redacted
-                    updated = True
-            else:
-                for key in ("package", "class_name", "method_signature"):
-                    if key in data:
-                        data[key] = redacted
-                        updated = True
-
-            if not updated:
-                continue
-
-            self._store_tool_payload(message, payload, payload_type)
 
     def _process_call_composition_agent_output(
             self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
@@ -364,12 +272,7 @@ class SupervisorReActAgent(ReActAgent):
 
         prev_state = self._clean_agent(self.composition_state, orchestrator)
 
-        canonical_blocks = None
-        if state.localized_scenario is not None:
-            canonical_blocks = state.localized_scenario
-        elif state.atomic_blocks is not None:
-            canonical_blocks = state.atomic_blocks
-
+        canonical_blocks = state.localized_scenario or state.atomic_blocks
         if canonical_blocks is None:
             outputs.append(
                 ToolMessage(
@@ -388,6 +291,7 @@ class SupervisorReActAgent(ReActAgent):
                 )
             )
             return
+
         try:
             updated_state: AgentState = orchestrator.assign_task(
                 canonical_blocks, instructions=instructions, agent_state=prev_state
@@ -438,8 +342,8 @@ class SupervisorReActAgent(ReActAgent):
         elif updated_state.localized_scenario is not None:
             payload["scenario"] = updated_state.localized_scenario.model_dump()
 
-        self._clean_previous_block_output(state)
-        self._clear_previous_test_code_results(state)
+        self._redact_previous_block_outputs(state)
+        self._redact_previous_test_code_results(state)
 
         outputs.append(
             ToolMessage(
@@ -536,120 +440,11 @@ class SupervisorReActAgent(ReActAgent):
             )
         )
 
-    def _format_compilation_error(self, compilation_error: CompilationError) -> str:
-        line = compilation_error.line if compilation_error.line is not None else "Unknown"
-
-        if compilation_error.details:
-            details_text = "\n".join(compilation_error.details)
-        else:
-            details_text = "No compiler details were provided."
-
-        return (
-            f"Line: {line}\n"
-            f"Error Message: {compilation_error.message}\n"
-            f"Error Details:\n{details_text}"
-        )
-
-    def _format_execution_issue(self, execution_issue: ExecutionIssue) -> str:
-        class_name = execution_issue.class_name
-        test_name = execution_issue.test_name
-        test_case = f"{class_name}.{test_name}" if class_name and test_name else None
-
-        line = execution_issue.line if execution_issue.line is not None else "Unknown"
-
-        issue_type = execution_issue.kind or "Unknown"
-        message = execution_issue.message or "No execution message was provided."
-        stack_trace = execution_issue.stack_trace.strip() if execution_issue.stack_trace else "No stack trace was captured."
-
-        return (
-            f"Test Case: {test_case}\n"
-            f"Issue Kind: {issue_type}\n"
-            f"Message: {message}\n"
-            f"Line: {line}\n"
-            f"Stack Trace:\n{stack_trace}"
-        )
-
     def _process_compile_and_execute_test_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        tool_name = tool_call["name"]
-        if not state.class_name or not state.method_signature:
-            outputs.append(
-                ToolMessage(
-                    content=format_tool_error(
-                        code="no_active_test",
-                        message="No test code has been generated or saved.",
-                        details={"tool": tool_name, "tool_call_id": tool_call["id"]},
-                    ),
-                    tool_call_id=tool_call["id"],
-                )
-            )
-            return
-
-        compilation_errors: List[CompilationError] = JavaMavenCompilation(self.project_root).get_compilation_errors()
-        file_key = f"{state.class_name}.java"
-        has_error_for_project = len(compilation_errors) > 0
-        has_error_for_target = any(ef.file.endswith(file_key) for ef in compilation_errors)
-
-        target_errors: List[str] = [self._format_compilation_error(compilation_error) for compilation_error in
-                                    compilation_errors if compilation_error.file.endswith(file_key)]
-
-        result_payload: Dict[str, Any] = {
-            "compilation": {
-                "status": "success" if not has_error_for_project else "compilation_error",
-                "target_class_file": file_key,
-                "has_errors_for_project": has_error_for_project,
-                "has_errors_for_target": has_error_for_target,
-                "error_details_for_target_class": target_errors,
-            }
-        }
-
-        if has_error_for_project and not has_error_for_target:
-            files_with_errors = [compilation_error.file for compilation_error in compilation_errors]
-            error_details = [self._format_compilation_error(compilation_error) for compilation_error in
-                             compilation_errors]
-            raise ProjectCompilationError(
-                "Unrelated project files failed to compile.",
-                extra_info={
-                    "files_with_errors": sorted(files_with_errors),
-                    "error_details": error_details
-                },
-            )
-
-        if not has_error_for_target:
-            qualified_class_name = f"{state.package}.{state.class_name}" if state.package else state.class_name
-            method_signature = state.method_signature
-            execution_issues: List[ExecutionIssue] = JavaMavenExecution(self.project_root).get_execution_errors(
-                qualified_class_name,
-                method_signature)
-            has_exec_error = len(execution_issues) > 0
-            execution_failures: List[ExecutionIssue] = [execution_issue for execution_issue in execution_issues if
-                                                        execution_issue.kind == "failure"]
-            execution_errors: List[ExecutionIssue] = [execution_issue for execution_issue in execution_issues if
-                                                      execution_issue.kind == "error"]
-
-            result_payload["execution"] = {
-                "status": "success" if not has_exec_error else "execution_error",
-                "num_failures": len(execution_failures),
-                "num_errors": len(execution_errors),
-                "execution_failures": [self._format_execution_issue(execution_issue) for execution_issue in
-                                       execution_failures],
-                "execution_errors": [self._format_execution_issue(execution_issue) for execution_issue in
-                                     execution_errors],
-            }
-
-        else:
-            result_payload["execution"] = {
-                "status": "compilation_errors",
-                "message": "Fix compilation errors in target test class before execution.",
-            }
-
-        outputs.append(
-            ToolMessage(
-                content=format_tool_ok(result_payload),
-                tool_call_id=tool_call["id"],
-            )
-        )
+        """Process compile_and_execute_test using shared mixin."""
+        self.process_compile_and_execute(tool_call, state, outputs)
 
     def _process_finalize_tool_output(
             self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List

@@ -1,36 +1,26 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import textwrap
 from typing import List, Any, Dict, Union, Tuple
 
 from cldk.analysis.java import JavaAnalysis
-from cldk.models.java.models import JMethodDetail, JCallable
 from langchain_core.tools import StructuredTool, BaseTool
 
+from nltest.nl2test.core.deferred_tool import DeferredTool
 from nltest.nl2test.models import (
     NL2TestInput,
     QueryClassArgs,
-    QueryMethodArgs,
     GenerateTestCodeArgs,
-    AtomicBlockList,
     FinalizeCommentsArgs,
     NoArgs,
-    ViewTestCodeArgs,
 )
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis.common_analysis import CommonAnalysis
 from nltest.utils.exceptions import (
-    CallSiteNotFoundError,
     ClassNotFoundError,
-    MethodNotFoundError,
     ToolExceptionHandler,
 )
-from nltest.utils.compilation import JavaCompilation
-from nltest.utils.execution.execution_old import JavaExecution
-from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.composition.tool_descriptions import (
     GET_CLASS_FIELDS_DESC,
@@ -41,24 +31,28 @@ from nltest.nl2test.generation.composition.tool_descriptions import (
     GENERATE_TEST_CODE_DESC,
     FINALIZE_DESC,
 )
-from nltest.nl2test.generation.common.tool_descriptions import (
-    EXTRACT_CODE_DESC,
-    METHOD_DETAILS_DESC,
-    CALL_SITE_DETAILS_DESC,
-    VIEW_TEST_CODE_DESC,
-    COMPILE_AND_EXECUTE_TEST_DESC,
-)
 from nltest.nl2test.generation.common.tools.common_java_analysis import (
     CommonJavaAnalysisTools,
 )
 from nltest.nl2test.generation.common.tools.common_search import (
     CommonSearchTools,
 )
+from nltest.nl2test.generation.common.tools.common_test_tools import (
+    CommonTestTools,
+)
 from nltest.utils.file_io.pom_processor import PomProcessor
 
 
 class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
-    """Shared composition tools; subclasses can extend with mode-specific tools."""
+    """
+    Shared composition tools; subclasses can extend with mode-specific tools.
+
+    Provides tools for:
+    - Code analysis (class fields, imports, constructors, getters/setters)
+    - Test generation (generate_test_code - deferred to agent)
+    - Test validation (view_test_code, compile_and_execute_test - deferred to agent)
+    - Finalization (finalize - deferred to agent)
+    """
 
     def __init__(
             self,
@@ -76,11 +70,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         self.structured_llm = structured_llm
         self.method_searcher = method_searcher
 
-        # Accept project root directly
         self.project_root: Path = Path(project_root)
         self.nl2_input: NL2TestInput = nl2_input
 
-        # Keep the same initial tool set as before; subclasses may append.
         self.tools: List[BaseTool] = [
             self._make_query_class_tool(),
             self._make_extract_code_tool(),
@@ -90,30 +82,23 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
             self._make_get_class_constructors_and_factories_tool(),
             self._make_get_getters_and_setters_tool(),
             self._make_get_maven_dependencies_tool(),
-            self._make_view_test_code_tool(),
+            CommonTestTools.make_view_test_code_tool(),
             self._make_generate_test_tool(),
-            self._make_compile_and_execute_test_tool(),
+            CommonTestTools.make_compile_and_execute_test_tool(),
             self._make_finalize_tool(),
             self._make_call_site_details_tool(),
-            # self._make_compile_test_tool(),  # DEPRECATED
-            # self._make_execution_test_tool(),  # DEPRECATED
         ]
 
-        # Tools that are allowed to be invoked repeatedly with identical args
-        # without being treated as duplicates. Empty by default.
         self.allow_duplicate_tools: List[BaseTool] = [
-            self._make_view_test_code_tool(),
-            self._make_compile_and_execute_test_tool(),
+            CommonTestTools.make_view_test_code_tool(),
+            CommonTestTools.make_compile_and_execute_test_tool(),
         ]
 
     def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
-        # Return tool list and the subset allowed to duplicate
         return self.tools, self.allow_duplicate_tools
 
-    # query_class_db now provided by CommonSearchTools
-
-    # For instantiating class properties that might be used
     def _make_get_class_fields_tool(self) -> StructuredTool:
+        """Get field declarations for a class."""
         def _get_class_fields(
                 qualified_class_name: str,
         ) -> List[Dict[str, Union[str, List[str]]]]:
@@ -144,8 +129,8 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    # For mocking dependencies or imports in test file
     def _make_get_class_imports_tool(self) -> StructuredTool:
+        """Get imports for a class."""
         def _get_class_imports(qualified_class_name: str) -> List[str]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -166,8 +151,8 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    # Understand how to instantiate class objects and requirements
     def _make_get_class_constructors_and_factories_tool(self) -> StructuredTool:
+        """Get constructors and factory methods for a class."""
         def _get_class_constructors_and_factories(
                 qualified_class_name: str,
         ) -> List[Dict[str, str]]:
@@ -219,6 +204,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         )
 
     def _make_get_getters_and_setters_tool(self) -> StructuredTool:
+        """Get getter and setter methods for a class."""
         def _get_getters_and_setters(qualified_class_name: str) -> List[str]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -249,6 +235,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         )
 
     def _make_get_maven_dependencies_tool(self) -> StructuredTool:
+        """Get Maven dependencies from pom.xml."""
         def _get_maven_dependencies() -> List[Dict[str, str]]:
             deps = PomProcessor.identify_dependencies(self.project_root)
             return [
@@ -263,92 +250,34 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    def _make_view_test_code_tool(self) -> StructuredTool:
-        def _view_test_code(start_line: int, end_line: int) -> dict:
-            if start_line <= 1 or end_line <= 1:
-                raise ValueError("start_line and end_line must be greater than 1.")
-            if end_line < start_line:
-                raise ValueError("end_line must be greater than or equal to start_line.")
-            return {"start_line": start_line, "end_line": end_line}
+    def _make_generate_test_tool(self) -> BaseTool:
+        """
+        Create the generate_test_code tool.
 
-        return StructuredTool.from_function(
-            func=_view_test_code,
-            name="view_test_code",
-            description=textwrap.dedent(VIEW_TEST_CODE_DESC).strip(),
-            args_schema=ViewTestCodeArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    def _make_generate_test_tool(self) -> StructuredTool:
-        def _generate_test_code(
-                test_code: str, qualified_class_name: str, method_signature: str
-        ) -> dict:
-            # NOTE: Work is done by the agent hook for state injection
-            return {
-                "test_code": test_code,
-                "qualified_class_name": qualified_class_name,
-                "method_signature": method_signature,
-            }
-
-        return StructuredTool.from_function(
-            func=_generate_test_code,
+        This is a deferred tool - it returns all inputs and the agent's
+        process_tool_output hook handles file saving and state updates.
+        """
+        return DeferredTool.create(
             name="generate_test_code",
             description=textwrap.dedent(GENERATE_TEST_CODE_DESC).strip(),
             args_schema=GenerateTestCodeArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
+            returns_input_keys=["test_code", "qualified_class_name", "method_signature"],
+            processing_note="Agent saves test file to filesystem and updates state.package, "
+                           "state.class_name, state.method_signature",
         )
 
-    # DEPRECATED
-    def _make_compile_test_tool(self) -> StructuredTool:
-        def _compile_test_code() -> Dict[str, Any]:
-            erroneous_files = JavaCompilation.get_erroneous_files(self.project_root)
+    def _make_finalize_tool(self) -> BaseTool:
+        """
+        Create the finalize tool.
 
-            class_key = TestFileManager(self.project_root).encode_class_name(
-                self.nl2_input.id
-            )
-            file_key = f"{class_key}.java"
-            has_error = any(
-                ef.endswith(file_key) or ef == file_key for ef in erroneous_files
-            )
-
-            return {
-                "erroneous_files": erroneous_files,
-                "target_class_file": file_key,
-                "has_errors_for_target": has_error,
-            }
-
-        return StructuredTool.from_function(
-            func=_compile_test_code,
-            name="compile_test_code",
-            description=textwrap.dedent("").strip(),
-            args_schema=NoArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    def _make_compile_and_execute_test_tool(self) -> StructuredTool:
-        def _compile_and_execute_test() -> dict:
-            # NOTE: Work is done by the agent for state injection
-            return {}
-
-        return StructuredTool.from_function(
-            func=_compile_and_execute_test,
-            name="compile_and_execute_test",
-            description=textwrap.dedent(COMPILE_AND_EXECUTE_TEST_DESC).strip(),
-            args_schema=NoArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
-        )
-
-    def _make_finalize_tool(self) -> StructuredTool:
-        def _finalize(comments: str) -> str:
-            # Return comments; agent will set final state and end.
-            return str(comments)
-
-        return StructuredTool.from_function(
-            func=_finalize,
+        This is a deferred tool - it returns comments and the agent's
+        process_tool_output hook sets final state and ends the run.
+        """
+        return DeferredTool.create(
             name="finalize",
             description=textwrap.dedent(FINALIZE_DESC).strip(),
             args_schema=FinalizeCommentsArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
+            returns_input_keys=["comments"],
+            processing_note="Agent sets state.final_comments, state.finalize_called=True, "
+                           "and signals end of execution",
         )
-
-    # Removed legacy _parse_and_validate helper; structured tools return typed outputs.

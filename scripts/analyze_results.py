@@ -4,11 +4,13 @@ Script for basic terminal output of NL2Test evaluation results.
 
 import json
 import statistics
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 # ============================================================================
-# CONFIGURATION FLAG
+# CONFIGURATION
 # ============================================================================
+DEFAULT_RESULTS_FILE = "tests/output/commons-cli/commons_cli_nl2test_evaluation_results.json"
 # Set to True to show per-abstraction level statistics (grouped by abstraction_level)
 # Set to False to show holistic statistics (all data combined)
 SHOW_BY_ABSTRACTION = True
@@ -260,7 +262,8 @@ def display_metrics_by_abstraction(grouped_data: Dict[str, List[Dict]]):
 
 def main():
     """Main function to analyze and display evaluation results."""
-    filepath = "commons_cli_nl2test_evaluation_results.json"
+    root_dir = Path(__file__).parent.parent
+    filepath = root_dir / DEFAULT_RESULTS_FILE
 
     print("\n" + "╔" + "═" * 78 + "╗")
     print("║" + " " * 20 + "NL2Test Evaluation Results Analysis" + " " * 23 + "║")

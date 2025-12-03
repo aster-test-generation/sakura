@@ -1,0 +1,16 @@
+# TASK
+Given a natural language description of a test case, additional instructions, an initial step decomposition (Gherkin-style), and access to static-analysis tools, produce a localized scenario where each step is mapped to verified methods with arguments, brief comments, and clear provenance, then call the `finalize` tool.
+To localize the steps, use the available tools to understand and query the application under test.
+
+# TEST DESCRIPTION
+{{ nl_description }}
+
+# INSTRUCTIONS
+{{ instructions }}
+
+# CURRENT SCENARIO STEPS WITH ASSOCIATED TASKS
+{{ steps }}
+
+# YOUR TURN
+Proceed. If a tool is needed, call it. Follow the system instructions.
+If finished, select the `finalize` tool with the updated localized scenario and comments.

@@ -1,7 +1,7 @@
-from dataclasses import dataclass
-from typing import Optional
+from __future__ import annotations
 
-import vertexai
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass
@@ -36,12 +36,14 @@ class PromptFormatter:
         """
         self._project = project
         self._location = location
-        self._client: Optional[vertexai.Client] = None
+        self._client: Any = None
 
     @property
-    def client(self) -> vertexai.Client:
+    def client(self) -> Any:
         """Lazy-initialize the Vertex AI client."""
         if self._client is None:
+            import vertexai
+
             self._client = vertexai.Client(
                 project=self._project,
                 location=self._location,

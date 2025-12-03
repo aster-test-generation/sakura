@@ -1,18 +1,24 @@
-# TASK
-Compose a compilable and runnable Java test for a Maven project using the provided localized steps, test description, and any extra instructions.
-
-Sequence all code in ascending step id order and place the test in a package that mirrors the primary SUT package when practical. Use tools to inspect the application code, generate the test, compile, run, and refine.
-
 # TEST DESCRIPTION
 {{ nl_description }}
 
 # INSTRUCTIONS
 {{ instructions }}
 
-# CURRENT LOCALIZED SCENARIO
+# LOCALIZED SCENARIO
 {{ localized_scenario }}
 
-# YOUR TURN
-- Plan the test skeleton from the description and scenario (setup, scenario steps, teardown) and map `${vars}` to Java variables.
-- Use tool calls as needed to understand signatures, construct objects, generate the test, and iterate on compilation and runtime feedback.
-- When finished or out of iterations, call `finalize`, which will return the last generated test code as the final solution. Include comments on the test structure, composition difficulties, and any recommended improvements to localization or composition.
+# PROCEED
+Compose a compilable Java test following the steps below.
+
+## Steps
+1. Plan test skeleton: setup, scenario steps (ascending id order), teardown.
+2. Map ${vars} to Java variables.
+3. Use tools to inspect signatures, constructors, and class metadata.
+4. Generate test code, compile, run, and iterate on errors.
+5. Call `finalize` when complete or at iteration limit.
+
+## Output
+Place the test in a package mirroring the primary SUT package when practical. In `finalize`, include:
+- Test structure summary
+- Composition difficulties encountered
+- Recommendations for localization or composition improvements

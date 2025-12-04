@@ -136,3 +136,20 @@ def test_get_execution_errors_with_transient_test_file(project_paths):
         assert issues_with_failure
     finally:
         manager.delete_single(failing_saved, encode_class_name=False, strict=False)
+
+def test_compilation_of_specific(project_paths, nl2test_context):
+    compiler = JavaMavenCompilation(project_paths.project_root)
+    compiler.is_spring_project = True  # Skip spring-javaformat validation for generated files
+
+    initial_errors = compiler.get_compilation_errors()
+    assert initial_errors == []
+
+    analysis = nl2test_context.analysis
+    class_under_test = "org.springframework.samples.petclinic.owner.PetControllerUpdateTest"
+    method_under_test = "testUpdatePetForm()"
+
+    print(analysis.get_class(class_under_test))
+    print(analysis.get_method(class_under_test, method_under_test))
+
+    assert analysis.get_class(class_under_test) is not None
+    assert analysis.get_method(class_under_test, method_under_test) is not None

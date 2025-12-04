@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
+import textwrap
 from typing import List, Optional, Literal, Dict, Any, Annotated, Union, Tuple, Set
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -24,15 +25,28 @@ class Step(BaseModel):
 
 
 class GherkinStep(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     given: List[Step]
     when: List[Step]
     then: List[Step]
 
 
+_GHERKIN_STEPS_DESC = textwrap.dedent(
+    """
+    Ordered Gherkin-style step groups (given, when, then) that capture distinct behaviors or paths.
+    Ids must be unique and increase across setup, each Gherkin group in order, and teardown. Each group has at least one When and one Then.
+    """
+).strip()
+
+
 class Scenario(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     testing_framework: str
     setup: List[Step]
-    steps: List[GherkinStep]
+    gherkin_groups: Annotated[
+        List[GherkinStep],
+        Field(description=_GHERKIN_STEPS_DESC),
+    ]
     teardown: List[Step]
 
 
@@ -116,15 +130,20 @@ class LocalizedStep(Step):
 
 
 class LocalizedGherkinStep(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     given: List[LocalizedStep]
     when: List[LocalizedStep]
     then: List[LocalizedStep]
 
 
 class LocalizedScenario(Scenario):
+    model_config = ConfigDict(populate_by_name=True)
     testing_framework: str
     setup: List[LocalizedStep]
-    steps: List[LocalizedGherkinStep]
+    gherkin_groups: Annotated[
+        List[LocalizedGherkinStep],
+        Field(description=_GHERKIN_STEPS_DESC),
+    ]
     teardown: List[LocalizedStep]
 
     @classmethod
@@ -149,7 +168,7 @@ class LocalizedScenario(Scenario):
             )
 
         localized_steps: List[LocalizedGherkinStep] = []
-        for gstep in scenario.steps:
+        for gstep in scenario.gherkin_groups:
             localized_steps.append(
                 LocalizedGherkinStep(
                     given=[_to_localized_step(s) for s in gstep.given],
@@ -161,15 +180,19 @@ class LocalizedScenario(Scenario):
         return cls(
             testing_framework=scenario.testing_framework,
             setup=[_to_localized_step(s) for s in scenario.setup],
-            steps=localized_steps,
+            gherkin_groups=localized_steps,
             teardown=[_to_localized_step(s) for s in scenario.teardown],
         )
 
     def enforce_candidate_limits(self, limit: int = 3) -> None:
         for step in self.setup:
             step.enforce_candidate_limit(limit)
-        for grouped in self.steps:
-            for collection in (grouped.given, grouped.when, grouped.then):
+        for grouped in self.gherkin_groups:
+            for collection in (
+                grouped.given,
+                grouped.when,
+                grouped.then,
+            ):
                 for step in collection:
                     step.enforce_candidate_limit(limit)
         for step in self.teardown:

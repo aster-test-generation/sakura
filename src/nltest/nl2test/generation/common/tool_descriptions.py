@@ -89,6 +89,7 @@ Returns:
 
 QUERY_CLASS_DESC = """
 Semantic search over application classes (vector index).
+Prioritize a maximum window of three results for any query unless a justified exception is needed.
 """
 
 VIEW_TEST_CODE_DESC_OLD = """

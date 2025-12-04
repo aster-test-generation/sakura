@@ -15,6 +15,7 @@ Returns:
 QUERY_METHOD_DESC = """
 Semantic search over application methods (vector index). 
 Returns the method signature, declaring class name (class that directly implement the method), and containing class name (the relevant class that inherits/contains the method) for each method matching the query.
+Prioritize a maximum window of three results for any query unless a justified exception is needed.
 """
 
 REACHABLE_METHODS_DESC_OLD = """
@@ -88,7 +89,7 @@ End localization by returning the final atomic block list with a concise 1–4 s
 FINALIZE_LOCALIZED_SCENARIO_DESC_OLD = """
 End localization by returning the final LocalizedScenario and brief comments.
 Args:
-  scenario: The finalized LocalizedScenario (setup + steps + teardown).
+  scenario: The finalized LocalizedScenario (setup_steps + gherkin_steps + teardown_steps).
   comments: Short notes on choices, alternates, and any non-localized tasks retained.
 Use when:
   Steps are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.

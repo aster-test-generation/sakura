@@ -1,11 +1,23 @@
+from unittest.mock import MagicMock
+
 from langchain_core.tools import StructuredTool
+from cldk import CLDK
+from cldk.analysis import AnalysisLevel
 
 from nltest.nl2test.generation.composition.orchestrators import (
     GherkinCompositionOrchestrator,
 )
-from nltest.nl2test.models import NL2TestInput, LocalizedScenario, AbstractionLevel
+from nltest.nl2test.generation.composition.tools.base import BaseCompositionTools
+from nltest.nl2test.generation.composition.tools.gherkin import GherkinCompositionTools
+from nltest.nl2test.generation.composition.tools.grammatical import GrammaticalCompositionTools
+from nltest.nl2test.models import NL2TestInput, LocalizedScenario, AbstractionLevel, AgentState
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.compilation.maven import JavaMavenCompilation
+from nltest.utils.evaluation.test_grader import TestGrader
+from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
+from nltest.utils.models import NL2TestMetadata
 from nltest.utils.pretty.prints import pretty_print
 
 
@@ -21,22 +33,22 @@ class TestCompositionAgent:
         rendered_true = prompt.format(parallelizable=True, max_iters=iters_true)
         pretty_print("Parallelizable prompt", rendered_true)
         expected_true = (
-            f"You must complete within at most {iters_true} tool invocation(s)."
+            f"You must complete within at most {iters_true} model step(s) (iterations)."
         )
         assert expected_true in rendered_true
-        assert "You may parallelize metadata lookups" in rendered_true
-        assert "Use sequential calls." not in rendered_true
+        assert "You may parallelize tool calls that do not depend on each other" in rendered_true
+        assert "Do not parallelize tool calls" not in rendered_true
 
         # parallelizable False path
         iters_false = 6
         rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
         pretty_print("Not parallelizable prompt", rendered_false)
         expected_false = (
-            f"You must complete within at most {iters_false} tool invocation(s)."
+            f"You must complete within at most {iters_false} model step(s) (iterations)."
         )
         assert expected_false in rendered_false
-        assert "Use sequential calls." in rendered_false
-        assert "You may parallelize metadata lookups" not in rendered_false
+        assert "Do not parallelize tool calls" in rendered_false
+        assert "You may parallelize tool calls that do not depend on each other" not in rendered_false
 
         # duplicate_tools path — mirror orchestrator formatting
         # Create simple tools using LangChain's StructuredTool (a BaseTool subclass)
@@ -60,11 +72,11 @@ class TestCompositionAgent:
         pretty_print("With duplicate_tools", rendered_with_dups)
 
         assert (
-            "You are only allowed to repeat the `view_test_code`, `compile_and_execute_tests` tools"
+            f"Duplicate tool calls are allowed only for the following tool names: {duplicate_tools_str}"
             in rendered_with_dups
         )
-        assert "- Never repeat the same {tool, args} pair" not in rendered_with_dups
-        assert "You are only allowed to repeat" not in rendered_true
+        assert "Never repeat an identical {tool, args} pair" not in rendered_with_dups
+        assert "Duplicate tool calls are allowed only for the following tool names" not in rendered_true
 
     def test_composition_chat_prompt_formatting(self):
         """Verify chat prompt formatting for composition Gherkin with placeholders."""
@@ -89,11 +101,15 @@ class TestCompositionAgent:
 
     def test_composition_agent_gherkin(self, nl2test_context):
         analysis = nl2test_context.analysis
+        config = nl2test_context.config
         method_searcher = MethodIndexer(analysis).build_index()
         class_searcher = ClassIndexer(analysis).build_index()
 
         project_name = nl2test_context.project_name
-        project_root = nl2test_context.resources_dir / project_name
+        project_root = nl2test_context.project_root
+
+        # Tighten iteration limits for this test
+        config.set("composition", "max_iters", 6)
 
         nl2_input = NL2TestInput(
             id=-1,
@@ -179,7 +195,7 @@ class TestCompositionAgent:
                     "produces": "pet_types",
                     "candidate_methods": [
                         {
-                            "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                            "declaring_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "method_signature": "findPetTypes()",
                             "return_type": "java.util.List<org.springframework.samples.petclinic.owner.PetType>",
@@ -196,7 +212,7 @@ class TestCompositionAgent:
                     "produces": "owner_with_pets",
                     "candidate_methods": [
                         {
-                            "implementing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                            "declaring_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "method_signature": "findById(java.lang.Integer)",
                             "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
@@ -207,7 +223,7 @@ class TestCompositionAgent:
                     "external": False,
                 },
             ],
-            "steps": [
+            "gherkin_groups": [
                 {
                     "given": [],
                     "when": [
@@ -218,7 +234,7 @@ class TestCompositionAgent:
                             "produces": "http_response",
                             "candidate_methods": [
                                 {
-                                    "implementing_class_name": "org.springframework.samples.petclinic.owner.PetController",
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.PetController",
                                     "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
                                     "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
                                     "return_type": "java.lang.String",
@@ -270,12 +286,20 @@ class TestCompositionAgent:
         localized_scenario = LocalizedScenario(**localized_scenario_data)
 
         instructions = "Compose the Java test for this scenario and finalize."
-        updated_scenario, final_comments, package, class_name = (
-            composition_agent.assign_task(localized_scenario, instructions=instructions)
+        agent_state = composition_agent.assign_task(
+            localized_scenario, instructions=instructions
         )
 
-        assert isinstance(updated_scenario, LocalizedScenario)
-        assert isinstance(final_comments, str)
+        assert isinstance(agent_state, AgentState)
+
+        # Extract results from AgentState
+        updated_scenario = agent_state.localized_scenario
+        final_comments = agent_state.final_comments
+        package = agent_state.package
+        class_name = agent_state.class_name
+
+        assert updated_scenario is None or isinstance(updated_scenario, LocalizedScenario)
+        assert final_comments is None or isinstance(final_comments, str)
 
         # Pretty print selected package and class name before assertions
         pretty_print("Selected package", package)
@@ -287,3 +311,281 @@ class TestCompositionAgent:
 
         pretty_print("Updated scenario", updated_scenario)
         pretty_print("Final comments", final_comments)
+
+        # Build qualified test class name
+        qualified_test_class_name = f"{package}.{class_name}" if package else class_name
+        method_signature = agent_state.method_signature or ""
+
+        # Regenerate analysis to pick up the new test class
+        new_analysis = CLDK(language="java").analysis(
+            project_path=project_root,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=nl2test_context.output_dir,
+            eager=True,
+        )
+
+        # Get application classes for grading
+        cmn = CommonAnalysis(new_analysis)
+        _, application_classes = cmn.get_test_methods_classes_and_application_classes()
+
+        # Gather compilation errors
+        compilation_errors = JavaMavenCompilation(project_root).get_compilation_errors()
+        erroneous_files = [err.file for err in compilation_errors]
+
+        # Create grader and grade the test
+        test_grader = TestGrader(
+            analysis=new_analysis,
+            project_root=project_root,
+            project_erroneous_files=erroneous_files,
+            application_classes=application_classes,
+        )
+
+        nl2_metadata = NL2TestMetadata(
+            qualified_test_class_name=qualified_test_class_name,
+            code="",
+            method_signature=method_signature or None,
+        )
+
+        eval_result = test_grader.grade(nl2_input, nl2_metadata)
+
+        # Load and attach test code
+        fm = TestFileManager(project_root)
+        info = TestFileInfo(qualified_class_name=qualified_test_class_name)
+        try:
+            code = fm.load(info, encode_class_name=False)
+            eval_result.nl2test_metadata.code = code
+        except FileNotFoundError:
+            pass
+
+        # Print evaluation results
+        pretty_print("Evaluation result", eval_result)
+        pretty_print("Compiles", eval_result.compiles)
+        pretty_print("Structural eval", eval_result.structured_eval)
+        pretty_print("Coverage eval", eval_result.coverage_eval)
+
+        # Assert that the generated test compiles
+        assert eval_result.compiles, "Generated test should compile"
+
+        # Clean up generated test file
+        try:
+            fm.delete_single(info, encode_class_name=False)
+        except Exception:
+            pass
+
+
+class TestCompositionToolInjection:
+    """Tests verifying tool injection after refactoring to shared utilities."""
+
+    @staticmethod
+    def _create_mock_dependencies():
+        """Create mock dependencies for tool builders."""
+        mock_analysis = MagicMock()
+        mock_analysis.get_class = MagicMock(return_value=None)
+        mock_analysis.get_method = MagicMock(return_value=None)
+        mock_method_searcher = MagicMock()
+        mock_class_searcher = MagicMock()
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        nl2_input = NL2TestInput(
+            id=-1,
+            description="Test description",
+            project_name="test-project",
+            qualified_class_name="org.example.TestClass",
+            method_signature="testMethod()",
+        )
+
+        return {
+            "analysis": mock_analysis,
+            "method_searcher": mock_method_searcher,
+            "class_searcher": mock_class_searcher,
+            "structured_llm": mock_llm,
+            "project_root": "/tmp/test",
+            "nl2_input": nl2_input,
+        }
+
+    def test_base_composition_tools_contains_expected_tools(self):
+        """Verify BaseCompositionTools creates expected base tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseCompositionTools(**deps)
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_base_tools = {
+            "query_class_db",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_fields",
+            "get_class_imports",
+            "get_class_constructors_and_factories",
+            "get_getters_and_setters",
+            "get_maven_dependencies",
+            "view_test_code",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize",
+            "get_call_site_details",
+        }
+
+        assert expected_base_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_base_tools}, Got: {tool_names}"
+        )
+
+    def test_gherkin_composition_tools_contains_all_tools(self):
+        """Verify GherkinCompositionTools includes base + Gherkin-specific tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GherkinCompositionTools(**deps)
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_tools = {
+            "query_class_db",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_fields",
+            "get_class_imports",
+            "get_class_constructors_and_factories",
+            "get_getters_and_setters",
+            "get_maven_dependencies",
+            "view_test_code",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize",
+            "get_call_site_details",
+            "modify_scenario_comment",
+        }
+
+        assert expected_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        )
+
+    def test_grammatical_composition_tools_contains_all_tools(self):
+        """Verify GrammaticalCompositionTools includes base + Grammatical-specific tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GrammaticalCompositionTools(**deps)
+        tools, allow_duplicates = tool_builder.all()
+
+        tool_names = {t.name for t in tools}
+        expected_tools = {
+            "query_class_db",
+            "extract_method_code",
+            "get_method_details",
+            "get_class_fields",
+            "get_class_imports",
+            "get_class_constructors_and_factories",
+            "get_getters_and_setters",
+            "get_maven_dependencies",
+            "view_test_code",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize",
+            "get_call_site_details",
+            "modify_scenario_comment",
+        }
+
+        assert expected_tools == tool_names, (
+            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
+        )
+
+    def test_composition_allow_duplicate_tools_correct(self):
+        """Verify allow_duplicate_tools list contains expected tools."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GherkinCompositionTools(**deps)
+        _, allow_duplicates = tool_builder.all()
+
+        allow_dup_names = {t.name for t in allow_duplicates}
+        expected_duplicates = {"view_test_code", "compile_and_execute_test"}
+
+        assert expected_duplicates == allow_dup_names, (
+            f"Allow duplicates mismatch. Expected: {expected_duplicates}, Got: {allow_dup_names}"
+        )
+
+    def test_deferred_tool_generate_test_code_returns_inputs(self):
+        """Verify generate_test_code returns expected input keys."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseCompositionTools(**deps)
+        tools, _ = tool_builder.all()
+
+        gen_tool = next(t for t in tools if t.name == "generate_test_code")
+        result = gen_tool.func(
+            test_code="public void test() {}",
+            qualified_class_name="org.example.TestClass",
+            method_signature="testMethod()",
+        )
+
+        assert result["test_code"] == "public void test() {}"
+        assert result["qualified_class_name"] == "org.example.TestClass"
+        assert result["method_signature"] == "testMethod()"
+
+    def test_deferred_tool_finalize_returns_comments(self):
+        """Verify finalize returns comments as expected."""
+        deps = self._create_mock_dependencies()
+        tool_builder = BaseCompositionTools(**deps)
+        tools, _ = tool_builder.all()
+
+        finalize_tool = next(t for t in tools if t.name == "finalize")
+        result = finalize_tool.func(comments="Test completed successfully")
+
+        assert result == {"comments": "Test completed successfully"}
+
+    def test_deferred_tool_modify_scenario_comment_gherkin(self):
+        """Verify Gherkin modify_scenario_comment returns expected keys."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GherkinCompositionTools(**deps)
+        tools, _ = tool_builder.all()
+
+        modify_tool = next(t for t in tools if t.name == "modify_scenario_comment")
+        result = modify_tool.func(id=0, comment="Updated comment")
+
+        assert result == {"id": 0, "comment": "Updated comment"}
+
+    def test_deferred_tool_modify_scenario_comment_grammatical(self):
+        """Verify Grammatical modify_scenario_comment returns expected keys."""
+        deps = self._create_mock_dependencies()
+        tool_builder = GrammaticalCompositionTools(**deps)
+        tools, _ = tool_builder.all()
+
+        modify_tool = next(t for t in tools if t.name == "modify_scenario_comment")
+        result = modify_tool.func(order=1, note="Updated note")
+
+        assert result == {"order": 1, "note": "Updated note"}
+
+    def test_view_test_code_tool_shared_across_modes(self):
+        """Verify view_test_code returns same structure across modes."""
+        deps = self._create_mock_dependencies()
+
+        gherkin_builder = GherkinCompositionTools(**deps)
+        grammatical_builder = GrammaticalCompositionTools(**deps)
+
+        gherkin_tools, _ = gherkin_builder.all()
+        grammatical_tools, _ = grammatical_builder.all()
+
+        gherkin_view = next(t for t in gherkin_tools if t.name == "view_test_code")
+        grammatical_view = next(t for t in grammatical_tools if t.name == "view_test_code")
+
+        gherkin_result = gherkin_view.func(
+            qualified_class_name="org.example.Test",
+            method_signature="test()",
+        )
+        grammatical_result = grammatical_view.func(
+            qualified_class_name="org.example.Test",
+            method_signature="test()",
+        )
+
+        assert gherkin_result == grammatical_result
+
+    def test_compile_and_execute_tool_shared_across_modes(self):
+        """Verify compile_and_execute_test returns same structure across modes."""
+        deps = self._create_mock_dependencies()
+
+        gherkin_builder = GherkinCompositionTools(**deps)
+        grammatical_builder = GrammaticalCompositionTools(**deps)
+
+        gherkin_tools, _ = gherkin_builder.all()
+        grammatical_tools, _ = grammatical_builder.all()
+
+        gherkin_compile = next(t for t in gherkin_tools if t.name == "compile_and_execute_test")
+        grammatical_compile = next(t for t in grammatical_tools if t.name == "compile_and_execute_test")
+
+        assert gherkin_compile.func() == grammatical_compile.func() == {}

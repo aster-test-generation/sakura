@@ -9,6 +9,7 @@ import traceback
 import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
+from tqdm import tqdm
 
 from nltest.nl2test import Pipeline as NL2TestPipeline
 from nltest.nl2test.models import NL2TestInput
@@ -109,9 +110,9 @@ class NL2TestActor:
         # Instantiate the NL2Test pipeline
         self.pipeline = NL2TestPipeline(
             self.analysis,
-            self.project_root,
-            decomposition_mode=self.decomposition_mode,
+            project_root=self.project_root,
             analysis_dir=self.analysis_dir,
+            decomposition_mode=self.decomposition_mode,
         )
         self.pipeline.run_preprocessing(exclude_test_dirs=exclude_test_dirs)
 
@@ -150,10 +151,11 @@ class NL2TestActor:
         behavior simple and logs basic progress.
         """
         results: list[dict[str, Any]] = []
-        for idx, payload in enumerate(input_payloads, start=1):
+        for payload in tqdm(input_payloads, desc=f"Running NL2TestActor:{self.project_name}", unit="task"):
             RichLog.debug(
-                f"[NL2TestActor:{self.project_name}] Running {idx}/{len(input_payloads)}: "
-                f"{payload.get('qualified_class_name')}::{payload.get('method_signature')} (id={payload.get('id')})"
+                f"[NL2TestActor:{self.project_name}] Running "
+                f"{payload.get('qualified_class_name')}::{payload.get('method_signature')} "
+                f"(id={payload.get('id')})"
             )
             results.append(self.run_nl2test_one(payload))
         return results

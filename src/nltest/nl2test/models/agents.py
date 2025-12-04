@@ -198,11 +198,13 @@ class FinalizeScenarioArgs(BaseModel):
     ]
 
 
+# DEPRECATED: No longer modifies this way
 class ModifyScenarioArgs(BaseModel):
     """Arguments for modifying a localized scenario in composition tools."""
     scenario: Annotated[LocalizedScenario, Field(description="")]
 
 
+# DEPRECATED: No longer modifies this way
 class ModifyAtomicBlocksArgs(BaseModel):
     """Arguments for modifying atomic blocks in composition tools."""
     atomic_blocks: Annotated[AtomicBlockList, Field(description="")]

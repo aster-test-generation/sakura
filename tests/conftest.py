@@ -89,10 +89,16 @@ def _env_bool(env_var: str, default: bool) -> bool:
 def project_paths() -> ProjectPaths:
     load_dotenv()
     tests_dir = Path(__file__).resolve().parent
-    project_name = os.getenv("TEST_PROJECT_NAME", "spring-petclinic")
-
+    repo_root = tests_dir.parent
     resources_dir = tests_dir / "resources"
-    project_root = resources_dir / project_name
+
+    # TEST_PROJECT_ROOT is relative to repo root
+    test_project_root = os.getenv("TEST_PROJECT_ROOT")
+    project_root = repo_root / test_project_root
+
+    # Derive project name from project root
+    project_name = project_root.name
+
     if not project_root.is_dir():
         raise RuntimeError(
             f"Project root directory {project_root} does not exist. "
@@ -120,7 +126,7 @@ def analysis(project_paths: ProjectPaths) -> JavaAnalysis:
         analysis_backend_path=None,
         analysis_level=AnalysisLevel.symbol_table,
         analysis_json_path=project_paths.project_output_dir,
-        eager=False,
+        eager=True,
     )
 
 

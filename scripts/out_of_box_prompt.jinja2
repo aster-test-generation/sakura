@@ -1,0 +1,21 @@
+[TASK]
+Given a natural-language test description for a Java repository, produce one Java test file implementing that test.
+
+[DESCRIPTION]
+{{ test_description }}
+
+[GUIDELINES]
+- Use the framework specified in the description; otherwise use JUnit 5.
+- Use mocking only if explicitly requested; default to Mockito if no mocking framework is specified.
+- If the description mentions an assertion library (e.g., AssertJ), use it; otherwise use the built-in assertions.
+- First identify the correct classes/methods involved, then implement the test accordingly.
+- Use only classes that actually exist in the repository.
+- Ensure that the test compiles without errors.
+
+[OUTPUT]
+Produce exactly one Java source file that:
+- Defines exactly one public test class containing exactly one @Test method.
+- May include helper fields/methods (not annotated as tests).
+- Contains all required imports.
+- Adds no new production classes and no external dependencies beyond the test/mocking frameworks.
+- Does not modify any other repository files.

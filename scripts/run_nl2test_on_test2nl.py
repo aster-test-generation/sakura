@@ -5,31 +5,31 @@ from pathlib import Path
 # === CONFIGURATION CONSTANTS ===
 # Directory paths relative to this script
 SRC_DIR = "../src"
-BASE_PROJECT_DIR = "../resources/datasets/"
+BASE_PROJECT_DIR = "../resources/test_dataset/"
 BASE_ANALYSIS_DIR = "../resources/analysis/"
 OUTPUT_DIR = "../resources/output/"
 # Log file name to write under OUTPUT_DIR
 LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 # Test2NL CSV file path (must include the filename)
-CSV_FILE = "../resources/test2nl/partitioned_dataset/selected_from_subsets.csv"
+CSV_FILE = "../resources/test_dataset/selected_from_subsets.csv"
 
 # CLI arguments
 MAX_ENTRIES = 0
 # Note: 0 = unlimited
-DEBUG = True
+DEBUG = False
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = False
 
-LLM_MODEL = "GCP/claude-3-7-sonnet"
+LLM_MODEL = "gcp/gemini-2.5-flash"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = "gcp"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
-EMB_MODEL = "Azure/text-embedding-3-small-1"
+EMB_MODEL = "Qwen/Qwen3-Embedding-8B"
 # Either EMB_PROVIDER or EMB_API_URL must be non-None
-EMB_PROVIDER: str | None = "gcp"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
-EMB_API_URL: str | None = None
+EMB_PROVIDER: str | None = "vllm"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
+EMB_API_URL: str | None = 'https://wca4j-qwen-embedding-8b-vllm-wca-core-training.apps.dmf.dipc.res.ibm.com/v1'
 
 # Decomposition mode
 DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.

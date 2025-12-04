@@ -32,7 +32,7 @@ class ReActAgent:
             tools: List[BaseTool],
             allow_duplicate_tools: Optional[List[BaseTool]] = None,
             system_message: Optional[str] = None,
-            allow_parallelize: bool = False,
+            allow_parallelize: bool = True,
             max_iters: int = 20,
             strict_finalize: bool = True,
             use_checkpointer: bool = True,
@@ -227,7 +227,7 @@ class ReActAgent:
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,
                 tools=self.tools,
-                tool_choice="any",
+                tool_choice="auto",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
             state.messages.append(out)
@@ -372,16 +372,16 @@ class ReActAgent:
 
             # Route explicitly to the finalize tool when available
             tool_choice = (
-                {"type": "tool", "name": "finalize"}
+                {"type": "function", "function": {"name": "finalize"}}
                 if finalize_tools
-                else "any"
+                else "auto"
             )
 
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,
                 tools=tools_to_bind,
                 tool_choice=tool_choice,
-                extra_model_kwargs={"parallel_tool_calls": False},  # No parallel tool call; force end
+                # extra_model_kwargs={"parallel_tool_calls": False},  # No parallel tool call; force end; DEFAULT TO MODEL BINDING, as this was causing errors
             )
             state.messages.append(out)
 

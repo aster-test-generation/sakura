@@ -163,6 +163,9 @@ class CommonAnalysis:
             List: A list of TestingFramework objects for the class's compilation unit.
 
         """
+        if not self.analysis.get_class(qualified_class_name):
+            return []
+
         testing_frameworks = set()
         imports = self.get_imports_for_class(qualified_class_name)
 
@@ -175,6 +178,9 @@ class CommonAnalysis:
         return sorted(testing_frameworks, key=lambda x: len(x.value), reverse=True)
 
     def get_imports_for_class(self, qualified_class_name: str) -> List[str]:
+        if not self.analysis.get_class(qualified_class_name):
+            return []
+
         imports: Set[str] = set()
         java_file = self.analysis.get_java_file(qualified_class_name=qualified_class_name)
 

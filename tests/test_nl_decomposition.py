@@ -59,5 +59,5 @@ def test_nl_gherkin_decomposition_basic():
     assert isinstance(scenario, Scenario)
     assert isinstance(scenario.testing_framework, str)
     assert isinstance(scenario.setup, list)
-    assert isinstance(scenario.steps, list)
+    assert isinstance(scenario.gherkin_groups, list)
     assert isinstance(scenario.teardown, list)

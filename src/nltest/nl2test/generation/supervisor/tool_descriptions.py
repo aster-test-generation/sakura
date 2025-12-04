@@ -13,6 +13,7 @@ Returns:
 
 CALL_LOCALIZATION_AGENT_GHERKIN_DESC = """
 Delegate to the localization agent to begin localization or refine an already localized scenario.
+Receives the localization agent's feedback regarding localization difficulties.
 """
 
 CALL_LOCALIZATION_AGENT_GRAMMATICAL_DESC_OLD = """
@@ -78,5 +79,5 @@ Returns:
 """
 
 FINALIZE_DESC = """
-End supervision and test generation when the 
+End supervision and complete test generation once fault localization is complete and a compilable test case that satisfies all provided test descriptions has been produced.
 """

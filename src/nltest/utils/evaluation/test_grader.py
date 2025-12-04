@@ -308,8 +308,8 @@ class TestGrader:
 
         # Run coverage for both tests
         tests_to_run = [
-            (pred_class_name, pred_method_sig),
-            (gt_class_name, gt_method_sig),
+            (pred_class_name, pred_method_sig.split('(')[0]),
+            (gt_class_name, gt_method_sig.split('(')[0]),
         ]
         all_coverage_details = IndividualTestCoverage(
             project_root=self.project_root,
@@ -320,12 +320,12 @@ class TestGrader:
 
         if gt_class_name in all_coverage_details:
             for gt_method_coverage in all_coverage_details[gt_class_name]:
-                if gt_method_coverage["test_name"] == gt_method_sig:
+                if gt_method_coverage["test_name"] == gt_method_sig.split('(')[0]:
                     gt_coverage_details = gt_method_coverage["coverage_details"]
 
         if pred_class_name in all_coverage_details:
             for pred_method_coverage in all_coverage_details[pred_class_name]:
-                if pred_method_coverage["test_name"] == pred_method_sig:
+                if pred_method_coverage["test_name"] == pred_method_sig.split('(')[0]:
                     pred_coverage_details = pred_method_coverage["coverage_details"]
 
         def _as_set(x) -> Set[int]:

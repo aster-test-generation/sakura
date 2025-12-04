@@ -4,6 +4,7 @@ import json
 import re
 import uuid
 from typing import Any, Dict, Optional, Sequence, Tuple, Union, Literal
+import textwrap
 
 from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, HumanMessage
 from langchain_core.tools import BaseTool
@@ -71,22 +72,16 @@ class LLMClient:
             default_headers = {} if default_headers is None else default_headers
             default_headers.setdefault("HTTP-Referer", "http://localhost")
             default_headers.setdefault("X-Title", "NL2Test LLM Client")
-            # Configure parallel tool call behavior from Config
-            try:
-                can_parallel_tool = config.get("llm", "can_parallel_tool")
-            except ConfigurationException:
-                can_parallel_tool = False
 
-            # Only set if not explicitly provided in model_kwargs.
-            if "parallel_tool_calls" not in model_kwargs:
-                model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
+        # Configure parallel tool call behavior from Config
+        try:
+            can_parallel_tool = config.get("llm", "can_parallel_tool")
+        except ConfigurationException:
+            can_parallel_tool = False
 
-            # if "reasoning" not in model_kwargs:
-            #    model_kwargs["reasoning"] = {"enabled": True}
-            #    model_kwargs["reasoning"]["effort"] = "medium"
-
-            # if "include_reasoning" not in model_kwargs:
-            #    model_kwargs["include_reasoning"] = True
+        # Only set if not explicitly provided in model_kwargs.
+        if "parallel_tool_calls" not in model_kwargs:
+            model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
 
         self._chat = ChatOpenAI(
             model=model,
@@ -127,7 +122,9 @@ class LLMClient:
         runnable: RunnableSerializable = self._chat
 
         if tools:
-            runnable = runnable.bind_tools(tools, tool_choice=tool_choice)
+            runnable = runnable.bind_tools(
+                tools, tool_choice=tool_choice
+            )
 
         if (
                 response_format is not None and schema is None
@@ -253,11 +250,29 @@ class LLMClient:
         return text.strip()
 
     @staticmethod
+    def _normalize_string_values(value: Any) -> Any:
+        """Recursively dedent and strip string values to normalize LLM tool args."""
+        if isinstance(value, str):
+            return textwrap.dedent(value).strip()
+        if isinstance(value, dict):
+            return {k: LLMClient._normalize_string_values(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [LLMClient._normalize_string_values(v) for v in value]
+        if isinstance(value, tuple):
+            return tuple(LLMClient._normalize_string_values(v) for v in value)
+        return value
+
+    @staticmethod
     def parse_tool_args(args: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
         """Tool call args can be passed as a JSON string or a dict."""
         if isinstance(args, dict):
-            return args
-        try:
-            return json.loads(args)
-        except Exception:
-            return {}
+            return LLMClient._normalize_string_values(args)
+        if isinstance(args, str):
+            try:
+                parsed = json.loads(args)
+            except Exception:
+                return {}
+            if not isinstance(parsed, dict):
+                return {}
+            return LLMClient._normalize_string_values(parsed)
+        return {}

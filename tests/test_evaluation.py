@@ -79,9 +79,19 @@ def test_test_grader_petclinic(project_paths):
     qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
     method_signature = "shouldUpdateOwner()"
 
+    second_qualified_class_name = "org.springframework.samples.petclinic.owner.OwnerControllerTests"
+    second_method_signature = "testProcessUpdateOwnerFormHasErrors()"
+
     assert analysis.get_class(qualified_class_name) is not None
     assert (
-        analysis.get_method(qualified_class_name, method_signature) is not None
+            analysis.get_method(qualified_class_name, method_signature) is not None
+    )
+    assert analysis.get_class(second_qualified_class_name) is not None
+    assert (
+            analysis.get_method(
+                second_qualified_class_name, second_method_signature
+            )
+            is not None
     )
 
     grader = _build_grader(analysis, project_paths.project_root)
@@ -105,17 +115,44 @@ def test_test_grader_petclinic(project_paths):
     assert output.nl2test_input == nl2_input
     assert output.nl2test_metadata == nl2_metadata
 
-    assert output.structured_eval.assertion_recall == 1.0
-    assert output.structured_eval.obj_creation_recall == 1.0
-    assert output.structured_eval.assertion_precision == 1.0
-    assert output.structured_eval.obj_creation_precision == 1.0
-    assert 0.0 <= output.structured_eval.callable_recall <= 1.0
-    assert 0.0 <= output.structured_eval.callable_precision <= 1.0
-    assert 0.0 <= output.structured_eval.focal_recall <= 1.0
-    assert 0.0 <= output.structured_eval.focal_precision <= 1.0
+    assert output.structured_eval is not None
+    matching_metrics = [
+        output.structured_eval.obj_creation_recall,
+        output.structured_eval.obj_creation_precision,
+        output.structured_eval.assertion_recall,
+        output.structured_eval.assertion_precision,
+        output.structured_eval.callable_recall,
+        output.structured_eval.callable_precision,
+        output.structured_eval.focal_recall,
+        output.structured_eval.focal_precision,
+    ]
+    for metric in matching_metrics:
+        assert metric == pytest.approx(1.0)
 
     cov = output.coverage_eval
     assert 0.0 <= cov.class_coverage <= 1.0
     assert 0.0 <= cov.method_coverage <= 1.0
     assert 0.0 <= cov.line_coverage <= 1.0
     assert 0.0 <= cov.branch_coverage <= 1.0
+
+    mismatched_metadata = NL2TestMetadata(
+        qualified_test_class_name=second_qualified_class_name,
+        method_signature=second_method_signature,
+        code="",
+    )
+    mismatched_output = grader.grade(nl2_input, mismatched_metadata)
+    pretty_print("Grading Output (Mismatched)", mismatched_output)
+
+    assert mismatched_output.structured_eval is not None
+    mismatched_metrics = [
+        mismatched_output.structured_eval.obj_creation_recall,
+        mismatched_output.structured_eval.obj_creation_precision,
+        mismatched_output.structured_eval.assertion_recall,
+        mismatched_output.structured_eval.assertion_precision,
+        mismatched_output.structured_eval.callable_recall,
+        mismatched_output.structured_eval.callable_precision,
+        mismatched_output.structured_eval.focal_recall,
+        mismatched_output.structured_eval.focal_precision,
+    ]
+    for metric in mismatched_metrics:
+        assert metric < 1.0

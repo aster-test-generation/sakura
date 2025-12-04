@@ -28,7 +28,7 @@ replicate = "^1.0.3"
 tree-sitter-java = "^0.23.5"
 deepdiff = "^8.0.1"
 typer = ">=0.15.3,<0.17.0"
-hamster = { git = "git@github.com:aster-test-generation/hamster.git", branch = "main" }
+hamster = { git = "git@github.com:aster-test-generation/hamster-empirical-study.git", branch = "main" }
 reaster = { git = "git@github.com:aster-test-generation/re-aster.git", branch = "main" }
 javabuild = { git = "git@github.com:aster-test-generation/javabuild.git", branch = "main" }
 langchain = "^0.3.26"
@@ -37,16 +37,15 @@ langchain-community = "^0.3.26"
 poetry-core = "^2.1.3"
 langgraph = "^0.5.4"
 langchain-openai = "^0.3.30"
-pytest = "^7.4.3"
+google-cloud-aiplatform = "^1.74.0"
 
 [tool.poetry.scripts]
 nltest = "nltest.cli:app"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
-pytest = "^7.4.3"
+pytest = "^8.2.0"
 pytest-cov = "^4.1.0"
-pytest-pspec = "^0.0.4"
 pylint = "^3.0.2"
 flake8 = "^6.1.0"
 coverage = "^7.3.2"
@@ -56,3 +55,11 @@ ollama = "^0.5.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = [
+    "tests",
+]
+python_files = "test_*.py"

@@ -3,47 +3,62 @@ from __future__ import annotations
 from pathlib import Path
 import textwrap
 from typing import Union
-from langchain_core.tools import StructuredTool
+
+from langchain_core.tools import BaseTool
 
 from .base import BaseSupervisorTools
+from nltest.nl2test.core.deferred_tool import DeferredTool
 from nltest.nl2test.models import CallLocalizationAgentGherkinArgs, CallCompositionAgentGherkinArgs
 from nltest.nl2test.generation.supervisor.tool_descriptions import (
     CALL_LOCALIZATION_AGENT_GHERKIN_DESC,
     CALL_COMPOSITION_AGENT_GHERKIN_DESC,
 )
-from nltest.utils.exceptions import ToolExceptionHandler
 from nltest.utils.llm import LLMClient
 
 
 class GherkinSupervisorTools(BaseSupervisorTools):
+    """
+    Tool builder for Gherkin-mode supervisor agent.
+
+    Extends base tools with Gherkin-specific delegation tools:
+    - call_localization_agent: Delegate to localization agent (deferred)
+    - call_composition_agent: Delegate to composition agent (deferred)
+    """
+
     def __init__(self, *, llm: LLMClient, project_root: Union[str, Path]) -> None:
         super().__init__(llm=llm, project_root=project_root)
 
         self.tools.append(self._make_call_localization_agent_tool())
         self.tools.append(self._make_call_composition_agent_tool())
 
-    def _make_call_localization_agent_tool(self) -> StructuredTool:
-        def _call_localization_agent(instructions: str) -> dict:
-            # Defer the actual invocation to the Supervisor agent. Return inputs.
-            return {"instructions": instructions}
+    def _make_call_localization_agent_tool(self) -> BaseTool:
+        """
+        Create the call_localization_agent tool for Gherkin mode.
 
-        return StructuredTool.from_function(
-            func=_call_localization_agent,
+        This is a deferred tool - it returns the instructions and the agent's
+        process_tool_output hook invokes the actual localization orchestrator.
+        """
+        return DeferredTool.create(
             name="call_localization_agent",
             description=textwrap.dedent(CALL_LOCALIZATION_AGENT_GHERKIN_DESC).strip(),
             args_schema=CallLocalizationAgentGherkinArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
+            returns_input_keys=["instructions"],
+            processing_note="Agent invokes localization orchestrator with instructions, "
+                           "injecting current LocalizedScenario from state",
         )
 
-    def _make_call_composition_agent_tool(self) -> StructuredTool:
-        def _call_composition_agent(instructions: str) -> dict:
-            # Defer the actual invocation to the Supervisor agent. Return inputs.
-            return {"instructions": instructions}
+    def _make_call_composition_agent_tool(self) -> BaseTool:
+        """
+        Create the call_composition_agent tool for Gherkin mode.
 
-        return StructuredTool.from_function(
-            func=_call_composition_agent,
+        This is a deferred tool - it returns the instructions and the agent's
+        process_tool_output hook invokes the actual composition orchestrator.
+        """
+        return DeferredTool.create(
             name="call_composition_agent",
             description=textwrap.dedent(CALL_COMPOSITION_AGENT_GHERKIN_DESC).strip(),
             args_schema=CallCompositionAgentGherkinArgs,
-            handle_tool_error=ToolExceptionHandler.handle_error,
+            returns_input_keys=["instructions"],
+            processing_note="Agent invokes composition orchestrator with instructions, "
+                           "injecting current LocalizedScenario from state",
         )

@@ -1,10 +1,13 @@
 from .format_validator import FormatValidator
 from .model import ClientType
+from .prompt_formatting import OptimizedPrompts, PromptFormatter
 from .usage_tracker import UsageTracker
 
 __all__ = [
     "FormatValidator",
     "ClientType",
+    "OptimizedPrompts",
+    "PromptFormatter",
     "UsageTracker",
     "LLMClient",  # Lazily provided via __getattr__
 ]

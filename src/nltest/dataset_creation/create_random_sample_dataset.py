@@ -32,11 +32,11 @@ class RandomSampleDataset:
                 # If the value is not a list, just copy it
                 sampled_data[key] = values
 
-        os.makedirs(Path(BASE_PATH).joinpath('final_dataset')
+        os.makedirs(Path(BASE_PATH).joinpath('sampled_tests')
                           .joinpath(Path(dataset_folder).name), exist_ok=True)
 
         # Write the sampled data to a new JSON
-        with open(Path(BASE_PATH).joinpath('final_dataset')
+        with open(Path(BASE_PATH).joinpath('sampled_tests')
                           .joinpath(Path(dataset_folder).name).joinpath(FILE_NAME), 'w') as f:
             json.dump(sampled_data, f, indent=2)
 
@@ -48,6 +48,6 @@ class RandomSampleDataset:
 
 
 if __name__ == '__main__':
-    projects = RandomSampleDataset.get_subfolders(BASE_PATH.joinpath('nl2test'))
+    projects = RandomSampleDataset.get_subfolders(BASE_PATH.joinpath('bucketed_tests'))
     for project in projects:
         RandomSampleDataset.create_random_sample_dataset(project)

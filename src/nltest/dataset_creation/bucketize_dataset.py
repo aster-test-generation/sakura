@@ -86,8 +86,8 @@ if __name__ == "__main__":
     hamster_model_dir = "tests/output/" + constants.HAMSTER_MODEL_DIR
     # hamster_model_dir = constants.HAMSTER_MODEL_DIR
 
-    nl2test_dir = "tests/output/" + constants.NL2TEST_DIR
-    # nl2test_dir = constants.NL2TEST_DIR
+    nl2test_dir = "tests/output/" + constants.BUCKETED_TESTS_DIR
+    # nl2test_dir = constants.BUCKETED_TESTS_DIR
 
     # Ensure directories exist
     BASE_PATH.joinpath(hamster_model_dir).mkdir(parents=True, exist_ok=True)

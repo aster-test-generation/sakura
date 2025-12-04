@@ -57,4 +57,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# Example  python scripts/create_subset_dataset.py ./resources/final_dataset 5
+# Example  python scripts/create_subset_dataset.py ./resources/sampled_tests 5

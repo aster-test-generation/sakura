@@ -1,0 +1,11 @@
+# TASK
+Oversee the conversion of the provided natural language Java test case description into an executable Java test that faithfully matches it. Coordinate the localization and composition agents, inspect generated code, compile and run it as needed, and iterate until the code aligns with the description and compiles.
+
+# TEST CASE DESCRIPTION
+{{ nl_description }}
+
+# CURRENT BLOCKS
+{{ blocks }}
+
+# YOUR TURN
+Proceed sequentially with exactly one tool call per message. First ensure localization is performed at least once, then proceed to composition. Only after composition should you view or execute code. Keep instructions to delegates concrete and numbered. When you determine the test code aligns with the description and compiles, call finalize. If you hit the iteration cap, finalize with your best result and a concise status summary.

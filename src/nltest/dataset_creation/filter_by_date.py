@@ -91,7 +91,7 @@ class FilterByDate:
                 print(f"Skipping non-git directory: {repo_path}")
                 continue
 
-            print(f"📦 Processing repository: {repo_path}")
+            print(f"Processing repository: {repo_path}")
             java_files = self.filter(repo_path=repo_path, date_str=date_str)
             app, tests = self.classify_java_files(java_files)
 
@@ -134,4 +134,4 @@ if __name__ == '__main__':
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(all_results, f, indent=4)
 
-    print(f"\n✅ JSON report created at: {output_path}")
+    print(f"\nJSON report created at: {output_path}")

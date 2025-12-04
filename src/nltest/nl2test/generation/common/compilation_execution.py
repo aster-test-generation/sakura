@@ -17,9 +17,6 @@ class CompilationExecutionMixin:
     """
     Shared mixin providing compile_and_execute_test processing logic.
 
-    This mixin is used by both SupervisorReActAgent and CompositionReActAgent
-    to handle the compile_and_execute_test tool output in a consistent way.
-
     Requirements:
     - The using class must have a `project_root` attribute (Path or None)
     """

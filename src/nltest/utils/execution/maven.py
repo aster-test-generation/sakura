@@ -28,7 +28,8 @@ class ExecutionIssue(BaseModel):
 class JavaMavenExecution(MavenBuild):
     """Run Maven tests and parse failures/errors from Surefire or console logs."""
 
-    MAX_STACKTRACE_LINES = 12
+    HEAD_STACKTRACE_LINES = 8
+    TAIL_STACKTRACE_LINES = 4
     FAILURE_HEADER_RE = re.compile(
         r"^\[ERROR\]\s+(?:"
         r"(?P<class>[A-Za-z0-9_.$]+)\.(?P<test>[^\s]+)"  # com.example.MyTest.testMethod
@@ -204,7 +205,6 @@ class JavaMavenExecution(MavenBuild):
         collected: List[str] = []
         idx: int = start_index
         blank_streak = 0
-        non_empty_lines = 0
 
         while idx < len(lines):
             current: str = lines[idx]
@@ -244,15 +244,11 @@ class JavaMavenExecution(MavenBuild):
 
             if entry or collected:
                 collected.append(entry)
-                if entry:
-                    non_empty_lines += 1
 
             idx += 1
-            if non_empty_lines >= cls.MAX_STACKTRACE_LINES:
-                collected.append("... (truncated)")
-                break
 
         stack = "\n".join(collected).strip() if collected else None
+        stack = cls._truncate_stack_trace(stack)
         return stack, idx
 
     @classmethod
@@ -277,9 +273,16 @@ class JavaMavenExecution(MavenBuild):
         if not text:
             return None
         lines = text.splitlines()
-        if len(lines) <= cls.MAX_STACKTRACE_LINES:
+        total = len(lines)
+        max_lines = cls.HEAD_STACKTRACE_LINES + cls.TAIL_STACKTRACE_LINES
+        if total <= max_lines:
             return text
-        return "\n".join(lines[: cls.MAX_STACKTRACE_LINES]) + "\n... (truncated)"
+
+        skipped = total - max_lines
+        head = lines[:cls.HEAD_STACKTRACE_LINES]
+        tail = lines[-cls.TAIL_STACKTRACE_LINES:]
+
+        return "\n".join(head) + f"\n    ... (skipped {skipped} lines) ...\n" + "\n".join(tail)
 
     @staticmethod
     def _extract_error_type_and_message(stack_trace: Optional[str]) -> Tuple[Optional[str], Optional[str]]:

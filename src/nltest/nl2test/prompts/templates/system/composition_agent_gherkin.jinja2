@@ -30,9 +30,14 @@ Complete within {{ max_iters }} steps. A warning appears near the limit. If reac
 1. Process steps in ascending step id order.
 2. For each step, select one method from `candidate_methods` (ordered by confidence, left to right). Verify types, parameters, and metadata match the step sequence.
 3. Map ${vars} to Java variables, propagating return values as needed.
-4. Use metadata tools (`get_method_details`, `extract_method_code`, `get_call_site_details`, `get_class_fields`, `get_class_imports`, `get_class_constructors_and_factories`, `get_getters_and_setters`) to confirm signatures and constructors.
+4. Use lightweight metadata tools (`get_method_details`, `get_class_fields`, `get_class_constructors_and_factories`) first. Use `extract_method_code` only when implementation details matter. Avoid `view_test_code` unless verifying final alignment.
 5. Call `generate_test_code` with complete Java source: package statement, imports, test class, and exactly one annotated test method. Return the fully qualified class name and test method signature.
 6. Implement assertions in "then" steps. Use `modify_scenario_comment` for adjustments like alternative methods, parameter changes, or excluded steps.
+
+# VARIABLE MANAGEMENT
+- Name variables descriptively based on their step purpose (e.g., `createdUser`, `expectedResult`).
+- When ${var} references span multiple steps, ensure consistent typing and null safety.
+- For assertion steps, capture return values in named variables before asserting.
 
 # ERROR HANDLING
 - Compilation errors: Adjust method calls, signatures, imports, object construction, or switch to other candidate methods. Use tools to verify fixes.

@@ -6,7 +6,7 @@ from pathlib import Path
 # Relative directory paths
 SRC_DIR = "../src"
 ANALYSIS_DIR = "../tests/output/resources/output"
-ORGANIZED_METHODS_DIR = "../tests/output/resources/nl2test"
+ORGANIZED_METHODS_DIR = "../tests/output/resources/bucketed_tests"
 OUTPUT_DIR = "../tests/output/resources/test2nl"
 ORGANIZED_METHODS_FILE_NAME = "nl2test.json"
 

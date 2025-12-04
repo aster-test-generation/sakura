@@ -113,4 +113,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# Example python scripts/subset_test2nl_csv.py ./resources/final_dataset ./resources/test2nl/partitioned_dataset/test2nl.csv --subset-name nl2test_subset_5.json
+# Example python scripts/subset_test2nl_csv.py ./resources/sampled_tests ./resources/test2nl/partitioned_dataset/test2nl.csv --subset-name nl2test_subset_5.json

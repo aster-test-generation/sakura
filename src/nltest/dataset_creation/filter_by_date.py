@@ -5,9 +5,11 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
+from tqdm import tqdm
 
 from nltest.utils.analysis.common_analysis import CommonAnalysis
 
@@ -15,11 +17,13 @@ from nltest.utils.analysis.common_analysis import CommonAnalysis
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
 OUTPUT_FILE_NAME = "nl2test.json"
 SUMMARY_FILE_NAME = "summary.json"
+DEFAULT_DATE_STR = "2025-01-31"
+
+# Resource paths
 RESOURCES_DIR = "resources"  # Relative to ROOT_DIR
 DATASETS_DIR = "datasets"  # Relative to RESOURCES_DIR
 FILTERED_TESTS_DIR = "filtered_tests"  # Relative to RESOURCES_DIR
 ANALYSIS_DIR = "analysis"  # Relative to RESOURCES_DIR
-DEFAULT_DATE_STR = "2025-01-31"
 
 
 class FilterByDate:
@@ -173,6 +177,7 @@ class FilterByDate:
     ) -> Dict:
         """
         Iterate through subdirectories (each assumed to be a Git repo) and collect Java files added after date.
+        Processes repositories in parallel using Ray.
 
         Args:
             base_dir: Directory containing repository subdirectories.
@@ -188,85 +193,49 @@ class FilterByDate:
         if use_cldk and analysis_dir is None:
             raise ValueError("analysis_dir is required when use_cldk=True")
 
-        results: Dict = {}
+        # Launch parallel tasks for each project
+        futures = []
+        for project_name in os.listdir(base_dir):
+            repo_path = os.path.join(base_dir, project_name)
+            analysis_dir_str = str(analysis_dir) if analysis_dir else None
+            future = _process_single_repo.remote(  # pyright: ignore[reportCallIssue]
+                project_name, repo_path, date_str, use_cldk, analysis_dir_str
+            )
+            futures.append(future)
 
-        # Totals for CLDK mode
+        # Collect results with progress bar
+        collected_results = []
+        with tqdm(total=len(futures), desc="Processing repositories") as pbar:
+            while futures:
+                done, futures = ray.wait(futures, num_returns=1)
+                res = ray.get(done)
+                collected_results.extend(res)
+                pbar.update(len(done))
+
+        # Aggregate results
+        results: Dict = {}
         total_test_classes = 0
         total_test_methods = 0
-
-        # Totals for heuristic mode
         total_application_files = 0
         total_test_files = 0
         total_heuristic_test_methods = 0
 
-        for project_name in os.listdir(base_dir):
-            repo_path = os.path.join(base_dir, project_name)
-            if not os.path.isdir(repo_path):
+        for item in collected_results:
+            if item is None:
                 continue
+            project_name, project_result = item
+            results[project_name] = project_result
 
-            if not os.path.exists(os.path.join(repo_path, ".git")):
-                print(f"Skipping non-git directory: {repo_path}")
-                continue
-
-            print(f"Processing repository: {repo_path}")
-            java_files = self.filter(repo_path=repo_path, date_str=date_str)
-
+            summary = project_result.get("summary", {})
             if use_cldk:
-                # Create CLDK analysis for this repo
-                analysis_dir.mkdir(parents=True, exist_ok=True)
-                repo_analysis_dir = analysis_dir / project_name
-                analysis = CLDK(language="java").analysis(
-                    project_path=repo_path,
-                    analysis_backend_path=None,
-                    analysis_level=AnalysisLevel.symbol_table,
-                    analysis_json_path=repo_analysis_dir,
-                    eager=False,
-                )
-
-                test_classes_and_methods = self.classify_files_using_cldk(
-                    java_files, repo_path, analysis
-                )
-
-                repo_test_class_count = len(test_classes_and_methods)
-                repo_test_method_count = sum(
-                    len(methods) for methods in test_classes_and_methods.values()
-                )
-
-                total_test_classes += repo_test_class_count
-                total_test_methods += repo_test_method_count
-
-                results[project_name] = {
-                    "summary": {
-                        "test_class_count": repo_test_class_count,
-                        "test_method_count": repo_test_method_count,
-                    },
-                    "test_classes_and_methods": test_classes_and_methods,
-                }
+                total_test_classes += summary.get("test_class_count", 0)
+                total_test_methods += summary.get("test_method_count", 0)
             else:
-                # Heuristic classification
-                application_files, test_files = self.classify_files(java_files)
+                total_application_files += summary.get("application_file_count", 0)
+                total_test_files += summary.get("test_file_count", 0)
+                total_heuristic_test_methods += summary.get("test_method_count", 0)
 
-                app_file_count = len(application_files)
-                test_file_count = len(test_files)
-                repo_test_method_count = sum(
-                    self.count_tests_in_file(t, repo_path) for t in test_files
-                )
-
-                total_application_files += app_file_count
-                total_test_files += test_file_count
-                total_heuristic_test_methods += repo_test_method_count
-
-                results[project_name] = {
-                    "summary": {
-                        "application_file_count": app_file_count,
-                        "test_file_count": test_file_count,
-                        "test_method_count": repo_test_method_count,
-                    },
-                    "application_files": application_files,
-                    "test_files": test_files,
-                }
-
-        # Add overall summary (different structure based on mode)
+        # Add overall summary
         if use_cldk:
             results["summary"] = {
                 "total_test_classes": total_test_classes,
@@ -318,6 +287,98 @@ class FilterByDate:
         print(f"\nResults saved to: {output_dir}")
         print(f"  - Top-level summary: {summary_file}")
         print(f"  - Per-project data: {len(project_summaries)} projects")
+
+
+# Type alias for the remote function return type
+RepoResult = Optional[Tuple[str, Dict]]
+
+
+@ray.remote
+def _process_single_repo(
+    project_name: str,
+    repo_path: str,
+    date_str: str,
+    use_cldk: bool,
+    analysis_dir: Optional[str],
+) -> RepoResult:
+    """
+    Process a single repository to find Java files added after a given date.
+
+    Args:
+        project_name: Name of the project/repository.
+        repo_path: Path to the Git repository.
+        date_str: Date in 'YYYY-MM-DD' format.
+        use_cldk: If True, use CLDK analysis for test classification.
+        analysis_dir: Directory for CLDK analysis JSON (as string).
+
+    Returns:
+        Tuple of (project_name, result_dict) or None if not a valid git repo.
+    """
+    if not os.path.isdir(repo_path):
+        return None
+
+    if not os.path.exists(os.path.join(repo_path, ".git")):
+        print(f"Skipping non-git directory: {repo_path}")
+        return None
+
+    print(f"Processing repository: {repo_path}")
+
+    filter_instance = FilterByDate()
+    java_files = filter_instance.filter(repo_path=repo_path, date_str=date_str)
+
+    if use_cldk:
+        if not analysis_dir:
+            raise ValueError(
+                "CLDK filtering requested, but no analysis directory provided"
+            )
+
+        analysis_path = Path(analysis_dir)
+        analysis_path.mkdir(parents=True, exist_ok=True)
+        repo_analysis_dir = analysis_path / project_name
+        analysis = CLDK(language="java").analysis(
+            project_path=repo_path,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=repo_analysis_dir,
+            eager=False,
+        )
+
+        test_classes_and_methods = filter_instance.classify_files_using_cldk(
+            java_files, repo_path, analysis
+        )
+
+        repo_test_class_count = len(test_classes_and_methods)
+        repo_test_method_count = sum(
+            len(methods) for methods in test_classes_and_methods.values()
+        )
+
+        result = {
+            "summary": {
+                "test_class_count": repo_test_class_count,
+                "test_method_count": repo_test_method_count,
+            },
+            "test_classes_and_methods": test_classes_and_methods,
+        }
+    else:
+        application_files, test_files = filter_instance.classify_files(java_files)
+
+        app_file_count = len(application_files)
+        test_file_count = len(test_files)
+        repo_test_method_count = sum(
+            filter_instance.count_tests_in_file(t, repo_path) for t in test_files
+        )
+
+        result = {
+            "summary": {
+                "application_file_count": app_file_count,
+                "test_file_count": test_file_count,
+                "test_method_count": repo_test_method_count,
+            },
+            "application_files": application_files,
+            "test_files": test_files,
+        }
+
+    return (project_name, result)
 
 
 def main():

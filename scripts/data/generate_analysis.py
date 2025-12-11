@@ -8,8 +8,12 @@ import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-PROJECTS_DIR = "../resources/datasets/"
-BASE_ANALYSIS_DIR = "../resources/analysis/"
+# Root directory (project root, two levels up from this script)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Directory paths relative to ROOT_DIR
+PROJECTS_DIR = "resources/datasets/"
+BASE_ANALYSIS_DIR = "resources/analysis/"
 OVERRIDE_EXISTING = True
 
 
@@ -17,11 +21,6 @@ class AnalysisResult(NamedTuple):
     project: str
     status: str
     message: str | None = None
-
-
-def resolve_relative(path_str: str) -> Path:
-    """Resolve a relative path against this script's location."""
-    return (Path(__file__).resolve().parent / path_str).resolve()
 
 
 def iter_project_dirs(projects_root: Path) -> Iterable[Path]:
@@ -66,8 +65,8 @@ def generate_analysis_for_project(
 
 
 def main() -> None:
-    projects_root = resolve_relative(PROJECTS_DIR)
-    analysis_root = resolve_relative(BASE_ANALYSIS_DIR)
+    projects_root = (ROOT_DIR / PROJECTS_DIR).resolve()
+    analysis_root = (ROOT_DIR / BASE_ANALYSIS_DIR).resolve()
 
     if not projects_root.is_dir():
         raise FileNotFoundError(f"Projects directory not found: {projects_root}")

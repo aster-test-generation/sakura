@@ -3,11 +3,14 @@ import subprocess
 from pathlib import Path
 
 # === CONFIGURATION CONSTANTS ===
-# Relative directory paths
-SRC_DIR = "../src"
-ANALYSIS_DIR = "../tests/output/resources/output"
-ORGANIZED_METHODS_DIR = "../tests/output/resources/bucketed_tests"
-OUTPUT_DIR = "../tests/output/resources/test2nl"
+# Root directory (project root, two levels up from this script)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Directory paths relative to ROOT_DIR
+SRC_DIR = "src"
+ANALYSIS_DIR = "tests/output/resources/output"
+ORGANIZED_METHODS_DIR = "tests/output/resources/bucketed_tests"
+OUTPUT_DIR = "tests/output/resources/test2nl"
 ORGANIZED_METHODS_FILE_NAME = "nl2test.json"
 
 # CLI arguments
@@ -37,13 +40,11 @@ EXCLUDE_GROUPS: list[str] = ["tests_with_one_focal_methods"]
 
 
 def main() -> None:
-    script_dir = Path(__file__).resolve().parent
-
-    # Resolve paths
-    src_dir = (script_dir / SRC_DIR).resolve()
-    analysis_dir = (script_dir / ANALYSIS_DIR).resolve()
-    organized_methods_dir = (script_dir / ORGANIZED_METHODS_DIR).resolve()
-    output_dir = (script_dir / OUTPUT_DIR).resolve()
+    # Resolve paths relative to ROOT_DIR
+    src_dir = (ROOT_DIR / SRC_DIR).resolve()
+    analysis_dir = (ROOT_DIR / ANALYSIS_DIR).resolve()
+    organized_methods_dir = (ROOT_DIR / ORGANIZED_METHODS_DIR).resolve()
+    output_dir = (ROOT_DIR / OUTPUT_DIR).resolve()
 
     # Verify paths exist
     if not src_dir.is_dir():

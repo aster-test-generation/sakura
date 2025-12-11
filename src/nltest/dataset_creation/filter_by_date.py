@@ -318,10 +318,7 @@ def _process_single_repo(
         return None
 
     if not os.path.exists(os.path.join(repo_path, ".git")):
-        print(f"Skipping non-git directory: {repo_path}")
         return None
-
-    print(f"Processing repository: {repo_path}")
 
     filter_instance = FilterByDate()
     java_files = filter_instance.filter(repo_path=repo_path, date_str=date_str)
@@ -332,20 +329,26 @@ def _process_single_repo(
                 "CLDK filtering requested, but no analysis directory provided"
             )
 
-        analysis_path = Path(analysis_dir)
-        analysis_path.mkdir(parents=True, exist_ok=True)
-        repo_analysis_dir = analysis_path / project_name
-        analysis = CLDK(language="java").analysis(
-            project_path=repo_path,
-            analysis_backend_path=None,
-            analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=repo_analysis_dir,
-            eager=False,
-        )
+        try:
+            analysis_path = Path(analysis_dir)
+            analysis_path.mkdir(parents=True, exist_ok=True)
+            repo_analysis_dir = analysis_path / project_name
+            analysis = CLDK(language="java").analysis(
+                project_path=repo_path,
+                analysis_backend_path=None,
+                analysis_level=AnalysisLevel.symbol_table,
+                analysis_json_path=repo_analysis_dir,
+                eager=False,
+            )
 
-        test_classes_and_methods = filter_instance.classify_files_using_cldk(
-            java_files, repo_path, analysis
-        )
+            test_classes_and_methods = filter_instance.classify_files_using_cldk(
+                java_files, repo_path, analysis
+            )
+        except Exception as e:
+            return (
+                project_name,
+                {"error": str(e), "summary": {"test_class_count": 0, "test_method_count": 0}},
+            )
 
         repo_test_class_count = len(test_classes_and_methods)
         repo_test_method_count = sum(

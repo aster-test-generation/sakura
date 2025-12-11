@@ -5,9 +5,15 @@ import ray
 from hamster.code_analysis.model.models import ProjectAnalysis
 from tqdm import tqdm
 
-from nltest.dataset_creation.create_hamster_model import CreateHamsterModel, BASE_PATH
+from nltest.dataset_creation.create_hamster_model import CreateHamsterModel
 from nltest.dataset_creation.model import Test, NL2TestDataset
 from nltest.utils import constants
+
+# Path constants
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
+INPUT_FILE_NAME = "hamster.json"
+OUTPUT_FILE_NAME = "nl2test.json"
+TEST_OUTPUT_DIR = "tests/output"  # Relative to ROOT_DIR
 
 
 class BucketizeDataset:
@@ -77,30 +83,30 @@ class BucketizeDataset:
             output_dir = Path(report_store_path) / Path(dataset_name).name
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            with open(output_dir / "nl2test.json", "w") as f:
+            with open(output_dir / OUTPUT_FILE_NAME, "w") as f:
                 f.write(nl2test_dataset_str)
 
 
 if __name__ == "__main__":
     # Define the directory paths
-    hamster_model_dir = "tests/output/" + constants.HAMSTER_MODEL_DIR
+    hamster_model_dir = TEST_OUTPUT_DIR + "/" + constants.HAMSTER_MODEL_DIR
     # hamster_model_dir = constants.HAMSTER_MODEL_DIR
 
-    nl2test_dir = "tests/output/" + constants.BUCKETED_TESTS_DIR
+    nl2test_dir = TEST_OUTPUT_DIR + "/" + constants.BUCKETED_TESTS_DIR
     # nl2test_dir = constants.BUCKETED_TESTS_DIR
 
     # Ensure directories exist
-    BASE_PATH.joinpath(hamster_model_dir).mkdir(parents=True, exist_ok=True)
-    BASE_PATH.joinpath(nl2test_dir).mkdir(parents=True, exist_ok=True)
+    ROOT_DIR.joinpath(hamster_model_dir).mkdir(parents=True, exist_ok=True)
+    ROOT_DIR.joinpath(nl2test_dir).mkdir(parents=True, exist_ok=True)
 
     # Change this to your specific folder path
-    projects = CreateHamsterModel.get_subfolders(BASE_PATH.joinpath(hamster_model_dir))
+    projects = CreateHamsterModel.get_subfolders(ROOT_DIR.joinpath(hamster_model_dir))
 
     # Launch tasks
     futures = [
         BucketizeDataset.create_bucketize_dataset.remote(
-            str(Path(sf).joinpath("hamster.json")),
-            BASE_PATH.joinpath(nl2test_dir),
+            str(Path(sf).joinpath(INPUT_FILE_NAME)),
+            ROOT_DIR.joinpath(nl2test_dir),
         )
         for sf in projects
     ]

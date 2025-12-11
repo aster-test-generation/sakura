@@ -5,9 +5,13 @@ import random
 
 from nltest.utils import constants
 
-FILE_NAME = 'nl2test.json'
-STORE_PATH = ""
-BASE_PATH = Path(__file__).resolve().parent.parent.parent.parent.joinpath('resources')
+# Path constants
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
+INPUT_FILE_NAME = "nl2test.json"
+OUTPUT_FILE_NAME = "nl2test.json"
+RESOURCES_DIR = "resources"  # Relative to ROOT_DIR
+BUCKETED_TESTS_DIR = "bucketed_tests"  # Relative to RESOURCES_DIR
+SAMPLED_TESTS_DIR = "sampled_tests"  # Relative to RESOURCES_DIR
 RANDOM_SAMPLE_SIZE = 20
 
 
@@ -17,7 +21,7 @@ class RandomSampleDataset:
 
     @staticmethod
     def create_random_sample_dataset(dataset_folder: str):
-        with open(Path(dataset_folder).joinpath(FILE_NAME), 'r') as f:
+        with open(Path(dataset_folder).joinpath(INPUT_FILE_NAME), 'r') as f:
             file_content = json.load(f)
 
         # Dictionary to hold sampled data
@@ -32,12 +36,11 @@ class RandomSampleDataset:
                 # If the value is not a list, just copy it
                 sampled_data[key] = values
 
-        os.makedirs(Path(BASE_PATH).joinpath('sampled_tests')
-                          .joinpath(Path(dataset_folder).name), exist_ok=True)
+        output_dir = ROOT_DIR / RESOURCES_DIR / SAMPLED_TESTS_DIR / Path(dataset_folder).name
+        os.makedirs(output_dir, exist_ok=True)
 
         # Write the sampled data to a new JSON
-        with open(Path(BASE_PATH).joinpath('sampled_tests')
-                          .joinpath(Path(dataset_folder).name).joinpath(FILE_NAME), 'w') as f:
+        with open(output_dir / OUTPUT_FILE_NAME, 'w') as f:
             json.dump(sampled_data, f, indent=2)
 
     @staticmethod
@@ -48,6 +51,6 @@ class RandomSampleDataset:
 
 
 if __name__ == '__main__':
-    projects = RandomSampleDataset.get_subfolders(BASE_PATH.joinpath('bucketed_tests'))
+    projects = RandomSampleDataset.get_subfolders(ROOT_DIR / RESOURCES_DIR / BUCKETED_TESTS_DIR)
     for project in projects:
         RandomSampleDataset.create_random_sample_dataset(project)

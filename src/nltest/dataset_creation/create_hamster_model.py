@@ -10,7 +10,11 @@ from tqdm import tqdm
 
 from nltest.utils import constants
 
-BASE_PATH = Path(__file__).resolve().parent.parent.parent.parent
+# Path constants
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
+OUTPUT_FILE_NAME = "hamster.json"
+TEST_RESOURCES_DIR = "tests/resources"  # Relative to ROOT_DIR
+TEST_OUTPUT_DIR = "tests/output"  # Relative to ROOT_DIR
 
 
 class CreateHamsterModel:
@@ -30,7 +34,7 @@ class CreateHamsterModel:
                 project_path=project_path,
                 analysis_backend_path=None,
                 analysis_level=AnalysisLevel.symbol_table,
-                analysis_json_path=BASE_PATH.joinpath(
+                analysis_json_path=ROOT_DIR.joinpath(
                     analysis_dir, Path(project_path).name
                 ),
             )
@@ -39,10 +43,10 @@ class CreateHamsterModel:
             ).gather_project_analysis_info()
             project_analysis_str = project_analysis.model_dump_json()
 
-            output_dir = BASE_PATH.joinpath(hamster_dir) / Path(project_path).name
+            output_dir = ROOT_DIR.joinpath(hamster_dir) / Path(project_path).name
             output_dir.mkdir(parents=True, exist_ok=True)
 
-            with open(output_dir / "hamster.json", "w") as f:
+            with open(output_dir / OUTPUT_FILE_NAME, "w") as f:
                 f.write(project_analysis_str)
         except Exception as e:
             print(f"Error processing dataset {project_path}")
@@ -61,22 +65,22 @@ class CreateHamsterModel:
 
 if __name__ == "__main__":
     # Define the directory paths
-    resource_dir = "tests/resources"
+    resource_dir = TEST_RESOURCES_DIR
     # resource_dir = constants.RESOURCE_DIR
 
     # hamster_dir = constants.HAMSTER_MODEL_DIR
-    hamster_dir = "tests/output/" + constants.HAMSTER_MODEL_DIR
+    hamster_dir = TEST_OUTPUT_DIR + "/" + constants.HAMSTER_MODEL_DIR
 
     # analysis_dir = constants.DEFAULT_ANALYSIS_DIR
-    analysis_dir = "tests/output/" + constants.DEFAULT_ANALYSIS_DIR
+    analysis_dir = TEST_OUTPUT_DIR + "/" + constants.DEFAULT_ANALYSIS_DIR
 
     # Ensure directories exist
-    BASE_PATH.joinpath(resource_dir).mkdir(parents=True, exist_ok=True)
-    BASE_PATH.joinpath(hamster_dir).mkdir(parents=True, exist_ok=True)
-    BASE_PATH.joinpath(analysis_dir).mkdir(parents=True, exist_ok=True)
+    ROOT_DIR.joinpath(resource_dir).mkdir(parents=True, exist_ok=True)
+    ROOT_DIR.joinpath(hamster_dir).mkdir(parents=True, exist_ok=True)
+    ROOT_DIR.joinpath(analysis_dir).mkdir(parents=True, exist_ok=True)
 
     # Change this to your specific folder path
-    subfolders = CreateHamsterModel.get_subfolders(BASE_PATH.joinpath(resource_dir))
+    subfolders = CreateHamsterModel.get_subfolders(ROOT_DIR.joinpath(resource_dir))
 
     # Launch tasks
     futures = [

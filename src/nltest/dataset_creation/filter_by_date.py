@@ -11,6 +11,16 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.utils.analysis.common_analysis import CommonAnalysis
 
+# Path constants
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
+OUTPUT_FILE_NAME = "nl2test.json"
+SUMMARY_FILE_NAME = "summary.json"
+RESOURCES_DIR = "resources"  # Relative to ROOT_DIR
+DATASETS_DIR = "datasets"  # Relative to RESOURCES_DIR
+FILTERED_TESTS_DIR = "filtered_tests"  # Relative to RESOURCES_DIR
+ANALYSIS_DIR = "analysis"  # Relative to RESOURCES_DIR
+DEFAULT_DATE_STR = "2025-01-31"
+
 
 class FilterByDate:
     def __init__(self):
@@ -290,14 +300,14 @@ class FilterByDate:
             project_dir = output_dir / project_name
             project_dir.mkdir(parents=True, exist_ok=True)
 
-            project_file = project_dir / "nl2test.json"
+            project_file = project_dir / OUTPUT_FILE_NAME
             with open(project_file, "w", encoding="utf-8") as f:
                 json.dump(project_data, f, indent=4)
 
             # Extract just the summary for the top-level file
             project_summaries[project_name] = project_data.get("summary", {})
 
-        summary_file = output_dir / "summary.json"
+        summary_file = output_dir / SUMMARY_FILE_NAME
         summary_data = {
             "summary": overall_summary,
             "projects": project_summaries,
@@ -312,12 +322,12 @@ class FilterByDate:
 
 def main():
     # Calculate paths relative to this file's location
-    resources_dir = Path(__file__).parent.parent.parent.parent / "resources"
-    base_dir = resources_dir / "datasets"
-    output_dir = resources_dir / "filtered_tests"
-    date_str = "2025-01-31"  # For Gemini
+    resources_dir = ROOT_DIR / RESOURCES_DIR
+    base_dir = resources_dir / DATASETS_DIR
+    output_dir = resources_dir / FILTERED_TESTS_DIR
+    date_str = DEFAULT_DATE_STR
     use_cldk = True
-    analysis_dir = resources_dir / "analysis"
+    analysis_dir = resources_dir / ANALYSIS_DIR
 
     filter_by_date = FilterByDate()
     results = filter_by_date.process_repos_in_dir(

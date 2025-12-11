@@ -1,0 +1,98 @@
+{
+    "dataset_name": "commons-exec",
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.OS",
+                    "focal_method_names": [
+                        "isVersion(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.OS",
+                    "focal_method_names": [
+                        "isArch(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.TimeoutObserverTest",
+            "method_signature": "testTimeoutOccurred()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.TimeoutObserverTest.TimeoutObserverFixture",
+                    "focal_method_names": [
+                        "timeoutOccured(org.apache.commons.exec.Watchdog)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Watchdog.Builder",
+                    "focal_method_names": [
+                        "setTimeout(java.time.Duration)",
+                        "setThreadFactory(java.util.concurrent.ThreadFactory)",
+                        "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.ExecuteWatchdog.Builder",
+                    "focal_method_names": [
+                        "setTimeout(java.time.Duration)",
+                        "setThreadFactory(java.util.concurrent.ThreadFactory)",
+                        "get()"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.OS",
+                    "focal_method_names": [
+                        "isFamilyOpenVms()",
+                        "isFamilyNetware()",
+                        "isFamilyZOS()",
+                        "isFamilyOS2()",
+                        "isFamilyDOS()",
+                        "isFamilyTandem()",
+                        "isFamilyUnix()",
+                        "isFamilyWindows()",
+                        "isFamilyOS400()",
+                        "isFamilyWin9x()",
+                        "isFamilyMac()",
+                        "isFamilyWinNT()"
+                    ]
+                }
+            ]
+        }
+    ]
+}

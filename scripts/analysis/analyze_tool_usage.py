@@ -6,6 +6,10 @@ import statistics
 from pathlib import Path
 from typing import List, Tuple
 
+# Root directory (project root, three levels up from this script)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Paths relative to ROOT_DIR
 DEFAULT_RESULTS_FILE = "tests/output/commons-cli/commons_cli_nl2test_evaluation_results.json"
 
 # Tools to count (from composition agent)
@@ -128,8 +132,7 @@ def analyze_composition_tool_usage(results_file: Path) -> None:
 
 
 def main() -> None:
-    root_dir = Path(__file__).parent.parent
-    results_file = root_dir / DEFAULT_RESULTS_FILE
+    results_file = ROOT_DIR / DEFAULT_RESULTS_FILE
 
     if not results_file.exists():
         print(f"Error: Results file not found at {results_file}")

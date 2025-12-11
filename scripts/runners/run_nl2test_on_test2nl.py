@@ -3,15 +3,18 @@ import subprocess
 from pathlib import Path
 
 # === CONFIGURATION CONSTANTS ===
-# Directory paths relative to this script
-SRC_DIR = "../src"
-BASE_PROJECT_DIR = "../resources/test_dataset/"
-BASE_ANALYSIS_DIR = "../resources/analysis/"
-OUTPUT_DIR = "../resources/output/"
+# Root directory (project root, two levels up from this script)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Directory paths relative to ROOT_DIR
+SRC_DIR = "src"
+BASE_PROJECT_DIR = "resources/test_dataset/"
+BASE_ANALYSIS_DIR = "resources/analysis/"
+OUTPUT_DIR = "resources/output/"
 # Log file name to write under OUTPUT_DIR
 LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 # Test2NL CSV file path (must include the filename)
-CSV_FILE = "../resources/test_dataset/selected_from_subsets.csv"
+CSV_FILE = "resources/test_dataset/selected_from_subsets.csv"
 
 # CLI arguments
 MAX_ENTRIES = 0
@@ -48,16 +51,14 @@ MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
 
 def main() -> None:
-    script_dir = Path(__file__).resolve().parent
-
     # Set up paths using configuration constants
-    src_dir = (script_dir / SRC_DIR).resolve()
-    base_project_dir = (script_dir / BASE_PROJECT_DIR).resolve()
-    output_dir = (script_dir / OUTPUT_DIR).resolve()
+    src_dir = (ROOT_DIR / SRC_DIR).resolve()
+    base_project_dir = (ROOT_DIR / BASE_PROJECT_DIR).resolve()
+    output_dir = (ROOT_DIR / OUTPUT_DIR).resolve()
     log_file_name = LOG_FILE_NAME  # Name only; CLI saves under output_dir
-    test2nl_file = (script_dir / CSV_FILE).resolve()
+    test2nl_file = (ROOT_DIR / CSV_FILE).resolve()
     base_analysis_dir = (
-        (script_dir / BASE_ANALYSIS_DIR).resolve() if BASE_ANALYSIS_DIR else None
+        (ROOT_DIR / BASE_ANALYSIS_DIR).resolve() if BASE_ANALYSIS_DIR else None
     )
 
     # Verify paths exist

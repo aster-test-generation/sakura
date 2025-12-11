@@ -1,0 +1,69 @@
+{
+    "dataset_name": "commons-beanutils",
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+            "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.PropertyUtilsBean",
+                    "focal_method_names": [
+                        "getNestedProperty(java.lang.Object, java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+            "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.BeanUtilsBean",
+                    "focal_method_names": [
+                        "getPropertyUtils()",
+                        "getProperty(java.lang.Object, java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+            "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.PropertyUtilsBean",
+                    "focal_method_names": [
+                        "getNestedProperty(java.lang.Object, java.lang.String)",
+                        "removeBeanIntrospector(org.apache.commons.beanutils2.BeanIntrospector)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+            "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.BeanUtilsBean",
+                    "focal_method_names": [
+                        "getPropertyUtils()",
+                        "getProperty(java.lang.Object, java.lang.String)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.beanutils2.PropertyUtilsBean",
+                    "focal_method_names": [
+                        "getNestedProperty(java.lang.Object, java.lang.String)",
+                        "removeBeanIntrospector(org.apache.commons.beanutils2.BeanIntrospector)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_ten_focal_methods": []
+}

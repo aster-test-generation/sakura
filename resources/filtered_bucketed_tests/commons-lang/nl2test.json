@@ -1,0 +1,84 @@
+{
+    "dataset_name": "commons-lang",
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+            "method_signature": "testAbbreviate_StringIntInt()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.StringUtils",
+                    "focal_method_names": [
+                        "abbreviate(java.lang.String, int, int)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+            "method_signature": "testAbbreviate_StringInt()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.StringUtils",
+                    "focal_method_names": [
+                        "abbreviate(java.lang.String, int)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+            "method_signature": "testAbbreviate_StringStringIntInt()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.StringUtils",
+                    "focal_method_names": [
+                        "abbreviate(java.lang.String, java.lang.String, int, int)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+            "method_signature": "testAbbreviateMarkerWithEmptyString()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.StringUtils",
+                    "focal_method_names": [
+                        "abbreviate(java.lang.String, java.lang.String, int)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+            "method_signature": "testAbbreviate_StringStringInt()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.StringUtils",
+                    "focal_method_names": [
+                        "abbreviate(java.lang.String, int)",
+                        "abbreviate(java.lang.String, java.lang.String, int)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
+            "method_signature": "testAbbreviateMiddle()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.StringUtils",
+                    "focal_method_names": [
+                        "repeat(java.lang.String, int)",
+                        "abbreviateMiddle(java.lang.String, java.lang.String, int)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_two_to_five_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_ten_focal_methods": []
+}

@@ -9,13 +9,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # === CONFIGURATION CONSTANTS ===
+# Root directory (project root, two levels up from this script)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Prompt file names (located in src/nltest/nl2test/prompts/templates/{system,chat}/)
 SYSTEM_PROMPT_FILE = "composition_agent_gherkin.jinja2"
 CHAT_PROMPT_FILE = "composition_agent_gherkin.jinja2"
 
-# Output directory relative to scripts/
-OUTPUT_DIR = "../tests/output/optimized_prompts"
+# Output directory relative to ROOT_DIR
+OUTPUT_DIR = "tests/output/optimized_prompts"
 
 # GCP Configuration for Vertex AI Prompt Optimizer
 # Can be set via environment variables or hardcoded here
@@ -24,11 +26,8 @@ GCP_LOCATION = os.getenv("GCP_LOCATION", "us-central1")
 
 
 def main() -> None:
-    script_dir = Path(__file__).resolve().parent
-    root_dir = script_dir.parent
-
     # Add src to path for imports
-    src_dir = root_dir / "src"
+    src_dir = ROOT_DIR / "src"
     sys.path.insert(0, str(src_dir))
 
     # Import after path setup
@@ -36,7 +35,7 @@ def main() -> None:
     from nltest.utils.llm import PromptFormatter
 
     # Resolve output directory
-    output_dir = (script_dir / OUTPUT_DIR).resolve()
+    output_dir = (ROOT_DIR / OUTPUT_DIR).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Load prompt templates

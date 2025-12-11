@@ -1,0 +1,114 @@
+{
+    "summary": {
+        "test_class_count": 8,
+        "test_method_count": 90
+    },
+    "test_classes_and_methods": {
+        "org.apache.commons.io.function.IOBooleanSupplierTest": [
+            "testAsSupplier()",
+            "testGet()"
+        ],
+        "org.apache.commons.io.serialization.ProxyTest": [
+            "testRejectProxy()",
+            "testAcceptProxy()"
+        ],
+        "org.apache.commons.io.build.ChannelOriginTest": [
+            "testGetRandomAccessFile()",
+            "testGetPath()",
+            "testGetRandomAccessFile(java.nio.file.OpenOption)",
+            "testUnsupportedOperations_WritableByteChannel()",
+            "testGetFile()",
+            "testUnsupportedOperations_ReadableByteChannel()"
+        ],
+        "org.apache.commons.io.channels.CloseShieldChannelTest": [
+            "testCloseIsIdempotent(java.lang.Class)",
+            "testToString(java.lang.Class)",
+            "testGatheringByteChannelMethods()",
+            "testWritableByteChannelMethods()",
+            "testPreservesInterfaces(java.lang.Class)",
+            "testHashCode(java.lang.Class)",
+            "testCloseIsShielded(java.lang.Class)",
+            "testScatteringByteChannelMethods()",
+            "testSeekableByteChannelMethods()",
+            "testWrapFileChannel(java.nio.file.Path)",
+            "testDoesNotDoubleWrap()",
+            "testEquals(java.lang.Class)",
+            "testReadableByteChannelMethods()",
+            "testNetworkChannelMethods()",
+            "testCloseDoesNotCloseDelegate(java.lang.Class)"
+        ],
+        "org.apache.commons.io.channels.AbstractSeekableByteChannelTest": [
+            "testWriteSingleByte()",
+            "testWriteDifferentSizes(int)",
+            "testWriteBeyondSizeGrows()",
+            "testReadBytes()",
+            "testReadClosed()",
+            "testWritePositionReadVerify()",
+            "tesWriteBytes()",
+            "testIsOpennOnNew()",
+            "testSizeAfterTruncateToLargerSize()",
+            "testReadNull()",
+            "testPositionOnClosed()",
+            "testIsOpenAfterClose()",
+            "testReadBuffer()",
+            "testSizeOnClosed()",
+            "testSizeSameOnOverwrite()",
+            "testTruncateShrinks()",
+            "testPositionInBounds(long, long)",
+            "testCloseMultipleTimes()",
+            "testRandomAccess()",
+            "testPartialWritesAndReads()",
+            "testWriteEmpty()",
+            "testWriteToClosedChannel()",
+            "testPositionOnNew()",
+            "testSizeAfterWrite()",
+            "testReadEmpty()",
+            "testSizeOnNew()",
+            "testReadAtEndOfFile()",
+            "testWriteNull()",
+            "testTruncateNegative()",
+            "testPositionBeyondSize()",
+            "testReadSingleByte()",
+            "testPositionNegative()",
+            "testConcurrentPositionAndSizeQueries()"
+        ],
+        "org.apache.commons.io.channels.ByteArraySeekableByteChannelCompressTest": [
+            "testCloseIsIdempotent()",
+            "testShouldSetProperPositionOnTruncate()",
+            "testShouldThrowExceptionWhenSettingIncorrectPosition()",
+            "testTruncateToCurrentSizeDoesntChangeAnything()",
+            "testTruncateMovesPositionWhenNotResizingButPositionBiggerThanSize()",
+            "testThrowsIllegalArgumentExceptionWhenTruncatingToANegativeSize()",
+            "testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel()",
+            "testShouldThrowExceptionOnWritingToClosedChannel()",
+            "testShouldWriteDataProperlyAfterPositionSet()",
+            "throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel()",
+            "throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel()",
+            "testShouldSignalEOFWhenPositionAtTheEnd()",
+            "testShouldSetProperPosition()",
+            "testShouldThrowExceptionWhenTruncatingToIncorrectSize()",
+            "testShouldTruncateContentsProperly()",
+            "testShouldReadContentsWhenBiggerBufferSupplied()",
+            "testTruncateDoesntChangeSmallPosition()",
+            "testShouldThrowExceptionOnReadingClosedChannel()",
+            "testTruncateMovesPositionWhenNewSizeIsBiggerThanSizeAndPositionIsEvenBigger()",
+            "testThrowsIOExceptionWhenPositionIsSetToANegativeValue()",
+            "testShouldReadContentsProperly()",
+            "testTruncateToBiggerSizeDoesntChangeAnything()",
+            "testTruncateMovesPositionWhenShrinkingBeyondPosition()",
+            "testReadingFromAPositionAfterEndReturnsEOF(int)",
+            "testShouldWriteDataProperly()",
+            "throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel()",
+            "testShouldReadDataFromSetPosition()"
+        ],
+        "org.apache.commons.io.channels.ByteArraySeekableByteChannelTest": [
+            "testShouldResizeWhenWritingMoreDataThanCapacity(byte[], int)",
+            "testConstructorInvalid()",
+            "testConstructor(org.apache.commons.io.function.IOSupplier, byte[], int)"
+        ],
+        "org.apache.commons.io.IOUtilsConcurrentTest": [
+            "testConcurrentReaderTasks(org.apache.commons.io.function.IOConsumer)",
+            "testConcurrentInputStreamTasks(org.apache.commons.io.function.IOConsumer)"
+        ]
+    }
+}

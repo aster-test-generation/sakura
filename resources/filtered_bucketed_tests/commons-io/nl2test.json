@@ -1,0 +1,33 @@
+{
+    "dataset_name": "commons-io",
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.io.function.IOBooleanSupplierTest",
+            "method_signature": "testAsSupplier()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.function.IOBooleanSupplier",
+                    "focal_method_names": [
+                        "asBooleanSupplier()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.function.IOBooleanSupplierTest",
+            "method_signature": "testGet()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.function.IOBooleanSupplier",
+                    "focal_method_names": [
+                        "getAsBoolean()"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_ten_focal_methods": []
+}

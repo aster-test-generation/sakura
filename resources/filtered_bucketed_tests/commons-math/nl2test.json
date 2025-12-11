@@ -1,0 +1,95 @@
+{
+    "dataset_name": "commons-math",
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+            "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[], double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+            "method_signature": "testInterpolateLinearDegenerateTwoSegment()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[], double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+            "method_signature": "testUnsupportedStorelessMethods()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.StorelessSumOfSquares",
+                    "focal_method_names": [
+                        "create()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+            "method_signature": "testPercentile()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.Percentile",
+                    "focal_method_names": [
+                        "create(double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+            "method_signature": "testInvalidPercentileThrows(double)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.Percentile",
+                    "focal_method_names": [
+                        "create(double)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+            "method_signature": "testIntegral()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[])",
+                        "interpolate(double[], double[], double, double)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.SplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.integration.SimpsonIntegrator",
+                    "focal_method_names": [
+                        "integrate(int, org.apache.commons.math4.legacy.analysis.UnivariateFunction, double, double)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_ten_focal_methods": []
+}

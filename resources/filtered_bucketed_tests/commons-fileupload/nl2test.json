@@ -1,0 +1,22 @@
+{
+    "dataset_name": "commons-fileupload",
+    "tests_with_one_focal_methods": [],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest",
+            "method_signature": "testThresholdMinusOne()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream",
+                    "focal_method_names": [
+                        "isInMemory()",
+                        "getInputStream()"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_two_to_five_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_ten_focal_methods": []
+}

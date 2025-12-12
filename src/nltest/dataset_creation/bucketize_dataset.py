@@ -6,12 +6,12 @@ from hamster.code_analysis.model.models import ProjectAnalysis
 from tqdm import tqdm
 
 from nltest.dataset_creation.create_hamster_model import CreateHamsterModel
-from nltest.dataset_creation.model import Test, NL2TestDataset
+from nltest.dataset_creation.model import NL2TestDataset, Test
 from nltest.utils import constants
 
 # Path constants
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
-INPUT_FILE_NAME = "hamster.json"
+INPUT_FILE_NAME = "hamster.json"  # Relative to
 OUTPUT_FILE_NAME = "nl2test.json"
 TEST_OUTPUT_DIR = "tests/output"  # Relative to ROOT_DIR
 

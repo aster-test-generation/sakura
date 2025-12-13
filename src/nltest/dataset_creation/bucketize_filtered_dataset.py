@@ -9,6 +9,9 @@ from nltest.dataset_creation.model import NL2TestDataset, Test
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
 INPUT_FILE_NAME = "nl2test.json"
 OUTPUT_FILE_NAME = "nl2test.json"
+SUMMARY_FILE_NAME = "summary.json"
+
+# Resources paths
 RESOURCES_DIR = "resources"  # Relative to ROOT_DIR
 BUCKETED_TESTS_DIR = "bucketed_tests"  # Relative to RESOURCES_DIR
 FILTERED_TESTS_DIR = "filtered_tests"  # Relative to RESOURCES_DIR
@@ -68,6 +71,37 @@ def process_projects(bucket_dir: Path, filtered_dir: Path, output_dir: Path) -> 
         filtered_dir: Directory containing filtered test classes and methods per project.
         output_dir: Directory to write filtered bucketed datasets.
     """
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Track per-project and overall counts based on the actual filtered datasets
+    # written to filtered_bucketed_tests/. This mirrors filtered_tests/summary.json
+    # but reflects any tests that were dropped during bucket matching.
+    project_summaries: Dict[str, Dict[str, int]] = {}
+    total_test_classes = 0
+    total_test_methods = 0
+
+    def count_tests_in_dataset(dataset: NL2TestDataset) -> tuple[int, int]:
+        """
+        Count unique test classes and methods in a bucketed dataset.
+
+        A "test method" is a unique (qualified_class_name, method_signature) pair.
+        A "test class" is a unique qualified_class_name across all buckets.
+        """
+        method_pairs: set[tuple[str, str]] = set()
+        buckets = [
+            dataset.tests_with_one_focal_methods,
+            dataset.tests_with_two_focal_methods,
+            dataset.tests_with_more_than_two_to_five_focal_methods,
+            dataset.tests_with_more_than_five_to_ten_focal_methods,
+            dataset.tests_with_more_than_ten_focal_methods,
+        ]
+        for bucket in buckets:
+            for test in bucket:
+                method_pairs.add((test.qualified_class_name, test.method_signature))
+
+        class_names = {class_name for class_name, _ in method_pairs}
+        return (len(class_names), len(method_pairs))
+
     for project_name in os.listdir(bucket_dir):
         if project_name.startswith(".") or project_name.startswith("__"):
             continue
@@ -107,7 +141,32 @@ def process_projects(bucket_dir: Path, filtered_dir: Path, output_dir: Path) -> 
         with open(output_file, "w", encoding="utf-8") as f:
             json.dump(filtered_dataset.model_dump(), f, indent=4)
 
+        # Update summaries after writing the project dataset.
+        project_test_class_count, project_test_method_count = count_tests_in_dataset(
+            filtered_dataset
+        )
+        project_summaries[project_name] = {
+            "test_class_count": project_test_class_count,
+            "test_method_count": project_test_method_count,
+        }
+        total_test_classes += project_test_class_count
+        total_test_methods += project_test_method_count
+
         print(f"Processed {project_name}: saved to {output_file}")
+
+    summary_file = output_dir / SUMMARY_FILE_NAME
+    summary_data = {
+        "summary": {
+            "total_test_classes": total_test_classes,
+            "total_test_methods": total_test_methods,
+        },
+        "projects": project_summaries,
+    }
+    with open(summary_file, "w", encoding="utf-8") as f:
+        json.dump(summary_data, f, indent=4)
+
+    print(f"\nTop-level summary saved to: {summary_file}")
+    print(f"  - Total projects: {len(project_summaries)}")
 
 
 def main():

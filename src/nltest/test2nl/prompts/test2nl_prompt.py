@@ -1,23 +1,22 @@
-from typing import Tuple, List
-
-import yaml
 import json
+from typing import List, Tuple
+
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.test2nl.model.models import (
-    AbstractionLevel,
-    MethodContext,
-    ReferencedClass,
-    FieldDeclaration,
-)
 from nltest.test2nl.extractors import (
     FieldDeclarationExtractor,
     MethodExtractor,
     ReferencedClassExtractor,
 )
+from nltest.test2nl.model.models import (
+    AbstractionLevel,
+    FieldDeclaration,
+    MethodContext,
+    ReferencedClass,
+)
 from nltest.test2nl.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis, Reachability
-from nltest.utils.llm import LLMClient, ClientType
+from nltest.utils.llm import ClientType, LLMClient
 
 
 class Test2NLPrompt:
@@ -189,10 +188,10 @@ class Test2NLPrompt:
             else "None"
         )
 
-        chat_template = LoadPrompt.load_prompt(
-            f"{abs_level}_abs.jinja2", PromptFormat.JINJA2, "chat"
+        chat_template = LoadPrompt.load_jinja2_template(
+            f"{abs_level}_abs.jinja2", "chat"
         )
-        rendered_prompt = chat_template.format(
+        rendered_prompt = chat_template.render(
             method_code=method_code_str,
             setup_methods=setup_methods_str,
             teardown_methods=teardown_methods_str,

@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Union
 from cldk.models.java.models import JMethodDetail, JCallable
 from langchain_core.tools import StructuredTool
 
-from nltest.utils.analysis.common_analysis import CommonAnalysis
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
 from nltest.utils.exceptions import (
     ToolExceptionHandler,
     MethodNotFoundError,

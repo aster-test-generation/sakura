@@ -11,7 +11,7 @@ from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
 from tqdm import tqdm
 
-from nltest.utils.analysis.common_analysis import CommonAnalysis
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
 
 # Path constants
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root

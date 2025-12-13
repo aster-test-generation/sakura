@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Set
 
-from nltest.utils.analysis.common_analysis import CommonAnalysis
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
 
 
 class CLDKArgNormalizer:

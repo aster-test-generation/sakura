@@ -4,8 +4,17 @@ import yaml
 import json
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.test2nl.model.models import AbstractionLevel, MethodContext, ReferencedClass, FieldDeclaration
-from nltest.test2nl.extractors import FieldDeclarationExtractor, MethodExtractor, ReferencedClassExtractor
+from nltest.test2nl.model.models import (
+    AbstractionLevel,
+    MethodContext,
+    ReferencedClass,
+    FieldDeclaration,
+)
+from nltest.test2nl.extractors import (
+    FieldDeclarationExtractor,
+    MethodExtractor,
+    ReferencedClassExtractor,
+)
 from nltest.test2nl.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis, Reachability
 from nltest.utils.llm import LLMClient, ClientType
@@ -17,109 +26,172 @@ class Test2NLPrompt:
         self.analysis = analysis
         self.llm = LLMClient(ClientType.SUMMARIZATION)
 
-    def format(self, method_signature: str, qualified_class_name: str,
-               abstraction_level: AbstractionLevel) -> str:
-
+    def format(
+        self,
+        method_signature: str,
+        qualified_class_name: str,
+        abstraction_level: AbstractionLevel,
+    ) -> str:
         abs_level = abstraction_level.value
 
-        method_details = self.analysis.get_method(qualified_class_name, method_signature)
+        method_details = self.analysis.get_method(
+            qualified_class_name, method_signature
+        )
         if not method_details:
-            raise Exception(f"Method {method_signature} in {qualified_class_name} not found")
+            raise Exception(
+                f"Method {method_signature} in {qualified_class_name} not found"
+            )
 
         setup_methods: List[MethodContext] = []
-        for setup_method in CommonAnalysis(self.analysis).get_setup_methods(qualified_class_name):
+        for setup_method in CommonAnalysis(self.analysis).get_setup_methods(
+            qualified_class_name
+        ):
             if not setup_method:
                 continue
-            setup_methods.append(MethodExtractor.extract(setup_method, complete_methods=True))
+            setup_methods.append(
+                MethodExtractor.extract(setup_method, complete_methods=True)
+            )
 
         teardown_methods: List[MethodContext] = []
-        for teardown_method in CommonAnalysis(self.analysis).get_teardown_methods(qualified_class_name):
+        for teardown_method in CommonAnalysis(self.analysis).get_teardown_methods(
+            qualified_class_name
+        ):
             if not teardown_method:
                 continue
-            teardown_methods.append(MethodExtractor.extract(teardown_method, complete_methods=True))
+            teardown_methods.append(
+                MethodExtractor.extract(teardown_method, complete_methods=True)
+            )
 
         helper_methods: List[MethodContext] = []
         # Add helper methods from the main test method
-        for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
-                                                                                                  method_signature,
-                                                                                                  depth=1).items():
+        for qualified_class, helper_method_sigs in (
+            Reachability(self.analysis)
+            .get_helper_methods(qualified_class_name, method_signature, depth=1)
+            .items()
+        ):
             for helper_sig in helper_method_sigs:
                 helper_details = self.analysis.get_method(qualified_class, helper_sig)
                 if not helper_details:
                     continue
-                helper_context = MethodExtractor.extract(helper_details, complete_methods=True)
+                helper_context = MethodExtractor.extract(
+                    helper_details, complete_methods=True
+                )
                 if helper_context not in helper_methods:
                     helper_methods.append(helper_context)
-        
+
         # Add helper methods from setup methods
         for setup_method in setup_methods:
-            for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
-                                                                                                      setup_method.method_signature,
-                                                                                                      depth=1).items():
+            for qualified_class, helper_method_sigs in (
+                Reachability(self.analysis)
+                .get_helper_methods(
+                    qualified_class_name, setup_method.method_signature, depth=1
+                )
+                .items()
+            ):
                 for helper_sig in helper_method_sigs:
-                    helper_details = self.analysis.get_method(qualified_class, helper_sig)
+                    helper_details = self.analysis.get_method(
+                        qualified_class, helper_sig
+                    )
                     if not helper_details:
                         continue
-                    helper_context = MethodExtractor.extract(helper_details, complete_methods=True)
+                    helper_context = MethodExtractor.extract(
+                        helper_details, complete_methods=True
+                    )
                     # Avoid duplicates
                     if helper_context not in helper_methods:
                         helper_methods.append(helper_context)
-        
+
         # Add helper methods from teardown methods
         for teardown_method in teardown_methods:
-            for qualified_class, helper_method_sigs in Reachability(self.analysis).get_helper_methods(qualified_class_name,
-                                                                                                        teardown_method.method_signature,
-                                                                                                        depth=1).items():
+            for qualified_class, helper_method_sigs in (
+                Reachability(self.analysis)
+                .get_helper_methods(
+                    qualified_class_name, teardown_method.method_signature, depth=1
+                )
+                .items()
+            ):
                 for helper_sig in helper_method_sigs:
-                    helper_details = self.analysis.get_method(qualified_class, helper_sig)
+                    helper_details = self.analysis.get_method(
+                        qualified_class, helper_sig
+                    )
                     if not helper_details:
                         continue
-                    helper_context = MethodExtractor.extract(helper_details, complete_methods=True)
+                    helper_context = MethodExtractor.extract(
+                        helper_details, complete_methods=True
+                    )
                     # Avoid duplicates
                     if helper_context not in helper_methods:
                         helper_methods.append(helper_context)
 
         referenced_classes: List[ReferencedClass] = []
-        ref_class_names: List[str] = CommonAnalysis(self.analysis).get_referenced_app_classes(method_details)
-        for qualified_class_name in ref_class_names:
+        ref_class_names: List[str] = CommonAnalysis(
+            self.analysis
+        ).get_referenced_app_classes(method_details)
+        for ref_qualified_class_name in ref_class_names:
             referenced_classes.append(
-                ReferencedClassExtractor(self.analysis).extract(qualified_class_name, complete_methods=True)
+                ReferencedClassExtractor(self.analysis).extract(
+                    ref_qualified_class_name, complete_methods=True
+                )
             )
 
-        method: MethodContext = MethodExtractor.extract(method_details, complete_methods=True)
+        method: MethodContext = MethodExtractor.extract(
+            method_details, complete_methods=True
+        )
 
         class_details = self.analysis.get_class(qualified_class_name)
 
         field_declarations: List[FieldDeclaration] = []
         for field_declaration in class_details.field_declarations:
-            field_declarations.append(FieldDeclarationExtractor.extract(field_declaration))
+            field_declarations.append(
+                FieldDeclarationExtractor.extract(field_declaration)
+            )
 
         # method_code_str: str = yaml.dump(method.model_dump(), sort_keys=False, indent=4)
         method_code_str: str = json.dumps(method.model_dump(), indent=4)
         # setup_methods_str: List[str] = [yaml.dump(setup_context.model_dump(), sort_keys=False, indent=4) for
         #                                 setup_context in setup_methods]
-        setup_methods_str: List[str] = [json.dumps(setup_context.model_dump(), indent=4) for
-                                        setup_context in setup_methods]
+        setup_methods_str: List[str] = [
+            json.dumps(setup_context.model_dump(), indent=4)
+            for setup_context in setup_methods
+        ]
         # teardown_methods_str: List[str] = [yaml.dump(teardown_context.model_dump(), sort_keys=False, indent=4) for
         #                                    teardown_context in teardown_methods]
-        teardown_methods_str: List[str] = [json.dumps(teardown_context.model_dump(), indent=4) for
-                                           teardown_context in teardown_methods]
+        teardown_methods_str: List[str] = [
+            json.dumps(teardown_context.model_dump(), indent=4)
+            for teardown_context in teardown_methods
+        ]
         # field_declarations_str: List[str] = [yaml.dump(field_context.model_dump(), sort_keys=False, indent=4) for
         #                                      field_context in field_declarations]
-        field_declarations_str: List[str] = [json.dumps(field_context.model_dump(), indent=4) for
-                                             field_context in field_declarations]
+        field_declarations_str: List[str] = [
+            json.dumps(field_context.model_dump(), indent=4)
+            for field_context in field_declarations
+        ]
         # helper_methods_str: List[str] = [yaml.dump(helper_context.model_dump(), sort_keys=False, indent=4) for
         #                                  helper_context in helper_methods]
-        helper_methods_str: List[str] = [json.dumps(helper_context.model_dump(), indent=4) for
-                                         helper_context in helper_methods]
+        helper_methods_str: List[str] = [
+            json.dumps(helper_context.model_dump(), indent=4)
+            for helper_context in helper_methods
+        ]
         # referenced_classes_str: List[str] = [yaml.dump(referenced_context.model_dump(), sort_keys=False, indent=4) for
         #                                      referenced_context in referenced_classes]
-        referenced_classes_str: List[str] = [json.dumps(referenced_context.model_dump(), indent=4) for
-                                             referenced_context in referenced_classes]
-        class_annotation_str: str = ", ".join(class_details.annotations) if class_details.annotations else "None"
-        method_annotation_str: str = ", ".join(method_details.annotations) if method_details.annotations else "None"
+        referenced_classes_str: List[str] = [
+            json.dumps(referenced_context.model_dump(), indent=4)
+            for referenced_context in referenced_classes
+        ]
+        class_annotation_str: str = (
+            ", ".join(class_details.annotations)
+            if class_details.annotations
+            else "None"
+        )
+        method_annotation_str: str = (
+            ", ".join(method_details.annotations)
+            if method_details.annotations
+            else "None"
+        )
 
-        chat_template = LoadPrompt.load_prompt(f"{abs_level}_abs.jinja2", PromptFormat.JINJA2, "chat")
+        chat_template = LoadPrompt.load_prompt(
+            f"{abs_level}_abs.jinja2", PromptFormat.JINJA2, "chat"
+        )
         rendered_prompt = chat_template.format(
             method_code=method_code_str,
             setup_methods=setup_methods_str,
@@ -132,8 +204,12 @@ class Test2NLPrompt:
         )
         return rendered_prompt
 
-    def generate(self, method_signature: str, qualified_class_name: str,
-                 abstraction_level: AbstractionLevel) -> Tuple[str | None, str, bool]:
+    def generate(
+        self,
+        method_signature: str,
+        qualified_class_name: str,
+        abstraction_level: AbstractionLevel,
+    ) -> Tuple[str | None, str, bool]:
         """
         Prompt to get the natural language description of a test case.
         Args:
@@ -147,9 +223,12 @@ class Test2NLPrompt:
 
         """
 
-        system_prompt = LoadPrompt.load_prompt(f"{abstraction_level.value}_abs.jinja2",
-                                               PromptFormat.JINJA2, "system").format()
-        chat_prompt = self.format(method_signature, qualified_class_name, abstraction_level)
+        system_prompt = LoadPrompt.load_prompt(
+            f"{abstraction_level.value}_abs.jinja2", PromptFormat.JINJA2, "system"
+        ).format()
+        chat_prompt = self.format(
+            method_signature, qualified_class_name, abstraction_level
+        )
 
         # Call the LLM
         ai_msg = self.llm.invoke_prompts(system_prompt, chat_prompt)

@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional, Dict
+from typing import Dict, List, Optional
 
 from cldk.analysis.java import JavaAnalysis
 
@@ -43,15 +43,26 @@ class MethodSnippetExtractor:
         declaration = " ".join(parts)
         return declaration
 
-    def _format_code(self, qualified_class_name: str, method_signature: str, containing_class: str) -> str:
-        method_details = self.analysis.get_method(qualified_class_name, method_signature)
-        code = CommonAnalysis.get_complete_method_code(method_details.declaration, method_details.code)
+    def _format_code(
+        self, qualified_class_name: str, method_signature: str, containing_class: str
+    ) -> str:
+        method_details = self.analysis.get_method(
+            qualified_class_name, method_signature
+        )
+        code = CommonAnalysis.get_complete_method_code(
+            method_details.declaration, method_details.code
+        )
         simple_class_decl = self._reconstruct_simple_class_declaration(
-            containing_class)  # Containing class for declaration
+            containing_class
+        )  # Containing class for declaration
         return simple_class_decl + "{\n" + code + "\n}"
 
-    def get_method_snippet(self, qualified_class_name: str, method_signature: str,
-                           containing_class: Optional[str] = None) -> MethodSnippet | None:
+    def get_method_snippet(
+        self,
+        qualified_class_name: str,
+        method_signature: str,
+        containing_class: Optional[str] = None,
+    ) -> MethodSnippet | None:
         """
         Creates a method snippet from the method signature and qualified class and returns it. The qualified class name
         refers to the actual class containing the method, but the containing class refers to the class under analysis
@@ -68,44 +79,63 @@ class MethodSnippetExtractor:
             return None
         if not containing_class:
             containing_class = qualified_class_name
-        code = self._format_code(qualified_class_name, method_signature, containing_class)
+        code = self._format_code(
+            qualified_class_name, method_signature, containing_class
+        )
         return MethodSnippet(
             declaring_class_name=qualified_class_name,
-            # NOTE: This is the class that contains the method, not the class that the method is in
+            # NOTE: This is the class that implements the method, not the class that the method is in
             method_signature=method_signature,
             code=code,  # NOTE: This contains the class of the containing class for retrieval
             containing_class_name=containing_class,
         )
 
-    def get_class_snippets(self, qualified_class_name: str, exclude_test_dirs: bool = False) -> List[MethodSnippet]:
+    def get_class_snippets(
+        self, qualified_class_name: str, exclude_test_dirs: bool = False
+    ) -> List[MethodSnippet]:
         if not self.analysis.get_class(qualified_class_name):
             return []
 
-        if exclude_test_dirs and TEST_DIR in self.analysis.get_java_file(qualified_class_name):
+        if exclude_test_dirs and TEST_DIR in self.analysis.get_java_file(
+            qualified_class_name
+        ):
             return []
 
         method_snippets: List[MethodSnippet] = []
-        testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
+        testing_frameworks = CommonAnalysis(
+            self.analysis
+        ).get_testing_frameworks_for_class(qualified_class_name)
 
         # Do not process test classes
-        if CommonAnalysis(self.analysis).is_test_class(qualified_class_name, testing_frameworks):
+        if CommonAnalysis(self.analysis).is_test_class(
+            qualified_class_name, testing_frameworks
+        ):
             return []
 
         # Get all reachable methods from the class
-        reachable_methods: Dict[str, List[str]] = Reachability(self.analysis).get_visible_class_methods(
-            qualified_class_name, visibility_mode="same_package_or_subclass")
+        reachable_methods: Dict[str, List[str]] = Reachability(
+            self.analysis
+        ).get_visible_class_methods(
+            qualified_class_name, visibility_mode="same_package_or_subclass"
+        )
 
         for cls, method_sigs in reachable_methods.items():
             for method_sig in method_sigs:
-                method_snippet = self.get_method_snippet(cls, method_sig, containing_class=qualified_class_name)
+                method_snippet = self.get_method_snippet(
+                    cls, method_sig, containing_class=qualified_class_name
+                )
                 if method_snippet:
                     method_snippets.append(method_snippet)
 
         return method_snippets
 
-    def get_project_snippets(self, exclude_test_dirs: bool = False) -> List[MethodSnippet]:
+    def get_project_snippets(
+        self, exclude_test_dirs: bool = False
+    ) -> List[MethodSnippet]:
         """Collect all non-test method snippets from the project."""
         method_snippets: List[MethodSnippet] = []
         for qualified_class in self.analysis.get_classes():
-            method_snippets.extend(self.get_class_snippets(qualified_class, exclude_test_dirs))
+            method_snippets.extend(
+                self.get_class_snippets(qualified_class, exclude_test_dirs)
+            )
         return method_snippets

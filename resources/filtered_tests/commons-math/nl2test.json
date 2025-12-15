@@ -1,16 +1,15 @@
 {
     "summary": {
         "test_class_count": 3,
-        "test_method_count": 17
+        "test_method_count": 17,
+        "new_test_method_count": 12
     },
     "test_classes_and_methods": {
-        "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest": [
-            "testIntegral()",
-            "testInterpolateLinearDegenerateThreeSegment()",
-            "testInsufficientData()",
-            "testUnsortedArray()",
-            "testArrayLengthMismatch()",
-            "testInterpolateLinearDegenerateTwoSegment()"
+        "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest": [
+            "testUnsupportedMethods()",
+            "testUnsupportedStorelessMethods()",
+            "testPercentile()",
+            "testInvalidPercentileThrows(double)"
         ],
         "org.apache.commons.math4.legacy.stat.descriptive.WeightedEvaluationAbstractTest": [
             "testEvaluateArraySegmentWeighted()",
@@ -21,11 +20,47 @@
             "testUnweightedEvaluation()",
             "testWeightedConsistency()"
         ],
-        "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest": [
-            "testUnsupportedMethods()",
-            "testUnsupportedStorelessMethods()",
-            "testPercentile()",
-            "testInvalidPercentileThrows(double)"
+        "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest": [
+            "testIntegral()",
+            "testInterpolateLinearDegenerateThreeSegment()",
+            "testInsufficientData()",
+            "testUnsortedArray()",
+            "testArrayLengthMismatch()",
+            "testInterpolateLinearDegenerateTwoSegment()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/util/ComplexFormatAbstractTest.java": [
+            "testParseMissingImaginaryCharacter"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/ml/clustering/ElkanKMeansPlusPlusClustererTest.java": [
+            "testAllPointsIdentical"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/linear/RealVectorTest.java": [
+            "testSparseIteratorEmptyVector"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/interval/ClopperPearsonIntervalTest.java": [
+            "testCase4"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/optim/linear/SimplexSolverTest.java": [
+            "testMath1674"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/moment/SemiVarianceTest.java": [
+            "testProperties",
+            "testCopy"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/StatUtilsTest.java": [
+            "testSum"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/StatisticsTest.java": [
+            "testPercentile"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/SummaryStatisticsTest.java": [
+            "testSetterAll",
+            "testEmpty"
+        ],
+        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/DescriptiveStatisticsTest.java": [
+            "testEmpty"
         ]
     }
 }

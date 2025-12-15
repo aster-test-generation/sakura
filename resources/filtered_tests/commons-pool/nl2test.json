@@ -1,13 +1,43 @@
 {
     "summary": {
         "test_class_count": 1,
-        "test_method_count": 3
+        "test_method_count": 3,
+        "new_test_method_count": 17
     },
     "test_classes_and_methods": {
         "org.apache.commons.pool3.PooledObjectTest": [
             "testGetObject()",
             "testNonNull()",
             "testIsNull()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/pool3/impl/TestBaseGenericObjectPool.java": [
+            "testCollectDetailedStatisticsDefault",
+            "testCollectDetailedStatisticsConfiguration",
+            "testCollectDetailedStatisticsDisabled",
+            "testCollectDetailedStatisticsEnabled",
+            "testCollectDetailedStatisticsToggling",
+            "testStatsStoreConcurrentAccess",
+            "testStatsStoreCircularBuffer",
+            "testDetailedStatisticsConfigIntegration"
+        ],
+        "src/test/java/org/apache/commons/pool3/PooledObjectTest.java": [
+            "testGetObject"
+        ],
+        "src/test/java/org/apache/commons/pool3/proxy/AbstractTestProxiedObjectPool.java": [
+            "testUnwrapInvocationTargetExceptionFalse",
+            "testUnwrapInvocationTargetExceptionTrue",
+            "testUnwrapInvocationTargetExceptionTrue",
+            "testUnwrapInvocationTargetExceptionFalse"
+        ],
+        "src/test/java/org/apache/commons/pool3/impl/TestGenericKeyedObjectPool.java": [
+            "testValidateOnCreateFailure",
+            "clear"
+        ],
+        "src/test/java/org/apache/commons/pool3/impl/TestResilientPooledObjectFactory.java": [
+            "testConstructorWithDefaults",
+            "testIsMonitorRunning"
         ]
     }
 }

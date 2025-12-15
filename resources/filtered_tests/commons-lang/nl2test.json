@@ -1,15 +1,22 @@
 {
     "summary": {
         "test_class_count": 6,
-        "test_method_count": 17
+        "test_method_count": 17,
+        "new_test_method_count": 147
     },
     "test_classes_and_methods": {
+        "org.apache.commons.lang3.reflect.Lang1792Test": [
+            "testStackOverflowError()"
+        ],
         "org.apache.commons.lang3.function.ByteConsumerTest": [
             "testAccept()",
             "testAndThen()"
         ],
-        "org.apache.commons.lang3.reflect.Lang1792Test": [
-            "testStackOverflowError()"
+        "org.apache.commons.lang3.concurrent.ConcurrentExceptionTest": [
+            "testCauseString()",
+            "testCauseError()",
+            "testCauseNull()",
+            "testCauseUnchecked()"
         ],
         "org.apache.commons.lang3.StringUtilsAbbreviateTest": [
             "testAbbreviate_StringIntInt()",
@@ -19,12 +26,6 @@
             "testAbbreviateMiddle()",
             "testAbbreviateMarkerWithEmptyString()"
         ],
-        "org.apache.commons.lang3.concurrent.ConcurrentExceptionTest": [
-            "testCauseString()",
-            "testCauseError()",
-            "testCauseNull()",
-            "testCauseUnchecked()"
-        ],
         "org.apache.commons.lang3.concurrent.ConcurrentRuntimeExceptionTest": [
             "testCauseError()",
             "testCauseNull()",
@@ -32,6 +33,223 @@
         ],
         "org.apache.commons.lang3.function.ByteSupplierTest": [
             "testGetAsByte()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/lang3/CharRangeTest.java": [
+            "testHashCodeLang1802"
+        ],
+        "src/test/java/org/apache/commons/lang3/StringUtilsTest.java": [
+            "testGetDigitsKeycaps",
+            "testToCodePointsEmoji"
+        ],
+        "src/test/java/org/apache/commons/lang3/builder/ReflectionDiffBuilderTest.java": [
+            "testGetDiffAtomicInteger",
+            "testGetDiffAtomicIntegerWrapper",
+            "testGetDiffFloatWrapper",
+            "testGetDiffFloatWrapperDeepEquals",
+            "testGetDiffFloatWrapperEquals",
+            "testGetDiffFloatWrapperWrapper",
+            "testGetDiffFloatWrapperWrapperEquals",
+            "testNoDiffBuilderSet",
+            "testGetExcludeFieldNamesEmpty",
+            "testRetention"
+        ],
+        "src/test/java/org/apache/commons/lang3/time/StopWatchTest.java": [
+            "testSplitsWithStringLabels",
+            "testGetSplits",
+            "testSplitsWithStringLabels"
+        ],
+        "src/test/java/org/apache/commons/lang3/ClassUtilsTest.java": [
+            "testGetClassLongestCheck",
+            "testGetClassInner"
+        ],
+        "src/test/java/org/apache/commons/lang3/time/FastDateFormatTest.java": [
+            "testLang1791",
+            "fastDateFormatFormatterUsingCalendarShouldMakeGmtTimestamp",
+            "testParseCentralEuropeanSummerTime"
+        ],
+        "src/test/java/org/apache/commons/lang3/tuple/MutablePairTest.java": [
+            "testOfNonNullMapEntry"
+        ],
+        "src/test/java/org/apache/commons/lang3/LocaleUtilsTest.java": [
+            "testToLocaleGetIso3Country",
+            "testToLocaleGetIso3Language"
+        ],
+        "src/test/java/org/apache/commons/lang3/SystemPropertiesTest.java": [
+            "testGetPath",
+            "testGetBooleanClass",
+            "testGetIntClass",
+            "testGetLongClass",
+            "testIsPropertySetEdges",
+            "testGetPropertyStringString",
+            "testGetPropertyStringSupplier"
+        ],
+        "src/test/java/org/apache/commons/lang3/compare/ObjectToStringComparatorTest.java": [
+            "testNullLeft",
+            "testNullRight"
+        ],
+        "src/test/java/org/apache/commons/lang3/time/DurationUtilsTest.java": [
+            "testGet",
+            "testGetMilliseconds",
+            "testGetSeconds"
+        ],
+        "src/test/java/org/apache/commons/lang3/reflect/MethodUtilsTest.java": [
+            "testInvokeMethodVarArgsOfInterface",
+            "testInvokeStaticMethodVarArgsOfInterface",
+            "testInvokeMethodVarArgsOfInterface",
+            "testInvokeMethod1PlusVarArgs",
+            "testInvokeMethodVarArgsNotUniqueResolvable",
+            "testInvokeStaticMethod1PlusVarArgs",
+            "testInvokeStaticMethod",
+            "testNullArgument",
+            "testVarargsOverloadingResolution",
+            "testJavaVarargsOverloadingResolution",
+            "testVarArgsUnboxingShortArray",
+            "testVarArgsUnboxingByteArray",
+            "testVarArgsUnboxingCharArray",
+            "testVarArgsUnboxingDoubleArray",
+            "testVarArgsUnboxingFloatArray",
+            "testVarArgsUnboxingIntArray",
+            "testVarArgsUnboxingLongArray",
+            "testGetAccessibleMethodPublicSubOtherPackage",
+            "testGetAccessibleMethodPublicSub"
+        ],
+        "src/test/java/org/apache/commons/lang3/function/FailableTest.java": [
+            "testApplyNotNull",
+            "testApplyNotNull2",
+            "testApplyNotNull3"
+        ],
+        "src/test/java/org/apache/commons/lang3/function/FunctionsTest.java": [
+            "testApplyNotNull",
+            "testApplyNotNull2",
+            "testApplyNotNull3"
+        ],
+        "src/test/java/org/apache/commons/lang3/function/FailableFunctionsTest.java": [
+            "testThrows_FailableByteSupplier_IOException",
+            "testThrows_FailableByteSupplier_Throwable",
+            "testByteConsumerAndThen",
+            "testThrows_FailableByteConsumer_IOException",
+            "testThrows_FailableByteConsumer_Throwable",
+            "testFailableToBooleanFunctionNop",
+            "testThrows_FailableToBooleanFunction_Object_Throwable",
+            "testThrows_FailableToBooleanFunction_String_IOException"
+        ],
+        "src/test/java/org/apache/commons/lang3/time/DateUtilsTest.java": [
+            "testToLocalDateTime"
+        ],
+        "src/test/java/org/apache/commons/lang3/StringUtilsEqualsIndexOfTest.java": [
+            "testIndexOfAny_StringCharArrayWithSupplementaryChars",
+            "testIndexOfAny_StringIntCharArray"
+        ],
+        "src/test/java/org/apache/commons/lang3/concurrent/ConcurrentUtilsTest.java": [
+            "testConcurrentExceptionCauseString"
+        ],
+        "src/test/java/org/apache/commons/lang3/ArrayUtilsTest.java": [
+            "testShuffleStringRandom",
+            "testShiftDoubleArrayNull",
+            "testShiftFloatArrayNull",
+            "testShiftIntArrayNull",
+            "testShiftObjectArrayNull",
+            "testShiftRangeBoolean",
+            "testShiftShortArrayNull",
+            "testToStringDefault",
+            "testShiftByteParams",
+            "testShiftBooleanParams",
+            "testToStringDefault",
+            "testToPrimitiveArray",
+            "testToPrimitiveArrayViaObjectArray",
+            "testShuffleBooleanRandom",
+            "testShuffleByteRandom",
+            "testShuffleCharRandom",
+            "testShuffleDoubleRandom",
+            "testShuffleFloatRandom",
+            "testShuffleIntRandom",
+            "testShuffleLongRandom",
+            "testShuffleRandom",
+            "testShuffleShortRandom"
+        ],
+        "src/test/java/org/apache/commons/lang3/compare/ComparableUtilsTest.java": [
+            "testIsEqualTo",
+            "testIsGreaterThan",
+            "testIsGreaterThanOrEqualTo",
+            "testIsLessThan",
+            "testIsLessThanOrEqualTo"
+        ],
+        "src/test/java/org/apache/commons/lang3/EnumUtilsTest.java": [
+            "testStream",
+            "testGetFirstEnumToIntFunction",
+            "testGenerateBitVector"
+        ],
+        "src/test/java/org/apache/commons/lang3/concurrent/locks/LockingVisitorsTest.java": [
+            "testBuilderReentrantStampedLockVisitor",
+            "testReentrantReadWriteLockNotExclusive",
+            "testReentrantLock",
+            "testDeprecatedConstructor"
+        ],
+        "src/test/java/org/apache/commons/lang3/reflect/TypeUtilsTest.java": [
+            "testEquals",
+            "testDeprecatedConstructor",
+            "testUnrollVariables",
+            "testUnrollVariables",
+            "testToString",
+            "testNormalizeUpperBounds",
+            "testNormalizeUpperBounds_LANG_820",
+            "testParameterizeVarArgs"
+        ],
+        "src/test/java/org/apache/commons/lang3/concurrent/BackgroundInitializerTest.java": [
+            "testBuilder",
+            "testBuilderThenGetFailures"
+        ],
+        "src/test/java/org/apache/commons/lang3/stream/StreamsTest.java": [
+            "testAssertNotTerminated",
+            "testArrayCollectorCombiner",
+            "testDeprefcatedCopnstructor",
+            "testFailableAllMatch",
+            "testFailableAnyMatch",
+            "testFailableCollect",
+            "testFailableReduce",
+            "testFailableStream",
+            "testOfVarArg",
+            "testStream"
+        ],
+        "src/test/java/org/apache/commons/lang3/stream/IntStreamsTest.java": [
+            "testDeprecatedConstructor"
+        ],
+        "src/test/java/org/apache/commons/lang3/tuple/ImmutableTripleTest.java": [
+            "testOf"
+        ],
+        "src/test/java/org/apache/commons/lang3/RegExUtilsTest.java": [
+            "testRemoveAllDeprecated",
+            "testRemoveFirstDeprecated",
+            "testReplaceAllDeprecated",
+            "testReplaceFirstDeprecated"
+        ],
+        "src/test/java/org/apache/commons/lang3/StringUtilsAbbreviateTest.java": [
+            "testEmoji",
+            "testEmoji"
+        ],
+        "src/test/java/org/apache/commons/lang3/time/FastDateParser_TimeZoneStrategyTest.java": [
+            "testTimeZoneStrategyPattern_zh_HK_Hans"
+        ],
+        "src/test/java/org/apache/commons/lang3/StringUtilsSubstringTest.java": [
+            "testSubstringBetween_StringString"
+        ],
+        "src/test/java/org/apache/commons/lang3/ObjectUtilsTest.java": [
+            "testGetIfNullObject",
+            "testGetIfNullSupplier"
+        ],
+        "src/test/java/org/apache/commons/lang3/ArrayFillTest.java": [
+            "testFillFunction",
+            "testFillBooleanArray",
+            "testFillBooleanArrayNull",
+            "testFillFunction"
+        ],
+        "src/test/java/org/apache/commons/lang3/SystemUtilsTest.java": [
+            "testGetUserHomePath",
+            "testGetUserDirPath",
+            "testGetJavaHomePath",
+            "testGetJavaIoTmpDirPath"
         ]
     }
 }

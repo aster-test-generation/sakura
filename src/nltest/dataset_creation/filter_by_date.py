@@ -6,43 +6,36 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import ray
+import tree_sitter_java as tsjava
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
 from tqdm import tqdm
+from tree_sitter import Parser, Language
 
 from nltest.utils.analysis.java_analyzer import CommonAnalysis
 
 # Path constants
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
 OUTPUT_FILE_NAME = "nl2test.json"
 SUMMARY_FILE_NAME = "summary.json"
 DEFAULT_DATE_STR = "2025-01-31"
 
-# Resource paths
-RESOURCES_DIR = "resources"  # Relative to ROOT_DIR
-DATASETS_DIR = "datasets"  # Relative to RESOURCES_DIR
-FILTERED_TESTS_DIR = "filtered_tests"  # Relative to RESOURCES_DIR
-ANALYSIS_DIR = "analysis"  # Relative to RESOURCES_DIR
+RESOURCES_DIR = "resources"
+DATASETS_DIR = "datasets"
+FILTERED_TESTS_DIR = "filtered_tests"
+ANALYSIS_DIR = "analysis"
 
 
 class FilterByDate:
     def __init__(self):
-        pass
+        self.java_lang: Language = Language(tsjava.language())
+        self.parser: Parser = Parser(self.java_lang)
+
 
     def filter(self, repo_path: str, date_str: str):
-        """
-        Returns all Java files added (i.e., first committed) after a given date in a Git repo.
-
-        Args:
-            date_str (str): Date in 'YYYY-MM-DD' format.
-            repo_path (str): Path to the Git repository (default current directory).
-
-        Returns:
-            list: List of Java file paths added after the given date.
-        """
+        """Return all Java files added (first committed) after a given date."""
         try:
-            # Verify it's a Git repo
             subprocess.run(
                 ["git", "-C", repo_path, "rev-parse", "--is-inside-work-tree"],
                 check=True,
@@ -52,70 +45,109 @@ class FilterByDate:
         except subprocess.CalledProcessError:
             raise Exception(f"{repo_path} is not a valid Git repository.")
 
-            # Prepare the git log command
         git_command = [
-            "git",
-            "-C",
-            repo_path,
-            "log",
-            "--diff-filter=A",  # Filter only added files
-            "--name-only",  # Show only file names
-            "--pretty=format:",  # Suppress commit headers
-            f"--since={date_str}",  # Filter by date
-            "--",
-            "*.java",  # Only Java files
+            "git", "-C", repo_path, "log",
+            "--diff-filter=A", "--name-only", "--pretty=format:",
+            f"--since={date_str}", "--", "*.java"
         ]
 
-        # Execute the git command
         result = subprocess.run(git_command, capture_output=True, text=True, check=True)
-
-        # Split output into individual files and remove duplicates
-        files = list(
-            {line.strip() for line in result.stdout.split("\n") if line.strip()}
-        )
-
+        files = list({line.strip() for line in result.stdout.split("\n") if line.strip()})
         return files
 
     def classify_files(self, file_list: List[str]) -> Tuple[List[str], List[str]]:
-        """
-        Categorize files into application and test files using path-based heuristics.
-
-        Args:
-            file_list: List of relative file paths.
-
-        Returns:
-            Tuple of (application_files, test_files).
-        """
-        application_files = []
-        test_files = []
-
+        """Heuristically classify files as app or test."""
+        app_files, test_files = [], []
         for file_path in file_list:
-            # Heuristic: check for /test/ directory or Test suffix in filename
             is_test = (
                 "/test/" in file_path.lower()
                 or "\\test\\" in file_path.lower()
                 or "Test" in os.path.basename(file_path)
             )
-            if is_test:
-                test_files.append(file_path)
-            else:
-                application_files.append(file_path)
-
-        return application_files, test_files
+            (test_files if is_test else app_files).append(file_path)
+        return app_files, test_files
 
     def count_tests_in_file(self, file_path, repo_path):
-        """
-        Count number of test methods in a Java file (based on @Test annotations).
-        """
+        """Count @Test annotations."""
         abs_path = os.path.join(repo_path, file_path)
         if not os.path.exists(abs_path):
             return 0
         try:
             with open(abs_path, "r", encoding="utf-8", errors="ignore") as f:
-                content = f.read()
-                return len(re.findall(r"@Test\b", content))
+                return len(re.findall(r"@Test\b", f.read()))
         except Exception:
             return 0
+
+    def get_added_test_methods_treesitter(self, repo_path: str, date_str: str) -> Dict[str, List[str]]:
+        """
+        Detect new test methods added after a date using git diff + Tree-sitter.
+        Returns { file_path -> [method_names] } where entire method is newly added.
+        """
+        git_diff_cmd = [
+            "git", "-C", repo_path, "log", "--since", date_str,
+            "-p", "--", "*.java"
+        ]
+        result = subprocess.run(git_diff_cmd, capture_output=True, text=True, check=True)
+
+        new_tests: Dict[str, List[str]] = {}
+        current_file = None
+        added_lines: List[str] = []
+
+        for line in result.stdout.splitlines():
+            if line.startswith("+++ b/"):
+                current_file = line[6:].strip()
+                added_lines = []
+                continue
+
+            if not current_file:
+                continue
+
+            # Collect contiguous added lines only
+            if line.startswith("+") and not line.startswith("+++"):
+                added_lines.append(line[1:])
+
+            # On hunk boundary or non-added lines: analyze block
+            if (not line.startswith("+") and added_lines):
+                self._analyze_added_block_with_treesitter(current_file, added_lines, new_tests)
+                added_lines = []
+
+        # Handle trailing block
+        if added_lines:
+            self._analyze_added_block_with_treesitter(current_file, added_lines, new_tests)
+
+        return new_tests
+
+    def _analyze_added_block_with_treesitter(self, file_path: str, added_lines: List[str], new_tests: Dict[str, List[str]]):
+        """
+        Use Tree-sitter to extract @Test-annotated methods entirely within added block.
+        """
+        code_fragment = "\n".join(added_lines)
+        if "@Test" not in code_fragment:
+            return  # fast path — skip if no tests
+
+        try:
+            tree = self.parser.parse(bytes(code_fragment, "utf8"))
+            root_node = tree.root_node
+
+            def get_node_text(node):
+                return code_fragment[node.start_byte:node.end_byte]
+
+            for class_child in root_node.children:
+                # descend to methods
+                if class_child.type == "method_declaration":
+                    method_code = get_node_text(class_child)
+                    if "@Test" in method_code:
+                        # full method body added
+                        method_name = None
+                        for n in class_child.children:
+                            if n.type == "identifier":
+                                method_name = get_node_text(n)
+                                break
+                        if method_name:
+                            new_tests.setdefault(file_path, []).append(method_name)
+        except Exception as e:
+            print(f"[Tree-sitter] parse error in {file_path}: {e}")
+            return
 
     def classify_files_using_cldk(
         self,
@@ -123,49 +155,32 @@ class FilterByDate:
         repo_path: str,
         analysis: JavaAnalysis,
     ) -> Dict[str, List[str]]:
-        """
-        Classify files using CLDK analysis to identify test classes and methods.
-
-        Args:
-            file_list: List of relative file paths from filter().
-            repo_path: Path to the repository root.
-            analysis: CLDK JavaAnalysis object for the repository.
-
-        Returns:
-            Dict mapping qualified test class names to list of test method signatures.
-        """
+        """Classify using CLDK analysis for accurate test detection."""
         common_analysis = CommonAnalysis(analysis)
         test_classes_and_methods: Dict[str, List[str]] = {}
 
-        # Process each file from the filter output
         for rel_path in file_list:
             abs_path = os.path.join(repo_path, rel_path)
-
             compilation_unit = analysis.get_java_compilation_unit(abs_path)
-
             if not compilation_unit:
                 continue
 
-            classes_in_file = compilation_unit.type_declarations
-
-            for qualified_class_name in classes_in_file:
-                testing_frameworks = common_analysis.get_testing_frameworks_for_class(
+            for qualified_class_name in compilation_unit.type_declarations:
+                frameworks = common_analysis.get_testing_frameworks_for_class(
                     qualified_class_name
                 )
-                if not testing_frameworks:
+                if not frameworks:
                     continue
 
-                # Check each method in the class
                 test_methods = []
                 for method_sig in analysis.get_methods_in_class(qualified_class_name):
                     if common_analysis.is_test_method(
-                        method_sig, qualified_class_name, testing_frameworks
+                        method_sig, qualified_class_name, frameworks
                     ):
                         test_methods.append(method_sig)
 
                 if test_methods:
                     test_classes_and_methods[qualified_class_name] = test_methods
-
         return test_classes_and_methods
 
     def process_repos_in_dir(
@@ -174,36 +189,29 @@ class FilterByDate:
         date_str: str,
         use_cldk: bool = False,
         analysis_dir: Optional[Path] = None,
+        debug: bool = False,
     ) -> Dict:
-        """
-        Iterate through subdirectories (each assumed to be a Git repo) and collect Java files added after date.
-        Processes repositories in parallel using Ray.
-
-        Args:
-            base_dir: Directory containing repository subdirectories.
-            date_str: Date in 'YYYY-MM-DD' format to filter files added after.
-            use_cldk: If True, use CLDK analysis for accurate test classification.
-            analysis_dir: Directory for CLDK analysis JSON (required if use_cldk=True).
-
-        Returns:
-            Dict with per-repo results and overall summary.
-            - CLDK mode: test_classes_and_methods mapping qualified names to method signatures.
-            - Heuristic mode: application_files and test_files lists.
-        """
+        """Iterate through subdirectories and collect data."""
+        if not ray.is_initialized():
+            if debug:
+                print("⚙️ Running Ray in local debug mode...")
+                ray.init(local_mode=True, ignore_reinit_error=True)
+            else:
+                ray.init(ignore_reinit_error=True)
         if use_cldk and analysis_dir is None:
             raise ValueError("analysis_dir is required when use_cldk=True")
 
-        # Launch parallel tasks for each project
         futures = []
         for project_name in os.listdir(base_dir):
             repo_path = os.path.join(base_dir, project_name)
+            if not os.path.isdir(repo_path) or not os.path.exists(os.path.join(repo_path, ".git")):
+                continue
             analysis_dir_str = str(analysis_dir) if analysis_dir else None
-            future = _process_single_repo.remote(  # pyright: ignore[reportCallIssue]
+            future = _process_single_repo.remote(
                 project_name, repo_path, date_str, use_cldk, analysis_dir_str
             )
             futures.append(future)
 
-        # Collect results with progress bar
         collected_results = []
         with tqdm(total=len(futures), desc="Processing repositories") as pbar:
             while futures:
@@ -212,13 +220,10 @@ class FilterByDate:
                 collected_results.extend(res)
                 pbar.update(len(done))
 
-        # Aggregate results
         results: Dict = {}
+        total_new_test_methods = 0
         total_test_classes = 0
         total_test_methods = 0
-        total_application_files = 0
-        total_test_files = 0
-        total_heuristic_test_methods = 0
 
         for item in collected_results:
             if item is None:
@@ -227,69 +232,36 @@ class FilterByDate:
             results[project_name] = project_result
 
             summary = project_result.get("summary", {})
-            if use_cldk:
-                total_test_classes += summary.get("test_class_count", 0)
-                total_test_methods += summary.get("test_method_count", 0)
-            else:
-                total_application_files += summary.get("application_file_count", 0)
-                total_test_files += summary.get("test_file_count", 0)
-                total_heuristic_test_methods += summary.get("test_method_count", 0)
+            total_new_test_methods += summary.get("new_test_method_count", 0)
+            total_test_classes += summary.get("test_class_count", 0)
+            total_test_methods += summary.get("test_method_count", 0)
 
-        # Add overall summary
-        if use_cldk:
-            results["summary"] = {
-                "total_test_classes": total_test_classes,
-                "total_test_methods": total_test_methods,
-            }
-        else:
-            results["summary"] = {
-                "total_application_files": total_application_files,
-                "total_test_files": total_test_files,
-                "total_test_methods": total_heuristic_test_methods,
-            }
-
+        results["summary"] = {
+            "total_test_classes": total_test_classes,
+            "total_test_methods": total_test_methods,
+            "total_new_test_methods": total_new_test_methods,
+        }
         return results
 
     def save_results(self, results: Dict, output_dir: Path) -> None:
-        """
-        Save results to the output directory structure.
-
-        Args:
-            results: Results dict from process_repos_in_dir().
-            output_dir: Directory to save output files.
-        """
+        """Save per-project and summary results."""
         output_dir.mkdir(parents=True, exist_ok=True)
-
-        # Separate overall summary from per-project results
         overall_summary = results.pop("summary", {})
-        project_summaries: Dict[str, Dict] = {}
+        project_summaries = {}
 
-        # Write per-project files
         for project_name, project_data in results.items():
             project_dir = output_dir / project_name
             project_dir.mkdir(parents=True, exist_ok=True)
-
-            project_file = project_dir / OUTPUT_FILE_NAME
-            with open(project_file, "w", encoding="utf-8") as f:
+            with open(project_dir / OUTPUT_FILE_NAME, "w", encoding="utf-8") as f:
                 json.dump(project_data, f, indent=4)
-
-            # Extract just the summary for the top-level file
             project_summaries[project_name] = project_data.get("summary", {})
 
-        summary_file = output_dir / SUMMARY_FILE_NAME
-        summary_data = {
-            "summary": overall_summary,
-            "projects": project_summaries,
-        }
-        with open(summary_file, "w", encoding="utf-8") as f:
-            json.dump(summary_data, f, indent=4)
+        with open(output_dir / SUMMARY_FILE_NAME, "w", encoding="utf-8") as f:
+            json.dump({"summary": overall_summary, "projects": project_summaries}, f, indent=4)
 
-        print(f"\nResults saved to: {output_dir}")
-        print(f"  - Top-level summary: {summary_file}")
-        print(f"  - Per-project data: {len(project_summaries)} projects")
+        print(f"\n✅ Results saved to: {output_dir}")
 
 
-# Type alias for the remote function return type
 RepoResult = Optional[Tuple[str, Dict]]
 
 
@@ -301,38 +273,14 @@ def _process_single_repo(
     use_cldk: bool,
     analysis_dir: Optional[str],
 ) -> RepoResult:
-    """
-    Process a single repository to find Java files added after a given date.
-
-    Args:
-        project_name: Name of the project/repository.
-        repo_path: Path to the Git repository.
-        date_str: Date in 'YYYY-MM-DD' format.
-        use_cldk: If True, use CLDK analysis for test classification.
-        analysis_dir: Directory for CLDK analysis JSON (as string).
-
-    Returns:
-        Tuple of (project_name, result_dict) or None if not a valid git repo.
-    """
-    if not os.path.isdir(repo_path):
-        return None
-
-    if not os.path.exists(os.path.join(repo_path, ".git")):
-        return None
-
+    """Process one repo."""
     filter_instance = FilterByDate()
-    java_files = filter_instance.filter(repo_path=repo_path, date_str=date_str)
+    java_files = filter_instance.filter(repo_path, date_str)
+    new_tests = filter_instance.get_added_test_methods_treesitter(repo_path, date_str)
 
     if use_cldk:
-        if not analysis_dir:
-            raise ValueError(
-                "CLDK filtering requested, but no analysis directory provided"
-            )
-
         try:
-            analysis_path = Path(analysis_dir)
-            analysis_path.mkdir(parents=True, exist_ok=True)
-            repo_analysis_dir = analysis_path / project_name
+            repo_analysis_dir = Path(analysis_dir) / project_name
             analysis = CLDK(language="java").analysis(
                 project_path=repo_path,
                 analysis_backend_path=None,
@@ -340,62 +288,52 @@ def _process_single_repo(
                 analysis_json_path=repo_analysis_dir,
                 eager=False,
             )
-
             test_classes_and_methods = filter_instance.classify_files_using_cldk(
                 java_files, repo_path, analysis
             )
         except Exception as e:
-            return (
-                project_name,
-                {"error": str(e), "summary": {"test_class_count": 0, "test_method_count": 0}},
-            )
-
-        repo_test_class_count = len(test_classes_and_methods)
-        repo_test_method_count = sum(
-            len(methods) for methods in test_classes_and_methods.values()
-        )
+            return project_name, {"error": str(e)}
 
         result = {
             "summary": {
-                "test_class_count": repo_test_class_count,
-                "test_method_count": repo_test_method_count,
+                "test_class_count": len(test_classes_and_methods),
+                "test_method_count": sum(len(m) for m in test_classes_and_methods.values()),
+                "new_test_method_count": sum(len(m) for m in new_tests.values()),
             },
             "test_classes_and_methods": test_classes_and_methods,
+            "new_test_methods_since_date": new_tests,
         }
+
     else:
-        application_files, test_files = filter_instance.classify_files(java_files)
-
-        app_file_count = len(application_files)
-        test_file_count = len(test_files)
-        repo_test_method_count = sum(
-            filter_instance.count_tests_in_file(t, repo_path) for t in test_files
-        )
-
+        app_files, test_files = filter_instance.classify_files(java_files)
         result = {
             "summary": {
-                "application_file_count": app_file_count,
-                "test_file_count": test_file_count,
-                "test_method_count": repo_test_method_count,
+                "application_file_count": len(app_files),
+                "test_file_count": len(test_files),
+                "test_method_count": sum(filter_instance.count_tests_in_file(t, repo_path) for t in test_files),
+                "new_test_method_count": sum(len(m) for m in new_tests.values()),
             },
-            "application_files": application_files,
+            "application_files": app_files,
             "test_files": test_files,
+            "new_test_methods_since_date": new_tests,
         }
 
     return (project_name, result)
 
 
 def main():
-    # Calculate paths relative to this file's location
     resources_dir = ROOT_DIR / RESOURCES_DIR
     base_dir = resources_dir / DATASETS_DIR
     output_dir = resources_dir / FILTERED_TESTS_DIR
     date_str = DEFAULT_DATE_STR
     use_cldk = True
+    debug = False
     analysis_dir = resources_dir / ANALYSIS_DIR
 
     filter_by_date = FilterByDate()
     results = filter_by_date.process_repos_in_dir(
-        str(base_dir), date_str, use_cldk=use_cldk, analysis_dir=analysis_dir
+        str(base_dir), date_str, use_cldk=use_cldk, analysis_dir=analysis_dir,
+        debug=debug
     )
     filter_by_date.save_results(results, output_dir)
 

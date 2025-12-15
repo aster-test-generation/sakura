@@ -1,13 +1,22 @@
 {
     "summary": {
         "test_class_count": 1,
-        "test_method_count": 3
+        "test_method_count": 3,
+        "new_test_method_count": 2
     },
     "test_classes_and_methods": {
         "org.apache.commons.imaging.ImageFormatsTest": [
             "testExtensions(org.apache.commons.imaging.ImageFormats)",
             "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
             "testName(org.apache.commons.imaging.ImageFormats)"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/imaging/formats/jpeg/iptc/IptcParserTest.java": [
+            "testEncodingSupport"
+        ],
+        "src/test/java/org/apache/commons/imaging/formats/png/PngReadTest.java": [
+            "testReadExif"
         ]
     }
 }

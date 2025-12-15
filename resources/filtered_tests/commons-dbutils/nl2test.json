@@ -1,7 +1,8 @@
 {
     "summary": {
         "test_class_count": 1,
-        "test_method_count": 195
+        "test_method_count": 195,
+        "new_test_method_count": 5
     },
     "test_classes_and_methods": {
         "org.apache.commons.dbutils.BaseResultSetHandlerDelegationTest": [
@@ -200,6 +201,15 @@
             "testGetObject()",
             "testGetCharacterStreamInt()",
             "testGetTime()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/dbutils/DbUtilsTest.java": [
+            "testLoadDriverClassLoaderH2",
+            "testLoadDriverH2",
+            "testLoadDriverReturnsFalse",
+            "testPrintStackTraceSQLException",
+            "testPrintStackTraceSQLExceptionPrintWriter"
         ]
     }
 }

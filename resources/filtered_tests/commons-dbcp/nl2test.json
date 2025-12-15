@@ -1,15 +1,28 @@
 {
     "summary": {
         "test_class_count": 2,
-        "test_method_count": 3
+        "test_method_count": 3,
+        "new_test_method_count": 4
     },
     "test_classes_and_methods": {
+        "org.apache.commons.dbcp2.datasources.UserPassKeyTest": [
+            "testClear()"
+        ],
         "org.apache.commons.dbcp2.datasources.PooledConnectionManagerTest": [
             "testSetPasswordString()",
             "testSetPasswordCharArray()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/dbcp2/datasources/CharArrayTest.java": [
+            "testClear",
+            "testClear"
         ],
-        "org.apache.commons.dbcp2.datasources.UserPassKeyTest": [
-            "testClear()"
+        "src/test/java/org/apache/commons/dbcp2/datasources/TestCPDSConnectionFactory.java": [
+            "testSetPasswordString"
+        ],
+        "src/test/java/org/apache/commons/dbcp2/datasources/TestPerUserPoolDataSource.java": [
+            "testDefaultReadOnly"
         ]
     }
 }

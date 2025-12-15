@@ -1,10 +1,16 @@
 {
     "summary": {
-        "test_class_count": 2,
-        "test_method_count": 10
+        "test_class_count": 3,
+        "test_method_count": 13,
+        "new_test_method_count": 67
     },
     "test_classes_and_methods": {
+        "org.apache.commons.text.similarity.EditDistanceFromTest": [
+            "testGetLeft()",
+            "testGetSimilarityScore()"
+        ],
         "org.apache.commons.text.translate.CharSequenceTranslatorTest": [
+            "testIOException()",
             "testWith()"
         ],
         "org.apache.commons.text.similarity.DamerauLevenshteinDistanceTest": [
@@ -17,6 +23,115 @@
             "testGetThresholdIsCorrect()",
             "testNullInputsThrowLimited()",
             "testGetThresholdDirectlyAfterObjectInstantiation()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/text/lookup/StringLookupFactoryTest.java": [
+            "testClear",
+            "testDeprecatedSingletons",
+            "testDeprecatedSingletons",
+            "testClear",
+            "testXmlStringLookupExternalEntityOff",
+            "testXmlStringLookupExternalEntityOn",
+            "testDefault",
+            "testDefault"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/LevenshteinResultsTest.java": [
+            "testEqualsWithDifferentObject",
+            "testEqualsDifferentDistance",
+            "testEqualsWithDifferentObject"
+        ],
+        "src/test/java/org/apache/commons/text/translate/CharSequenceTranslatorTest.java": [
+            "testWith",
+            "testIOException"
+        ],
+        "src/test/java/org/apache/commons/text/translate/OctalUnescaperTest.java": [
+            "testInvalid",
+            "testInvalid",
+            "testHighLowSurrogate"
+        ],
+        "src/test/java/org/apache/commons/text/translate/UnicodeUnescaperTest.java": [
+            "testTooShort",
+            "testTooShort"
+        ],
+        "src/test/java/org/apache/commons/text/StringSubstitutorTest.java": [
+            "testToString",
+            "testDetectsCyclicSubstitution",
+            "testDetectsCyclicSubstitution"
+        ],
+        "src/test/java/org/apache/commons/text/TextStringBuilderTest.java": [
+            "testConstructorCharSequenceNull"
+        ],
+        "src/test/java/org/apache/commons/text/WordUtilsTest.java": [
+            "testIsDelimiter",
+            "testIsDelimiterCodePoint"
+        ],
+        "src/test/java/org/apache/commons/text/translate/SinglePassTranslatorTest.java": [
+            "testTranslateThrowsIllegalArgumentExceptionWithNonAnonymousClass"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/JaroWinklerDistanceTest.java": [
+            "testMatchesDeprecated",
+            "testMatches",
+            "testApply_NullSimilarityInput",
+            "testApply_SimilarityInputNull",
+            "testApply_NullSimilarityInput",
+            "testApply_SimilarityInputNull"
+        ],
+        "src/test/java/org/apache/commons/text/lookup/XmlStringLookupTest.java": [
+            "testInterpolatorExternalDtdOff",
+            "testInterpolatorExternalDtdOn",
+            "testInterpolatorSecureOnBla",
+            "testExternalEntityOff",
+            "testExternalEntityOn",
+            "testInterpolatorExternalEntityOff",
+            "testInterpolatorExternalEntityOffOverride",
+            "testInterpolatorExternalEntityOn",
+            "testInterpolatorExternalEntityOnOverride"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/LevenshteinDistanceTest.java": [
+            "testGetLevenshteinDistance_EmptyStringString",
+            "testGetLevenshteinDistance_EmptyStringString"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/SimilarityScoreFromTest.java": [
+            "testFailsToCreateSimilarityScoreFromThrowsIllegalArgumentException",
+            "testGetLeft",
+            "testGetSimilarityScore"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/JaccardSimilarityTest.java": [
+            "testGettingJaccardSimilarityNullSimilarityInput",
+            "testGettingJaccardSimilaritySimilarityInputNull"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/LongestCommonSubsequenceTest.java": [
+            "testLongestCommonSubstringLengthArray"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/JaroWinklerSimilarityTest.java": [
+            "testGetJaroWinklerSimilarity_StringNull",
+            "testApply_NullSimilarityInput",
+            "testApply_SimilarityInputNull",
+            "testGetJaroWinklerSimilarity_StringNull",
+            "testApply_NullSimilarityInput",
+            "testApply_SimilarityInputNull"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/HammingDistanceTest.java": [
+            "testApply_DifferentSimilarityInputLength",
+            "testApply_NullSimilarityInput",
+            "testApply_SimilarityInputNull",
+            "testApply_DifferentSimilarityInputLength"
+        ],
+        "src/test/java/org/apache/commons/text/similarity/DamerauLevenshteinDistanceTest.java": [
+            "testGetThresholdDirectlyAfterObjectInstantiation",
+            "testGetThresholdIsCorrect",
+            "testInvalidThresholdThrows",
+            "testNullInputsThrowLimited",
+            "testNullInputsThrowUnlimited"
+        ],
+        "src/test/java/org/apache/commons/text/TextStringBuilderAppendInsertTest.java": [
+            "testInsertAtEnd"
+        ],
+        "src/test/java/org/apache/commons/text/RandomStringGeneratorTest.java": [
+            "testChangeOfFilter",
+            "testPasswordExample",
+            "testUsingRandomIntUnaryOperator"
         ]
     }
 }

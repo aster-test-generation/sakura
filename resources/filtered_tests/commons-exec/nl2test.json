@@ -1,12 +1,10 @@
 {
     "summary": {
         "test_class_count": 4,
-        "test_method_count": 7
+        "test_method_count": 7,
+        "new_test_method_count": 8
     },
     "test_classes_and_methods": {
-        "org.apache.commons.exec.ExecuteWatchdogTest": [
-            "testBuilder()"
-        ],
         "org.apache.commons.exec.OSTest": [
             "testIsVersion()",
             "testIsArchMacOs()",
@@ -16,8 +14,29 @@
             "testAccept()",
             "testTimeoutOccurred()"
         ],
+        "org.apache.commons.exec.ExecuteWatchdogTest": [
+            "testBuilder()"
+        ],
         "org.apache.commons.exec.WatchdogTest": [
             "testBuilder()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/exec/DefaultExecutorTest.java": [
+            "testExecuteStability"
+        ],
+        "src/test/java/org/apache/commons/exec/issues/Exec36Test.java": [
+            "testExec36Part4",
+            "testExec36Part5",
+            "testExec36Part6"
+        ],
+        "src/test/java/org/apache/commons/exec/util/StringUtilTest.java": [
+            "testQuoteArgument"
+        ],
+        "src/test/java/org/apache/commons/exec/StandAloneTest.java": [
+            "testDefaultExecutorBuilderFromPath",
+            "testDefaultExecutorFromFile",
+            "testDefaultExecutorFromPath"
         ]
     }
 }

@@ -1,46 +1,15 @@
 {
     "summary": {
         "test_class_count": 8,
-        "test_method_count": 90
+        "test_method_count": 93,
+        "new_test_method_count": 136
     },
     "test_classes_and_methods": {
-        "org.apache.commons.io.function.IOBooleanSupplierTest": [
-            "testAsSupplier()",
-            "testGet()"
-        ],
-        "org.apache.commons.io.serialization.ProxyTest": [
-            "testRejectProxy()",
-            "testAcceptProxy()"
-        ],
-        "org.apache.commons.io.build.ChannelOriginTest": [
-            "testGetRandomAccessFile()",
-            "testGetPath()",
-            "testGetRandomAccessFile(java.nio.file.OpenOption)",
-            "testUnsupportedOperations_WritableByteChannel()",
-            "testGetFile()",
-            "testUnsupportedOperations_ReadableByteChannel()"
-        ],
-        "org.apache.commons.io.channels.CloseShieldChannelTest": [
-            "testCloseIsIdempotent(java.lang.Class)",
-            "testToString(java.lang.Class)",
-            "testGatheringByteChannelMethods()",
-            "testWritableByteChannelMethods()",
-            "testPreservesInterfaces(java.lang.Class)",
-            "testHashCode(java.lang.Class)",
-            "testCloseIsShielded(java.lang.Class)",
-            "testScatteringByteChannelMethods()",
-            "testSeekableByteChannelMethods()",
-            "testWrapFileChannel(java.nio.file.Path)",
-            "testDoesNotDoubleWrap()",
-            "testEquals(java.lang.Class)",
-            "testReadableByteChannelMethods()",
-            "testNetworkChannelMethods()",
-            "testCloseDoesNotCloseDelegate(java.lang.Class)"
-        ],
         "org.apache.commons.io.channels.AbstractSeekableByteChannelTest": [
             "testWriteSingleByte()",
             "testWriteDifferentSizes(int)",
             "testWriteBeyondSizeGrows()",
+            "testPositionBeyondSizeRead()",
             "testReadBytes()",
             "testReadClosed()",
             "testWritePositionReadVerify()",
@@ -59,6 +28,7 @@
             "testRandomAccess()",
             "testPartialWritesAndReads()",
             "testWriteEmpty()",
+            "testTrucateBeyondSizeReadWrite()",
             "testWriteToClosedChannel()",
             "testPositionOnNew()",
             "testSizeAfterWrite()",
@@ -72,23 +42,49 @@
             "testPositionNegative()",
             "testConcurrentPositionAndSizeQueries()"
         ],
+        "org.apache.commons.io.serialization.ProxyTest": [
+            "testRejectProxy()",
+            "testAcceptProxy()"
+        ],
+        "org.apache.commons.io.build.ChannelOriginTest": [
+            "testGetRandomAccessFile()",
+            "testGetPath()",
+            "testGetRandomAccessFile(java.nio.file.OpenOption)",
+            "testUnsupportedOperations_WritableByteChannel()",
+            "testGetFile()",
+            "testUnsupportedOperations_ReadableByteChannel()"
+        ],
+        "org.apache.commons.io.function.IOBooleanSupplierTest": [
+            "testAsSupplier()",
+            "testGet()"
+        ],
+        "org.apache.commons.io.IOUtilsConcurrentTest": [
+            "testConcurrentReaderTasks(org.apache.commons.io.function.IOConsumer)",
+            "testConcurrentInputStreamTasks(org.apache.commons.io.function.IOConsumer)"
+        ],
+        "org.apache.commons.io.channels.ByteArraySeekableByteChannelTest": [
+            "testPositionBeyondSizeReadWrite()",
+            "testShouldResizeWhenWritingMoreDataThanCapacity(byte[], int)",
+            "testConstructorInvalid()",
+            "testConstructor(org.apache.commons.io.function.IOSupplier, byte[], int)"
+        ],
         "org.apache.commons.io.channels.ByteArraySeekableByteChannelCompressTest": [
             "testCloseIsIdempotent()",
             "testShouldSetProperPositionOnTruncate()",
-            "testShouldThrowExceptionWhenSettingIncorrectPosition()",
             "testTruncateToCurrentSizeDoesntChangeAnything()",
             "testTruncateMovesPositionWhenNotResizingButPositionBiggerThanSize()",
             "testThrowsIllegalArgumentExceptionWhenTruncatingToANegativeSize()",
             "testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel()",
             "testShouldThrowExceptionOnWritingToClosedChannel()",
             "testShouldWriteDataProperlyAfterPositionSet()",
+            "testThrowWhenSettingIncorrectPosition()",
             "throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel()",
             "throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel()",
             "testShouldSignalEOFWhenPositionAtTheEnd()",
             "testShouldSetProperPosition()",
-            "testShouldThrowExceptionWhenTruncatingToIncorrectSize()",
             "testShouldTruncateContentsProperly()",
             "testShouldReadContentsWhenBiggerBufferSupplied()",
+            "testThrowWhenTruncatingToIncorrectSize()",
             "testTruncateDoesntChangeSmallPosition()",
             "testShouldThrowExceptionOnReadingClosedChannel()",
             "testTruncateMovesPositionWhenNewSizeIsBiggerThanSizeAndPositionIsEvenBigger()",
@@ -101,14 +97,218 @@
             "throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel()",
             "testShouldReadDataFromSetPosition()"
         ],
-        "org.apache.commons.io.channels.ByteArraySeekableByteChannelTest": [
-            "testShouldResizeWhenWritingMoreDataThanCapacity(byte[], int)",
-            "testConstructorInvalid()",
-            "testConstructor(org.apache.commons.io.function.IOSupplier, byte[], int)"
+        "org.apache.commons.io.channels.CloseShieldChannelTest": [
+            "testCloseIsIdempotent(java.lang.Class)",
+            "testToString(java.lang.Class)",
+            "testGatheringByteChannelMethods()",
+            "testWritableByteChannelMethods()",
+            "testPreservesInterfaces(java.lang.Class)",
+            "testHashCode(java.lang.Class)",
+            "testCloseIsShielded(java.lang.Class)",
+            "testScatteringByteChannelMethods()",
+            "testSeekableByteChannelMethods()",
+            "testWrapFileChannel(java.nio.file.Path)",
+            "testDoesNotDoubleWrap()",
+            "testEquals(java.lang.Class)",
+            "testReadableByteChannelMethods()",
+            "testNetworkChannelMethods()",
+            "testCloseDoesNotCloseDelegate(java.lang.Class)"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/io/IOUtilsTest.java": [
+            "testCloseQuietly_CloseableIOExceptionAddSuppressed",
+            "testToByteArray_InputStream_Size_Truncated",
+            "testToByteArray_InputStream_Size_Truncated",
+            "testToByteArray_ThrowsIOExceptionOnHugeStream",
+            "testToByteArray_ThrowsIOExceptionOnHugeStream",
+            "testContentEqualsSequenceInputStream",
+            "testCloseQuietly_CloseableExceptionConsumer"
         ],
-        "org.apache.commons.io.IOUtilsConcurrentTest": [
-            "testConcurrentReaderTasks(org.apache.commons.io.function.IOConsumer)",
-            "testConcurrentInputStreamTasks(org.apache.commons.io.function.IOConsumer)"
+        "src/test/java/org/apache/commons/io/channels/AbstractSeekableByteChannelTest.java": [
+            "testPositionBeyondSizeRead",
+            "testTrucateBeyondSizeReadWrite",
+            "testCloseMultipleTimes",
+            "testConcurrentPositionAndSizeQueries",
+            "testIsOpenAfterClose",
+            "testIsOpennOnNew",
+            "testPartialWritesAndReads",
+            "testPositionBeyondSize",
+            "testPositionNegative",
+            "testPositionOnClosed",
+            "testPositionOnNew",
+            "testRandomAccess",
+            "testReadAtEndOfFile",
+            "testReadBuffer",
+            "testReadBytes",
+            "testReadClosed",
+            "testReadEmpty",
+            "testReadNull",
+            "testReadSingleByte",
+            "testSizeAfterTruncateToLargerSize",
+            "testSizeAfterWrite",
+            "testSizeOnClosed",
+            "testSizeOnNew",
+            "testSizeSameOnOverwrite",
+            "testTruncateNegative",
+            "testTruncateShrinks",
+            "testWriteBeyondSizeGrows",
+            "testWriteEmpty",
+            "testWriteNull",
+            "testWritePositionReadVerify",
+            "testWriteSingleByte",
+            "testWriteToClosedChannel",
+            "tesWriteBytes",
+            "testPositionNegative",
+            "testSizeAfterWrite",
+            "testSizeSameOnOverwrite",
+            "testWriteToClosedChannel"
+        ],
+        "src/test/java/org/apache/commons/io/channels/ByteArraySeekableByteChannelTest.java": [
+            "testPositionBeyondSizeReadWrite",
+            "testConstructorInvalid"
+        ],
+        "src/test/java/org/apache/commons/io/channels/CloseShieldChannelTest.java": [
+            "testWrapFileChannel",
+            "testCorrectlyDetectsInterfaces",
+            "testCorrectlyDetectsInterfaces",
+            "testDoesNotDoubleWrap",
+            "testGatheringByteChannelMethods",
+            "testNetworkChannelMethods"
+        ],
+        "src/test/java/org/apache/commons/io/input/UnsynchronizedBufferedReaderTest.java": [
+            "testReadArray_HARMONY_54",
+            "testReadArray_HARMONY_831",
+            "testReadArray2",
+            "testReadArray3",
+            "testReadArray4",
+            "testReadArray_HARMONY_831",
+            "testReadArray_HARMONY_54"
+        ],
+        "src/test/java/org/apache/commons/io/output/NullWriterTest.java": [
+            "testAppendChar",
+            "testAppendCharSequence",
+            "testCloseNoOp",
+            "testFlush",
+            "testWriteCharArray",
+            "testWriteCharArrayWithOffset",
+            "testWriteInt",
+            "testWriteString",
+            "testWriteStringWithOffset"
+        ],
+        "src/test/java/org/apache/commons/io/build/AbstractOriginTest.java": [
+            "testGetReader",
+            "testGetWriter",
+            "testGetReadableByteChannel",
+            "testGetWritableByteChannel"
+        ],
+        "src/test/java/org/apache/commons/io/build/ByteArrayOriginTest.java": [
+            "testGetWritableByteChannel"
+        ],
+        "src/test/java/org/apache/commons/io/build/CharSequenceOriginTest.java": [
+            "testGetWritableByteChannel",
+            "testGetReaderIgnoreCharsetNull"
+        ],
+        "src/test/java/org/apache/commons/io/build/InputStreamOriginTest.java": [
+            "testGetWritableByteChannel"
+        ],
+        "src/test/java/org/apache/commons/io/build/OutputStreamOriginTest.java": [
+            "testGetReadableByteChannel"
+        ],
+        "src/test/java/org/apache/commons/io/build/ReaderOriginTest.java": [
+            "testGetWritableByteChannel"
+        ],
+        "src/test/java/org/apache/commons/io/function/IOIterableTest.java": [
+            "testAsIterable",
+            "testUnrwap"
+        ],
+        "src/test/java/org/apache/commons/io/file/PathUtilsTest.java": [
+            "testGetPath",
+            "testCopyFileTwoFileSystem"
+        ],
+        "src/test/java/org/apache/commons/io/FileSystemTest.java": [
+            "testIsLegalName_Encoding",
+            "testReplacementWithNUL",
+            "testSorted",
+            "testIsLegalName_Encoding",
+            "testMaxNameLength_MatchesRealSystem",
+            "testGetIllegalFileNameChars"
+        ],
+        "src/test/java/org/apache/commons/io/output/ProxyOutputStreamTest.java": [
+            "testWriteByteArrayAtRepeat",
+            "testWriteByteArrayRepeat",
+            "testWriteIntRepeat",
+            "testWriteByteArrayAt",
+            "testWriteInt"
+        ],
+        "src/test/java/org/apache/commons/io/FileUtilsListFilesTest.java": [
+            "testStreamFilesWithDeletionCollect",
+            "testStreamFilesWithDeletionForEach",
+            "testStreamFilesWithDeletionIterator"
+        ],
+        "src/test/java/org/apache/commons/io/input/TailerTest.java": [
+            "testTailerIgnoreTouch",
+            "testTailerReissueOnTouch",
+            "testTailerIgnoreTouch",
+            "testTailerReissueOnTouch"
+        ],
+        "src/test/java/org/apache/commons/io/FileUtilsTest.java": [
+            "testForceDeleteBrokenSymlink",
+            "testForceDeleteSymlink",
+            "testForceDeleteBrokenSymlink",
+            "testForceDeleteSymlink",
+            "testReadLines_Errors",
+            "testReadLines_Defaults",
+            "testOpenInputStream_exists",
+            "testOpenInputStream_existsButIsDirectory",
+            "testOpenInputStream_notExists",
+            "testOpenOutputStream_exists",
+            "testOpenOutputStream_existsButIsDirectory",
+            "testOpenOutputStream_intoExistingSymlinkedDir",
+            "testOpenOutputStream_noParentCreateFile",
+            "testOpenOutputStream_noParentNoFile",
+            "testOpenOutputStream_notExists",
+            "testOpenOutputStream_notExistsCannotCreate"
+        ],
+        "src/test/java/org/apache/commons/io/input/QueueInputStreamTest.java": [
+            "bulkReadErrorHandlingTests",
+            "testBulkReadZeroLength",
+            "bulkReadErrorHandlingTests",
+            "testBulkReadZeroLength"
+        ],
+        "src/test/java/org/apache/commons/io/comparator/CompositeFileComparatorTest.java": [
+            "testToString"
+        ],
+        "src/test/java/org/apache/commons/io/CharsetsTest.java": [
+            "testToCharsetWithStringCharset"
+        ],
+        "src/test/java/org/apache/commons/io/function/IOStreamTest.java": [
+            "testForEachOrderedAdaptParallel",
+            "testAdaptParallelAndCount",
+            "testAdaptAsParallel",
+            "testForEachOrderedAsParallel"
+        ],
+        "src/test/java/org/apache/commons/io/input/AbstractInputStreamTest.java": [
+            "testReadOneByOneCheckAvailable"
+        ],
+        "src/test/java/org/apache/commons/io/file/PathUtilsContentEqualsTest.java": [
+            "testContentEqualsFileSystemsZipVsZip",
+            "testDirectoryAndFileContentEqualsDifferentFileSystemsZipVsZip",
+            "testDirectoryAndFileContentEqualsDifferentFileSystemsZipVsZipEmpty",
+            "testDirectoryAndFileContentEqualsDifferentFileSystems"
+        ],
+        "src/test/java/org/apache/commons/io/file/attribute/FileTimesTest.java": [
+            "testMaxJavaTime"
+        ],
+        "src/test/java/org/apache/commons/io/function/UncheckTest.java": [
+            "testGetAsBoolean"
+        ],
+        "src/test/java/org/apache/commons/io/output/ThresholdingOutputStreamTest.java": [
+            "testSetByteCountOutputStream",
+            "testResetByteCount"
+        ],
+        "src/test/java/org/apache/commons/io/ByteOrderMarkTest.java": [
+            "testMatches"
         ]
     }
 }

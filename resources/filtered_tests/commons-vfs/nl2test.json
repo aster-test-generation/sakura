@@ -1,15 +1,10 @@
 {
     "summary": {
         "test_class_count": 8,
-        "test_method_count": 26
+        "test_method_count": 26,
+        "new_test_method_count": 5
     },
     "test_classes_and_methods": {
-        "org.apache.commons.vfs2.provider.sftp.SftpPutChannelTest": [
-            "testDoGetInputStream()"
-        ],
-        "org.apache.commons.vfs2.util.URIUtilsTest": [
-            "testEncodePathThrowsIllegalArgumentException()"
-        ],
         "org.apache.commons.vfs2.provider.res.Vfs444Test": [
             "testResolveFullPathFile2()",
             "testResolveFullPathFile1()",
@@ -20,8 +15,17 @@
             "testResolveFullPathURI2()",
             "testResolveFullPathFile0()"
         ],
+        "org.apache.commons.vfs2.provider.sftp.SftpPermissionExceptionTest": [
+            "testGetOutputStreamException()"
+        ],
+        "org.apache.commons.vfs2.util.URIUtilsTest": [
+            "testEncodePathThrowsIllegalArgumentException()"
+        ],
         "org.apache.commons.vfs2.AbstractProviderTestSuite": [
             "providerTests()"
+        ],
+        "org.apache.commons.vfs2.provider.sftp.SftpPutChannelTest": [
+            "testDoGetInputStream()"
         ],
         "org.apache.commons.vfs2.provider.http4.Http4ProviderTest": [
             "testResolveFolderSlashYesRedirectOn()",
@@ -30,9 +34,6 @@
             "testResolveFolderSlashNoRedirectOn()",
             "testResolveFolderSlashNoRedirectOff()",
             "testHttpTimeoutConfig()"
-        ],
-        "org.apache.commons.vfs2.provider.sftp.SftpPermissionExceptionTest": [
-            "testGetOutputStreamException()"
         ],
         "org.apache.commons.vfs2.provider.http5.Http5ProviderTest": [
             "testReadFileOperations()",
@@ -45,6 +46,23 @@
         ],
         "org.apache.commons.vfs2.provider.ftp.FtpProviderIPv6Test": [
             "testResolveIPv6Url()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "commons-vfs2/src/test/java/org/apache/commons/vfs2/filter/SizeFileFilterTest.java": [
+            "testSizeFilterSizeNegative"
+        ],
+        "commons-vfs2/src/test/java/org/apache/commons/vfs2/IPv6LocalConnectionTests.java": [
+            "testIPv6Connection"
+        ],
+        "commons-vfs2/src/test/java/org/apache/commons/vfs2/provider/http4/Http4ProviderTestCase.java": [
+            "testReadFileOperations"
+        ],
+        "commons-vfs2/src/test/java/org/apache/commons/vfs2/provider/http5/Http5ProviderTestCase.java": [
+            "testReadFileOperations"
+        ],
+        "commons-vfs2/src/test/java/org/apache/commons/vfs2/provider/ftp/FtpFileSystemConfigBuilderTest.java": [
+            "testControlEncoding"
         ]
     }
 }

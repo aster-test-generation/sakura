@@ -1,7 +1,68 @@
 {
-    "error": "'/Users/tylerstennett/Documents/repos/nltest/resources/datasets/commons-cli/src/test/java/org/apache/commons/cli/OptionCountTest.java'",
     "summary": {
-        "test_class_count": 0,
-        "test_method_count": 0
+        "test_class_count": 2,
+        "test_method_count": 7,
+        "new_test_method_count": 28
+    },
+    "test_classes_and_methods": {
+        "org.apache.commons.cli.OptionCountTest": [
+            "testThreeSwitchesCompact()",
+            "testOneSwitch()",
+            "testNoSwitch()",
+            "testFiveSwitchesMixed()",
+            "testThreeSwitches()"
+        ],
+        "org.apache.commons.cli.MissingOptionExceptionTest": [
+            "testGetMissingOptions()",
+            "testGetMessage()"
+        ]
+    },
+    "new_test_methods_since_date": {
+        "src/test/java/org/apache/commons/cli/help/HelpFormatterTest.java": [
+            "testPrintHelpHeader",
+            "testPrintHelpWithIterableOptions",
+            "verifyOptionGroupingOutput",
+            "testPrintHelpHeader"
+        ],
+        "src/test/java/org/apache/commons/cli/OptionCountTest.java": [
+            "testFiveSwitchesMixed"
+        ],
+        "src/test/java/org/apache/commons/cli/help/TextHelpAppendableTest.java": [
+            "testMakeColumnQueue",
+            "testMakeColumnQueueWithMultipleTrailingLineBreaks",
+            "testMakeColumnQueueWithMultipleTrailingLineBreaks"
+        ],
+        "src/test/java/org/apache/commons/cli/help/OptionFormatterTest.java": [
+            "testCli343Part1",
+            "testCli343Part2"
+        ],
+        "src/test/java/org/apache/commons/cli/OptionsTest.java": [
+            "testRequiredOptionInGroupShouldNotBeInRequiredList",
+            "testRequiredOptionInGroupShouldNotBeInRequiredList"
+        ],
+        "src/test/java/org/apache/commons/cli/MissingOptionExceptionTest.java": [
+            "testGetMessage"
+        ],
+        "src/test/java/org/apache/commons/cli/OptionTest.java": [
+            "testBuilderEmpty",
+            "testProcessValue"
+        ],
+        "src/test/java/org/apache/commons/cli/DefaultParserTest.java": [
+            "testBuilder",
+            "testDeprecated",
+            "testLegacyStopAtNonOption",
+            "testLongOptionWithEqualsQuoteHandling",
+            "testParseSkipHappyPath",
+            "testParseNullOption",
+            "chainingParsersSkipHappyPath",
+            "chainingParsersSkipNonHappyPath",
+            "chainingParsersIgnoreHappyPath",
+            "chainingParsersIgnoreNonHappyPath",
+            "legacyStopAtNonOption"
+        ],
+        "src/test/java/org/apache/commons/cli/HelpFormatterTest.java": [
+            "testDeprecatedFindWrapPosZeroWidth",
+            "testDeprecatedPrintOptionsZeroWidth"
+        ]
     }
 }

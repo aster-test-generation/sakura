@@ -290,7 +290,7 @@ def _process_single_repo(
                 analysis_backend_path=None,
                 analysis_level=AnalysisLevel.symbol_table,
                 analysis_json_path=repo_analysis_dir,
-                eager=False,
+                eager=True,
             )
             test_classes_and_methods = filter_instance.classify_files_using_cldk(
                 java_files, repo_path, analysis

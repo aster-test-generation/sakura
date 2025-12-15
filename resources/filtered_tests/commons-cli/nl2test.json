@@ -15,6 +15,43 @@
         "org.apache.commons.cli.MissingOptionExceptionTest": [
             "testGetMissingOptions()",
             "testGetMessage()"
+        ],
+        "org.apache.commons.cli.help.HelpFormatterTest": [
+            "testPrintHelpHeader()",
+            "testPrintHelpWithIterableOptions()",
+            "verifyOptionGroupingOutput()"
+        ],
+        "org.apache.commons.cli.help.TextHelpAppendableTest": [
+            "testMakeColumnQueue()",
+            "testMakeColumnQueueWithMultipleTrailingLineBreaks()"
+        ],
+        "org.apache.commons.cli.help.OptionFormatterTest": [
+            "testCli343Part1()",
+            "testCli343Part2()"
+        ],
+        "org.apache.commons.cli.OptionsTest": [
+            "testRequiredOptionInGroupShouldNotBeInRequiredList()"
+        ],
+        "org.apache.commons.cli.OptionTest": [
+            "testBuilderEmpty()",
+            "testProcessValue()"
+        ],
+        "org.apache.commons.cli.DefaultParserTest": [
+            "testBuilder()",
+            "testDeprecated()",
+            "testLegacyStopAtNonOption()",
+            "testLongOptionWithEqualsQuoteHandling()",
+            "testParseSkipHappyPath()",
+            "testParseNullOption()",
+            "chainingParsersSkipHappyPath()",
+            "chainingParsersSkipNonHappyPath()",
+            "chainingParsersIgnoreHappyPath()",
+            "chainingParsersIgnoreNonHappyPath()",
+            "legacyStopAtNonOption()"
+        ],
+        "org.apache.commons.cli.HelpFormatterTest": [
+            "testDeprecatedFindWrapPosZeroWidth()",
+            "testDeprecatedPrintOptionsZeroWidth()"
         ]
     },
     "new_test_methods_since_date": {

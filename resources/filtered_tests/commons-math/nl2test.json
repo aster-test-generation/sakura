@@ -5,11 +5,13 @@
         "new_test_method_count": 12
     },
     "test_classes_and_methods": {
-        "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest": [
-            "testUnsupportedMethods()",
-            "testUnsupportedStorelessMethods()",
-            "testPercentile()",
-            "testInvalidPercentileThrows(double)"
+        "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest": [
+            "testIntegral()",
+            "testInterpolateLinearDegenerateThreeSegment()",
+            "testInsufficientData()",
+            "testUnsortedArray()",
+            "testArrayLengthMismatch()",
+            "testInterpolateLinearDegenerateTwoSegment()"
         ],
         "org.apache.commons.math4.legacy.stat.descriptive.WeightedEvaluationAbstractTest": [
             "testEvaluateArraySegmentWeighted()",
@@ -20,13 +22,40 @@
             "testUnweightedEvaluation()",
             "testWeightedConsistency()"
         ],
-        "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest": [
-            "testIntegral()",
-            "testInterpolateLinearDegenerateThreeSegment()",
-            "testInsufficientData()",
-            "testUnsortedArray()",
-            "testArrayLengthMismatch()",
-            "testInterpolateLinearDegenerateTwoSegment()"
+        "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest": [
+            "testUnsupportedMethods()",
+            "testUnsupportedStorelessMethods()",
+            "testPercentile()",
+            "testInvalidPercentileThrows(double)"
+        ],
+        "org.apache.commons.math4.legacy.util.ComplexFormatAbstractTest": [
+            "testParseMissingImaginaryCharacter()"
+        ],
+        "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest": [
+            "testAllPointsIdentical()"
+        ],
+        "org.apache.commons.math4.legacy.linear.RealVectorTest": [
+            "testSparseIteratorEmptyVector()"
+        ],
+        "org.apache.commons.math4.legacy.stat.interval.ClopperPearsonIntervalTest": [
+            "testCase4()"
+        ],
+        "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest": [
+            "testMath1674()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest": [
+            "testProperties()",
+            "testCopy()"
+        ],
+        "org.apache.commons.math4.legacy.stat.StatUtilsTest": [
+            "testSum()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest": [
+            "testSetterAll()",
+            "testEmpty()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest": [
+            "testEmpty()"
         ]
     },
     "new_test_methods_since_date": {

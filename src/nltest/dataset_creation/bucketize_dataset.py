@@ -20,7 +20,7 @@ RESOURCES_DIR = "resources"
 
 # Relative to RESOURCES_DIR
 DATASETS_DIR = "datasets/"  # Source projects for CLDK analysis
-HAMSTER_DIR = "hamster/"  # Input: contains hamster.json per project
+HAMSTER_DIR = "hamster_models/"  # Input: contains hamster.json per project
 BUCKETED_DIR = "bucketed_tests/"  # Output: nl2test.json per project
 ANALYSIS_DIR = "analysis/"  # CLDK analysis cache directory
 

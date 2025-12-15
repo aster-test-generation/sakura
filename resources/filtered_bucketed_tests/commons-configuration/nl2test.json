@@ -1,6 +1,19 @@
 {
     "dataset_name": "commons-configuration",
-    "tests_with_one_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.configuration2.YAMLConfiguration",
+                    "focal_method_names": [
+                        "read(java.io.Reader)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_two_focal_methods": [],
     "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],

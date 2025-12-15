@@ -2,6 +2,18 @@
     "dataset_name": "commons-math",
     "tests_with_one_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.math4.legacy.linear.RealVectorTest",
+            "method_signature": "testSparseIteratorEmptyVector()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+                    "focal_method_names": [
+                        "sparseIterator()"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
             "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
             "focal_details": [
@@ -62,8 +74,36 @@
             ]
         }
     ],
-    "tests_with_two_focal_methods": [],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+            "method_signature": "testProperties()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
+                    "focal_method_names": [
+                        "setVarianceDirection(org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction)",
+                        "setBiasCorrected(boolean)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+            "method_signature": "testCopy()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
+                    "focal_method_names": [
+                        "setVarianceDirection(org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction)",
+                        "setBiasCorrected(boolean)",
+                        "copy()"
+                    ]
+                }
+            ]
+        },
         {
             "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
             "method_signature": "testIntegral()",
@@ -85,6 +125,25 @@
                     "focal_class": "org.apache.commons.math4.legacy.analysis.integration.SimpsonIntegrator",
                     "focal_method_names": [
                         "integrate(int, org.apache.commons.math4.legacy.analysis.UnivariateFunction, double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.StatUtilsTest",
+            "method_signature": "testSum()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.StatUtils",
+                    "focal_method_names": [
+                        "sum(double[])",
+                        "sum(double[], int, int)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.TestUtils",
+                    "focal_method_names": [
+                        "assertEquals(double, double, double)"
                     ]
                 }
             ]

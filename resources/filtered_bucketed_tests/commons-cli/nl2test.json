@@ -1,8 +1,297 @@
 {
     "dataset_name": "commons-cli",
-    "tests_with_one_focal_methods": [],
-    "tests_with_two_focal_methods": [],
-    "tests_with_more_than_two_to_five_focal_methods": [],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.HelpFormatterTest",
+            "method_signature": "testPrintHelpHeader()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.help.HelpFormatter.Builder",
+                    "focal_method_names": [
+                        "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.DefaultParserTest",
+            "method_signature": "testLongOptionWithEqualsQuoteHandling()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Options",
+                    "focal_method_names": [
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.DefaultParserTest",
+            "method_signature": "testParseNullOption()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Options",
+                    "focal_method_names": [
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.cli.OptionTest",
+            "method_signature": "testProcessValue()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Option",
+                    "focal_method_names": [
+                        "processValue(java.lang.String)",
+                        "setValueSeparator(char)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.OptionFormatterTest",
+            "method_signature": "testCli343Part2()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Option.Builder",
+                    "focal_method_names": [
+                        "desc(java.lang.String)",
+                        "build()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.OptionFormatterTest",
+            "method_signature": "testCli343Part1()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Option.Builder",
+                    "focal_method_names": [
+                        "required(boolean)",
+                        "build()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.DefaultParserTest",
+            "method_signature": "testLegacyStopAtNonOption()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.DefaultParser",
+                    "focal_method_names": [
+                        "parse(org.apache.commons.cli.Options, java.lang.String[], java.util.Properties, boolean)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.CommandLine",
+                    "focal_method_names": [
+                        "getArgList()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.Option.Builder",
+                    "focal_method_names": []
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.HelpFormatterTest",
+            "method_signature": "verifyOptionGroupingOutput()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.help.HelpFormatter",
+                    "focal_method_names": [
+                        "builder()",
+                        "printHelp(java.lang.String, java.lang.String, org.apache.commons.cli.Options, java.lang.String, boolean)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.help.HelpFormatter.Builder",
+                    "focal_method_names": [
+                        "setShowSince(boolean)",
+                        "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.HelpFormatterTest",
+            "method_signature": "testPrintHelpWithIterableOptions()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.help.HelpFormatter",
+                    "focal_method_names": [
+                        "printHelp(java.lang.String, java.lang.String, java.lang.Iterable, java.lang.String, boolean)",
+                        "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.help.HelpFormatter.Builder",
+                    "focal_method_names": [
+                        "setShowSince(boolean)",
+                        "get()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.Option.Builder",
+                    "focal_method_names": []
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.OptionsTest",
+            "method_signature": "testRequiredOptionInGroupShouldNotBeInRequiredList()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Options",
+                    "focal_method_names": [
+                        "addOptionGroup(org.apache.commons.cli.OptionGroup)",
+                        "getRequiredOptions()",
+                        "getOption(java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.TextHelpAppendableTest",
+            "method_signature": "testMakeColumnQueueWithMultipleTrailingLineBreaks()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.help.TextHelpAppendable",
+                    "focal_method_names": [
+                        "makeColumnQueue(java.lang.CharSequence, org.apache.commons.cli.help.TextStyle)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.help.TextStyle.Builder",
+                    "focal_method_names": [
+                        "setIndent(int)",
+                        "setLeftPad(int)",
+                        "get()",
+                        "setMaxWidth(int)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.DefaultParserTest",
+            "method_signature": "testParseSkipHappyPath()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Options",
+                    "focal_method_names": [
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.DefaultParser",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.CommandLine",
+                    "focal_method_names": [
+                        "hasOption(java.lang.String)",
+                        "getArgList()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.Option.Builder",
+                    "focal_method_names": []
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.DefaultParserTest",
+            "method_signature": "testBuilder()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Options",
+                    "focal_method_names": [
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.DefaultParser.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "build()"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.cli.help.TextHelpAppendableTest",
+            "method_signature": "testMakeColumnQueue()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.help.TextHelpAppendable",
+                    "focal_method_names": [
+                        "makeColumnQueue(java.lang.CharSequence, org.apache.commons.cli.help.TextStyle)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.help.TextStyle.Builder",
+                    "focal_method_names": [
+                        "setLeftPad(int)",
+                        "setMaxWidth(int)",
+                        "setIndent(int)",
+                        "setAlignment(org.apache.commons.cli.help.TextStyle.Alignment)",
+                        "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.cli.DefaultParserTest",
+            "method_signature": "testDeprecated()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.cli.Options",
+                    "focal_method_names": [
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.Option",
+                    "focal_method_names": [
+                        "builder()",
+                        "getOpt()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.CommandLine",
+                    "focal_method_names": [
+                        "hasOption(java.lang.String)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.Option.Builder",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.cli.DeprecatedAttributes.Builder",
+                    "focal_method_names": [
+                        "setSince(java.lang.String)",
+                        "setForRemoval(boolean)",
+                        "get()",
+                        "setDescription(java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": []
 }

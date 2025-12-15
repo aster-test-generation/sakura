@@ -290,7 +290,7 @@ def _process_single_repo(
                 analysis_backend_path=None,
                 analysis_level=AnalysisLevel.symbol_table,
                 analysis_json_path=repo_analysis_dir,
-                eager=True,
+                eager=False,
             )
             test_classes_and_methods = filter_instance.classify_files_using_cldk(
                 java_files, repo_path, analysis
@@ -321,6 +321,63 @@ def _process_single_repo(
             "test_files": test_files,
             "new_test_methods_since_date": new_tests,
         }
+    # --------------------------------------------------------------------------
+    # Merge new test methods into test_classes_and_methods (avoid duplicates)
+    # -------------------------------------------------------------------------
+
+    merged = result["test_classes_and_methods"]
+
+    for file_path, methods in result.get("new_test_methods_since_date", {}).items():
+        normalized_methods = [m if m.endswith("()") else f"{m}()" for m in methods]
+
+        # Default: derive simple class name
+        class_name = os.path.splitext(os.path.basename(file_path))[0]
+        fqcn_match = None
+
+        # 1️⃣ Try to match existing CLDK FQCN by file path
+        if analysis and merged:
+            for fqcn in merged.keys():
+                fqcn_path_fragment = fqcn.replace(".", os.sep)
+                if fqcn_path_fragment in file_path:
+                    fqcn_match = fqcn
+                    break
+
+        # 2️⃣ If no match, derive FQCN from path after src/test/java or src/main/java
+        if not fqcn_match:
+            lower_path = file_path.replace("\\", "/")
+            if "src/test/java/" in lower_path:
+                rel_path = lower_path.split("src/test/java/")[1]
+                fqcn_match = rel_path.replace("/", ".").replace(".java", "")
+            elif "src/main/java/" in lower_path:
+                rel_path = lower_path.split("src/main/java/")[1]
+                fqcn_match = rel_path.replace("/", ".").replace(".java", "")
+            else:
+                fqcn_match = None
+
+        # 3️⃣ Fallback: simple class name
+        key = fqcn_match if fqcn_match else class_name
+
+        # Merge safely
+        if key in merged:
+            existing = set(merged[key])
+            for m in normalized_methods:
+                if m not in existing:
+                    merged[key].append(m)
+                    existing.add(m)
+        else:
+            merged[key] = list(dict.fromkeys(normalized_methods))
+
+    # Deduplicate per class
+    for cname, mlist in merged.items():
+        seen = set()
+        merged[cname] = [m for m in mlist if not (m in seen or seen.add(m))]
+
+    # # Clean up and update summary
+    # result["test_classes_and_methods"] = merged
+    # result.pop("new_test_methods_since_date", None)
+    #
+    # result["summary"]["test_class_count"] = len(merged)
+    # result["summary"]["test_method_count"] = sum(len(v) for v in merged.values())
 
     return (project_name, result)
 

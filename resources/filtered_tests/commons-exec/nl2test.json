@@ -5,20 +5,36 @@
         "new_test_method_count": 8
     },
     "test_classes_and_methods": {
-        "org.apache.commons.exec.ExecuteWatchdogTest": [
+        "org.apache.commons.exec.WatchdogTest": [
             "testBuilder()"
-        ],
-        "org.apache.commons.exec.TimeoutObserverTest": [
-            "testAccept()",
-            "testTimeoutOccurred()"
         ],
         "org.apache.commons.exec.OSTest": [
             "testIsVersion()",
             "testIsArchMacOs()",
             "testIsArch()"
         ],
-        "org.apache.commons.exec.WatchdogTest": [
+        "org.apache.commons.exec.TimeoutObserverTest": [
+            "testAccept()",
+            "testTimeoutOccurred()"
+        ],
+        "org.apache.commons.exec.ExecuteWatchdogTest": [
             "testBuilder()"
+        ],
+        "org.apache.commons.exec.DefaultExecutorTest": [
+            "testExecuteStability()"
+        ],
+        "org.apache.commons.exec.issues.Exec36Test": [
+            "testExec36Part4()",
+            "testExec36Part5()",
+            "testExec36Part6()"
+        ],
+        "org.apache.commons.exec.util.StringUtilTest": [
+            "testQuoteArgument()"
+        ],
+        "org.apache.commons.exec.StandAloneTest": [
+            "testDefaultExecutorBuilderFromPath()",
+            "testDefaultExecutorFromFile()",
+            "testDefaultExecutorFromPath()"
         ]
     },
     "new_test_methods_since_date": {

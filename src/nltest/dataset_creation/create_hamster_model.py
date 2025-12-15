@@ -13,8 +13,8 @@ from nltest.utils import constants
 # Path constants
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
 OUTPUT_FILE_NAME = "hamster.json"
-TEST_RESOURCES_DIR = "tests/resources"  # Relative to ROOT_DIR
-TEST_OUTPUT_DIR = "tests/output"  # Relative to ROOT_DIR
+TEST_RESOURCES_DIR = "resources/datasets"  # Relative to ROOT_DIR
+TEST_OUTPUT_DIR = "output"  # Relative to ROOT_DIR
 
 
 class CreateHamsterModel:

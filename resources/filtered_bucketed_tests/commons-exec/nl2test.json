@@ -2,6 +2,18 @@
     "dataset_name": "commons-exec",
     "tests_with_one_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.util.StringUtils",
+                    "focal_method_names": [
+                        "quoteArgument(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.exec.OSTest",
             "method_signature": "testIsVersion()",
             "focal_details": [
@@ -38,7 +50,52 @@
             ]
         }
     ],
-    "tests_with_two_focal_methods": [],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.exec.issues.Exec36Test",
+            "method_signature": "testExec36Part6()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.exec.CommandLine",
+                    "focal_method_names": [
+                        "parse(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+            "method_signature": "testDefaultExecutorFromFile()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "execute(org.apache.commons.exec.CommandLine)",
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+            "method_signature": "testDefaultExecutorFromPath()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "execute(org.apache.commons.exec.CommandLine)",
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_two_to_five_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
@@ -47,9 +104,47 @@
                 {
                     "focal_class": "org.apache.commons.exec.Watchdog.Builder",
                     "focal_method_names": [
-                        "setTimeout(java.time.Duration)",
+                        "get()",
                         "setThreadFactory(java.util.concurrent.ThreadFactory)",
-                        "get()"
+                        "setTimeout(java.time.Duration)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.issues.Exec36Test",
+            "method_signature": "testExec36Part4()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.exec.CommandLine",
+                    "focal_method_names": [
+                        "toStrings()",
+                        "parse(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.issues.Exec36Test",
+            "method_signature": "testExec36Part5()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.exec.CommandLine",
+                    "focal_method_names": [
+                        "toStrings()",
+                        "parse(java.lang.String)"
                     ]
                 }
             ]
@@ -61,15 +156,57 @@
                 {
                     "focal_class": "org.apache.commons.exec.ExecuteWatchdog.Builder",
                     "focal_method_names": [
-                        "setTimeout(java.time.Duration)",
+                        "get()",
                         "setThreadFactory(java.util.concurrent.ThreadFactory)",
-                        "get()"
+                        "setTimeout(java.time.Duration)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+            "method_signature": "testDefaultExecutorBuilderFromPath()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "execute(org.apache.commons.exec.CommandLine)",
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+                    "focal_method_names": [
+                        "setThreadFactory(java.util.concurrent.ThreadFactory)"
                     ]
                 }
             ]
         }
     ],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.exec.DefaultExecutorTest",
+            "method_signature": "testExecuteStability()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.TestUtil",
+                    "focal_method_names": [
+                        "getTestScriptCodesForOS()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+                        "isFailure(int)",
+                        "execute(org.apache.commons.exec.CommandLine, java.util.Map)",
+                        "execute(org.apache.commons.exec.CommandLine, java.util.Map, org.apache.commons.exec.ExecuteResultHandler)",
+                        "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.exec.OSTest",
@@ -78,18 +215,18 @@
                 {
                     "focal_class": "org.apache.commons.exec.OS",
                     "focal_method_names": [
-                        "isFamilyOpenVms()",
-                        "isFamilyNetware()",
-                        "isFamilyZOS()",
                         "isFamilyOS2()",
-                        "isFamilyDOS()",
+                        "isFamilyNetware()",
+                        "isFamilyOpenVms()",
                         "isFamilyTandem()",
+                        "isFamilyWinNT()",
                         "isFamilyUnix()",
-                        "isFamilyWindows()",
-                        "isFamilyOS400()",
                         "isFamilyWin9x()",
+                        "isFamilyDOS()",
+                        "isFamilyOS400()",
                         "isFamilyMac()",
-                        "isFamilyWinNT()"
+                        "isFamilyWindows()",
+                        "isFamilyZOS()"
                     ]
                 }
             ]

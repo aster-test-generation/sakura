@@ -52,6 +52,30 @@
                     ]
                 }
             ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVParserTest",
+            "method_signature": "testParsePathCharsetNullFormat()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "parse(java.nio.file.Path, java.nio.charset.Charset, org.apache.commons.csv.CSVFormat)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVParserTest",
+            "method_signature": "testParseInputStreamCharsetNullFormat()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "parse(java.io.InputStream, java.nio.charset.Charset, org.apache.commons.csv.CSVFormat)"
+                    ]
+                }
+            ]
         }
     ],
     "tests_with_two_focal_methods": [
@@ -64,6 +88,58 @@
                     "focal_method_names": [
                         "reset()",
                         "toString()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVFormatTest",
+            "method_signature": "testDelimiterStringLineBreakLfThrowsException1()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "setDelimiter(java.lang.String)",
+                        "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVFormatTest",
+            "method_signature": "testDelimiterCharLineBreakCrThrowsException1()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setDelimiter(char)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVFormatTest",
+            "method_signature": "testDelimiterStringLineBreakCrThrowsException1()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "setDelimiter(java.lang.String)",
+                        "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVFormatTest",
+            "method_signature": "testDelimiterCharLineBreakLfThrowsException1()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setDelimiter(char)"
                     ]
                 }
             ]
@@ -83,9 +159,9 @@
                 {
                     "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
                     "focal_method_names": [
-                        "setDelimiter(char)",
                         "setIgnoreSurroundingSpaces(boolean)",
-                        "get()"
+                        "get()",
+                        "setDelimiter(char)"
                     ]
                 }
             ]
@@ -106,10 +182,10 @@
                     "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
                     "focal_method_names": [
                         "setIgnoreSurroundingSpaces(boolean)",
+                        "setHeader(java.lang.String[])",
                         "setSkipHeaderRecord(boolean)",
                         "get()",
-                        "setDelimiter(char)",
-                        "setHeader(java.lang.String[])"
+                        "setDelimiter(char)"
                     ]
                 }
             ]

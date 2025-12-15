@@ -2,21 +2,15 @@
     "summary": {
         "test_class_count": 6,
         "test_method_count": 17,
-        "new_test_method_count": 147
+        "new_test_method_count": 141
     },
     "test_classes_and_methods": {
-        "org.apache.commons.lang3.reflect.Lang1792Test": [
-            "testStackOverflowError()"
-        ],
         "org.apache.commons.lang3.function.ByteConsumerTest": [
             "testAccept()",
             "testAndThen()"
         ],
-        "org.apache.commons.lang3.concurrent.ConcurrentExceptionTest": [
-            "testCauseString()",
-            "testCauseError()",
-            "testCauseNull()",
-            "testCauseUnchecked()"
+        "org.apache.commons.lang3.reflect.Lang1792Test": [
+            "testStackOverflowError()"
         ],
         "org.apache.commons.lang3.StringUtilsAbbreviateTest": [
             "testAbbreviate_StringIntInt()",
@@ -25,6 +19,12 @@
             "testAbbreviate_StringStringIntInt()",
             "testAbbreviateMiddle()",
             "testAbbreviateMarkerWithEmptyString()"
+        ],
+        "org.apache.commons.lang3.concurrent.ConcurrentExceptionTest": [
+            "testCauseString()",
+            "testCauseError()",
+            "testCauseNull()",
+            "testCauseUnchecked()"
         ],
         "org.apache.commons.lang3.concurrent.ConcurrentRuntimeExceptionTest": [
             "testCauseError()",
@@ -57,8 +57,7 @@
         ],
         "src/test/java/org/apache/commons/lang3/time/StopWatchTest.java": [
             "testSplitsWithStringLabels",
-            "testGetSplits",
-            "testSplitsWithStringLabels"
+            "testGetSplits"
         ],
         "src/test/java/org/apache/commons/lang3/ClassUtilsTest.java": [
             "testGetClassLongestCheck",
@@ -97,7 +96,6 @@
         "src/test/java/org/apache/commons/lang3/reflect/MethodUtilsTest.java": [
             "testInvokeMethodVarArgsOfInterface",
             "testInvokeStaticMethodVarArgsOfInterface",
-            "testInvokeMethodVarArgsOfInterface",
             "testInvokeMethod1PlusVarArgs",
             "testInvokeMethodVarArgsNotUniqueResolvable",
             "testInvokeStaticMethod1PlusVarArgs",
@@ -156,7 +154,6 @@
             "testToStringDefault",
             "testShiftByteParams",
             "testShiftBooleanParams",
-            "testToStringDefault",
             "testToPrimitiveArray",
             "testToPrimitiveArrayViaObjectArray",
             "testShuffleBooleanRandom",
@@ -190,7 +187,6 @@
         "src/test/java/org/apache/commons/lang3/reflect/TypeUtilsTest.java": [
             "testEquals",
             "testDeprecatedConstructor",
-            "testUnrollVariables",
             "testUnrollVariables",
             "testToString",
             "testNormalizeUpperBounds",
@@ -226,7 +222,6 @@
             "testReplaceFirstDeprecated"
         ],
         "src/test/java/org/apache/commons/lang3/StringUtilsAbbreviateTest.java": [
-            "testEmoji",
             "testEmoji"
         ],
         "src/test/java/org/apache/commons/lang3/time/FastDateParser_TimeZoneStrategyTest.java": [
@@ -242,8 +237,7 @@
         "src/test/java/org/apache/commons/lang3/ArrayFillTest.java": [
             "testFillFunction",
             "testFillBooleanArray",
-            "testFillBooleanArrayNull",
-            "testFillFunction"
+            "testFillBooleanArrayNull"
         ],
         "src/test/java/org/apache/commons/lang3/SystemUtilsTest.java": [
             "testGetUserHomePath",

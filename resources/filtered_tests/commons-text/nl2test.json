@@ -2,16 +2,16 @@
     "summary": {
         "test_class_count": 3,
         "test_method_count": 13,
-        "new_test_method_count": 67
+        "new_test_method_count": 53
     },
     "test_classes_and_methods": {
-        "org.apache.commons.text.similarity.EditDistanceFromTest": [
-            "testGetLeft()",
-            "testGetSimilarityScore()"
-        ],
         "org.apache.commons.text.translate.CharSequenceTranslatorTest": [
             "testIOException()",
             "testWith()"
+        ],
+        "org.apache.commons.text.similarity.EditDistanceFromTest": [
+            "testGetLeft()",
+            "testGetSimilarityScore()"
         ],
         "org.apache.commons.text.similarity.DamerauLevenshteinDistanceTest": [
             "testCalculateDamerauLevenshteinDistance_SimilarityInput(java.lang.String, java.lang.String, int, int, java.lang.Class)",
@@ -29,17 +29,13 @@
         "src/test/java/org/apache/commons/text/lookup/StringLookupFactoryTest.java": [
             "testClear",
             "testDeprecatedSingletons",
-            "testDeprecatedSingletons",
-            "testClear",
             "testXmlStringLookupExternalEntityOff",
             "testXmlStringLookupExternalEntityOn",
-            "testDefault",
             "testDefault"
         ],
         "src/test/java/org/apache/commons/text/similarity/LevenshteinResultsTest.java": [
             "testEqualsWithDifferentObject",
-            "testEqualsDifferentDistance",
-            "testEqualsWithDifferentObject"
+            "testEqualsDifferentDistance"
         ],
         "src/test/java/org/apache/commons/text/translate/CharSequenceTranslatorTest.java": [
             "testWith",
@@ -47,16 +43,13 @@
         ],
         "src/test/java/org/apache/commons/text/translate/OctalUnescaperTest.java": [
             "testInvalid",
-            "testInvalid",
             "testHighLowSurrogate"
         ],
         "src/test/java/org/apache/commons/text/translate/UnicodeUnescaperTest.java": [
-            "testTooShort",
             "testTooShort"
         ],
         "src/test/java/org/apache/commons/text/StringSubstitutorTest.java": [
             "testToString",
-            "testDetectsCyclicSubstitution",
             "testDetectsCyclicSubstitution"
         ],
         "src/test/java/org/apache/commons/text/TextStringBuilderTest.java": [
@@ -73,8 +66,6 @@
             "testMatchesDeprecated",
             "testMatches",
             "testApply_NullSimilarityInput",
-            "testApply_SimilarityInputNull",
-            "testApply_NullSimilarityInput",
             "testApply_SimilarityInputNull"
         ],
         "src/test/java/org/apache/commons/text/lookup/XmlStringLookupTest.java": [
@@ -89,7 +80,6 @@
             "testInterpolatorExternalEntityOnOverride"
         ],
         "src/test/java/org/apache/commons/text/similarity/LevenshteinDistanceTest.java": [
-            "testGetLevenshteinDistance_EmptyStringString",
             "testGetLevenshteinDistance_EmptyStringString"
         ],
         "src/test/java/org/apache/commons/text/similarity/SimilarityScoreFromTest.java": [
@@ -107,16 +97,12 @@
         "src/test/java/org/apache/commons/text/similarity/JaroWinklerSimilarityTest.java": [
             "testGetJaroWinklerSimilarity_StringNull",
             "testApply_NullSimilarityInput",
-            "testApply_SimilarityInputNull",
-            "testGetJaroWinklerSimilarity_StringNull",
-            "testApply_NullSimilarityInput",
             "testApply_SimilarityInputNull"
         ],
         "src/test/java/org/apache/commons/text/similarity/HammingDistanceTest.java": [
             "testApply_DifferentSimilarityInputLength",
             "testApply_NullSimilarityInput",
-            "testApply_SimilarityInputNull",
-            "testApply_DifferentSimilarityInputLength"
+            "testApply_SimilarityInputNull"
         ],
         "src/test/java/org/apache/commons/text/similarity/DamerauLevenshteinDistanceTest.java": [
             "testGetThresholdDirectlyAfterObjectInstantiation",

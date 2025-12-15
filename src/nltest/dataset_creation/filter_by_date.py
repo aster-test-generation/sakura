@@ -115,6 +115,10 @@ class FilterByDate:
         if added_lines:
             self._analyze_added_block_with_treesitter(current_file, added_lines, new_tests)
 
+        for fpath, methods in new_tests.items():
+            seen = set()
+            new_tests[fpath] = [m for m in methods if not (m in seen or seen.add(m))]
+
         return new_tests
 
     def _analyze_added_block_with_treesitter(self, file_path: str, added_lines: List[str], new_tests: Dict[str, List[str]]):

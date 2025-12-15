@@ -2,7 +2,7 @@
     "summary": {
         "test_class_count": 2,
         "test_method_count": 7,
-        "new_test_method_count": 28
+        "new_test_method_count": 25
     },
     "test_classes_and_methods": {
         "org.apache.commons.cli.OptionCountTest": [
@@ -21,15 +21,13 @@
         "src/test/java/org/apache/commons/cli/help/HelpFormatterTest.java": [
             "testPrintHelpHeader",
             "testPrintHelpWithIterableOptions",
-            "verifyOptionGroupingOutput",
-            "testPrintHelpHeader"
+            "verifyOptionGroupingOutput"
         ],
         "src/test/java/org/apache/commons/cli/OptionCountTest.java": [
             "testFiveSwitchesMixed"
         ],
         "src/test/java/org/apache/commons/cli/help/TextHelpAppendableTest.java": [
             "testMakeColumnQueue",
-            "testMakeColumnQueueWithMultipleTrailingLineBreaks",
             "testMakeColumnQueueWithMultipleTrailingLineBreaks"
         ],
         "src/test/java/org/apache/commons/cli/help/OptionFormatterTest.java": [
@@ -37,7 +35,6 @@
             "testCli343Part2"
         ],
         "src/test/java/org/apache/commons/cli/OptionsTest.java": [
-            "testRequiredOptionInGroupShouldNotBeInRequiredList",
             "testRequiredOptionInGroupShouldNotBeInRequiredList"
         ],
         "src/test/java/org/apache/commons/cli/MissingOptionExceptionTest.java": [

@@ -9,7 +9,7 @@ from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.model.models import ProjectAnalysis
 from tqdm import tqdm
 
-from nltest.dataset_creation.create_hamster_model import CreateHamsterModel
+from nltest.dataset_creation.create_hamster_model import get_subfolders
 from nltest.dataset_creation.model import NL2TestDataset, Test
 
 # Path constants
@@ -157,7 +157,7 @@ def main():
     bucketed_dir.mkdir(parents=True, exist_ok=True)
     analysis_dir.mkdir(parents=True, exist_ok=True)
 
-    projects = CreateHamsterModel.get_subfolders(hamster_dir)
+    projects = get_subfolders(hamster_dir)
 
     futures = []
     for project_folder in projects:
@@ -172,7 +172,7 @@ def main():
         )
 
     results = []
-    with tqdm(total=len(futures), desc="Processing folders") as pbar:
+    with tqdm(total=len(futures), desc="Processing projects...") as pbar:
         while futures:
             done, futures = ray.wait(futures, num_returns=1)
             res = ray.get(done)

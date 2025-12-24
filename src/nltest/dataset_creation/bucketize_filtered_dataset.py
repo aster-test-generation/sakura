@@ -17,6 +17,9 @@ BUCKETED_TESTS_DIR = "bucketed_tests"  # Relative to RESOURCES_DIR
 FILTERED_TESTS_DIR = "filtered_tests"  # Relative to RESOURCES_DIR
 FILTERED_BUCKETED_TESTS_DIR = "filtered_bucketed_tests"  # Relative to RESOURCES_DIR
 
+print("HTTP_PROXY:", os.environ.get("HTTP_PROXY"))
+print("HTTPS_PROXY:", os.environ.get("HTTPS_PROXY"))
+
 
 def filter_tests_by_date(
     dataset: NL2TestDataset,

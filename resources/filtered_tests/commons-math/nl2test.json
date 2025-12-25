@@ -1,10 +1,9 @@
 {
     "summary": {
-        "test_class_count": 3,
-        "test_method_count": 17,
-        "new_test_method_count": 12
+        "new_test_class_count": 11,
+        "new_test_method_count": 27
     },
-    "test_classes_and_methods": {
+    "new_tests": {
         "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest": [
             "testIntegral()",
             "testInterpolateLinearDegenerateThreeSegment()",
@@ -28,68 +27,31 @@
             "testPercentile()",
             "testInvalidPercentileThrows(double)"
         ],
-        "org.apache.commons.math4.legacy.util.ComplexFormatAbstractTest": [
-            "testParseMissingImaginaryCharacter()"
+        "org.apache.commons.math4.legacy.linear.RealVectorTest": [
+            "testSparseIteratorEmptyVector()"
         ],
         "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest": [
             "testAllPointsIdentical()"
         ],
-        "org.apache.commons.math4.legacy.linear.RealVectorTest": [
-            "testSparseIteratorEmptyVector()"
-        ],
-        "org.apache.commons.math4.legacy.stat.interval.ClopperPearsonIntervalTest": [
-            "testCase4()"
-        ],
         "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest": [
             "testMath1674()"
+        ],
+        "org.apache.commons.math4.legacy.stat.StatUtilsTest": [
+            "testSum()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest": [
+            "testEmpty()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest": [
+            "testEmpty()",
+            "testSetterAll()"
         ],
         "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest": [
             "testProperties()",
             "testCopy()"
         ],
-        "org.apache.commons.math4.legacy.stat.StatUtilsTest": [
-            "testSum()"
-        ],
-        "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest": [
-            "testSetterAll()",
-            "testEmpty()"
-        ],
-        "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest": [
-            "testEmpty()"
-        ]
-    },
-    "new_test_methods_since_date": {
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/util/ComplexFormatAbstractTest.java": [
-            "testParseMissingImaginaryCharacter"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/ml/clustering/ElkanKMeansPlusPlusClustererTest.java": [
-            "testAllPointsIdentical"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/linear/RealVectorTest.java": [
-            "testSparseIteratorEmptyVector"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/interval/ClopperPearsonIntervalTest.java": [
-            "testCase4"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/optim/linear/SimplexSolverTest.java": [
-            "testMath1674"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/moment/SemiVarianceTest.java": [
-            "testProperties",
-            "testCopy"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/StatUtilsTest.java": [
-            "testSum"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/StatisticsTest.java": [
-            "testPercentile"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/SummaryStatisticsTest.java": [
-            "testSetterAll",
-            "testEmpty"
-        ],
-        "commons-math-legacy/src/test/java/org/apache/commons/math4/legacy/stat/descriptive/DescriptiveStatisticsTest.java": [
-            "testEmpty"
+        "org.apache.commons.math4.legacy.util.ComplexFormatAbstractTest": [
+            "testParseMissingImaginaryCharacter()"
         ]
     }
 }

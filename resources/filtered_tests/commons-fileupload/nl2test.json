@@ -1,57 +1,32 @@
 {
     "summary": {
-        "test_class_count": 1,
-        "test_method_count": 3,
-        "new_test_method_count": 10
+        "new_test_class_count": 6,
+        "new_test_method_count": 12
     },
-    "test_classes_and_methods": {
+    "new_tests": {
         "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest": [
             "testThresholdMinusOne()",
             "testThresholdZero()",
             "testExceedPositiveThreshold()"
         ],
-        "org.apache.commons.fileupload2.core.AbstractSizesTest": [
-            "testFilePartHeaderSizeMax()"
-        ],
         "org.apache.commons.fileupload2.core.AbstractFileUploadTest": [
             "testMultipartMixedNoBoundary()"
         ],
+        "org.apache.commons.fileupload2.core.AbstractSizesTest": [
+            "testFilePartHeaderSizeMax()"
+        ],
         "org.apache.commons.fileupload2.core.DiskFileItemTest": [
-            "testStateModelWithThresholdMinusOne()",
-            "testStateModelWithPositiveThreshold()"
+            "testStateModelWithPositiveThreshold()",
+            "testStateModelWithThresholdZero()"
         ],
         "org.apache.commons.fileupload2.core.MultipartStreamTest": [
+            "testPartHeaderSizeMaxLimit()",
             "testSmallBuffer()",
             "testThreeParamConstructor()",
-            "testTwoParamConstructor()",
-            "testPartHeaderSizeMaxLimit()"
+            "testTwoParamConstructor()"
         ],
         "org.apache.commons.fileupload2.core.QuotedPrintableDecoderTestCase": [
             "testTruncatedEscape()"
-        ]
-    },
-    "new_test_methods_since_date": {
-        "commons-fileupload2-core/src/test/java/org/apache/commons/fileupload2/core/DeferrableOutputStreamTest.java": [
-            "testThresholdMinusOne"
-        ],
-        "commons-fileupload2-core/src/test/java/org/apache/commons/fileupload2/core/AbstractSizesTest.java": [
-            "testFilePartHeaderSizeMax"
-        ],
-        "commons-fileupload2-core/src/test/java/org/apache/commons/fileupload2/core/AbstractFileUploadTest.java": [
-            "testMultipartMixedNoBoundary"
-        ],
-        "commons-fileupload2-core/src/test/java/org/apache/commons/fileupload2/core/DiskFileItemTest.java": [
-            "testStateModelWithThresholdMinusOne",
-            "testStateModelWithPositiveThreshold"
-        ],
-        "commons-fileupload2-core/src/test/java/org/apache/commons/fileupload2/core/MultipartStreamTest.java": [
-            "testSmallBuffer",
-            "testThreeParamConstructor",
-            "testTwoParamConstructor",
-            "testPartHeaderSizeMaxLimit"
-        ],
-        "commons-fileupload2-core/src/test/java/org/apache/commons/fileupload2/core/QuotedPrintableDecoderTestCase.java": [
-            "testTruncatedEscape"
         ]
     }
 }

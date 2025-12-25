@@ -1,21 +1,20 @@
 {
     "summary": {
-        "test_class_count": 2,
-        "test_method_count": 8,
-        "new_test_method_count": 6
+        "new_test_class_count": 3,
+        "new_test_method_count": 14
     },
-    "test_classes_and_methods": {
-        "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest": [
-            "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
-            "testAllowAccessToClassPropertyFromBeanUtilsBean()",
-            "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
-            "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
-        ],
+    "new_tests": {
         "org.apache.commons.beanutils2.converters.InstantConverterTest": [
             "testConvertingInstantString()",
             "testConvertingMilliseconds()",
             "testLocalizedNumber()",
             "testText()"
+        ],
+        "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest": [
+            "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
+            "testAllowAccessToClassPropertyFromBeanUtilsBean()",
+            "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
+            "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
         ],
         "org.apache.commons.beanutils2.converters.EnumConverterTest": [
             "testConvertTimeUnit()",
@@ -24,16 +23,6 @@
             "testBrokenNamingConvention()",
             "testNonEnumClasses()",
             "testNonExistingClasses()"
-        ]
-    },
-    "new_test_methods_since_date": {
-        "src/test/java/org/apache/commons/beanutils2/converters/EnumConverterTest.java": [
-            "testConvertTimeUnit",
-            "testConvertDayOfWeek",
-            "testConvertMismatchingEnumType",
-            "testBrokenNamingConvention",
-            "testNonEnumClasses",
-            "testNonExistingClasses"
         ]
     }
 }

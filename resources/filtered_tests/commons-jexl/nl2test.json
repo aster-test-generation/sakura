@@ -1,21 +1,9 @@
 {
     "summary": {
-        "test_class_count": 3,
-        "test_method_count": 18,
-        "new_test_method_count": 75
+        "new_test_class_count": 7,
+        "new_test_method_count": 31
     },
-    "test_classes_and_methods": {
-        "org.apache.commons.jexl3.internal.SourceCacheTest": [
-            "testInterpolationCache()",
-            "testSource()",
-            "testMetaCache()",
-            "testSourceCache()"
-        ],
-        "org.apache.commons.jexl3.internal.FqcnTest": [
-            "testFqcn()",
-            "testBadImport1()",
-            "testBadImport0()"
-        ],
+    "new_tests": {
         "org.apache.commons.jexl3.SwitchTest": [
             "testSwitchExpression1()",
             "testSwitchStatement1()",
@@ -29,186 +17,37 @@
             "testSwitchExpressionFail()",
             "test440e()"
         ],
-        "org.apache.commons.jexl3.Issues400Test": [
-            "test450a()",
-            "test450b()",
-            "test450c()",
-            "test451()",
-            "test450()",
-            "testIssue447()",
-            "testIssue441()",
-            "testIssue442()",
-            "test437a()",
-            "test437b()",
-            "test440c()",
-            "test440a()",
-            "test440b()",
-            "testSQLTranspose()",
-            "testSQLNoChange()",
-            "test438()"
+        "org.apache.commons.jexl3.internal.FqcnTest": [
+            "testFqcn()",
+            "testBadImport1()",
+            "testBadImport0()"
+        ],
+        "org.apache.commons.jexl3.internal.SourceCacheTest": [
+            "testInterpolationCache()",
+            "testSource()",
+            "testMetaCache()",
+            "testSourceCache()"
         ],
         "org.apache.commons.jexl3.BlockTest": [
             "testSetVSBlock()"
         ],
-        "org.apache.commons.jexl3.internal.RangeTest": [
-            "testMisc()"
+        "org.apache.commons.jexl3.Issues400Test": [
+            "test437a()",
+            "test437b()",
+            "testSQLTranspose()",
+            "testSQLNoChange()",
+            "test438()",
+            "testIssue441()",
+            "testIssue442()",
+            "testIssue447()",
+            "test450()"
         ],
-        "org.apache.commons.jexl3.ForEachTest": [
-            "testForLoop0a()",
-            "testForLoop0b0()"
-        ],
-        "org.apache.commons.jexl3.PragmaTest": [
-            "test354()",
-            "testPragmaModuleCache()",
-            "testPragmaModuleNoCache()"
-        ],
-        "org.apache.commons.jexl3.internal.introspection.PermissionsTest": [
-            "testPrivateOverload1()",
-            "testProtectedOverride0()",
-            "testProtectedOverride1()"
+        "org.apache.commons.jexl3.LambdaTest": [
+            "testRefCapture5()",
+            "testRefCapture6()"
         ],
         "org.apache.commons.jexl3.SideEffectTest": [
             "testSideEffectArray()"
-        ],
-        "org.apache.commons.jexl3.LambdaTest": [
-            "test270()",
-            "test271a()",
-            "test271b()",
-            "test271c()",
-            "test271d()",
-            "test271e()",
-            "test405a()",
-            "test405b()",
-            "testCompareLambdaRecurse()",
-            "testCurry1()",
-            "testCurry2()",
-            "testCurry3()",
-            "testCurry4()",
-            "testCurry5()",
-            "testFailParseFunc0()",
-            "testFailParseFunc1()",
-            "testFatFact0()",
-            "testFatFact1()",
-            "testHoistLambda()",
-            "testIdentity()",
-            "testLambda()",
-            "testLambdaClosure()",
-            "testLambdaExpr0()",
-            "testLambdaExpr1()",
-            "testLambdaExpr10()",
-            "testLambdaExpr2()",
-            "testLambdaExpr3()",
-            "testLambdaLambda()",
-            "testNamedFunc()",
-            "testNamedFuncIsConst()",
-            "testNestLambada()",
-            "testNestLambda()",
-            "testRecurse()",
-            "testRecurse1()",
-            "testRecurse2()",
-            "testRecurse2b()",
-            "testRecurse3()",
-            "testScriptArguments()",
-            "testScriptContext()",
-            "testRefCapture5()",
-            "testRefCapture6()"
-        ]
-    },
-    "new_test_methods_since_date": {
-        "src/test/java/org/apache/commons/jexl3/Issues400Test.java": [
-            "test450a",
-            "test450b",
-            "test450c",
-            "test451",
-            "test450",
-            "testIssue447",
-            "testIssue441",
-            "testIssue442",
-            "test437a",
-            "test437b",
-            "test440c",
-            "test440a",
-            "test440b",
-            "testSQLTranspose",
-            "testSQLNoChange",
-            "test438"
-        ],
-        "src/test/java/org/apache/commons/jexl3/BlockTest.java": [
-            "testSetVSBlock"
-        ],
-        "src/test/java/org/apache/commons/jexl3/internal/SourceCacheTest.java": [
-            "testSource",
-            "testSourceCache",
-            "testInterpolationCache",
-            "testMetaCache"
-        ],
-        "src/test/java/org/apache/commons/jexl3/SwitchTest.java": [
-            "testSwitchStatement1",
-            "testSwitchExpression1",
-            "testSwitchExpressionFail"
-        ],
-        "src/test/java/org/apache/commons/jexl3/internal/RangeTest.java": [
-            "testMisc"
-        ],
-        "src/test/java/org/apache/commons/jexl3/ForEachTest.java": [
-            "testForLoop0a",
-            "testForLoop0b0"
-        ],
-        "src/test/java/org/apache/commons/jexl3/PragmaTest.java": [
-            "test354",
-            "testPragmaModuleCache",
-            "testPragmaModuleNoCache"
-        ],
-        "src/test/java/org/apache/commons/jexl3/internal/introspection/PermissionsTest.java": [
-            "testPrivateOverload1",
-            "testProtectedOverride0",
-            "testProtectedOverride1"
-        ],
-        "src/test/java/org/apache/commons/jexl3/SideEffectTest.java": [
-            "testSideEffectArray"
-        ],
-        "src/test/java/org/apache/commons/jexl3/LambdaTest.java": [
-            "test270",
-            "test271a",
-            "test271b",
-            "test271c",
-            "test271d",
-            "test271e",
-            "test405a",
-            "test405b",
-            "testCompareLambdaRecurse",
-            "testCurry1",
-            "testCurry2",
-            "testCurry3",
-            "testCurry4",
-            "testCurry5",
-            "testFailParseFunc0",
-            "testFailParseFunc1",
-            "testFatFact0",
-            "testFatFact1",
-            "testHoistLambda",
-            "testIdentity",
-            "testLambda",
-            "testLambdaClosure",
-            "testLambdaExpr0",
-            "testLambdaExpr1",
-            "testLambdaExpr10",
-            "testLambdaExpr2",
-            "testLambdaExpr3",
-            "testLambdaLambda",
-            "testNamedFunc",
-            "testNamedFuncIsConst",
-            "testNestLambada",
-            "testNestLambda",
-            "testRecurse",
-            "testRecurse1",
-            "testRecurse2",
-            "testRecurse2b",
-            "testRecurse3",
-            "testScriptArguments",
-            "testScriptContext",
-            "testRefCapture5",
-            "testRefCapture6"
         ]
     }
 }

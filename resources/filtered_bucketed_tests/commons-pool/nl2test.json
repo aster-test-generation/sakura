@@ -2,83 +2,80 @@
     "dataset_name": "commons-pool",
     "tests_with_one_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
-            "method_signature": "testCollectDetailedStatisticsToggling()",
+            "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+            "method_signature": "testGetObject()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+                    "focal_class": "org.apache.commons.pool3.PooledObject",
                     "focal_method_names": [
-                        "makeObject()"
+                        "getObject(org.apache.commons.pool3.PooledObject)"
                     ]
                 }
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
-            "method_signature": "testCollectDetailedStatisticsDisabled()",
+            "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+            "method_signature": "testNonNull()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+                    "focal_class": "org.apache.commons.pool3.PooledObject",
                     "focal_method_names": [
-                        "makeObject()"
+                        "nonNull(org.apache.commons.pool3.PooledObject)"
                     ]
                 }
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
-            "method_signature": "testStatsStoreConcurrentAccess()",
+            "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+            "method_signature": "testIsNull()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
+                    "focal_class": "org.apache.commons.pool3.PooledObject",
                     "focal_method_names": [
-                        "makeObject()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
-            "method_signature": "testStatsStoreCircularBuffer()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
-                    "focal_method_names": [
-                        "makeObject()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
-            "method_signature": "testCollectDetailedStatisticsEnabled()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.pool3.impl.TestGenericObjectPool.SimpleFactory",
-                    "focal_method_names": [
-                        "makeObject()"
+                        "isNull(org.apache.commons.pool3.PooledObject)"
                     ]
                 }
             ]
         }
     ],
-    "tests_with_two_focal_methods": [
+    "tests_with_two_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+            "method_signature": "testClearReuseCapacity()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
+                    "focal_method_names": [
+                        "setMaxTotalPerKey(int)",
+                        "setMaxWait(java.time.Duration)",
+                        "clear(java.lang.Object)",
+                        "setMaxTotal(int)",
+                        "returnObject(java.lang.Object, java.lang.Object)",
+                        "borrowObject(java.lang.Object)"
+                    ]
+                }
+            ]
+        },
         {
             "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
             "method_signature": "testValidateOnCreateFailure()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool.SimpleFactory",
+                    "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
                     "focal_method_names": [
-                        "setValid(boolean)",
-                        "setValidationEnabled(boolean)"
+                        "getNumIdle()",
+                        "setMaxTotal(int)",
+                        "getNumActive()",
+                        "setTestOnBorrow(boolean)",
+                        "borrowObject(java.lang.Object)",
+                        "addObject(java.lang.Object)",
+                        "setTestOnCreate(boolean)"
                     ]
                 }
             ]
-        }
-    ],
-    "tests_with_more_than_two_to_five_focal_methods": [],
-    "tests_with_more_than_five_to_ten_focal_methods": [
+        },
         {
             "qualified_class_name": "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory",
             "method_signature": "testConstructorWithDefaults()",
@@ -88,12 +85,12 @@
                     "focal_method_names": [
                         "isMonitorRunning()",
                         "setTimeBetweenChecks(java.time.Duration)",
-                        "getDefaultDelay()",
-                        "isAdderRunning()",
+                        "getDefaultLogSize()",
                         "getDefaultTimeBetweenChecks()",
-                        "getDefaultLookBack()",
                         "setLogSize(int)",
-                        "getDefaultLogSize()"
+                        "getDefaultLookBack()",
+                        "getDefaultDelay()",
+                        "isAdderRunning()"
                     ]
                 }
             ]

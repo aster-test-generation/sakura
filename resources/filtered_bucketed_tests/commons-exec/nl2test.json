@@ -36,18 +36,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.exec.TimeoutObserverTest",
-            "method_signature": "testTimeoutOccurred()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.exec.TimeoutObserverTest.TimeoutObserverFixture",
-                    "focal_method_names": [
-                        "timeoutOccured(org.apache.commons.exec.Watchdog)"
-                    ]
-                }
-            ]
         }
     ],
     "tests_with_two_focal_methods": [
@@ -76,8 +64,21 @@
                 {
                     "focal_class": "org.apache.commons.exec.Executor",
                     "focal_method_names": [
-                        "execute(org.apache.commons.exec.CommandLine)",
-                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+                        "execute(org.apache.commons.exec.CommandLine)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
+            "method_signature": "testDefaultExecutorBuilderFromPath()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_method_names": [
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+                        "execute(org.apache.commons.exec.CommandLine)"
                     ]
                 }
             ]
@@ -89,8 +90,8 @@
                 {
                     "focal_class": "org.apache.commons.exec.Executor",
                     "focal_method_names": [
-                        "execute(org.apache.commons.exec.CommandLine)",
-                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+                        "execute(org.apache.commons.exec.CommandLine)"
                     ]
                 }
             ]
@@ -104,9 +105,15 @@
                 {
                     "focal_class": "org.apache.commons.exec.Watchdog.Builder",
                     "focal_method_names": [
-                        "get()",
                         "setThreadFactory(java.util.concurrent.ThreadFactory)",
+                        "get()",
                         "setTimeout(java.time.Duration)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.exec.Watchdog",
+                    "focal_method_names": [
+                        "builder()"
                     ]
                 }
             ]
@@ -156,28 +163,15 @@
                 {
                     "focal_class": "org.apache.commons.exec.ExecuteWatchdog.Builder",
                     "focal_method_names": [
-                        "get()",
                         "setThreadFactory(java.util.concurrent.ThreadFactory)",
+                        "get()",
                         "setTimeout(java.time.Duration)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.exec.StandAloneTest",
-            "method_signature": "testDefaultExecutorBuilderFromPath()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.exec.Executor",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.exec.CommandLine)",
-                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)"
                     ]
                 },
                 {
-                    "focal_class": "org.apache.commons.exec.DefaultExecutor.Builder",
+                    "focal_class": "org.apache.commons.exec.ExecuteWatchdog",
                     "focal_method_names": [
-                        "setThreadFactory(java.util.concurrent.ThreadFactory)"
+                        "builder()"
                     ]
                 }
             ]
@@ -189,19 +183,20 @@
             "method_signature": "testExecuteStability()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.exec.TestUtil",
+                    "focal_class": "org.apache.commons.exec.Executor",
                     "focal_method_names": [
-                        "getTestScriptCodesForOS()"
+                        "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)",
+                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
+                        "execute(org.apache.commons.exec.CommandLine, java.util.Map)",
+                        "isFailure(int)",
+                        "execute(org.apache.commons.exec.CommandLine, java.util.Map, org.apache.commons.exec.ExecuteResultHandler)"
                     ]
                 },
                 {
-                    "focal_class": "org.apache.commons.exec.Executor",
+                    "focal_class": "org.apache.commons.exec.DefaultExecuteResultHandler",
                     "focal_method_names": [
-                        "setStreamHandler(org.apache.commons.exec.ExecuteStreamHandler)",
-                        "isFailure(int)",
-                        "execute(org.apache.commons.exec.CommandLine, java.util.Map)",
-                        "execute(org.apache.commons.exec.CommandLine, java.util.Map, org.apache.commons.exec.ExecuteResultHandler)",
-                        "setWatchdog(org.apache.commons.exec.ExecuteWatchdog)"
+                        "hasResult()",
+                        "waitFor(long)"
                     ]
                 }
             ]
@@ -215,18 +210,18 @@
                 {
                     "focal_class": "org.apache.commons.exec.OS",
                     "focal_method_names": [
-                        "isFamilyOS2()",
-                        "isFamilyNetware()",
-                        "isFamilyOpenVms()",
-                        "isFamilyTandem()",
+                        "isFamilyDOS()",
                         "isFamilyWinNT()",
+                        "isFamilyOpenVms()",
+                        "isFamilyOS400()",
+                        "isFamilyWindows()",
+                        "isFamilyMac()",
+                        "isFamilyTandem()",
+                        "isFamilyZOS()",
                         "isFamilyUnix()",
                         "isFamilyWin9x()",
-                        "isFamilyDOS()",
-                        "isFamilyOS400()",
-                        "isFamilyMac()",
-                        "isFamilyWindows()",
-                        "isFamilyZOS()"
+                        "isFamilyNetware()",
+                        "isFamilyOS2()"
                     ]
                 }
             ]

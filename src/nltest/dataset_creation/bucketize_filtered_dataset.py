@@ -17,9 +17,6 @@ BUCKETED_TESTS_DIR = "bucketed_tests"  # Relative to RESOURCES_DIR
 FILTERED_TESTS_DIR = "filtered_tests"  # Relative to RESOURCES_DIR
 FILTERED_BUCKETED_TESTS_DIR = "filtered_bucketed_tests"  # Relative to RESOURCES_DIR
 
-print("HTTP_PROXY:", os.environ.get("HTTP_PROXY"))
-print("HTTPS_PROXY:", os.environ.get("HTTPS_PROXY"))
-
 
 def filter_tests_by_date(
     dataset: NL2TestDataset,
@@ -134,7 +131,7 @@ def process_projects(bucket_dir: Path, filtered_dir: Path, output_dir: Path) -> 
 
         with open(filtered_file, "r", encoding="utf-8") as f:
             filtered_data = json.load(f)
-        test_classes_and_methods = filtered_data.get("test_classes_and_methods", {})
+        test_classes_and_methods = filtered_data.get("new_tests", {})
 
         filtered_dataset = filter_tests_by_date(dataset, test_classes_and_methods)
 

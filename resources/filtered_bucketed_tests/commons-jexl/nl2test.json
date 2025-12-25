@@ -2,61 +2,25 @@
     "dataset_name": "commons-jexl",
     "tests_with_one_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.jexl3.ForEachTest",
-            "method_signature": "testForLoop0b0()",
+            "qualified_class_name": "org.apache.commons.jexl3.SwitchTest",
+            "method_signature": "testBrokenSwitchExpression0()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlEngine",
                     "focal_method_names": [
-                        "createScript(java.lang.String)"
+                        "createScript(java.lang.String, java.lang.String[])"
                     ]
                 }
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.jexl3.ForEachTest",
-            "method_signature": "testForLoop0a()",
+            "qualified_class_name": "org.apache.commons.jexl3.SwitchTest",
+            "method_signature": "testSwitchExpressionFail()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlEngine",
                     "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test450()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test450a()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "newInstance(java.lang.String, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.internal.SourceCacheTest",
-            "method_signature": "testSource()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlFeatures",
-                    "focal_method_names": [
-                        "createDefault()"
+                        "createScript(java.lang.String, java.lang.String[])"
                     ]
                 }
             ]
@@ -72,56 +36,9 @@
                     ]
                 }
             ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.BlockTest",
-            "method_signature": "testSetVSBlock()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.AnnotationTest.AnnotationContext",
-                    "focal_method_names": []
-                }
-            ]
         }
     ],
     "tests_with_two_focal_methods": [
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.SideEffectTest",
-            "method_signature": "testSideEffectArray()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.junit.Asserter",
-                    "focal_method_names": [
-                        "assertExpression(java.lang.String, java.lang.Object, java.lang.Object[])",
-                        "setVariable(java.lang.String, java.lang.Object)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.SwitchTest",
-            "method_signature": "testBrokenSwitchExpression0()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlException.Parsing",
-                    "focal_method_names": [
-                        "getMessage()"
-                    ]
-                }
-            ]
-        },
         {
             "qualified_class_name": "org.apache.commons.jexl3.SwitchTest",
             "method_signature": "testSwitchStatement()",
@@ -178,24 +95,6 @@
         },
         {
             "qualified_class_name": "org.apache.commons.jexl3.SwitchTest",
-            "method_signature": "testSwitchExpressionFail()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlException.Parsing",
-                    "focal_method_names": [
-                        "getMessage()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.SwitchTest",
             "method_signature": "test440e()",
             "focal_details": [
                 {
@@ -232,36 +131,18 @@
         },
         {
             "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test451()",
+            "method_signature": "test450()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlEngine",
                     "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.introspection.JexlSandbox.Permissions",
-                    "focal_method_names": [
-                        "execute(java.lang.String[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test450b()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
+                        "createScript(java.lang.String)"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
+                        "execute(org.apache.commons.jexl3.JexlContext)"
                     ]
                 }
             ]
@@ -269,276 +150,6 @@
         {
             "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
             "method_signature": "test437a()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test437b()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testFatFact0()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaExpr10()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambda()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test271a()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test271b()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testNestLambda()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test271e()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaExpr3()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaExpr2()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaExpr1()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaExpr0()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaLambda()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testLambdaClosure()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testRecurse()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlEngine",
@@ -568,150 +179,6 @@
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
                         "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testRecurse2()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testRecurse3()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testScriptArguments()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.internal.SourceCacheTest",
-            "method_signature": "testInterpolationCache()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.PragmaTest",
-            "method_signature": "test354()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "getPragmas()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.internal.introspection.PermissionsTest",
-            "method_signature": "testPrivateOverload1()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.internal.introspection.PermissionsTest",
-            "method_signature": "testProtectedOverride1()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.internal.introspection.PermissionsTest",
-            "method_signature": "testProtectedOverride0()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
                     ]
                 }
             ]
@@ -769,8 +236,8 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getParsedText()"
+                        "getParsedText()",
+                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
                     ]
                 }
             ]
@@ -788,14 +255,8 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getParsedText()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlException.Parsing",
-                    "focal_method_names": [
-                        "getMessage()"
+                        "getParsedText()",
+                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
                     ]
                 }
             ]
@@ -813,8 +274,8 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getParsedText()"
+                        "getParsedText()",
+                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
                     ]
                 }
             ]
@@ -833,9 +294,8 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getLocalVariables()",
-                        "execute(org.apache.commons.jexl3.JexlContext)"
+                        "execute(org.apache.commons.jexl3.JexlContext)",
+                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
                     ]
                 }
             ]
@@ -867,27 +327,16 @@
         },
         {
             "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test438()",
+            "method_signature": "test437b()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.jexl3.JexlBuilder",
+                    "focal_class": "org.apache.commons.jexl3.JexlFeatures",
                     "focal_method_names": [
-                        "create()",
-                        "parserFactory(java.util.function.Supplier)"
+                        "supportsAmbiguousStatement()",
+                        "createDefault()",
+                        "ambiguousStatement(boolean)"
                     ]
                 },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testCompareLambdaRecurse()",
-            "focal_details": [
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlEngine",
                     "focal_method_names": [
@@ -897,273 +346,7 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)",
-                        "toString()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.internal.Closure",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testFatFact1()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlException.Feature",
-                    "focal_method_names": [
-                        "getMessage()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testCurry1()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)",
-                        "getUnboundParameters()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testCurry2()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)",
-                        "getUnboundParameters()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testCurry3()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test271c()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test271d()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)",
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test405a()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)",
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
                         "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testScriptContext()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "getParsedText(int)",
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testNamedFunc()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getParsedText()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test405b()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)",
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "test270()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)",
-                        "toString()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testCurry4()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testCurry5()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "curry(java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
                     ]
                 }
             ]
@@ -1182,91 +365,47 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testRecurse2b()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.internal.Script",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getCapturedVariables()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testIdentity()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getParameters()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testHoistLambda()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "getLocalVariables()",
-                        "getVariables()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testRecurse1()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
                         "execute(org.apache.commons.jexl3.JexlContext)",
-                        "getParsedText()"
+                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.jexl3.internal.SourceCacheTest",
+            "method_signature": "testInterpolationCache()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
+                    "focal_method_names": [
+                        "createScript(java.lang.String, java.lang.String[])",
+                        "getCache()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlCache",
+                    "focal_method_names": [
+                        "size()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlScript",
+                    "focal_method_names": [
+                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.jexl3.internal.SourceCacheTest",
+            "method_signature": "testSource()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.jexl3.internal.Source",
+                    "focal_method_names": [
+                        "compareTo(org.apache.commons.jexl3.internal.Source)",
+                        "hashCode()",
+                        "length()"
                     ]
                 }
             ]
@@ -1285,9 +424,59 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlCache",
                     "focal_method_names": [
-                        "get(java.lang.Object)",
                         "put(java.lang.Object, java.lang.Object)",
-                        "size()"
+                        "size()",
+                        "get(java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.jexl3.BlockTest",
+            "method_signature": "testSetVSBlock()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlScript",
+                    "focal_method_names": [
+                        "execute(org.apache.commons.jexl3.JexlContext)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
+                    "focal_method_names": [
+                        "createScript(java.lang.String)",
+                        "createScript(java.lang.String, java.lang.String[])"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
+            "method_signature": "test438()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlFeatures",
+                    "focal_method_names": [
+                        "loops(boolean)",
+                        "sideEffectGlobal(boolean)",
+                        "lambda(boolean)",
+                        "localVar(boolean)",
+                        "sideEffect(boolean)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlBuilder",
+                    "focal_method_names": [
+                        "parserFactory(java.util.function.Supplier)",
+                        "create()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
+                    "focal_method_names": [
+                        "createScript(java.lang.String, java.lang.String[])"
                     ]
                 }
             ]
@@ -1299,110 +488,27 @@
                 {
                     "focal_class": "org.apache.commons.jexl3.internal.Source",
                     "focal_method_names": [
-                        "compareTo(org.apache.commons.jexl3.internal.Source)",
-                        "equals(java.lang.Object)"
+                        "equals(java.lang.Object)",
+                        "compareTo(org.apache.commons.jexl3.internal.Source)"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlEngine",
                     "focal_method_names": [
-                        "createScript(java.lang.String, java.lang.String[])"
+                        "createScript(java.lang.String, java.lang.String[])",
+                        "getCache()"
                     ]
                 },
                 {
-                    "focal_class": "org.apache.commons.jexl3.internal.Source",
+                    "focal_class": "org.apache.commons.jexl3.JexlCache",
                     "focal_method_names": [
-                        "compareTo(org.apache.commons.jexl3.internal.Source)",
-                        "equals(java.lang.Object)"
+                        "clear()",
+                        "size()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.jexl3.JexlScript",
                     "focal_method_names": []
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.PragmaTest",
-            "method_signature": "testPragmaModuleNoCache()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.PragmaTest.CachingModuleContext",
-                    "focal_method_names": [
-                        "getCountCompute()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlException.Method",
-                    "focal_method_names": [
-                        "getMethod()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.PragmaTest.ModuleContext",
-                    "focal_method_names": [
-                        "script(java.lang.String, org.apache.commons.jexl3.JexlScript)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.PragmaTest",
-            "method_signature": "testPragmaModuleCache()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.PragmaTest.CachingModuleContext",
-                    "focal_method_names": [
-                        "getCountCompute()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlException.Method",
-                    "focal_method_names": [
-                        "getMethod()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.PragmaTest.ModuleContext",
-                    "focal_method_names": [
-                        "script(java.lang.String, org.apache.commons.jexl3.JexlScript)"
-                    ]
-                }
-            ]
-        }
-    ],
-    "tests_with_more_than_five_to_ten_focal_methods": [
-        {
-            "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
-            "method_signature": "testNestLambada()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)",
-                        "createScript(java.lang.String, java.lang.String[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext, java.lang.Object[])",
-                        "toString()",
-                        "hashCode()",
-                        "callable(org.apache.commons.jexl3.JexlContext, java.lang.Object[])"
-                    ]
                 }
             ]
         }

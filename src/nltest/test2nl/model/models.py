@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional, List
+from typing import List
 
 from pydantic import BaseModel
 
@@ -25,7 +25,7 @@ class TestDescriptionInfo(BaseModel):
     method_signature: str
     qualified_class_name: str
     trial_number: int = 1
-    id: int = -1 # For matching Test2NL dataset with generated description
+    id: int = -1  # For matching Test2NL dataset with generated description
 
 
 class RoundTripTest(BaseModel):
@@ -40,6 +40,7 @@ class RoundTripTest(BaseModel):
 
 class ReferencedClasses(BaseModel):
     """DEPRECATED"""
+
     referenced_classes: List[ReferencedClass]
 
 
@@ -55,7 +56,7 @@ class ReferencedClass(BaseModel):
 
 
 class FieldDeclaration(BaseModel):
-    variables: List[str]
+    variables: List[str] | None = None
     type: str | None = None
     modifiers: List[str] | None = None
     annotations: List[str] | None = None
@@ -77,7 +78,9 @@ class Test2NLEntry(BaseModel):
     is_bdd: bool = False
 
     @classmethod
-    def from_test_description_info(cls, test_description_info: TestDescriptionInfo, project_name: str) -> Test2NLEntry:
+    def from_test_description_info(
+        cls, test_description_info: TestDescriptionInfo, project_name: str
+    ) -> Test2NLEntry:
         return cls(
             id=test_description_info.id,
             description=test_description_info.description,
@@ -85,5 +88,5 @@ class Test2NLEntry(BaseModel):
             qualified_class_name=test_description_info.qualified_class_name,
             method_signature=test_description_info.method_signature,
             abstraction_level=test_description_info.abstraction_level,
-            is_bdd=False
+            is_bdd=False,
         )

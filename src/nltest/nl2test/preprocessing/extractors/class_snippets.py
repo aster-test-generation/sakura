@@ -3,8 +3,7 @@ from typing import List, Tuple, Optional, Dict
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.models import MethodSnippet, ClassSnippet
-from nltest.utils.analysis.common_analysis import CommonAnalysis
-from nltest.utils.analysis.reachability import Reachability
+from nltest.utils.analysis.java_analyzer import CommonAnalysis, Reachability
 from nltest.utils.constants import TEST_DIR
 
 

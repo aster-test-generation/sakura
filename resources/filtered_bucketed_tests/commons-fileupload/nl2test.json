@@ -1,6 +1,19 @@
 {
     "dataset_name": "commons-fileupload",
-    "tests_with_one_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.QuotedPrintableDecoderTestCase",
+            "method_signature": "testTruncatedEscape()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.QuotedPrintableDecoder",
+                    "focal_method_names": [
+                        "decode(byte[], java.io.OutputStream)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_two_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest",
@@ -14,9 +27,173 @@
                     ]
                 }
             ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest",
+            "method_signature": "testThresholdZero()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream",
+                    "focal_method_names": [
+                        "isInMemory()",
+                        "getInputStream()"
+                    ]
+                }
+            ]
         }
     ],
-    "tests_with_more_than_two_to_five_focal_methods": [],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest",
+            "method_signature": "testExceedPositiveThreshold()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream",
+                    "focal_method_names": [
+                        "write(int)",
+                        "isInMemory()",
+                        "getInputStream()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.MultipartStreamTest",
+            "method_signature": "testPartHeaderSizeMaxLimit()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.MultipartInput",
+                    "focal_method_names": [
+                        "readBoundary()",
+                        "builder()",
+                        "readHeaders()",
+                        "readBodyData(java.io.OutputStream)",
+                        "skipPreamble()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.MultipartStreamTest",
+            "method_signature": "testThreeParamConstructor()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setBufferSize(int)",
+                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
+                        "setInputStream(java.io.InputStream)",
+                        "setBoundary(byte[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.MultipartStreamTest",
+            "method_signature": "testTwoParamConstructor()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
+                    "focal_method_names": [
+                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
+                        "setInputStream(java.io.InputStream)",
+                        "get()",
+                        "setBoundary(byte[])"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.DiskFileItemTest",
+            "method_signature": "testStateModelWithThresholdZero()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DiskFileItem",
+                    "focal_method_names": [
+                        "get()",
+                        "isInMemory()",
+                        "getSize()",
+                        "getOutputStream()",
+                        "getString()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream.State",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream",
+                    "focal_method_names": [
+                        "isInMemory()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DiskFileItemFactory",
+                    "focal_method_names": [
+                        "builder()",
+                        "fileItemBuilder()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.DiskFileItemTest",
+            "method_signature": "testStateModelWithPositiveThreshold()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DiskFileItem",
+                    "focal_method_names": [
+                        "get()",
+                        "isInMemory()",
+                        "getSize()",
+                        "getOutputStream()",
+                        "getString()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream.State",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DeferrableOutputStream",
+                    "focal_method_names": [
+                        "isInMemory()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.DiskFileItemFactory",
+                    "focal_method_names": [
+                        "builder()",
+                        "fileItemBuilder()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.fileupload2.core.MultipartStreamTest",
+            "method_signature": "testSmallBuffer()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setBufferSize(int)",
+                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
+                        "setInputStream(java.io.InputStream)",
+                        "setBoundary(byte[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.fileupload2.core.MultipartInput",
+                    "focal_method_names": [
+                        "builder()"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": []
 }

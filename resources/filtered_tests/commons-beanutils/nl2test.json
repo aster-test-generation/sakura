@@ -1,20 +1,28 @@
 {
     "summary": {
-        "test_class_count": 2,
-        "test_method_count": 8
+        "new_test_class_count": 3,
+        "new_test_method_count": 14
     },
-    "test_classes_and_methods": {
+    "new_tests": {
+        "org.apache.commons.beanutils2.converters.InstantConverterTest": [
+            "testConvertingInstantString()",
+            "testConvertingMilliseconds()",
+            "testLocalizedNumber()",
+            "testText()"
+        ],
         "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest": [
             "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
             "testAllowAccessToClassPropertyFromBeanUtilsBean()",
             "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
             "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
         ],
-        "org.apache.commons.beanutils2.converters.InstantConverterTest": [
-            "testConvertingInstantString()",
-            "testConvertingMilliseconds()",
-            "testLocalizedNumber()",
-            "testText()"
+        "org.apache.commons.beanutils2.converters.EnumConverterTest": [
+            "testConvertTimeUnit()",
+            "testConvertDayOfWeek()",
+            "testConvertMismatchingEnumType()",
+            "testBrokenNamingConvention()",
+            "testNonEnumClasses()",
+            "testNonExistingClasses()"
         ]
     }
 }

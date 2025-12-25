@@ -1,13 +1,24 @@
 {
     "summary": {
-        "test_class_count": 1,
-        "test_method_count": 3
+        "new_test_class_count": 4,
+        "new_test_method_count": 8
     },
-    "test_classes_and_methods": {
+    "new_tests": {
         "org.apache.commons.pool3.PooledObjectTest": [
             "testGetObject()",
             "testNonNull()",
             "testIsNull()"
+        ],
+        "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool": [
+            "testClearReuseCapacity()",
+            "testValidateOnCreateFailure()"
+        ],
+        "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory": [
+            "testConstructorWithDefaults()"
+        ],
+        "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool": [
+            "testUnwrapInvocationTargetExceptionFalse()",
+            "testUnwrapInvocationTargetExceptionTrue()"
         ]
     }
 }

@@ -1,9 +1,9 @@
 {
     "summary": {
-        "test_class_count": 1,
-        "test_method_count": 195
+        "new_test_class_count": 2,
+        "new_test_method_count": 198
     },
-    "test_classes_and_methods": {
+    "new_tests": {
         "org.apache.commons.dbutils.BaseResultSetHandlerDelegationTest": [
             "testUpdateNCharacterStreamIntReader()",
             "testGetObjectStringClass()",
@@ -200,6 +200,11 @@
             "testGetObject()",
             "testGetCharacterStreamInt()",
             "testGetTime()"
+        ],
+        "org.apache.commons.dbutils.DbUtilsTest": [
+            "testLoadDriverClassLoaderH2()",
+            "testLoadDriverH2()",
+            "testPrintStackTraceSQLException()"
         ]
     }
 }

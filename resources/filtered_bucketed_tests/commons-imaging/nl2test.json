@@ -26,7 +26,30 @@
             ]
         }
     ],
-    "tests_with_two_focal_methods": [],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.imaging.formats.png.PngImageParser",
+                    "focal_method_names": [
+                        "getMetadata(java.io.File)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.imaging.formats.tiff.TiffImageMetadata",
+                    "focal_method_names": [
+                        "findDirectory(int)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.imaging.formats.png.PngImageMetadata",
+                    "focal_method_names": []
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],
     "tests_with_more_than_ten_focal_methods": []

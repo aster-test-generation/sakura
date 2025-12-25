@@ -2,6 +2,126 @@
     "dataset_name": "commons-beanutils",
     "tests_with_one_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+            "method_signature": "testNonExistingClasses()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+            "method_signature": "testConvertDayOfWeek()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+            "method_signature": "testConvertMismatchingEnumType()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+            "method_signature": "testNonEnumClasses()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+            "method_signature": "testConvertTimeUnit()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+            "method_signature": "testBrokenNamingConvention()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+            "method_signature": "testConvertingInstantString()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+            "method_signature": "testConvertingMilliseconds()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+            "method_signature": "testLocalizedNumber()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+            "method_signature": "testText()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.beanutils2.Converter",
+                    "focal_method_names": [
+                        "convert(java.lang.Class, java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
             "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()",
             "focal_details": [
@@ -35,8 +155,8 @@
                 {
                     "focal_class": "org.apache.commons.beanutils2.PropertyUtilsBean",
                     "focal_method_names": [
-                        "getNestedProperty(java.lang.Object, java.lang.String)",
-                        "removeBeanIntrospector(org.apache.commons.beanutils2.BeanIntrospector)"
+                        "removeBeanIntrospector(org.apache.commons.beanutils2.BeanIntrospector)",
+                        "getNestedProperty(java.lang.Object, java.lang.String)"
                     ]
                 }
             ]
@@ -50,15 +170,15 @@
                 {
                     "focal_class": "org.apache.commons.beanutils2.BeanUtilsBean",
                     "focal_method_names": [
-                        "getPropertyUtils()",
-                        "getProperty(java.lang.Object, java.lang.String)"
+                        "getProperty(java.lang.Object, java.lang.String)",
+                        "getPropertyUtils()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.beanutils2.PropertyUtilsBean",
                     "focal_method_names": [
-                        "getNestedProperty(java.lang.Object, java.lang.String)",
-                        "removeBeanIntrospector(org.apache.commons.beanutils2.BeanIntrospector)"
+                        "removeBeanIntrospector(org.apache.commons.beanutils2.BeanIntrospector)",
+                        "getNestedProperty(java.lang.Object, java.lang.String)"
                     ]
                 }
             ]

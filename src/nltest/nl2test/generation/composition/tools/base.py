@@ -16,7 +16,7 @@ from nltest.nl2test.models import (
     NoArgs,
 )
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
-from nltest.utils.analysis.common_analysis import CommonAnalysis
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
 from nltest.utils.exceptions import (
     ClassNotFoundError,
     ToolExceptionHandler,

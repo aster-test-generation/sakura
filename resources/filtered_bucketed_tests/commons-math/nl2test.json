@@ -2,8 +2,20 @@
     "dataset_name": "commons-math",
     "tests_with_one_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.math4.legacy.linear.RealVectorTest",
+            "method_signature": "testSparseIteratorEmptyVector()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.linear.RealVector",
+                    "focal_method_names": [
+                        "sparseIterator()"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
-            "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
+            "method_signature": "testInsufficientData()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
@@ -15,24 +27,81 @@
         },
         {
             "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
-            "method_signature": "testInterpolateLinearDegenerateTwoSegment()",
+            "method_signature": "testUnsortedArray()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
                     "focal_method_names": [
                         "interpolate(double[], double[], double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+            "method_signature": "testArrayLengthMismatch()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[], double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest",
+            "method_signature": "testAllPointsIdentical()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClusterer",
+                    "focal_method_names": [
+                        "cluster(java.util.Collection)"
                     ]
                 }
             ]
         },
         {
             "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
-            "method_signature": "testUnsupportedStorelessMethods()",
+            "method_signature": "testUnsupportedMethods()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.StorelessSumOfSquares",
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.SumOfSquares",
                     "focal_method_names": [
-                        "create()"
+                        "evaluate(double[])"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest",
+            "method_signature": "testMath1674()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.optim.linear.SimplexSolver",
+                    "focal_method_names": [
+                        "optimize(org.apache.commons.math4.legacy.optim.OptimizationData[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.optim.PointValuePair",
+                    "focal_method_names": [
+                        "getValue()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+            "method_signature": "testProperties()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
+                    "focal_method_names": [
+                        "setVarianceDirection(org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction)",
+                        "setBiasCorrected(boolean)"
                     ]
                 }
             ]
@@ -44,6 +113,7 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.Percentile",
                     "focal_method_names": [
+                        "evaluate(double[])",
                         "create(double)"
                     ]
                 }
@@ -56,14 +126,45 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.Percentile",
                     "focal_method_names": [
+                        "setQuantile(double)",
                         "create(double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.StatUtilsTest",
+            "method_signature": "testSum()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.StatUtils",
+                    "focal_method_names": [
+                        "sum(double[])",
+                        "sum(double[], int, int)"
                     ]
                 }
             ]
         }
     ],
-    "tests_with_two_focal_methods": [],
     "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+            "method_signature": "testCopy()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
+                    "focal_method_names": [
+                        "setVarianceDirection(org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction)",
+                        "setBiasCorrected(boolean)",
+                        "copy()"
+                    ]
+                }
+            ]
+        },
         {
             "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
             "method_signature": "testIntegral()",
@@ -71,8 +172,8 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
                     "focal_method_names": [
-                        "interpolate(double[], double[])",
-                        "interpolate(double[], double[], double, double)"
+                        "interpolate(double[], double[], double, double)",
+                        "interpolate(double[], double[])"
                     ]
                 },
                 {
@@ -88,8 +189,144 @@
                     ]
                 }
             ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+            "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialSplineFunction",
+                    "focal_method_names": [
+                        "value(double)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction",
+                    "focal_method_names": [
+                        "polynomialDerivative()",
+                        "value(double)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[], double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+            "method_signature": "testInterpolateLinearDegenerateTwoSegment()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialSplineFunction",
+                    "focal_method_names": [
+                        "value(double)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.polynomials.PolynomialFunction",
+                    "focal_method_names": [
+                        "polynomialDerivative()",
+                        "value(double)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
+                    "focal_method_names": [
+                        "interpolate(double[], double[], double, double)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+            "method_signature": "testUnsupportedStorelessMethods()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.StorelessSumOfSquares",
+                    "focal_method_names": [
+                        "incrementAll(double[])",
+                        "create()",
+                        "evaluate(double[])",
+                        "evaluate(double[], int, int)",
+                        "incrementAll(double[], int, int)"
+                    ]
+                }
+            ]
         }
     ],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
-    "tests_with_more_than_ten_focal_methods": []
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+            "method_signature": "testEmpty()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+                    "focal_method_names": [
+                        "getStandardDeviation()",
+                        "getSum()",
+                        "getMean()",
+                        "getMax()",
+                        "getMin()",
+                        "getVariance()"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest",
+            "method_signature": "testEmpty()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatistics",
+                    "focal_method_names": [
+                        "getGeometricMean()",
+                        "getSumsq()",
+                        "getStandardDeviation()",
+                        "getKurtosis()",
+                        "getSkewness()",
+                        "getSum()",
+                        "getMean()",
+                        "getQuadraticMean()",
+                        "getMax()",
+                        "getMin()",
+                        "getVariance()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+            "method_signature": "testSetterAll()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
+                    "focal_method_names": [
+                        "getVariance()",
+                        "setMinImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
+                        "setMaxImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
+                        "getSum()",
+                        "getSumImpl()",
+                        "copy()",
+                        "getMean()",
+                        "addValue(double)",
+                        "getMax()",
+                        "getMinImpl()",
+                        "getVarianceImpl()",
+                        "clear()",
+                        "getMin()",
+                        "setVarianceImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
+                        "getMeanImpl()",
+                        "setSumImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
+                        "getMaxImpl()",
+                        "setMeanImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)"
+                    ]
+                }
+            ]
+        }
+    ]
 }

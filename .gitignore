@@ -13,6 +13,9 @@ scripts/*.toml
 # Mac file
 .DS_Store
 
+# Ruff files
+.ruff_cache
+
 # Log file
 *.log
 
@@ -60,12 +63,10 @@ log*
 
 # resource applications
 resources/*
-resources/hamster_models/*
-resources/output/*
-!resources/bucketed_tests/*
-!resources/filtered_tests/*
-!resources/filtered_bucketed_tests/*
-!resources/sampled_tests/*
+!resources/bucketed_tests/
+!resources/filtered_tests/
+!resources/filtered_bucketed_tests/
+!resources/sampled_tests/
 !resources/test2nl/
 
 # Scratchpad
@@ -102,7 +103,7 @@ todos.txt
 # Agents file
 AGENTS.md
 
-# Claude Code documentation
+# Claude Logging
 CLAUDE.md
 .claude
 

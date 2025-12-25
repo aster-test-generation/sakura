@@ -1,6 +1,43 @@
 {
     "dataset_name": "commons-dbutils",
-    "tests_with_one_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+            "method_signature": "testLoadDriverClassLoaderH2()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.dbutils.DbUtils",
+                    "focal_method_names": [
+                        "loadDriver(java.lang.ClassLoader, java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+            "method_signature": "testPrintStackTraceSQLException()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.dbutils.DbUtils",
+                    "focal_method_names": [
+                        "printStackTrace(java.sql.SQLException)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+            "method_signature": "testLoadDriverH2()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.dbutils.DbUtils",
+                    "focal_method_names": [
+                        "loadDriver(java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_two_focal_methods": [],
     "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],

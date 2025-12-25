@@ -1,21 +1,80 @@
 {
     "dataset_name": "commons-dbcp",
-    "tests_with_one_focal_methods": [
+    "tests_with_one_focal_methods": [],
+    "tests_with_two_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.dbcp2.datasources.PooledConnectionManagerTest",
-            "method_signature": "testSetPasswordString()",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.dbcp2.datasources.PooledConnectionManagerTest.Fixture",
+                    "focal_class": "org.apache.commons.dbcp2.datasources.CharArray",
                     "focal_method_names": [
-                        "setPassword(java.lang.String)"
+                        "clear()",
+                        "get()"
                     ]
                 }
             ]
         }
     ],
-    "tests_with_two_focal_methods": [],
-    "tests_with_more_than_two_to_five_focal_methods": [],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.dbcp2.datasources.UserPassKey",
+                    "focal_method_names": [
+                        "clear()",
+                        "getPasswordCharArray()",
+                        "getUserName()"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
+                    "focal_method_names": [
+                        "setPassword(java.lang.String)",
+                        "setDriver(java.lang.String)",
+                        "setUrl(java.lang.String)",
+                        "setUser(java.lang.String)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory",
+                    "focal_method_names": [
+                        "setPassword(java.lang.String)",
+                        "getPasswordCharArray()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
+                    "focal_method_names": [
+                        "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                        "setPerUserMaxWait(java.lang.String, java.time.Duration)",
+                        "isDefaultReadOnly()",
+                        "setDefaultMaxTotal(int)",
+                        "setDefaultAutoCommit(java.lang.Boolean)",
+                        "setDefaultReadOnly(java.lang.Boolean)",
+                        "setDefaultTransactionIsolation(int)",
+                        "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                        "setDefaultMaxWait(java.time.Duration)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": []
 }

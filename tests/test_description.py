@@ -2,21 +2,26 @@ from typing import List
 
 from nltest.test2nl.model.models import (
     AbstractionLevel,
-    TestDescriptionInfo,
     Test2NLEntry,
+    TestDescriptionInfo,
 )
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.pretty.prints import pretty_print
+from tests.conftest import Test2NLContext
 
 
-def test_desc_one_abs_one_method(test2nl_context):
-    qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
+def test_desc_one_abs_one_method(test2nl_context: Test2NLContext):
+    qualified_class_name = (
+        "org.springframework.samples.petclinic.service.ClinicServiceTests"
+    )
     method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
     abstraction_level = AbstractionLevel.HIGH
     desc_generator = test2nl_context.desc_generator
-    test_description_info: TestDescriptionInfo = desc_generator.generate_for_method(
-        method_signature, qualified_class_name, abstraction_level
+    test_description_info: TestDescriptionInfo | None = (
+        desc_generator.generate_for_method(
+            method_signature, qualified_class_name, abstraction_level
+        )
     )
     assert test_description_info is not None, "LLM generation failed..."
 
@@ -24,8 +29,10 @@ def test_desc_one_abs_one_method(test2nl_context):
     test2nl_context.data_manager.save("descriptions.json", test_descriptions)
 
 
-def test_desc_all_abs_one_method(test2nl_context):
-    qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
+def test_desc_all_abs_one_method(test2nl_context: Test2NLContext):
+    qualified_class_name = (
+        "org.springframework.samples.petclinic.service.ClinicServiceTests"
+    )
     method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
     desc_generator = test2nl_context.desc_generator
@@ -117,7 +124,9 @@ def test_description_multiple_focal(test2nl_context):
         entries.append(entry)
 
     data_manager = test2nl_context.data_manager
-    data_manager.save("descriptions.json", test_descriptions, format="json", mode="append")
+    data_manager.save(
+        "descriptions.json", test_descriptions, format="json", mode="append"
+    )
     data_manager.save("test2nl.csv", entries, format="csv", mode="append")
 
     print(

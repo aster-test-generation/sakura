@@ -1,13 +1,32 @@
 {
     "summary": {
-        "test_class_count": 1,
-        "test_method_count": 3
+        "new_test_class_count": 6,
+        "new_test_method_count": 12
     },
-    "test_classes_and_methods": {
+    "new_tests": {
         "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest": [
             "testThresholdMinusOne()",
             "testThresholdZero()",
             "testExceedPositiveThreshold()"
+        ],
+        "org.apache.commons.fileupload2.core.AbstractFileUploadTest": [
+            "testMultipartMixedNoBoundary()"
+        ],
+        "org.apache.commons.fileupload2.core.AbstractSizesTest": [
+            "testFilePartHeaderSizeMax()"
+        ],
+        "org.apache.commons.fileupload2.core.DiskFileItemTest": [
+            "testStateModelWithPositiveThreshold()",
+            "testStateModelWithThresholdZero()"
+        ],
+        "org.apache.commons.fileupload2.core.MultipartStreamTest": [
+            "testPartHeaderSizeMaxLimit()",
+            "testSmallBuffer()",
+            "testThreeParamConstructor()",
+            "testTwoParamConstructor()"
+        ],
+        "org.apache.commons.fileupload2.core.QuotedPrintableDecoderTestCase": [
+            "testTruncatedEscape()"
         ]
     }
 }

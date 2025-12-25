@@ -58,6 +58,83 @@ def _should_skip_test_class(
     return False
 
 
+def _has_empty_body(code: str) -> bool:
+    """Check if method body contains only whitespace, braces, and/or comments."""
+    brace_start = code.find("{")
+    brace_end = code.rfind("}")
+    if brace_start == -1 or brace_end == -1 or brace_start >= brace_end:
+        return True
+
+    body_content = code[brace_start + 1 : brace_end]
+    in_block_comment = False
+
+    for line in body_content.split("\n"):
+        stripped = line.strip()
+
+        # Handle continued block comment
+        if in_block_comment:
+            if "*/" in stripped:
+                in_block_comment = False
+                after_comment = stripped[stripped.index("*/") + 2 :].strip()
+                if after_comment and not after_comment.startswith("//"):
+                    return False
+            continue
+
+        if not stripped:
+            continue
+
+        # Strip all inline block comments from the line
+        remaining = stripped
+        while "/*" in remaining:
+            start = remaining.index("/*")
+            if "*/" in remaining[start:]:
+                end = remaining.index("*/", start) + 2
+                remaining = (remaining[:start] + remaining[end:]).strip()
+            else:
+                in_block_comment = True
+                remaining = remaining[:start].strip()
+                break
+
+        if not remaining:
+            continue
+
+        # Skip single-line comments and Javadoc continuation lines
+        if remaining.startswith("//") or remaining.startswith("*"):
+            continue
+
+        # Found actual code
+        return False
+
+    return True
+
+
+def _should_skip_test_method(
+    analysis: JavaAnalysis,
+    qualified_class_name: str,
+    method_signature: str,
+) -> bool:
+    """Determine if a test method should be skipped from bucketing."""
+    method_details = analysis.get_method(qualified_class_name, method_signature)
+    if not method_details:
+        return True
+
+    # Skip methods with @Disabled or @TestFactory annotations
+    if method_details.annotations:
+        for annotation in method_details.annotations:
+            # Extract base annotation name (strip parameters like @Disabled("reason"))
+            base_annotation = annotation.lstrip("@").split("(")[0]
+            if base_annotation.startswith("Disabled"):
+                return True
+            if base_annotation == "TestFactory":
+                return True
+
+    # Skip methods with empty bodies (only whitespace/comments)
+    if method_details.code and _has_empty_body(method_details.code.strip()):
+        return True
+
+    return False
+
+
 @ray.remote
 def _create_bucketized_dataset(
     hamster_path: str,
@@ -104,12 +181,14 @@ def _create_bucketized_dataset(
     tests_with_more_than_ten_focal_methods: List[Test] = []
 
     for test_class in project_analysis.test_class_analyses:
-        # Skip classes that shouldn't be processed
         if _should_skip_test_class(analysis, test_class.qualified_class_name):
             continue
 
         for test_method in test_class.test_method_analyses:
-            # TODO: Should determine if we should add a _should_skip_test_method method here, for deprecated tests or others
+            if _should_skip_test_method(
+                analysis, test_class.qualified_class_name, test_method.method_signature
+            ):
+                continue
 
             focal_classes = test_method.focal_classes or []
             focal_method_count = sum(
@@ -195,8 +274,8 @@ def _create_summary(bucketed_dir: Path, results: List[Dict[str, Any] | None]) ->
         projects[dataset_name] = project_counts
 
     summary: Dict[str, Any] = {
-        "projects": dict(sorted(projects.items())),
         "totals": totals,
+        "projects": dict(sorted(projects.items())),
     }
 
     with open(bucketed_dir / SUMMARY_FILE_NAME, "w") as f:

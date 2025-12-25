@@ -2,6 +2,7 @@ import json
 import os
 import re
 import subprocess
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -11,7 +12,7 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
 from tqdm import tqdm
-from tree_sitter import Parser, Language
+from tree_sitter import Language, Node, Parser
 
 from nltest.utils.analysis.java_analyzer import CommonAnalysis
 
@@ -22,6 +23,8 @@ SUMMARY_FILE_NAME = "summary.json"
 DEFAULT_DATE_STR = "2025-01-31"
 
 RESOURCES_DIR = "resources"
+
+# Relative to RESOURCES_DIR:
 DATASETS_DIR = "datasets"
 FILTERED_TESTS_DIR = "filtered_tests"
 ANALYSIS_DIR = "analysis"
@@ -32,9 +35,8 @@ class FilterByDate:
         self.java_lang: Language = Language(tsjava.language())
         self.parser: Parser = Parser(self.java_lang)
 
-
-    def filter(self, repo_path: str, date_str: str):
-        """Return all Java files added (first committed) after a given date."""
+    def get_files_added_after_date(self, repo_path: str, date_str: str) -> List[str]:
+        """Return Java files first committed after a given date."""
         try:
             subprocess.run(
                 ["git", "-C", repo_path, "rev-parse", "--is-inside-work-tree"],
@@ -46,13 +48,22 @@ class FilterByDate:
             raise Exception(f"{repo_path} is not a valid Git repository.")
 
         git_command = [
-            "git", "-C", repo_path, "log",
-            "--diff-filter=A", "--name-only", "--pretty=format:",
-            f"--since={date_str}", "--", "*.java"
+            "git",
+            "-C",
+            repo_path,
+            "log",
+            "--diff-filter=A",
+            "--name-only",
+            "--pretty=format:",
+            f"--since={date_str}",
+            "--",
+            "*.java",
         ]
 
         result = subprocess.run(git_command, capture_output=True, text=True, check=True)
-        files = list({line.strip() for line in result.stdout.split("\n") if line.strip()})
+        files = list(
+            {line.strip() for line in result.stdout.split("\n") if line.strip()}
+        )
         return files
 
     def classify_files(self, file_list: List[str]) -> Tuple[List[str], List[str]]:
@@ -78,88 +89,131 @@ class FilterByDate:
         except Exception:
             return 0
 
-    def get_added_test_methods_treesitter(self, repo_path: str, date_str: str) -> Dict[str, List[str]]:
-        """
-        Detect new test methods added after a date using git diff + Tree-sitter.
-        Returns { file_path -> [method_names] } where entire method is newly added.
-        """
-        git_diff_cmd = [
-            "git", "-C", repo_path, "log", "--since", date_str,
-            "-p", "--", "*.java"
-        ]
-        result = subprocess.run(git_diff_cmd, capture_output=True, text=True, check=True)
+    def get_new_methods_via_blame(
+        self, repo_path: str, date_str: str
+    ) -> Dict[str, List[str]]:
+        """Find methods added after a date by checking git blame timestamps."""
+        new_methods: Dict[str, List[str]] = {}
+        cutoff_timestamp = self._date_str_to_timestamp(date_str)
 
-        new_tests: Dict[str, List[str]] = {}
-        current_file = None
-        added_lines: List[str] = []
+        test_files = self._find_candidate_test_files(repo_path)
+
+        for file_path in test_files:
+            abs_path = os.path.join(repo_path, file_path)
+            if not os.path.exists(abs_path):
+                continue
+
+            try:
+                with open(abs_path, "rb") as f:
+                    content = f.read()
+                tree = self.parser.parse(content)
+            except Exception:
+                continue
+
+            line_timestamps = self._get_line_timestamps(repo_path, file_path)
+            if not line_timestamps:
+                continue
+
+            methods = self._find_new_methods(
+                tree.root_node,
+                content.decode("utf-8", errors="ignore"),
+                line_timestamps,
+                cutoff_timestamp,
+            )
+            if methods:
+                new_methods[file_path] = methods
+
+        return new_methods
+
+    def _date_str_to_timestamp(self, date_str: str) -> int:
+        """Convert YYYY-MM-DD to Unix timestamp."""
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        return int(dt.timestamp())
+
+    def _find_candidate_test_files(self, repo_path: str) -> List[str]:
+        """Find Java files that might contain tests."""
+        result = subprocess.run(
+            ["git", "-C", repo_path, "ls-files", "*.java"],
+            capture_output=True,
+            text=True,
+        )
+        files = []
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            if "/test/" in line.lower() or "Test" in os.path.basename(line):
+                files.append(line)
+        return files
+
+    def _get_line_timestamps(self, repo_path: str, file_path: str) -> Dict[int, int]:
+        """Get timestamp for each line using git blame."""
+        cmd = ["git", "-C", repo_path, "blame", "--line-porcelain", file_path]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            return {}
+
+        line_timestamps: Dict[int, int] = {}
+        current_line = 0
+        current_timestamp = 0
 
         for line in result.stdout.splitlines():
-            if line.startswith("+++ b/"):
-                current_file = line[6:].strip()
-                added_lines = []
-                continue
+            if line.startswith("author-time "):
+                current_timestamp = int(line.split()[1])
+            elif line.startswith("\t"):
+                current_line += 1
+                line_timestamps[current_line] = current_timestamp
 
-            if not current_file:
-                continue
+        return line_timestamps
 
-            # Collect contiguous added lines only
-            if line.startswith("+") and not line.startswith("+++"):
-                added_lines.append(line[1:])
+    def _find_new_methods(
+        self,
+        root_node: Node,
+        source_code: str,
+        line_timestamps: Dict[int, int],
+        cutoff_timestamp: int,
+    ) -> List[str]:
+        """Find methods where all lines were added after cutoff."""
+        new_methods: List[str] = []
 
-            # On hunk boundary or non-added lines: analyze block
-            if (not line.startswith("+") and added_lines):
-                self._analyze_added_block_with_treesitter(current_file, added_lines, new_tests)
-                added_lines = []
+        def visit(node: Node) -> None:
+            if node.type == "method_declaration":
+                method_name = None
+                for child in node.children:
+                    if child.type == "identifier":
+                        method_name = source_code[child.start_byte : child.end_byte]
+                        break
 
-        # Handle trailing block
-        if added_lines:
-            self._analyze_added_block_with_treesitter(current_file, added_lines, new_tests)
+                if not method_name:
+                    return
 
-        for fpath, methods in new_tests.items():
-            seen = set()
-            new_tests[fpath] = [m for m in methods if not (m in seen or seen.add(m))]
+                # Check if all lines were added after cutoff (1-indexed)
+                start_line = node.start_point[0] + 1
+                end_line = node.end_point[0] + 1
 
-        return new_tests
+                all_new = True
+                for line_num in range(start_line, end_line + 1):
+                    timestamp = line_timestamps.get(line_num, 0)
+                    if timestamp < cutoff_timestamp:
+                        all_new = False
+                        break
 
-    def _analyze_added_block_with_treesitter(self, file_path: str, added_lines: List[str], new_tests: Dict[str, List[str]]):
-        """
-        Use Tree-sitter to extract @Test-annotated methods entirely within added block.
-        """
-        code_fragment = "\n".join(added_lines)
-        if "@Test" not in code_fragment:
-            return  # fast path — skip if no tests
+                if all_new:
+                    new_methods.append(method_name)
+            else:
+                for child in node.children:
+                    visit(child)
 
-        try:
-            tree = self.parser.parse(bytes(code_fragment, "utf8"))
-            root_node = tree.root_node
+        visit(root_node)
+        return new_methods
 
-            def get_node_text(node):
-                return code_fragment[node.start_byte:node.end_byte]
-
-            for class_child in root_node.children:
-                # descend to methods
-                if class_child.type == "method_declaration":
-                    method_code = get_node_text(class_child)
-                    if "@Test" in method_code:
-                        # full method body added
-                        method_name = None
-                        for n in class_child.children:
-                            if n.type == "identifier":
-                                method_name = get_node_text(n)
-                                break
-                        if method_name:
-                            new_tests.setdefault(file_path, []).append(method_name)
-        except Exception as e:
-            print(f"[Tree-sitter] parse error in {file_path}: {e}")
-            return
-
-    def classify_files_using_cldk(
+    def extract_test_methods_from_files(
         self,
         file_list: List[str],
         repo_path: str,
         analysis: JavaAnalysis,
     ) -> Dict[str, List[str]]:
-        """Classify using CLDK analysis for accurate test detection."""
+        """Extract test classes and methods from files using CLDK analysis."""
         common_analysis = CommonAnalysis(analysis)
         test_classes_and_methods: Dict[str, List[str]] = {}
 
@@ -198,7 +252,7 @@ class FilterByDate:
         """Iterate through subdirectories and collect data."""
         if not ray.is_initialized():
             if debug:
-                print("⚙️ Running Ray in local debug mode...")
+                print("Running Ray in local debug mode...")
                 ray.init(local_mode=True, ignore_reinit_error=True)
             else:
                 ray.init(ignore_reinit_error=True)
@@ -208,7 +262,9 @@ class FilterByDate:
         futures = []
         for project_name in os.listdir(base_dir):
             repo_path = os.path.join(base_dir, project_name)
-            if not os.path.isdir(repo_path) or not os.path.exists(os.path.join(repo_path, ".git")):
+            if not os.path.isdir(repo_path) or not os.path.exists(
+                os.path.join(repo_path, ".git")
+            ):
                 continue
             analysis_dir_str = str(analysis_dir) if analysis_dir else None
             future = _process_single_repo.remote(
@@ -225,9 +281,8 @@ class FilterByDate:
                 pbar.update(len(done))
 
         results: Dict = {}
+        total_new_test_classes = 0
         total_new_test_methods = 0
-        total_test_classes = 0
-        total_test_methods = 0
 
         for item in collected_results:
             if item is None:
@@ -236,13 +291,11 @@ class FilterByDate:
             results[project_name] = project_result
 
             summary = project_result.get("summary", {})
+            total_new_test_classes += summary.get("new_test_class_count", 0)
             total_new_test_methods += summary.get("new_test_method_count", 0)
-            total_test_classes += summary.get("test_class_count", 0)
-            total_test_methods += summary.get("test_method_count", 0)
 
         results["summary"] = {
-            "total_test_classes": total_test_classes,
-            "total_test_methods": total_test_methods,
+            "total_new_test_classes": total_new_test_classes,
             "total_new_test_methods": total_new_test_methods,
         }
         return results
@@ -261,12 +314,42 @@ class FilterByDate:
             project_summaries[project_name] = project_data.get("summary", {})
 
         with open(output_dir / SUMMARY_FILE_NAME, "w", encoding="utf-8") as f:
-            json.dump({"summary": overall_summary, "projects": project_summaries}, f, indent=4)
+            json.dump(
+                {"summary": overall_summary, "projects": project_summaries}, f, indent=4
+            )
 
-        print(f"\n✅ Results saved to: {output_dir}")
+        print(f"\nResults saved to: {output_dir}")
 
 
 RepoResult = Optional[Tuple[str, Dict]]
+
+
+def _normalize_method_sig(method_name: str, cldk_methods: List[str]) -> Optional[str]:
+    """Find matching CLDK signature for a method name.
+
+    Returns the full CLDK signature if found, None otherwise.
+    """
+    for sig in cldk_methods:
+        if sig.split("(")[0] == method_name:
+            return sig
+    return None
+
+
+def _find_fqcn_for_file(file_path: str, known_fqcns: List[str]) -> Optional[str]:
+    """Find the FQCN that matches a file path."""
+    for fqcn in known_fqcns:
+        fqcn_path_fragment = fqcn.replace(".", os.sep)
+        if fqcn_path_fragment in file_path:
+            return fqcn
+
+    # Derive FQCN from path after src/test/java or src/main/java
+    normalized_path = file_path.replace("\\", "/")
+    for marker in ("src/test/java/", "src/main/java/"):
+        if marker in normalized_path:
+            rel_path = normalized_path.split(marker)[1]
+            return rel_path.replace("/", ".").replace(".java", "")
+
+    return None
 
 
 @ray.remote
@@ -277,12 +360,22 @@ def _process_single_repo(
     use_cldk: bool,
     analysis_dir: Optional[str],
 ) -> RepoResult:
-    """Process one repo."""
+    """Process one repo to find tests added after a date."""
     filter_instance = FilterByDate()
-    java_files = filter_instance.filter(repo_path, date_str)
-    new_tests = filter_instance.get_added_test_methods_treesitter(repo_path, date_str)
+
+    # Phase 1: Find completely new files added after the cutoff
+    new_files = filter_instance.get_files_added_after_date(repo_path, date_str)
+
+    # Phase 2: Find individual methods added after cutoff (in any test file)
+    new_methods_via_blame = filter_instance.get_new_methods_via_blame(
+        repo_path, date_str
+    )
 
     if use_cldk:
+        if analysis_dir is None:
+            return project_name, {
+                "error": "analysis_dir is required when use_cldk=True"
+            }
         try:
             repo_analysis_dir = Path(analysis_dir) / project_name
             analysis = CLDK(language="java").analysis(
@@ -292,92 +385,99 @@ def _process_single_repo(
                 analysis_json_path=repo_analysis_dir,
                 eager=False,
             )
-            test_classes_and_methods = filter_instance.classify_files_using_cldk(
-                java_files, repo_path, analysis
+            # Phase 3: Extract test methods from new files using CLDK
+            test_classes_and_methods = filter_instance.extract_test_methods_from_files(
+                new_files, repo_path, analysis
             )
         except Exception as e:
             return project_name, {"error": str(e)}
 
+        # Phase 4: Process blame-detected methods from all test files (including existing)
+        common_analysis = CommonAnalysis(analysis)
+        verified_test_classes_and_methods: Dict[str, List[str]] = {}
+
+        # First, add verified test methods from new files
+        for class_name, method_sigs in test_classes_and_methods.items():
+            testing_frameworks = common_analysis.get_testing_frameworks_for_class(
+                class_name
+            )
+            if not testing_frameworks:
+                continue
+
+            verified_methods: List[str] = []
+            for method_sig in method_sigs:
+                if not analysis.get_method(class_name, method_sig):
+                    continue
+                if common_analysis.is_test_method(
+                    method_sig, class_name, testing_frameworks
+                ):
+                    verified_methods.append(method_sig)
+
+            if verified_methods:
+                verified_test_classes_and_methods[class_name] = verified_methods
+
+        # Then, process blame-detected methods (handles both new and existing files)
+        for file_path, method_names in new_methods_via_blame.items():
+            fqcn = _find_fqcn_for_file(file_path, [])
+            if not fqcn:
+                continue
+
+            if not analysis.get_class(fqcn):
+                continue
+
+            testing_frameworks = common_analysis.get_testing_frameworks_for_class(fqcn)
+            if not testing_frameworks:
+                continue
+
+            # Get all method signatures in this class for matching
+            all_class_methods = list(analysis.get_methods_in_class(fqcn))
+
+            existing_verified = set(verified_test_classes_and_methods.get(fqcn, []))
+            new_verified: List[str] = []
+
+            for method_name in method_names:
+                method_sig = _normalize_method_sig(method_name, all_class_methods)
+                if not method_sig:
+                    continue
+                if method_sig in existing_verified:
+                    continue
+                if not analysis.get_method(fqcn, method_sig):
+                    continue
+                if common_analysis.is_test_method(method_sig, fqcn, testing_frameworks):
+                    new_verified.append(method_sig)
+                    existing_verified.add(method_sig)
+
+            if new_verified:
+                if fqcn in verified_test_classes_and_methods:
+                    verified_test_classes_and_methods[fqcn].extend(new_verified)
+                else:
+                    verified_test_classes_and_methods[fqcn] = new_verified
+
         result = {
             "summary": {
-                "test_class_count": len(test_classes_and_methods),
-                "test_method_count": sum(len(m) for m in test_classes_and_methods.values()),
-                "new_test_method_count": sum(len(m) for m in new_tests.values()),
+                "new_test_class_count": len(verified_test_classes_and_methods),
+                "new_test_method_count": sum(
+                    len(m) for m in verified_test_classes_and_methods.values()
+                ),
             },
-            "test_classes_and_methods": test_classes_and_methods,
-            "new_test_methods_since_date": new_tests,
+            "new_tests": verified_test_classes_and_methods,
         }
 
     else:
-        app_files, test_files = filter_instance.classify_files(java_files)
+        # Non-CLDK path: use heuristics
+        app_files, test_files = filter_instance.classify_files(new_files)
         result = {
             "summary": {
-                "application_file_count": len(app_files),
-                "test_file_count": len(test_files),
-                "test_method_count": sum(filter_instance.count_tests_in_file(t, repo_path) for t in test_files),
-                "new_test_method_count": sum(len(m) for m in new_tests.values()),
+                "new_app_file_count": len(app_files),
+                "new_test_file_count": len(test_files),
+                "new_test_method_count": sum(
+                    filter_instance.count_tests_in_file(t, repo_path)
+                    for t in test_files
+                ),
             },
-            "application_files": app_files,
-            "test_files": test_files,
-            "new_test_methods_since_date": new_tests,
+            "new_app_files": app_files,
+            "new_test_files": test_files,
         }
-    # --------------------------------------------------------------------------
-    # Merge new test methods into test_classes_and_methods (avoid duplicates)
-    # -------------------------------------------------------------------------
-
-    merged = result["test_classes_and_methods"]
-
-    for file_path, methods in result.get("new_test_methods_since_date", {}).items():
-        normalized_methods = [m if m.endswith("()") else f"{m}()" for m in methods]
-
-        # Default: derive simple class name
-        class_name = os.path.splitext(os.path.basename(file_path))[0]
-        fqcn_match = None
-
-        # 1️⃣ Try to match existing CLDK FQCN by file path
-        if analysis and merged:
-            for fqcn in merged.keys():
-                fqcn_path_fragment = fqcn.replace(".", os.sep)
-                if fqcn_path_fragment in file_path:
-                    fqcn_match = fqcn
-                    break
-
-        # 2️⃣ If no match, derive FQCN from path after src/test/java or src/main/java
-        if not fqcn_match:
-            lower_path = file_path.replace("\\", "/")
-            if "src/test/java/" in lower_path:
-                rel_path = lower_path.split("src/test/java/")[1]
-                fqcn_match = rel_path.replace("/", ".").replace(".java", "")
-            elif "src/main/java/" in lower_path:
-                rel_path = lower_path.split("src/main/java/")[1]
-                fqcn_match = rel_path.replace("/", ".").replace(".java", "")
-            else:
-                fqcn_match = None
-
-        # 3️⃣ Fallback: simple class name
-        key = fqcn_match if fqcn_match else class_name
-
-        # Merge safely
-        if key in merged:
-            existing = set(merged[key])
-            for m in normalized_methods:
-                if m not in existing:
-                    merged[key].append(m)
-                    existing.add(m)
-        else:
-            merged[key] = list(dict.fromkeys(normalized_methods))
-
-    # Deduplicate per class
-    for cname, mlist in merged.items():
-        seen = set()
-        merged[cname] = [m for m in mlist if not (m in seen or seen.add(m))]
-
-    # # Clean up and update summary
-    # result["test_classes_and_methods"] = merged
-    # result.pop("new_test_methods_since_date", None)
-    #
-    # result["summary"]["test_class_count"] = len(merged)
-    # result["summary"]["test_method_count"] = sum(len(v) for v in merged.values())
 
     return (project_name, result)
 
@@ -393,8 +493,11 @@ def main():
 
     filter_by_date = FilterByDate()
     results = filter_by_date.process_repos_in_dir(
-        str(base_dir), date_str, use_cldk=use_cldk, analysis_dir=analysis_dir,
-        debug=debug
+        str(base_dir),
+        date_str,
+        use_cldk=use_cldk,
+        analysis_dir=analysis_dir,
+        debug=debug,
     )
     filter_by_date.save_results(results, output_dir)
 

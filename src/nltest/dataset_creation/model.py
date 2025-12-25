@@ -1,13 +1,13 @@
 from typing import List
 
-from hamster.code_analysis.model.models import FocalClass
+from hamster.code_analysis.model.models import FocalClassInfo
 from pydantic import BaseModel
 
 
 class Test(BaseModel):
     qualified_class_name: str
     method_signature: str
-    focal_details: List[FocalClass] | None = None
+    focal_details: List[FocalClassInfo] | None = None
 
 
 class NL2TestDataset(BaseModel):

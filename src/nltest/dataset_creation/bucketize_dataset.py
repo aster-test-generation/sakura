@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 import ray
 from cldk import CLDK
@@ -20,13 +20,14 @@ RESOURCES_DIR = "resources"
 
 # Relative to RESOURCES_DIR
 DATASETS_DIR = "datasets/"  # Source projects for CLDK analysis
-HAMSTER_DIR = "hamster_models/"  # Input: contains hamster.json per project
+HAMSTER_DIR = "hamster/"  # Input: contains hamster.json per project
 BUCKETED_DIR = "bucketed_tests/"  # Output: nl2test.json per project
 ANALYSIS_DIR = "analysis/"  # CLDK analysis cache directory
 
 # File names
 INPUT_FILE_NAME = "hamster.json"  # Located in HAMSTER_DIR/<project>/
 OUTPUT_FILE_NAME = "nl2test.json"  # Output to BUCKETED_DIR/<project>/
+SUMMARY_FILE_NAME = "summary.json"  # Output to BUCKETED_DIR/
 
 
 def _should_skip_test_class(
@@ -63,7 +64,7 @@ def _create_bucketized_dataset(
     output_path: str,
     analysis_path: str,
     project_path: str,
-) -> None:
+) -> Dict[str, Any] | None:
     """Create a bucketized dataset from hamster analysis, filtering invalid test classes."""
     parent = Path(hamster_path).parent
     parent_name = parent.name
@@ -144,6 +145,61 @@ def _create_bucketized_dataset(
     with open(output_dir / OUTPUT_FILE_NAME, "w") as f:
         f.write(nl2test_dataset.model_dump_json())
 
+    return {
+        "dataset_name": dataset_name,
+        "tests_with_one_focal_methods": len(tests_with_one_focal_methods),
+        "tests_with_two_focal_methods": len(tests_with_two_focal_methods),
+        "tests_with_more_than_two_to_five_focal_methods": len(
+            tests_with_more_than_two_to_five_focal_methods
+        ),
+        "tests_with_more_than_five_to_ten_focal_methods": len(
+            tests_with_more_than_five_to_ten_focal_methods
+        ),
+        "tests_with_more_than_ten_focal_methods": len(
+            tests_with_more_than_ten_focal_methods
+        ),
+    }
+
+
+def _create_summary(bucketed_dir: Path, results: List[Dict[str, Any] | None]) -> None:
+    """Create a summary.json with test counts per project per bucket."""
+    bucket_names = [
+        "tests_with_one_focal_methods",
+        "tests_with_two_focal_methods",
+        "tests_with_more_than_two_to_five_focal_methods",
+        "tests_with_more_than_five_to_ten_focal_methods",
+        "tests_with_more_than_ten_focal_methods",
+    ]
+    totals = {bucket: 0 for bucket in bucket_names}
+    totals["total"] = 0
+    projects: Dict[str, Dict[str, int]] = {}
+
+    for result in results:
+        if result is None:
+            continue
+
+        dataset_name = result["dataset_name"]
+        project_counts: Dict[str, int] = {}
+        project_total = 0
+
+        for bucket in bucket_names:
+            count = result[bucket]
+            project_counts[bucket] = count
+            totals[bucket] += count
+            project_total += count
+
+        project_counts["total"] = project_total
+        totals["total"] += project_total
+        projects[dataset_name] = project_counts
+
+    summary: Dict[str, Any] = {
+        "projects": dict(sorted(projects.items())),
+        "totals": totals,
+    }
+
+    with open(bucketed_dir / SUMMARY_FILE_NAME, "w") as f:
+        json.dump(summary, f, indent=2)
+
 
 def main():
     """Process all projects and create bucketized datasets."""
@@ -171,13 +227,15 @@ def main():
             )
         )
 
-    results = []
+    results: List[Dict[str, Any] | None] = []
     with tqdm(total=len(futures), desc="Processing projects...") as pbar:
         while futures:
             done, futures = ray.wait(futures, num_returns=1)
             res = ray.get(done)
             results.extend(res)
             pbar.update(len(done))
+
+    _create_summary(bucketed_dir, results)
 
 
 if __name__ == "__main__":

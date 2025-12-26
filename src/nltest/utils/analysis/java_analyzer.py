@@ -1,21 +1,42 @@
+"""
+Java code analysis utilities for NL2Test and Test2NL.
+"""
+
 import os
 import re
-from collections import Counter, deque
+from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Set, Tuple, Union
 
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java import JCallable
+from hamster.code_analysis.common import (
+    CommonAnalysis as HamsterCommonAnalysis,
+)
+from hamster.code_analysis.common import (
+    Reachability as HamsterReachability,
+)
+from hamster.code_analysis.common.exceptions import (
+    ClassFileNotFoundException as HamsterClassFileNotFound,
+)
+from hamster.code_analysis.common.exceptions import (
+    ClassNotFoundException as HamsterClassNotFound,
+)
+from hamster.code_analysis.common.exceptions import (
+    CompilationUnitNotFoundException as HamsterCompilationUnitNotFound,
+)
+from hamster.code_analysis.common.exceptions import (
+    MethodNotFoundException as HamsterMethodNotFound,
+)
 from hamster.code_analysis.focal_class_method.focal_class_method import FocalClassMethod
 from hamster.code_analysis.model.models import TestingFramework
-from hamster.code_analysis.utils import constants
-from hamster.code_analysis.utils.constants import (
-    SORTED_FRAMEWORK_PREFIXES,
-    TEST_ANNOTATIONS,
+from hamster.code_analysis.test_statistics import (
+    SetupAnalysisInfo,
+    TeardownAnalysisInfo,
 )
+from hamster.code_analysis.utils import constants
 
-from nltest.utils.constants import SETUP_ANNOTATIONS, TEARDOWN_ANNOTATIONS
 from nltest.utils.exceptions import (
     ClassFileNotFound,
     ClassNotFoundError,
@@ -23,6 +44,46 @@ from nltest.utils.exceptions import (
     MethodNotFoundError,
 )
 from nltest.utils.pretty.prompt_formatting import pretty_indent
+
+
+def _map_class_exception(qualified_class_name: str, e: Exception) -> Exception:
+    """Map Hamster ClassNotFoundException to nltest ClassNotFoundError"""
+    if isinstance(e, HamsterClassNotFound):
+        return ClassNotFoundError(
+            f"Class {qualified_class_name} not found.",
+            extra_info={"qualified_class_name": qualified_class_name},
+        )
+    return e
+
+
+def _map_file_exception(qualified_class_name: str, e: Exception) -> Exception:
+    """Map Hamster file/compilation unit exceptions to nltest exceptions"""
+    if isinstance(e, HamsterClassFileNotFound):
+        return ClassFileNotFound(
+            f"Java file for {qualified_class_name} not found",
+            extra_info={"qualified_class_name": qualified_class_name},
+        )
+    if isinstance(e, HamsterCompilationUnitNotFound):
+        return CompilationUnitNotFound(
+            f"Compilation unit for {qualified_class_name} not found",
+            extra_info={"qualified_class_name": qualified_class_name},
+        )
+    return e
+
+
+def _map_method_exception(
+    qualified_class_name: str, method_signature: str, e: Exception
+) -> Exception:
+    """Map Hamster MethodNotFoundException to nltest MethodNotFoundError"""
+    if isinstance(e, HamsterMethodNotFound):
+        return MethodNotFoundError(
+            f"Method {method_signature} not found in class {qualified_class_name}.",
+            extra_info={
+                "qualified_class_name": qualified_class_name,
+                "method_signature": method_signature,
+            },
+        )
+    return e
 
 
 @dataclass
@@ -35,32 +96,7 @@ class ReachabilityConfig:
 class CommonAnalysis:
     def __init__(self, analysis: JavaAnalysis):
         self.analysis = analysis
-
-    def __get_project_root(self) -> str:
-        classes = list(self.analysis.get_classes().keys())
-        split_class_names = [s.split(".") for s in classes]
-
-        if not split_class_names:
-            return ""
-
-        # Find the shortest length of the split strings
-        min_length = min(len(s) for s in split_class_names)
-
-        project_root = []
-
-        # Iterate through the indices up to min_length
-        for i in range(min_length):
-            # Get the set of elements at index i
-            elements = set(s[i] for s in split_class_names)
-
-            # If all elements are the same at this position, add to common_parts
-            if len(elements) == 1:
-                project_root.append(elements.pop())
-            else:
-                break
-
-        # Join back with '.' to return the common prefix
-        return ".".join(project_root)
+        self._hamster = HamsterCommonAnalysis(analysis)
 
     def is_test_class(
         self, qualified_class_name: str, testing_frameworks: List[TestingFramework]
@@ -76,14 +112,7 @@ class CommonAnalysis:
             bool: True if the class is a test class, containing a test method, or False otherwise.
 
         """
-        for method_signature in self.analysis.get_methods_in_class(
-            qualified_class_name=qualified_class_name
-        ):
-            if self.is_test_method(
-                method_signature, qualified_class_name, testing_frameworks
-            ):
-                return True
-        return False
+        return self._hamster.is_test_class(qualified_class_name, testing_frameworks)
 
     def is_test_method(
         self,
@@ -102,107 +131,9 @@ class CommonAnalysis:
             bool: True if the method is a test method, False otherwise.
 
         """
-
-        method_details = self.analysis.get_method(
-            qualified_class_name=qualified_class_name,
-            qualified_method_name=method_signature,
+        return self._hamster.is_test_method(
+            method_signature, qualified_class_name, testing_frameworks, only_ascii=True
         )
-
-        if not method_details.code.isascii():  # NOTE: Do not consider non-ASCII methods (methods containing non-English characters)
-            return False
-
-        class_details = self.analysis.get_class(
-            qualified_class_name=qualified_class_name
-        )
-
-        is_public = "public" in method_details.modifiers
-
-        # JUnits 4 and 5 and some TestNG methods use method annotations
-        has_test_annot = any(
-            annot.split("(")[0] in TEST_ANNOTATIONS
-            for annot in method_details.annotations
-        )
-
-        # JUnit 3 uses naming conventions (i.e., method must begin with "test") for testing
-        is_junit3_test = (
-            TestingFramework.JUNIT3 in testing_frameworks
-            and any(ext.endswith("TestCase") for ext in class_details.extends_list)
-            and method_signature.startswith("test")
-            and is_public
-            and method_details.return_type == "void"
-            and len(method_details.parameters) == 0
-        )
-
-        # TestNG has class-level @Test annotations where every public method is a test case
-        is_testng_test = (
-            TestingFramework.TESTNG in testing_frameworks
-            and any(
-                annot.split("(")[0] == "@Test" for annot in class_details.annotations
-            )
-            and is_public
-        )
-
-        return has_test_annot or is_junit3_test or is_testng_test
-
-    def is_setup_method(
-        self,
-        method_signature,
-        qualified_class_name: str,
-        testing_frameworks: List[TestingFramework],
-    ) -> bool:
-        method_details = self.analysis.get_method(
-            qualified_class_name, method_signature
-        )
-
-        if not method_details.code.isascii():
-            return False
-
-        if (
-            TestingFramework.JUNIT3 in testing_frameworks
-            and method_details.signature == "setUp()"
-        ):
-            return True
-
-        for annotation in method_details.annotations:
-            if annotation in SETUP_ANNOTATIONS:
-                return True
-
-        return False
-
-    def is_teardown_method(
-        self,
-        method_signature,
-        qualified_class_name: str,
-        testing_frameworks: List[TestingFramework],
-    ) -> bool:
-        """
-        Determines whether a method is a teardown method.
-        Args:
-            method_signature: The signature of the method analyzed.
-            qualified_class_name: The qualified class name containing the method.
-            testing_frameworks: The testing frameworks imported in the compilation unit containing the class.
-
-        Returns:
-            bool: True if the method is a teardown method, False otherwise.
-        """
-        method_details = self.analysis.get_method(
-            qualified_class_name, method_signature
-        )
-
-        if not method_details.code.isascii():
-            return False
-
-        if (
-            TestingFramework.JUNIT3 in testing_frameworks
-            and method_details.signature == "tearDown()"
-        ):
-            return True
-
-        for annotation in method_details.annotations:
-            if annotation in TEARDOWN_ANNOTATIONS:
-                return True
-
-        return False
 
     def get_testing_frameworks_for_class(
         self, qualified_class_name: str
@@ -217,19 +148,10 @@ class CommonAnalysis:
             List: A list of TestingFramework objects for the class's compilation unit.
 
         """
-        if not self.analysis.get_class(qualified_class_name):
-            return []
-
-        testing_frameworks = set()
-        imports = self.get_imports_for_class(qualified_class_name)
-
-        for imp in imports:
-            for prefix, name in SORTED_FRAMEWORK_PREFIXES:
-                if imp.startswith(prefix):
-                    testing_frameworks.add(name)
-                    break
-
-        return sorted(testing_frameworks, key=lambda x: len(x.value), reverse=True)
+        try:
+            return self._hamster.get_testing_frameworks_for_class(qualified_class_name)
+        except Exception as e:
+            raise _map_file_exception(qualified_class_name, e)
 
     def get_imports_for_class(self, qualified_class_name: str) -> List[str]:
         if not self.analysis.get_class(qualified_class_name):
@@ -272,39 +194,29 @@ class CommonAnalysis:
 
         return sorted(verified_classes, key=len)
 
-    def get_setup_methods(self, qualified_class_name: str) -> List[JCallable]:
-        potential_methods = self.get_ascii_methods(qualified_class_name)
-        testing_frameworks = self.get_testing_frameworks_for_class(qualified_class_name)
-        setup_methods = []
-
-        for method in potential_methods:
-            if self.is_setup_method(
-                method.signature, qualified_class_name, testing_frameworks
-            ):
-                setup_methods.append(method)
-
-        return setup_methods
-
-    def get_teardown_methods(self, qualified_class_name: str) -> List[JCallable]:
+    def get_setup_methods(self, qualified_class_name: str) -> Dict[str, List[str]]:
         """
-        Gets a list of teardown methods for a given class.
-        Args:
-            qualified_class_name: The qualified class name of the class being analyzed.
-
-        Returns:
-            List[JCallable]: A list of teardown methods for the class.
+        Returns all setup methods visible to this class, grouped by declaring class.
+        Includes inherited methods from superclasses.
         """
-        potential_methods = self.get_ascii_methods(qualified_class_name)
-        testing_frameworks = self.get_testing_frameworks_for_class(qualified_class_name)
-        teardown_methods = []
+        try:
+            return SetupAnalysisInfo(self.analysis).get_setup_methods(
+                qualified_class_name
+            )
+        except Exception as e:
+            raise _map_file_exception(qualified_class_name, e)
 
-        for method in potential_methods:
-            if self.is_teardown_method(
-                method.signature, qualified_class_name, testing_frameworks
-            ):
-                teardown_methods.append(method)
-
-        return teardown_methods
+    def get_teardown_methods(self, qualified_class_name: str) -> Dict[str, List[str]]:
+        """
+        Returns all teardown methods visible to this class, grouped by declaring class.
+        Includes inherited methods from superclasses.
+        """
+        try:
+            return TeardownAnalysisInfo(self.analysis).get_teardown_methods(
+                qualified_class_name
+            )
+        except Exception as e:
+            raise _map_file_exception(qualified_class_name, e)
 
     def get_test_methods_in_class(
         self, qualified_class_name: str
@@ -384,30 +296,7 @@ class CommonAnalysis:
         return test_classes_methods, application_classes
 
     def is_subclass_of(self, sub_class: str, super_class: str) -> bool:
-        if not sub_class or not super_class or sub_class == super_class:
-            return False
-
-        sub_info = self.analysis.get_class(sub_class)
-        if not sub_info:
-            return False
-
-        stack = sub_info.extends_list
-        seen = set()
-
-        while stack:
-            curr = stack.pop()
-            if curr in seen:
-                continue
-            if curr == super_class:
-                return True
-            seen.add(curr)
-
-            curr_info = self.analysis.get_class(curr)
-            if curr_info:
-                parents = curr_info.extends_list
-                stack.extend(parents)
-
-        return False
+        return self._hamster.is_subclass_of(sub_class, super_class)
 
     def implements_interface(self, class_name: str, interface_name: str) -> bool:
         if not class_name or not interface_name:
@@ -421,8 +310,8 @@ class CommonAnalysis:
         seen = set()
 
         # Consider both implemented interfaces and superclass chain
-        stack.extend(cls_info.extends_list)
-        stack.extend(cls_info.implements_list)
+        stack.extend(cls_info.extends_list or [])
+        stack.extend(cls_info.implements_list or [])
 
         while stack:
             curr = stack.pop()
@@ -438,10 +327,10 @@ class CommonAnalysis:
 
             if curr_info.is_interface:
                 # Interfaces can't extend class or abstract class
-                stack.extend(curr_info.implements_list)
+                stack.extend(curr_info.implements_list or [])
             else:
-                stack.extend(curr_info.extends_list)
-                stack.extend(curr_info.implements_list)
+                stack.extend(curr_info.extends_list or [])
+                stack.extend(curr_info.implements_list or [])
 
         return False
 
@@ -453,68 +342,18 @@ class CommonAnalysis:
         accessor_class: Optional[str] = None,
         mode: Literal["public", "same_package", "same_package_or_subclass"] = "public",
     ) -> bool:
-        class_details = self.analysis.get_class(owner_class)
-        if not class_details:
-            raise ClassNotFoundError(
-                f"Class {owner_class} not found.",
-                extra_info={"qualified_class_name": owner_class},
+        try:
+            return self._hamster.is_accessible_from(
+                owner_class,
+                method_signature,
+                accessor_class=accessor_class if accessor_class else "",
+                mode=mode,
             )
-
-        method_details = self.analysis.get_method(owner_class, method_signature)
-        if not method_details:
-            raise MethodNotFoundError(
-                f"Method {method_signature} not found in class {owner_class}.",
-                extra_info={
-                    "qualified_class_name": owner_class,
-                    "method_signature": method_signature,
-                },
-            )
-
-        mods = set(method_details.modifiers)
-        owner_pkg = self.package_of(owner_class)
-
-        # Public methods and interface/annotation non-private methods are always visible
-        if "public" in mods:
-            return True
-        if class_details.is_interface or class_details.is_annotation_declaration:
-            if "private" not in mods:
-                return True
-
-        # Implicit public constructor for public class
-        if (
-            method_details.is_constructor
-            and method_details.is_implicit
-            and "public" in class_details.modifiers
-        ):
-            return True
-
-        # Determined all public accessibility options
-        if mode == "public":
-            return False
-
-        # Determine accessor package
-        acc_pkg = self.package_of(accessor_class) if accessor_class else ""
-
-        # Same package rules
-        if owner_pkg == acc_pkg:
-            if "private" in mods:
-                return False
-            return True
-        # Protected and package-private allowed in same package
-
-        # If different package and not public, it is not accessible
-        if mode == "same_package":
-            return False
-
-        # Check for subclass inheritance of protected method
-        if (
-            "protected" in mods
-            and accessor_class
-            and self.is_subclass_of(accessor_class, owner_class)
-        ):
-            return True
-
-        return False
+        except Exception as e:
+            # Map both class and method exceptions
+            e = _map_class_exception(owner_class, e)
+            e = _map_method_exception(owner_class, method_signature, e)
+            raise e
 
     def is_public(self, qualified_class_name: str, method_signature: str) -> bool:
         return self.is_accessible_from(
@@ -558,8 +397,7 @@ class CommonAnalysis:
 
         for test_class in test_class_map:
             testing_frameworks = self.get_testing_frameworks_for_class(test_class)
-            setup_methods = self.get_setup_methods(test_class)
-            setup_method_signatures = [method.signature for method in setup_methods]
+            setup_methods_dict = self.get_setup_methods(test_class)
 
             complicated_methods = []
 
@@ -568,10 +406,8 @@ class CommonAnalysis:
                     focal_class_method = FocalClassMethod(
                         self.analysis, application_classes
                     )
-                    focal_classes, _, _, _ = (
-                        focal_class_method.identify_focal_class_and_ui_api_test(
-                            test_class, method_signature, setup_method_signatures
-                        )
+                    focal_classes, _, _, _ = focal_class_method.extract_test_scope(
+                        test_class, method_signature, setup_methods_dict
                     )
 
                     is_complicated = len(focal_classes) > 1 or (
@@ -704,7 +540,10 @@ class CommonAnalysis:
 class Reachability:
     def __init__(self, analysis: JavaAnalysis):
         self.analysis = analysis
-        self._reachability_cache: Dict[Tuple, Dict[str, List[str]]] = {}
+        self._hamster = HamsterReachability(analysis)
+        self._reachability_cache: Dict[
+            Tuple, Dict[str, List[str]]
+        ] = {}  # For nltest-specific methods
 
     def get_helper_methods(
         self,
@@ -730,172 +569,13 @@ class Reachability:
         Returns:
             Dict[str, List[str]]: A map from class names to method signatures of helper methods.
         """
-        method_details = self.analysis.get_method(
-            qualified_class_name, method_signature
+        return self._hamster.get_helper_methods(
+            qualified_class_name,
+            method_signature,
+            depth,
+            add_extended_class,
+            allow_repetition,
         )
-        visited: Set[Tuple[str, str]] = set()
-        reachability_config = ReachabilityConfig(
-            allow_repetition=allow_repetition,
-            add_extended_class=add_extended_class,
-            only_helpers=True,
-        )
-        reachability_key = self._get_reachability_key(
-            qualified_class_name, method_signature, reachability_config
-        )
-
-        if reachability_key in self._reachability_cache:
-            reachable_methods_by_class = self._reachability_cache[reachability_key]
-        else:
-            reachable_methods_by_class: Dict[str, List[str]] = (
-                self._collect_reachable_methods(
-                    qualified_class_name,
-                    method_signature,
-                    depth,
-                    reachability_config,
-                    visited,
-                )
-            )
-            self._reachability_cache[reachability_key] = reachable_methods_by_class
-
-        final_reachable_methods: Dict[str, List[str]] = {}
-        for class_name in reachable_methods_by_class:
-            for method_signature in reachable_methods_by_class[class_name]:
-                method = self.analysis.get_method(class_name, method_signature)
-                if (
-                    method
-                    and (class_name != qualified_class_name or method != method_details)
-                    and method.code.isascii()
-                ):
-                    final_reachable_methods.setdefault(class_name, []).append(
-                        method_signature
-                    )
-        return final_reachable_methods
-
-    def _collect_reachable_methods(
-        self,
-        qualified_class_name: str,
-        method_signature: str,
-        depth: int,
-        reachability_config: ReachabilityConfig,
-        visited: Set[Tuple[str, str]] = None,
-    ) -> Dict[str, List[str]]:
-        """
-        Collects reachable methods starting from the given method within a given depth.
-
-        Args:
-            qualified_class_name: The qualified name of the class.
-            method_signature: The method signature.
-            depth: The depth for search in call hierarchy.
-            reachability_config: The configurations for reachability computation.
-            visited: The set of tuples that have already been visited.
-
-        Returns:
-            Dict[str, List[str]]: A map from class names to method signatures of reachable methods.
-        """
-        if depth < 0:
-            return {}
-
-        if visited is None:
-            visited: Set[Tuple[str, str]] = set()
-
-        # Normalize constructors
-        simple_class_name = qualified_class_name.split(".")[-1]
-        if method_signature.startswith(f"{simple_class_name}("):
-            method_signature = method_signature.replace(
-                f"{simple_class_name}(", "<init>("
-            )
-
-        basic_key = (qualified_class_name, method_signature)
-
-        # Check for an existing depth-level duplicate
-        if basic_key in visited:
-            return {}
-        visited.add(basic_key)
-
-        reachability_key = self._get_reachability_key(
-            qualified_class_name, method_signature, reachability_config
-        )
-
-        # Check if already expanded in cache
-        if reachability_key in self._reachability_cache:
-            return self._reachability_cache[reachability_key]
-
-        method_details = self.analysis.get_method(
-            qualified_class_name, method_signature
-        )
-
-        # Check for ensuring valid method
-        if not method_details:
-            return {}
-
-        # Seed result dictionary with the current method to start
-        reachable_methods: Dict[str, List[str]] = {
-            qualified_class_name: [method_signature]
-        }
-
-        # Determine extended classes if needed
-        extend_list = []
-        if reachability_config.add_extended_class:
-            class_details = self.analysis.get_class(qualified_class_name)
-            extend_list = class_details.extends_list if class_details else []
-
-        child_counter: Counter[Tuple[str, str]] = Counter()
-
-        # Handle interface-based call sites
-        interface_map: Dict[str, List[str]] = {}
-        for site in method_details.call_sites:
-            receiver = site.receiver_type
-            receiver_class = self.analysis.get_class(receiver)
-            if receiver_class and receiver_class.is_interface:
-                processed_sig = site.callee_signature
-                interface_map.setdefault(receiver, []).append(processed_sig)
-
-        # For all call sites with interface receiver types, collect the method signature
-        for interface, callee_sigs in interface_map.items():
-            for concrete_class in self.get_concrete_classes(interface_class=interface):
-                # All concrete classes that implement interface
-                if (
-                    not reachability_config.only_helpers
-                    or concrete_class == qualified_class_name
-                ) or concrete_class in extend_list:
-                    for callee_sig in callee_sigs:
-                        child_counter[(concrete_class, callee_sig)] += 1
-
-        # Handle direct symbol-table callees
-        callees = self.analysis.get_callees(
-            source_class_name=qualified_class_name,
-            source_method_declaration=method_signature,
-            using_symbol_table=True,
-        ).get("callee_details", [])
-        for callee_details in callees:
-            callee_class = callee_details["callee_method"].klass
-            if (
-                not reachability_config.only_helpers
-                or callee_class == qualified_class_name
-            ) or callee_class in extend_list:
-                callee_sig = callee_details["callee_method"].method.signature
-                num_calls = max(len(callee_details.get("calling_lines", [])), 1)
-                child_counter[(callee_class, callee_sig)] += num_calls
-
-        # Now process unique children
-        for child_key, num_calls in child_counter.items():
-            child_class, child_sig = child_key
-            child_reachable_methods = self._collect_reachable_methods(
-                child_class, child_sig, depth - 1, reachability_config, visited
-            )
-            if reachability_config.allow_repetition:
-                add_times = num_calls
-            else:
-                add_times = 1
-            for _ in range(add_times):
-                for child_c_class, methods_list in child_reachable_methods.items():
-                    reachable_methods.setdefault(child_c_class, []).extend(methods_list)
-
-        # This will allow a parent to revisit at the same level
-        if reachability_config.allow_repetition:
-            visited.remove(basic_key)
-
-        return reachable_methods
 
     def get_concrete_classes(self, interface_class: str) -> List[str]:
         """
@@ -907,42 +587,7 @@ class Reachability:
         Returns:
             List[str]: List of concrete classes that implement the given interface class.
         """
-        all_classes_in_application = self.analysis.get_classes()
-        concrete_classes = []
-        for qualified_class, class_details in all_classes_in_application.items():
-            if (
-                not class_details.is_interface
-                and "abstract" not in class_details.modifiers
-            ):
-                if interface_class in class_details.implements_list:
-                    concrete_classes.append(qualified_class)
-        return concrete_classes
-
-    def _get_reachability_key(
-        self,
-        qualified_class_name: str,
-        method_signature: str,
-        reachability_config: ReachabilityConfig,
-    ) -> Tuple:
-        """
-        Generates a unique key for the reachability computation based on the input parameters.
-
-        Args:
-            qualified_class_name: The qualified name of the class.
-            method_signature: The method signature.
-            reachability_config: The configurations for reachability computation.
-
-        Returns:
-            Tuple: A unique reachability key.
-        """
-        reachability_key = (
-            qualified_class_name,
-            method_signature,
-            reachability_config.allow_repetition,
-            reachability_config.add_extended_class,
-            reachability_config.only_helpers,
-        )
-        return reachability_key
+        return self._hamster.get_concrete_classes(interface_class)
 
     def get_visible_class_methods(
         self,

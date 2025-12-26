@@ -29,9 +29,9 @@ from nltest.utils.pretty.prints import pretty_print
 
 class TestLocalizationAgent:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
-        self.config = nl2test_context.config
+    def _inject(self, petclinic_analysis, petclinic_config):
+        self.analysis = petclinic_analysis
+        self.config = petclinic_config
 
     def test_gherkin_localization_system_prompt_formatting(self):
         """Ensure the system prompt renders with correct Jinja2 placeholders."""
@@ -268,10 +268,10 @@ class TestLocalizationAgent:
 
 class TestLocalizationGrader:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
-        self.config = nl2test_context.config
-        self.project_root = nl2test_context.project_root
+    def _inject(self, petclinic_analysis, petclinic_config, petclinic_paths):
+        self.analysis = petclinic_analysis
+        self.config = petclinic_config
+        self.project_root = petclinic_paths.project_root
 
     def _petcontroller_localized_scenario_payload(self) -> dict:
         return {
@@ -445,8 +445,8 @@ class TestLocalizationGrader:
 
 class TestLocalizationTools:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
+    def _inject(self, petclinic_analysis):
+        self.analysis = petclinic_analysis
 
     def test_localization_call_site_tool(self):
         qualified_class_name = (

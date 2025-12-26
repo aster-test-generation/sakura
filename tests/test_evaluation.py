@@ -12,12 +12,12 @@ from nltest.utils.pretty.prints import pretty_print
 
 
 @pytest.fixture(scope="session")
-def eager_analysis(project_paths):
+def eager_analysis(petclinic_paths):
     return CLDK(language="java").analysis(
-        project_path=project_paths.project_root,
+        project_path=petclinic_paths.project_root,
         analysis_backend_path=None,
         analysis_level=AnalysisLevel.symbol_table,
-        analysis_json_path=project_paths.project_output_dir,
+        analysis_json_path=petclinic_paths.project_output_dir,
         eager=True,
     )
 
@@ -34,8 +34,8 @@ def _build_grader(analysis, project_root):
     )
 
 
-def test_structural_grading(eager_analysis, project_paths):
-    grader = _build_grader(eager_analysis, project_paths.project_root)
+def test_structural_grading(eager_analysis, petclinic_paths):
+    grader = _build_grader(eager_analysis, petclinic_paths.project_root)
 
     gt_class = "org.springframework.samples.petclinic.owner.PetTypeFormatterTests"
     gt_method = "testPrint()"
@@ -67,12 +67,12 @@ def test_structural_grading(eager_analysis, project_paths):
         assert 0.0 <= value <= 1.0
 
 
-def test_test_grader_petclinic(project_paths):
+def test_test_grader_petclinic(petclinic_paths):
     analysis = CLDK(language="java").analysis(
-        project_path=project_paths.project_root,
+        project_path=petclinic_paths.project_root,
         analysis_backend_path=None,
         analysis_level=AnalysisLevel.symbol_table,
-        analysis_json_path=project_paths.project_output_dir,
+        analysis_json_path=petclinic_paths.project_output_dir,
         eager=False,
     )
 
@@ -94,11 +94,11 @@ def test_test_grader_petclinic(project_paths):
             is not None
     )
 
-    grader = _build_grader(analysis, project_paths.project_root)
+    grader = _build_grader(analysis, petclinic_paths.project_root)
 
     nl2_input = NL2TestInput(
         description="",
-        project_name=project_paths.project_name,
+        project_name=petclinic_paths.project_name,
         qualified_class_name=qualified_class_name,
         method_signature=method_signature,
     )

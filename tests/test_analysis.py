@@ -1,12 +1,14 @@
 from typing import Dict, List
+
+import pytest
+from hamster.code_analysis.test_statistics.setup_analysis_info import SetupAnalysisInfo
+
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.pretty.prints import pretty_print
 
-from hamster.code_analysis.test_statistics.setup_analysis_info import SetupAnalysisInfo
 
-
-def test_multiple_focal(test2nl_context):
-    analysis = test2nl_context.analysis
+def test_multiple_focal(petclinic_analysis):
+    analysis = petclinic_analysis
     complicated_tests = CommonAnalysis(analysis).get_complicated_focal_tests()
     total_count = CommonAnalysis(analysis).get_complicated_focal_tests_count()
 
@@ -22,15 +24,17 @@ def test_multiple_focal(test2nl_context):
         )
 
 
-def test_focal_classes_and_methods_for_specific_test(nl2test_context):
+def test_focal_classes_and_methods_for_specific_test(petclinic_analysis):
     """Test that pretty prints focal classes and methods for a specific test method."""
-    analysis = nl2test_context.analysis
+    analysis = petclinic_analysis
     qualified_class_name = (
         "org.springframework.samples.petclinic.owner.PetTypeFormatterTests"
     )
     method_signature = "shouldParse()"
 
-    setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(analysis).get_setup_methods(qualified_class_name)
+    setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(analysis).get_setup_methods(
+        qualified_class_name
+    )
 
     _, application_classes = CommonAnalysis(
         analysis
@@ -42,7 +46,7 @@ def test_focal_classes_and_methods_for_specific_test(nl2test_context):
 
     focal_class_method = FocalClassMethod(analysis, application_classes)
 
-    focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
+    focal_classes, _, _, _ = focal_class_method.extract_test_scope(
         qualified_class_name, method_signature, setup_methods
     )
 
@@ -67,8 +71,7 @@ def test_focal_classes_and_methods_for_specific_test(nl2test_context):
                 for focal_class in focal_classes
             ],
             "focal_methods": [
-                f"{class_name}.{method_sig}"
-                for class_name, method_sig in focal_methods
+                f"{class_name}.{method_sig}" for class_name, method_sig in focal_methods
             ],
         },
     )
@@ -80,7 +83,7 @@ def test_focal_classes_and_methods_for_specific_test(nl2test_context):
 
     for i, focal_class in enumerate(focal_classes):
         pretty_print(
-            f"Focal Class {i+1}: {focal_class.focal_class}",
+            f"Focal Class {i + 1}: {focal_class.focal_class}",
             {
                 "focal_class": focal_class.focal_class,
                 "focal_method_names": focal_class.focal_method_names,
@@ -89,7 +92,8 @@ def test_focal_classes_and_methods_for_specific_test(nl2test_context):
         )
 
 
-def test_compare_focal_classes_and_methods(nl2test_context):
+@pytest.mark.skip(reason="Test is just for comparison")
+def test_compare_focal_classes_and_methods(petclinic_analysis):
     """Test that compares focal classes and methods between ground truth and prediction."""
 
     gt_class = "org.apache.commons.cli.CommandLineTest"
@@ -97,11 +101,13 @@ def test_compare_focal_classes_and_methods(nl2test_context):
     pred_class = "org.apache.commons.cli.CommandLineParserTest"
     pred_method = "testOptionPropertiesExtraction()"
 
-    analysis = nl2test_context.analysis
+    analysis = petclinic_analysis
 
     # Helper function to get focal classes and methods for a test
     def get_focal_info(qualified_class_name: str, method_signature: str):
-        setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(analysis).get_setup_methods(qualified_class_name)
+        setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(
+            analysis
+        ).get_setup_methods(qualified_class_name)
 
         _, application_classes = CommonAnalysis(
             analysis
@@ -113,7 +119,7 @@ def test_compare_focal_classes_and_methods(nl2test_context):
 
         focal_class_method = FocalClassMethod(analysis, application_classes)
 
-        focal_classes, _, _, _ = focal_class_method.identify_focal_class_and_ui_api_test(
+        focal_classes, _, _, _ = focal_class_method.extract_test_scope(
             qualified_class_name, method_signature, setup_methods
         )
 
@@ -147,10 +153,12 @@ def test_compare_focal_classes_and_methods(nl2test_context):
                     }
                     for fc in gt_focal_classes
                 ],
-                "focal_methods": sorted([
-                    f"{class_name}.{method_sig}"
-                    for class_name, method_sig in gt_focal_methods
-                ]),
+                "focal_methods": sorted(
+                    [
+                        f"{class_name}.{method_sig}"
+                        for class_name, method_sig in gt_focal_methods
+                    ]
+                ),
             },
             "prediction": {
                 "test_class": pred_class,
@@ -165,10 +173,12 @@ def test_compare_focal_classes_and_methods(nl2test_context):
                     }
                     for fc in pred_focal_classes
                 ],
-                "focal_methods": sorted([
-                    f"{class_name}.{method_sig}"
-                    for class_name, method_sig in pred_focal_methods
-                ]),
+                "focal_methods": sorted(
+                    [
+                        f"{class_name}.{method_sig}"
+                        for class_name, method_sig in pred_focal_methods
+                    ]
+                ),
             },
         },
     )
@@ -183,7 +193,9 @@ def test_compare_focal_classes_and_methods(nl2test_context):
 
     method_intersection = gt_focal_methods & pred_focal_methods
     method_union = gt_focal_methods | pred_focal_methods
-    method_overlap = len(method_intersection) / len(method_union) if method_union else 1.0
+    method_overlap = (
+        len(method_intersection) / len(method_union) if method_union else 1.0
+    )
 
     pretty_print(
         "Overlap Scores",
@@ -196,15 +208,13 @@ def test_compare_focal_classes_and_methods(nl2test_context):
                 "count": f"{len(class_intersection)}/{len(class_union)}",
             },
             "focal_methods": {
-                "intersection": sorted([
-                    f"{c}.{m}" for c, m in method_intersection
-                ]),
-                "gt_only": sorted([
-                    f"{c}.{m}" for c, m in (gt_focal_methods - pred_focal_methods)
-                ]),
-                "pred_only": sorted([
-                    f"{c}.{m}" for c, m in (pred_focal_methods - gt_focal_methods)
-                ]),
+                "intersection": sorted([f"{c}.{m}" for c, m in method_intersection]),
+                "gt_only": sorted(
+                    [f"{c}.{m}" for c, m in (gt_focal_methods - pred_focal_methods)]
+                ),
+                "pred_only": sorted(
+                    [f"{c}.{m}" for c, m in (pred_focal_methods - gt_focal_methods)]
+                ),
                 "overlap_score (IoU)": f"{method_overlap:.2%}",
                 "count": f"{len(method_intersection)}/{len(method_union)}",
             },

@@ -99,14 +99,14 @@ class TestCompositionAgent:
         assert "CURRENT LOCALIZED SCENARIO" in rendered
         assert "Compose a compilable and runnable Java test" in rendered
 
-    def test_composition_agent_gherkin(self, nl2test_context):
-        analysis = nl2test_context.analysis
-        config = nl2test_context.config
+    def test_composition_agent_gherkin(self, petclinic_analysis, petclinic_config, petclinic_paths):
+        analysis = petclinic_analysis
+        config = petclinic_config
         method_searcher = MethodIndexer(analysis).build_index()
         class_searcher = ClassIndexer(analysis).build_index()
 
-        project_name = nl2test_context.project_name
-        project_root = nl2test_context.project_root
+        project_name = petclinic_paths.project_name
+        project_root = petclinic_paths.project_root
 
         # Tighten iteration limits for this test
         config.set("composition", "max_iters", 6)
@@ -122,7 +122,7 @@ class TestCompositionAgent:
                 "simulating HTTP requests. The setup method stubs the `findPetTypes` method of the mocked `OwnerRepository` "
                 "to return a list containing a `PetType` object with a predefined ID and name, and also stubs the `findById` "
                 "method to return an `Optional` containing an `Owner` object populated with two `Pet` objects, each having a "
-                'unique ID and name. The test then performs a `POST` request to the "/owners/{ownerId}/pets/{petId}/edit" '
+                "unique ID and name. The test then performs a `POST` request to the \"/owners/{ownerId}/pets/{petId}/edit\" "
                 "endpoint, substituting predefined `TEST_OWNER_ID` and `TEST_PET_ID` values into the URL, and including "
                 "parameters for the pet's name, type, and birth date. The test uses `MockMvc` to simulate the request and "
                 "verifies that the response has a 3xx redirection status code and that the view name is a redirection to the "
@@ -321,7 +321,7 @@ class TestCompositionAgent:
             project_path=project_root,
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=nl2test_context.output_dir,
+            analysis_json_path=petclinic_paths.project_output_dir,
             eager=True,
         )
 

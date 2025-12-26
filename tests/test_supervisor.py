@@ -32,11 +32,11 @@ from nltest.utils.utilities import test2nl_entry_to_nl2test_input
 
 class TestSupervisorAgent:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
-        self.config = nl2test_context.config
-        self.project_root = nl2test_context.project_root
-        self.output_dir = nl2test_context.output_dir
+    def _inject(self, petclinic_analysis, petclinic_config, petclinic_paths):
+        self.analysis = petclinic_analysis
+        self.config = petclinic_config
+        self.project_root = petclinic_paths.project_root
+        self.output_dir = petclinic_paths.project_output_dir
 
     def test_supervisor_end_to_end(self):
         tracker = UsageTracker()

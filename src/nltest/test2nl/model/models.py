@@ -62,10 +62,29 @@ class FieldDeclaration(BaseModel):
     annotations: List[str] | None = None
 
 
+class CallSiteInfo(BaseModel):
+    method_name: str
+    receiver_type: str
+    return_type: str
+    line_number: int
+    is_assertion: bool
+
+
+class VariableInfo(BaseModel):
+    name: str
+    type: str
+    initializer: str | None = None
+    line_number: int
+
+
 class MethodContext(BaseModel):
     method_signature: str
     is_getter_or_setter: bool | None = None
     code: str | None = None
+    call_sites: List[CallSiteInfo] = []
+    variable_declarations: List[VariableInfo] = []
+    thrown_exceptions: List[str] = []
+    javadoc: str | None = None
 
 
 class Test2NLEntry(BaseModel):

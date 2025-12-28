@@ -42,24 +42,33 @@ class Test2NLPrompt:
             )
 
         setup_methods: List[MethodContext] = []
-        for setup_method in CommonAnalysis(self.analysis).get_setup_methods(
+        setup_methods_dict = CommonAnalysis(self.analysis).get_setup_methods(
             qualified_class_name
-        ):
-            if not setup_method:
-                continue
-            setup_methods.append(
-                MethodExtractor.extract(setup_method, complete_methods=True)
-            )
+        )
+        method_extractor = MethodExtractor(self.analysis)
+        for declaring_class, method_sigs in setup_methods_dict.items():
+            for method_sig in method_sigs:
+                setup_method = self.analysis.get_method(declaring_class, method_sig)
+                if setup_method:
+                    setup_methods.append(
+                        method_extractor.extract(
+                            declaring_class, method_sig, complete_methods=True
+                        )
+                    )
 
         teardown_methods: List[MethodContext] = []
-        for teardown_method in CommonAnalysis(self.analysis).get_teardown_methods(
+        teardown_methods_dict = CommonAnalysis(self.analysis).get_teardown_methods(
             qualified_class_name
-        ):
-            if not teardown_method:
-                continue
-            teardown_methods.append(
-                MethodExtractor.extract(teardown_method, complete_methods=True)
-            )
+        )
+        for declaring_class, method_sigs in teardown_methods_dict.items():
+            for method_sig in method_sigs:
+                teardown_method = self.analysis.get_method(declaring_class, method_sig)
+                if teardown_method:
+                    teardown_methods.append(
+                        method_extractor.extract(
+                            declaring_class, method_sig, complete_methods=True
+                        )
+                    )
 
         helper_methods: List[MethodContext] = []
         # Add helper methods from the main test method
@@ -72,8 +81,8 @@ class Test2NLPrompt:
                 helper_details = self.analysis.get_method(qualified_class, helper_sig)
                 if not helper_details:
                     continue
-                helper_context = MethodExtractor.extract(
-                    helper_details, complete_methods=True
+                helper_context = method_extractor.extract(
+                    qualified_class, helper_sig, complete_methods=True
                 )
                 if helper_context not in helper_methods:
                     helper_methods.append(helper_context)
@@ -93,8 +102,8 @@ class Test2NLPrompt:
                     )
                     if not helper_details:
                         continue
-                    helper_context = MethodExtractor.extract(
-                        helper_details, complete_methods=True
+                    helper_context = method_extractor.extract(
+                        qualified_class, helper_sig, complete_methods=True
                     )
                     # Avoid duplicates
                     if helper_context not in helper_methods:
@@ -115,8 +124,8 @@ class Test2NLPrompt:
                     )
                     if not helper_details:
                         continue
-                    helper_context = MethodExtractor.extract(
-                        helper_details, complete_methods=True
+                    helper_context = method_extractor.extract(
+                        qualified_class, helper_sig, complete_methods=True
                     )
                     # Avoid duplicates
                     if helper_context not in helper_methods:
@@ -133,8 +142,8 @@ class Test2NLPrompt:
                 )
             )
 
-        method: MethodContext = MethodExtractor.extract(
-            method_details, complete_methods=True
+        method: MethodContext = method_extractor.extract(
+            qualified_class_name, method_signature, complete_methods=True
         )
 
         class_details = self.analysis.get_class(qualified_class_name)

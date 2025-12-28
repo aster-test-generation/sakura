@@ -2,18 +2,19 @@ from typing import List
 
 from cldk.analysis.java import JavaAnalysis
 
+from nltest.test2nl.model.models import FieldDeclaration, MethodContext, ReferencedClass
+
 from .field_declaration_extractor import FieldDeclarationExtractor
 from .method_extractor import MethodExtractor
-
-from nltest.test2nl.model.models import ReferencedClass, FieldDeclaration, MethodContext
-from nltest.utils.analysis import CommonAnalysis
 
 
 class ReferencedClassExtractor:
     def __init__(self, analysis: JavaAnalysis):
         self.analysis = analysis
 
-    def extract(self, qualified_class_name: str, complete_methods: bool) -> ReferencedClass:
+    def extract(
+        self, qualified_class_name: str, complete_methods: bool
+    ) -> ReferencedClass:
         class_file = self.analysis.get_java_file(qualified_class_name)
         if not class_file:
             raise RuntimeError(f"Could not find class file {qualified_class_name}")
@@ -37,12 +38,18 @@ class ReferencedClassExtractor:
         field_declarations: List[FieldDeclaration] = []
         for field_declaration in class_details.field_declarations:
             if any(modifier == "public" for modifier in field_declaration.modifiers):
-                field_declarations.append(FieldDeclarationExtractor(self.analysis).extract(field_declaration))
+                field_declarations.append(
+                    FieldDeclarationExtractor(self.analysis).extract(field_declaration)
+                )
 
         # Get methods for class
         methods: List[MethodContext] = []
-        for method_details in CommonAnalysis(self.analysis).get_ascii_methods(qualified_class_name):
-            methods.append(MethodExtractor(self.analysis).extract(method_details, complete_methods))
+        for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
+            methods.append(
+                MethodExtractor(self.analysis).extract(
+                    qualified_class_name, method_sig, complete_methods
+                )
+            )
 
         # Get comments for the compilation unit -> May contain semantic information about the class
         compilation_comments = [

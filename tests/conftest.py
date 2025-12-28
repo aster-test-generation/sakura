@@ -99,7 +99,7 @@ def get_analysis(project_paths: ProjectPaths) -> JavaAnalysis:
         analysis_backend_path=None,
         analysis_level=AnalysisLevel.symbol_table,
         analysis_json_path=project_paths.project_output_dir,
-        eager=True,
+        eager=False,
     )
 
 

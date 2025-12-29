@@ -58,9 +58,6 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra -q"
-testpaths = [
-    "tests",
-]
-python_files = "test_*.py"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-vv -s --tb=long"

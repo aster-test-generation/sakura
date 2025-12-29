@@ -254,7 +254,7 @@ class TestDescriptionContextExtraction:
 
     def test_referenced_class_extractor(self, petclinic_analysis):
         """
-        Test extracting referenced class info: Owner
+        Test extracting referenced class info: Owner (no filter)
         """
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
 
@@ -271,7 +271,7 @@ class TestDescriptionContextExtraction:
         assert any("Entity" in a for a in ref_class.annotations)
         assert any("Table" in a for a in ref_class.annotations)
 
-        # Check methods exist
+        # Check methods exist (no filter = all methods included)
         assert ref_class.class_methods is not None
         method_sigs = [m.method_signature for m in ref_class.class_methods]
         assert "getAddress()" in method_sigs
@@ -284,3 +284,82 @@ class TestDescriptionContextExtraction:
             for fd in ref_class.field_declarations:
                 assert fd.modifiers is not None
                 assert "public" in fd.modifiers
+
+    def test_referenced_class_extractor_with_filter(self, petclinic_analysis):
+        """
+        Test extracting referenced class with called_method_names filter.
+        Only methods in the filter (plus constructors) should be included.
+        """
+        qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
+
+        extractor = ReferencedClassExtractor(petclinic_analysis)
+        called_methods = {"getAddress", "addPet"}
+        ref_class = extractor.extract(
+            qualified_class_name,
+            complete_methods=False,
+            called_method_names=called_methods,
+        )
+
+        assert ref_class.class_methods is not None
+        method_sigs = [m.method_signature for m in ref_class.class_methods]
+
+        # Filtered methods should be included
+        assert "getAddress()" in method_sigs
+        assert "addPet(org.springframework.samples.petclinic.owner.Pet)" in method_sigs
+
+        # Methods not in filter should be excluded
+        assert "setAddress(java.lang.String)" not in method_sigs
+        assert "getCity()" not in method_sigs
+
+    def test_referenced_class_extractor_constructors_always_included(
+        self, petclinic_analysis
+    ):
+        """
+        Test that constructors are always included regardless of filter.
+        """
+        qualified_class_name = "org.springframework.samples.petclinic.owner.Pet"
+
+        extractor = ReferencedClassExtractor(petclinic_analysis)
+        # Filter with a method that doesn't exist - should still include constructors
+        called_methods = {"nonExistentMethod"}
+        ref_class = extractor.extract(
+            qualified_class_name,
+            complete_methods=False,
+            called_method_names=called_methods,
+        )
+
+        assert ref_class.class_methods is not None
+        method_sigs = [m.method_signature for m in ref_class.class_methods]
+
+        # Constructors should always be included (Pet class has a constructor)
+        has_constructor = any(
+            sig.startswith("Pet(") or sig == "<init>" for sig in method_sigs
+        )
+        assert has_constructor, f"Constructor not found in: {method_sigs}"
+
+    def test_referenced_class_extractor_empty_filter(self, petclinic_analysis):
+        """
+        Test extracting with empty filter - only constructors should be included.
+        """
+        qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
+
+        extractor = ReferencedClassExtractor(petclinic_analysis)
+        ref_class = extractor.extract(
+            qualified_class_name,
+            complete_methods=False,
+            called_method_names=set(),  # Empty filter
+        )
+
+        # Class metadata should still be present
+        assert ref_class.qualified_class_name == qualified_class_name
+        assert ref_class.simple_class_name == "Owner"
+        assert ref_class.annotations is not None
+
+        # With empty filter, only constructors should be included
+        if ref_class.class_methods:
+            for method in ref_class.class_methods:
+                method_name = method.method_signature.split("(")[0]
+                assert method_name == "Owner" or method_name == "<init>", (
+                    f"Non-constructor method {method.method_signature} "
+                    "should not be included with empty filter"
+                )

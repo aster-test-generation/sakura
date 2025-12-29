@@ -71,6 +71,8 @@ class Test2NLPrompt:
                     )
 
         helper_methods: List[MethodContext] = []
+        seen_helpers: set[tuple[str, str]] = set()
+
         # Add helper methods from the main test method
         for qualified_class, helper_method_sigs in (
             Reachability(self.analysis)
@@ -78,14 +80,17 @@ class Test2NLPrompt:
             .items()
         ):
             for helper_sig in helper_method_sigs:
+                key = (qualified_class, helper_sig)
+                if key in seen_helpers:
+                    continue
+                seen_helpers.add(key)
                 helper_details = self.analysis.get_method(qualified_class, helper_sig)
                 if not helper_details:
                     continue
                 helper_context = method_extractor.extract(
                     qualified_class, helper_sig, complete_methods=True
                 )
-                if helper_context not in helper_methods:
-                    helper_methods.append(helper_context)
+                helper_methods.append(helper_context)
 
         # Add helper methods from setup methods
         for setup_method in setup_methods:
@@ -97,6 +102,10 @@ class Test2NLPrompt:
                 .items()
             ):
                 for helper_sig in helper_method_sigs:
+                    key = (qualified_class, helper_sig)
+                    if key in seen_helpers:
+                        continue
+                    seen_helpers.add(key)
                     helper_details = self.analysis.get_method(
                         qualified_class, helper_sig
                     )
@@ -105,9 +114,7 @@ class Test2NLPrompt:
                     helper_context = method_extractor.extract(
                         qualified_class, helper_sig, complete_methods=True
                     )
-                    # Avoid duplicates
-                    if helper_context not in helper_methods:
-                        helper_methods.append(helper_context)
+                    helper_methods.append(helper_context)
 
         # Add helper methods from teardown methods
         for teardown_method in teardown_methods:
@@ -119,6 +126,10 @@ class Test2NLPrompt:
                 .items()
             ):
                 for helper_sig in helper_method_sigs:
+                    key = (qualified_class, helper_sig)
+                    if key in seen_helpers:
+                        continue
+                    seen_helpers.add(key)
                     helper_details = self.analysis.get_method(
                         qualified_class, helper_sig
                     )
@@ -127,9 +138,18 @@ class Test2NLPrompt:
                     helper_context = method_extractor.extract(
                         qualified_class, helper_sig, complete_methods=True
                     )
-                    # Avoid duplicates
-                    if helper_context not in helper_methods:
-                        helper_methods.append(helper_context)
+                    helper_methods.append(helper_context)
+
+        # Do naive method name matching
+        called_method_names: set[str] = set()
+        for cs in method_details.call_sites or []:
+            called_method_names.add(cs.method_name)
+        for setup_method in setup_methods:
+            for cs in setup_method.call_sites or []:
+                called_method_names.add(cs.method_name)
+        for teardown_method in teardown_methods:
+            for cs in teardown_method.call_sites or []:
+                called_method_names.add(cs.method_name)
 
         referenced_classes: List[ReferencedClass] = []
         ref_class_names: List[str] = CommonAnalysis(
@@ -138,7 +158,9 @@ class Test2NLPrompt:
         for ref_qualified_class_name in ref_class_names:
             referenced_classes.append(
                 ReferencedClassExtractor(self.analysis).extract(
-                    ref_qualified_class_name, complete_methods=True
+                    ref_qualified_class_name,
+                    complete_methods=True,
+                    called_method_names=called_method_names,
                 )
             )
 

@@ -13,7 +13,10 @@ class ReferencedClassExtractor:
         self.analysis = analysis
 
     def extract(
-        self, qualified_class_name: str, complete_methods: bool
+        self,
+        qualified_class_name: str,
+        complete_methods: bool,
+        called_method_names: set[str] | None = None,
     ) -> ReferencedClass:
         class_file = self.analysis.get_java_file(qualified_class_name)
         if not class_file:
@@ -42,9 +45,14 @@ class ReferencedClassExtractor:
                     FieldDeclarationExtractor(self.analysis).extract(field_declaration)
                 )
 
-        # Get methods for class
+        # Get methods for class (filtered if called_method_names provided)
         methods: List[MethodContext] = []
         for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
+            method_name = method_sig.split("(")[0]
+            is_constructor = method_name == simple_class_name or method_name == "<init>"
+            if called_method_names is not None and not is_constructor:
+                if method_name not in called_method_names:
+                    continue
             methods.append(
                 MethodExtractor(self.analysis).extract(
                     qualified_class_name, method_sig, complete_methods

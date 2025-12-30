@@ -119,17 +119,19 @@ def _should_skip_test_method(
         return True
 
     # Skip methods with @Disabled or @TestFactory annotations
-    if method_details.annotations:
-        for annotation in method_details.annotations:
-            # Extract base annotation name (strip parameters like @Disabled("reason"))
-            base_annotation = annotation.lstrip("@").split("(")[0]
-            if base_annotation.startswith("Disabled"):
-                return True
-            if base_annotation == "TestFactory":
-                return True
+    for annotation in method_details.annotations:
+        # Extract base annotation name (strip parameters like @Disabled("reason"))
+        base_annotation = annotation.lstrip("@").split("(")[0]
+        if base_annotation.startswith("Disabled"):
+            return True
+        if base_annotation == "TestFactory":
+            return True
 
     # Skip methods with empty bodies (only whitespace/comments)
-    if method_details.code and _has_empty_body(method_details.code.strip()):
+    if _has_empty_body(method_details.code.strip()):
+        return True
+
+    if not method_details.code.isascii():
         return True
 
     return False

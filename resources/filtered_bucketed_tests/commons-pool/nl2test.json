@@ -48,12 +48,12 @@
                 {
                     "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
                     "focal_method_names": [
-                        "setMaxTotalPerKey(int)",
                         "setMaxWait(java.time.Duration)",
-                        "clear(java.lang.Object)",
-                        "setMaxTotal(int)",
+                        "setMaxTotalPerKey(int)",
                         "returnObject(java.lang.Object, java.lang.Object)",
-                        "borrowObject(java.lang.Object)"
+                        "borrowObject(java.lang.Object)",
+                        "setMaxTotal(int)",
+                        "clear(java.lang.Object)"
                     ]
                 }
             ]
@@ -66,11 +66,11 @@
                     "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
                     "focal_method_names": [
                         "getNumIdle()",
-                        "setMaxTotal(int)",
                         "getNumActive()",
                         "setTestOnBorrow(boolean)",
-                        "borrowObject(java.lang.Object)",
                         "addObject(java.lang.Object)",
+                        "setMaxTotal(int)",
+                        "borrowObject(java.lang.Object)",
                         "setTestOnCreate(boolean)"
                     ]
                 }
@@ -83,14 +83,14 @@
                 {
                     "focal_class": "org.apache.commons.pool3.impl.ResilientPooledObjectFactory",
                     "focal_method_names": [
-                        "isMonitorRunning()",
                         "setTimeBetweenChecks(java.time.Duration)",
-                        "getDefaultLogSize()",
-                        "getDefaultTimeBetweenChecks()",
-                        "setLogSize(int)",
+                        "isMonitorRunning()",
                         "getDefaultLookBack()",
+                        "setLogSize(int)",
+                        "getDefaultTimeBetweenChecks()",
                         "getDefaultDelay()",
-                        "isAdderRunning()"
+                        "isAdderRunning()",
+                        "getDefaultLogSize()"
                     ]
                 }
             ]

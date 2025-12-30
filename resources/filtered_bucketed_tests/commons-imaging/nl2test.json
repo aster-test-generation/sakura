@@ -26,7 +26,8 @@
             ]
         }
     ],
-    "tests_with_two_focal_methods": [
+    "tests_with_two_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
             "method_signature": "testReadExif()",
@@ -46,11 +47,22 @@
                 {
                     "focal_class": "org.apache.commons.imaging.formats.png.PngImageMetadata",
                     "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.imaging.formats.tiff.TiffDirectory",
+                    "focal_method_names": [
+                        "getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.imaging.common.ImageMetadata",
+                    "focal_method_names": [
+                        "getItems()"
+                    ]
                 }
             ]
         }
     ],
-    "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],
     "tests_with_more_than_ten_focal_methods": []
 }

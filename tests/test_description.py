@@ -1,5 +1,7 @@
 from typing import List
 
+import pytest
+
 from nltest.test2nl.extractors import (
     FieldDeclarationExtractor,
     MethodExtractor,
@@ -15,7 +17,7 @@ from nltest.utils.pretty.prints import pretty_print
 
 
 class TestDescriptionGeneration:
-    def test_desc_one_abs_one_method(
+    def test_desc_high_abs_one_method(
         self, petclinic_desc_generator, petclinic_data_manager
     ):
         qualified_class_name = (
@@ -24,6 +26,46 @@ class TestDescriptionGeneration:
         method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
         abstraction_level = AbstractionLevel.HIGH
+        desc_generator = petclinic_desc_generator
+        test_description_info: TestDescriptionInfo | None = (
+            desc_generator.generate_for_method(
+                method_signature, qualified_class_name, abstraction_level
+            )
+        )
+        assert test_description_info is not None, "LLM generation failed..."
+
+        test_descriptions = [test_description_info]
+        petclinic_data_manager.save("descriptions.json", test_descriptions)
+
+    def test_desc_medium_abs_one_method(
+        self, petclinic_desc_generator, petclinic_data_manager
+    ):
+        qualified_class_name = (
+            "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        )
+        method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+
+        abstraction_level = AbstractionLevel.MEDIUM
+        desc_generator = petclinic_desc_generator
+        test_description_info: TestDescriptionInfo | None = (
+            desc_generator.generate_for_method(
+                method_signature, qualified_class_name, abstraction_level
+            )
+        )
+        assert test_description_info is not None, "LLM generation failed..."
+
+        test_descriptions = [test_description_info]
+        petclinic_data_manager.save("descriptions.json", test_descriptions)
+
+    def test_desc_low_abs_one_method(
+        self, petclinic_desc_generator, petclinic_data_manager
+    ):
+        qualified_class_name = (
+            "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        )
+        method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+
+        abstraction_level = AbstractionLevel.LOW
         desc_generator = petclinic_desc_generator
         test_description_info: TestDescriptionInfo | None = (
             desc_generator.generate_for_method(
@@ -71,7 +113,11 @@ class TestDescriptionGeneration:
         assert descriptions_path.exists(), "Descriptions file was not created"
         assert csv_path.exists(), "Test2NL CSV file was not created"
 
-    def test_test2nl_load(self, petclinic_data_manager):
+    def test_test2nl_load(self, petclinic_data_manager, petclinic_paths):
+        csv_path = petclinic_paths.project_output_dir / "test2nl.csv"
+        if not csv_path.exists():
+            pytest.skip("test2nl.csv not found; run test_desc_all_abs_one_method first")
+
         test2nl: List[Test2NLEntry] = petclinic_data_manager.load(
             "test2nl.csv", Test2NLEntry, format="csv"
         )
@@ -172,8 +218,7 @@ class TestDescriptionContextExtraction:
         )
         assert address_field is not None, "Field 'address' not found in Owner class"
 
-        extractor = FieldDeclarationExtractor(petclinic_analysis)
-        field_info = extractor.extract(address_field)
+        field_info = FieldDeclarationExtractor.extract(address_field)
 
         assert field_info is not None
         assert field_info.variables is not None
@@ -333,7 +378,7 @@ class TestDescriptionContextExtraction:
 
         # Constructors should always be included (Pet class has a constructor)
         has_constructor = any(
-            sig.startswith("Pet(") or sig == "<init>" for sig in method_sigs
+            sig.startswith("Pet(") or sig.startswith("<init>") for sig in method_sigs
         )
         assert has_constructor, f"Constructor not found in: {method_sigs}"
 

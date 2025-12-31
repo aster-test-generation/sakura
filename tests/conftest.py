@@ -53,26 +53,13 @@ def get_project_paths(project_name: str) -> ProjectPaths:
     repo_root = tests_dir.parent
     resources_dir = tests_dir / "resources"
 
-    # Assume project is in repo_root or specified by separate logic if needed.
-    # For now, default to looking in repo root or checks implied structure.
-    # Ideally projects are in resources or similar, but based on old code they were relative to repo root
-    # via TEST_PROJECT_ROOT. The user mentioned specifically resources/ has projects.
-    # Let's check resources first, if not there, check repo root.
-
-    # User comment: "for instance... spring-petclinic from @tests/resources/"
-    # So we should look in resources_dir first.
     candidate_path = resources_dir / project_name
     if not candidate_path.exists():
-        # Fallback to repo root if not in resources (legacy behavior)
         candidate_path = repo_root / project_name
 
     project_root = candidate_path
 
     if not project_root.is_dir():
-        # As a fallback for the old environment variable usage if that's still relevant?
-        # The user wants specific fixtures, so we should rely on the argument.
-        # But I will permit the old env var way if specific name not found, strictly for backward compat if needed?
-        # No, the user wants explicit fixtures.
         raise RuntimeError(
             f"Project root directory {project_root} does not exist. "
             "Ensure test datasets are initialized in tests/resources/ or repo root."
@@ -158,18 +145,24 @@ def petclinic_config(petclinic_paths: ProjectPaths) -> Generator[Config, None, N
 
 
 @pytest.fixture(scope="session")
-def petclinic_test2nl_prompt(petclinic_analysis: JavaAnalysis) -> Test2NLPrompt:
+def petclinic_test2nl_prompt(
+    petclinic_analysis: JavaAnalysis, petclinic_session_config: Config
+) -> Test2NLPrompt:
     return Test2NLPrompt(petclinic_analysis)
 
 
 @pytest.fixture(scope="session")
-def petclinic_roundtrip_prompt(petclinic_analysis: JavaAnalysis) -> RoundTripPrompt:
+def petclinic_roundtrip_prompt(
+    petclinic_analysis: JavaAnalysis, petclinic_session_config: Config
+) -> RoundTripPrompt:
     return RoundTripPrompt(petclinic_analysis)
 
 
 @pytest.fixture(scope="session")
 def petclinic_test2nl_pipeline(
-    petclinic_analysis: JavaAnalysis, petclinic_paths: ProjectPaths
+    petclinic_analysis: JavaAnalysis,
+    petclinic_paths: ProjectPaths,
+    petclinic_session_config: Config,
 ) -> Test2NLPipeline:
     return Test2NLPipeline(
         petclinic_analysis,
@@ -180,8 +173,21 @@ def petclinic_test2nl_pipeline(
 
 
 @pytest.fixture(scope="session")
+def petclinic_session_config(
+    petclinic_paths: ProjectPaths,
+) -> Generator[Config, None, None]:
+    """Session-scoped config for fixtures that need Config at session level."""
+    config = init_test_config(petclinic_paths)
+    try:
+        yield config
+    finally:
+        Config.reset()
+
+
+@pytest.fixture(scope="session")
 def petclinic_desc_generator(
     petclinic_analysis: JavaAnalysis,
+    petclinic_session_config: Config,
 ) -> DescriptionGenerator:
     return DescriptionGenerator(petclinic_analysis)
 

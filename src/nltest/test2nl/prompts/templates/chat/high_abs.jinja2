@@ -1,5 +1,5 @@
 # TASK
-Generate one concise paragraph at a low level of detail that follows the system instructions.
+Generate one concise paragraph at a **High Abstraction Level** (conceptual overview, no technical jargon) that follows the system instructions.
 
 # CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
@@ -74,4 +74,6 @@ None
 {%- endif %}
 
 # OUTPUT
-Produce a one paragraph instruction on how to reproduce the test method, using its code context. Follow the system instructions for the level of detail, and what to include in the natural language output.
+Produce a one-paragraph imperative instruction on how to reproduce the test case concept. Focus on the behavior and user story, avoiding all technical identifiers.
+Organize instructions chronologically: setup/preconditions first, then test actions and assertions **as they occur interwoven in the code**, and finally any teardown steps.
+Do not reference specific assertion methods, framework APIs, or annotation names.

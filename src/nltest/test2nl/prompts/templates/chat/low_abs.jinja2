@@ -1,5 +1,5 @@
 # TASK
-Generate one concise paragraph at a low level of detail that follows the system instructions.
+Generate one concise paragraph at a **Low Abstraction Level** (High technical detail, implementation spec) that follows the system instructions.
 
 # CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
@@ -74,4 +74,6 @@ None
 {%- endif %}
 
 # OUTPUT
-Produce a one paragraph instruction on how to reproduce the test method, using its code context. Follow the system instructions for the level of detail, and what to include in the natural language output.
+Produce a one-paragraph imperative instruction on how to reproduce the test method code. Include exact literals, method names, and granular details.
+Ensure all literal values, constructor arguments, and method parameters from the code are represented exactly in the instruction.
+Organize instructions chronologically: setup/preconditions first, then test actions and assertions **as they occur interwoven in the code**, and finally any teardown steps.

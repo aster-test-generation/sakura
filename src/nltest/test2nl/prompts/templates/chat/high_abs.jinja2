@@ -1,5 +1,6 @@
 # TASK
-Generate one concise paragraph at a **High Abstraction Level** (conceptual overview, no technical jargon) that follows the system instructions.
+Generate one concise paragraph at a **High Abstraction Level** (User Story/Business Intent) that follows the system instructions.
+Focus strictly on the *Why* and the *Outcome*, hiding all technical implementation details.
 
 # CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
@@ -72,6 +73,4 @@ None
 {%- endif %}
 
 # OUTPUT
-Produce a one-paragraph imperative instruction on how to reproduce the test case concept. Focus on the behavior and user story, avoiding all technical identifiers.
-Organize instructions chronologically: setup/preconditions first, then test actions and assertions **as they occur interwoven in the code**, and finally any teardown steps.
-Do not reference specific assertion methods, framework APIs, or annotation names.
+Produce a one-paragraph imperative instruction on the business logic of the test. Organize chronologically: preconditions first, then actions and outcomes **interwoven as they occur**, and finally any cleanup. Translate all technical elements into business terms.

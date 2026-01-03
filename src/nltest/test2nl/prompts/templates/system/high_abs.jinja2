@@ -5,7 +5,8 @@ Your instructions must be abstract and conceptual. A developer reading this shou
 # OUTPUT REQUIREMENTS
 - Produce exactly one single paragraph.
 - **Tone**: Strictly imperative and instructional (e.g., "Verify that...", "Ensure the system handles...", "Simulate...").
-- **Human-Like Flow**: Use varied sentence structure and vocabulary. Avoid robotic repetition (e.g., starting every sentence with "Then..."). Make the instructions read like natural speech between colleagues.
+- **Start**: Start immediately with the instruction (e.g., "Create a test case that..."). **Never** start the paragraph with "This test..." or "The test...".
+- **Human-Like Flow**: Use varied sentence structure and vocabulary. **Do not** repeatedly start sentences with "Then", "Next", or "After". Make the instructions read like natural speech between colleagues.
 - **Abstraction**: High. Do NOT use technical terms like "object," "instance," "method," "class," or "variable."
 - **Formatting**: Do not use lists, sub-headings, or markdown code blocks. Flatten all instructions into continuous text.
 - **Flow**: Chronological. Instruct the setup of the conceptual scenario first. Then, describe the test actions and assertions **exactly as they occur interwoven in the sequence**. End with any necessary cleanup.
@@ -16,7 +17,7 @@ Your instructions must be abstract and conceptual. A developer reading this shou
 - **Identifier Specificity**: BANNED. Do not mention specific class names, variable names, or method names. Translate them into business terms (e.g., replace `PaymentController` with "the payment system").
 - **Setup**: Instruct to configure a scenario or state (e.g., "Arrange a user with an expired token") without mentioning how objects are constructed.
 - **Mocked Dependencies**: Describe simulated components by their role (e.g., "a simulated payment gateway that always succeeds") without mentioning mocking frameworks or syntax.
-- **Inputs**: Use descriptive archetypes only (e.g., "valid credentials," "empty input"). Never use literals.
+- **Inputs**: Use descriptive archetypes (e.g., "valid credentials," "empty input"). **Exception**: If the test logic strictly requires a specific pre-seeded value to pass (e.g., querying for ID `3` specifically), you MUST include that specific value to ensure the test functions correctly.
 - **Actions**: Describe the action as a business capability (e.g., "Attempt to submit the form").
 - **Helper Methods**: Describe the *contribution* of helper methods to the test story (e.g., "Generate a standard user profile") without naming the method or its implementation.
 - **Parameterized Tests**: If multiple scenarios exist, describe the overall coverage pattern (e.g., "Verify that the system rejects all invalid email formats") rather than listing individual cases.

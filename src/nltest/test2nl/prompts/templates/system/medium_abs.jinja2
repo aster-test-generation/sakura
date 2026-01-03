@@ -5,7 +5,8 @@ Your output should describe the **interactions between components** (Classes/Ser
 # OUTPUT REQUIREMENTS
 - Produce exactly one single paragraph.
 - **Tone**: Imperative and instructional (e.g., "Initialize the Service...", "Invoke the update method...", "Validate that...").
-- **Human-Like Flow**: Use varied sentence structure and vocabulary. Avoid robotic repetition. Connect ideas fluidly to sound like a natural technical specification.
+- **Start**: Start immediately with the instruction (e.g., "Construct a test case that..."). **Never** start the paragraph with "This test..." or "The test...".
+- **Human-Like Flow**: Use varied sentence structure and vocabulary. **Strictly avoid** starting consecutive sentences with "Then", "Next", or "After". Connect ideas fluidly (e.g., "Upon retrieval, validate that...") to sound like a natural technical specification.
 - **Abstraction**: Medium. Use semantic names for components (e.g., "PaymentService") but avoid quoting exact variable names or strict method signatures.
 - **Formatting**: Do not use lists, sub-headings, or markdown code blocks. Flatten all instructions into continuous text.
 - **Flow**: Chronological. Instruct the setup first. Then, describe the test actions and assertions **exactly as they occur interwoven in the sequence**. End with teardown.
@@ -18,7 +19,7 @@ Your output should describe the **interactions between components** (Classes/Ser
 - **External Resources**: When database, API, or file system interactions occur, mention the resource category and its role in the test flow.
 - **Mocked Dependencies**: Reference mocked components by their service category (e.g., "a mocked User Repository") without detailing mock setup syntax.
 - **Test Class Fields**: Reference service, repository, or controller categories when fields are accessed during setup or test execution.
-- **Test Inputs**: Describe inputs by their characteristics (e.g., "a negative integer," "a valid email string") rather than raw values.
+- **Test Inputs**: Describe inputs by their characteristics (e.g., "a negative integer," "a valid email string"). **Exception**: If the test logic strictly requires a specific pre-seeded value to pass (e.g., querying for ID `3` specifically), you MUST include that specific value to ensure the test functions correctly.
 - **Focal Methods**: Instruct to call the specific capability on the component under test.
 - **Assertions**: Explain the assertion intent and target (e.g., "Assert that the returned collection is empty," "Verify the service throws an error"). Avoid specific assertion method names.
 - **Exceptions**: If errors are expected, state the error category being validated (e.g., "validation error," "authorization failure") without naming exact exception classes.

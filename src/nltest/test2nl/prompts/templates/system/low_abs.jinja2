@@ -5,6 +5,7 @@ Your output must be granular enough that a developer could rewrite the code almo
 # OUTPUT REQUIREMENTS
 - Produce exactly one single paragraph.
 - **Tone**: Strictly Imperative and Technical (e.g., "Instantiate...", "Pass argument 'X'...", "Assert that...").
+- **Start**: Start immediately with the instruction (e.g., "Write a test that..."). **Never** start the paragraph with "This test..." or "The test...".
 - **Human-Like Flow**: Despite the high detail, use varied sentence structure and natural transitions. Do not produce a robotic list of commands. Write it as if dictating the code to a colleague.
 - **Abstraction**: Low (High Detail). You MUST use exact class names and literal values found in the code.
 - **Formatting**: Do not use lists or sub-headings. Do not use multi-line markdown code blocks, but DO use single backticks for exact alphanumeric identifiers from the code. Flatten all instructions into continuous text.
@@ -13,14 +14,14 @@ Your output must be granular enough that a developer could rewrite the code almo
 
 # CONTENT RULES
 - **Test Intent**: Begin by specifying the exact class and method under test.
-- **Identifier Specificity**: Use EXACT names for classes and methods. Use simple class names (e.g., `UserController`, not `com.api.UserController`) and **method names** (e.g., `saveUser`) **without** parameter signatures/parentheses. However, if ambiguity exists between classes with the same simple name, include the package prefix for disambiguation.
+- **Identifier Specificity**: Use EXACT names for classes and methods. Use simple class names (e.g., `UserController`, not `com.api.UserController`) and **method names** (e.g., `saveUser`) **without** parameter signatures/parentheses, using package prefixes only if ambiguity exists. Do not dictate local variable names (e.g., do not say "assign this to variable `response`"); focus on the values and objects being passed or returned. For standard library factories or statics, use concise code literals (e.g., `LocalDate.now()`) instead of verbose prose.
 - **Setup**: Instruct to instantiate specific classes using specific constructors or builders. Quote the exact values used for initialization.
 - **Mocked Dependencies**: Specify the exact classes being mocked and the stubbed behaviors (e.g., "mock `UserRepository` to return an empty `Optional` when `findById` is called").
 - **External Resources**: Include exact endpoints, ports, connection strings, or resource identifiers when present in the code.
 - **Test Class Fields**: Reference exact field types and names when accessed. Note their initialization if visible in setup methods.
-- **Test Inputs**: You MUST include the exact literal values (strings, numbers, booleans) used as arguments.
+- **Test Inputs**: You MUST include the exact literal values (strings, numbers, booleans) used as arguments. Focus heavily on the **arguments** passed to methods rather than the mechanics of the call itself.
 - **Focal Methods**: Instruct to invoke the exact method name on the subject object.
-- **Assertions**: List every assertion method called (e.g., `assertEquals`) and the exact expected value. For tests with more than five similar assertions, group them by pattern (e.g., "assert that fields `name`, `email`, and `phone` each equal their respective expected literals").
+- **Assertions**: List every assertion method called (e.g., `assertEquals`) and the exact expected value. Treat method chains (e.g., AssertJ) as a single logical unit (e.g., "Assert that the owner's pet list size matches the stored count + 1") rather than breaking them into separate sentences. For tests with more than five similar assertions, group them by pattern.
 - **Exceptions**: If an exception is expected, name the exact Exception class and the mechanism used to verify it.
 - **Annotations**: List all test method annotations and their parameters (e.g., `@Test(expected = IllegalArgumentException.class)`).
 - **Helper Methods**: Do not summarize helpers. Unwrap the helper logic and include their imperative steps directly in the instruction flow where they occur.

@@ -239,6 +239,7 @@ class Test2NLPrompt:
         method_signature: str,
         qualified_class_name: str,
         abstraction_level: AbstractionLevel,
+        temperature: float | None = None,
     ) -> Tuple[str | None, str, bool]:
         """
         Prompt to get the natural language description of a test case.
@@ -246,6 +247,7 @@ class Test2NLPrompt:
             method_signature: The method signature of the test case
             qualified_class_name: The qualified class name containing the method with the test case.
             abstraction_level: The abstraction level of the natural language description.
+            temperature: Optional temperature override for the LLM call.
 
         Returns:
             Tuple[str|None, str, bool]: The natural language description of the test case, the prompts, and
@@ -260,8 +262,9 @@ class Test2NLPrompt:
             method_signature, qualified_class_name, abstraction_level
         )
 
-        # Call the LLM
-        ai_msg = self.llm.invoke_prompts(system_prompt, chat_prompt)
+        ai_msg = self.llm.invoke_prompts(
+            system_prompt, chat_prompt, temperature=temperature
+        )
         test_desc = ai_msg.content.strip() if ai_msg and ai_msg.content else None
 
         if test_desc:

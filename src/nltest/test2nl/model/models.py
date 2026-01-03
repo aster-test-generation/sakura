@@ -5,11 +5,17 @@ from typing import List
 
 from pydantic import BaseModel
 
+from nltest.utils.constants import ABSTRACTION_TEMPERATURES
+
 
 class AbstractionLevel(Enum):
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
+
+    def get_temperature(self) -> float:
+        """Return the temperature for this abstraction level."""
+        return ABSTRACTION_TEMPERATURES[self.value]
 
 
 class TrialType(Enum):

@@ -21,10 +21,10 @@ from .usage_tracker import UsageTracker
 
 class LLMClient:
     def __init__(
-            self,
-            client_type: ClientType,
-            *,
-            usage_tracker: UsageTracker | None = None,
+        self,
+        client_type: ClientType,
+        *,
+        usage_tracker: UsageTracker | None = None,
     ):
         config = Config()
 
@@ -107,27 +107,29 @@ class LLMClient:
         self._client_type = client_type
 
     def _build_runnable(
-            self,
-            *,
-            tools: Optional[Sequence[BaseTool]] = None,
-            tool_choice: Union[str, dict, None] = "auto",
-            response_format: Optional[Dict[str, Any]] = None,
-            extra_model_kwargs: Optional[Dict[str, Any]] = None,
-            schema: Any = None,
-            strict: bool = True,
-            method: Optional[
-                Literal["json_schema", "function_calling", "json_mode"]
-            ] = "json_schema",
+        self,
+        *,
+        tools: Optional[Sequence[BaseTool]] = None,
+        tool_choice: Union[str, dict, None] = "auto",
+        response_format: Optional[Dict[str, Any]] = None,
+        extra_model_kwargs: Optional[Dict[str, Any]] = None,
+        schema: Any = None,
+        strict: bool = True,
+        method: Optional[
+            Literal["json_schema", "function_calling", "json_mode"]
+        ] = "json_schema",
+        temperature: Optional[float] = None,
     ) -> RunnableSerializable:
         runnable: RunnableSerializable = self._chat
 
+        if temperature is not None:
+            runnable = runnable.bind(temperature=temperature)
+
         if tools:
-            runnable = runnable.bind_tools(
-                tools, tool_choice=tool_choice
-            )
+            runnable = runnable.bind_tools(tools, tool_choice=tool_choice)
 
         if (
-                response_format is not None and schema is None
+            response_format is not None and schema is None
         ):  # NOTE: If schema is provided, we don't need to bind the response format
             runnable = runnable.bind(response_format=response_format)
 
@@ -157,18 +159,19 @@ class LLMClient:
         return ai_msg
 
     def invoke_messages(
-            self,
-            messages: Sequence[BaseMessage],
-            *,
-            tools: Optional[Sequence[BaseTool]] = None,
-            tool_choice: Union[str, dict, None] = "auto",
-            response_format: Optional[Dict[str, Any]] = None,
-            extra_model_kwargs: Optional[Dict[str, Any]] = None,
-            schema: Any = None,
-            strict: bool = True,
-            method: Optional[
-                Literal["json_schema", "function_calling", "json_mode"]
-            ] = "json_schema",
+        self,
+        messages: Sequence[BaseMessage],
+        *,
+        tools: Optional[Sequence[BaseTool]] = None,
+        tool_choice: Union[str, dict, None] = "auto",
+        response_format: Optional[Dict[str, Any]] = None,
+        extra_model_kwargs: Optional[Dict[str, Any]] = None,
+        schema: Any = None,
+        strict: bool = True,
+        method: Optional[
+            Literal["json_schema", "function_calling", "json_mode"]
+        ] = "json_schema",
+        temperature: Optional[float] = None,
     ) -> Any:
         runnable = self._build_runnable(
             tools=tools,
@@ -178,6 +181,7 @@ class LLMClient:
             schema=schema,
             strict=strict,
             method=method,
+            temperature=temperature,
         )
         try:
             out = runnable.invoke(list(messages))
@@ -213,17 +217,18 @@ class LLMClient:
         return self._normalize_tool_call_ids(out) if isinstance(out, AIMessage) else out
 
     def invoke_prompts(
-            self,
-            system: str,
-            chat: str,
-            *,
-            response_format: Optional[Dict[str, Any]] = None,
-            extra_model_kwargs: Optional[Dict[str, Any]] = None,
-            schema: Any = None,
-            strict: bool = True,
-            method: Optional[
-                Literal["json_schema", "function_calling", "json_mode"]
-            ] = "json_schema",
+        self,
+        system: str,
+        chat: str,
+        *,
+        response_format: Optional[Dict[str, Any]] = None,
+        extra_model_kwargs: Optional[Dict[str, Any]] = None,
+        schema: Any = None,
+        strict: bool = True,
+        method: Optional[
+            Literal["json_schema", "function_calling", "json_mode"]
+        ] = "json_schema",
+        temperature: Optional[float] = None,
     ) -> Any:
         messages: Sequence[BaseMessage] = [
             SystemMessage(content=system),
@@ -236,6 +241,7 @@ class LLMClient:
             schema=schema,
             strict=strict,
             method=method,
+            temperature=temperature,
         )
 
     @staticmethod

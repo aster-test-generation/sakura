@@ -4,6 +4,13 @@
         "new_test_method_count": 8
     },
     "new_tests": {
+        "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool": [
+            "testUnwrapInvocationTargetExceptionFalse()",
+            "testUnwrapInvocationTargetExceptionTrue()"
+        ],
+        "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory": [
+            "testConstructorWithDefaults()"
+        ],
         "org.apache.commons.pool3.PooledObjectTest": [
             "testGetObject()",
             "testNonNull()",
@@ -12,13 +19,6 @@
         "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool": [
             "testClearReuseCapacity()",
             "testValidateOnCreateFailure()"
-        ],
-        "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory": [
-            "testConstructorWithDefaults()"
-        ],
-        "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool": [
-            "testUnwrapInvocationTargetExceptionFalse()",
-            "testUnwrapInvocationTargetExceptionTrue()"
         ]
     }
 }

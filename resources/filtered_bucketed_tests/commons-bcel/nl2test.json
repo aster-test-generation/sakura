@@ -1,6 +1,31 @@
 {
     "dataset_name": "commons-bcel",
-    "tests_with_one_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+            "method_signature": "testGetResources()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.util.ClassPath",
+                    "focal_method_names": [
+                        "getResources(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+            "method_signature": "testClose()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.util.ClassPath",
+                    "focal_method_names": [
+                        "getClassPath()"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_two_focal_methods": [],
     "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],

@@ -4,11 +4,13 @@
         "new_test_method_count": 14
     },
     "new_tests": {
-        "org.apache.commons.beanutils2.converters.InstantConverterTest": [
-            "testConvertingInstantString()",
-            "testConvertingMilliseconds()",
-            "testLocalizedNumber()",
-            "testText()"
+        "org.apache.commons.beanutils2.converters.EnumConverterTest": [
+            "testNonExistingClasses()",
+            "testConvertDayOfWeek()",
+            "testConvertMismatchingEnumType()",
+            "testNonEnumClasses()",
+            "testConvertTimeUnit()",
+            "testBrokenNamingConvention()"
         ],
         "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest": [
             "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
@@ -16,13 +18,11 @@
             "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
             "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
         ],
-        "org.apache.commons.beanutils2.converters.EnumConverterTest": [
-            "testConvertTimeUnit()",
-            "testConvertDayOfWeek()",
-            "testConvertMismatchingEnumType()",
-            "testBrokenNamingConvention()",
-            "testNonEnumClasses()",
-            "testNonExistingClasses()"
+        "org.apache.commons.beanutils2.converters.InstantConverterTest": [
+            "testConvertingInstantString()",
+            "testConvertingMilliseconds()",
+            "testLocalizedNumber()",
+            "testText()"
         ]
     }
 }

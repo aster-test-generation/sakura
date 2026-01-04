@@ -1,19 +1,39 @@
 {
     "summary": {
-        "new_test_class_count": 11,
-        "new_test_method_count": 29
+        "new_test_class_count": 13,
+        "new_test_method_count": 35
     },
     "new_tests": {
-        "org.apache.commons.vfs2.provider.http4.Http4ProviderTest": [
-            "testResolveFolderSlashYesRedirectOn()",
-            "testResolveFolderSlashYesRedirectOff()",
-            "testResolveIPv6Url()",
-            "testResolveFolderSlashNoRedirectOn()",
-            "testResolveFolderSlashNoRedirectOff()",
-            "testHttpTimeoutConfig()"
+        "org.apache.commons.vfs2.filter.NameFileFilterTest.ListBasedFiltering": [
+            "testAcceptListIOCaseInsensitive()",
+            "testAcceptList()",
+            "testAcceptListIOCaseSensitive()"
+        ],
+        "org.apache.commons.vfs2.filter.NameFileFilterTest.StringBasedFiltering": [
+            "testAcceptStringIOCaseInsensitive()",
+            "testAcceptStringIOCaseSensitive()",
+            "testAcceptString()"
+        ],
+        "org.apache.commons.vfs2.AbstractProviderTestSuite": [
+            "providerTests()"
         ],
         "org.apache.commons.vfs2.util.URIUtilsTest": [
             "testEncodePathThrowsIllegalArgumentException()"
+        ],
+        "org.apache.commons.vfs2.provider.sftp.SftpPutChannelTest": [
+            "testDoGetInputStream()"
+        ],
+        "org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilderTest": [
+            "testControlEncoding()"
+        ],
+        "org.apache.commons.vfs2.provider.ftp.FtpProviderIPv6Test": [
+            "testResolveIPv6Url()"
+        ],
+        "org.apache.commons.vfs2.filter.SizeFileFilterTest": [
+            "testSizeFilterSizeNegative()"
+        ],
+        "org.apache.commons.vfs2.provider.sftp.SftpPermissionExceptionTest": [
+            "testGetOutputStreamException()"
         ],
         "org.apache.commons.vfs2.provider.res.Vfs444Test": [
             "testResolveFullPathFile2()",
@@ -34,26 +54,16 @@
             "testResolveFolderSlashNoRedirectOff()",
             "testHttpTimeoutConfig()"
         ],
-        "org.apache.commons.vfs2.provider.ftp.FtpProviderIPv6Test": [
-            "testResolveIPv6Url()"
-        ],
-        "org.apache.commons.vfs2.provider.sftp.SftpPutChannelTest": [
-            "testDoGetInputStream()"
-        ],
-        "org.apache.commons.vfs2.AbstractProviderTestSuite": [
-            "providerTests()"
-        ],
-        "org.apache.commons.vfs2.provider.sftp.SftpPermissionExceptionTest": [
-            "testGetOutputStreamException()"
-        ],
-        "org.apache.commons.vfs2.filter.SizeFileFilterTest": [
-            "testSizeFilterSizeNegative()"
-        ],
-        "org.apache.commons.vfs2.provider.ftp.FtpFileSystemConfigBuilderTest": [
-            "testControlEncoding()"
-        ],
         "org.apache.commons.vfs2.provider.sftp.SftpProviderIPv6Test": [
             "testResolveIPv6Url()"
+        ],
+        "org.apache.commons.vfs2.provider.http4.Http4ProviderTest": [
+            "testResolveFolderSlashYesRedirectOn()",
+            "testResolveFolderSlashYesRedirectOff()",
+            "testResolveIPv6Url()",
+            "testResolveFolderSlashNoRedirectOn()",
+            "testResolveFolderSlashNoRedirectOff()",
+            "testHttpTimeoutConfig()"
         ]
     }
 }

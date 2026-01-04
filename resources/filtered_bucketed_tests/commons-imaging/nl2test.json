@@ -26,7 +26,30 @@
             ]
         }
     ],
-    "tests_with_two_focal_methods": [],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegImageParser",
+                    "focal_method_names": [
+                        "getMetadata(java.io.File)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata",
+                    "focal_method_names": [
+                        "getItems()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem",
+                    "focal_method_names": []
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_two_to_five_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",

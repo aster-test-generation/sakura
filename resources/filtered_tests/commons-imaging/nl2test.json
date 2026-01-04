@@ -1,16 +1,19 @@
 {
     "summary": {
-        "new_test_class_count": 2,
-        "new_test_method_count": 4
+        "new_test_class_count": 3,
+        "new_test_method_count": 5
     },
     "new_tests": {
+        "org.apache.commons.imaging.formats.png.PngReadTest": [
+            "testReadExif()"
+        ],
         "org.apache.commons.imaging.ImageFormatsTest": [
             "testExtensions(org.apache.commons.imaging.ImageFormats)",
             "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
             "testName(org.apache.commons.imaging.ImageFormats)"
         ],
-        "org.apache.commons.imaging.formats.png.PngReadTest": [
-            "testReadExif()"
+        "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest": [
+            "testEncodingSupport()"
         ]
     }
 }

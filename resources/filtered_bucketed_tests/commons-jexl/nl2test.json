@@ -219,30 +219,6 @@
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.jexl3.Issues400Test",
-            "method_signature": "test437a()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
-                    "focal_method_names": [
-                        "createScript(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlScript",
-                    "focal_method_names": [
-                        "execute(org.apache.commons.jexl3.JexlContext)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.jexl3.JexlBuilder",
-                    "focal_method_names": [
-                        "create()"
-                    ]
-                }
-            ]
-        },
-        {
             "qualified_class_name": "org.apache.commons.jexl3.LambdaTest",
             "method_signature": "testRefCapture5()",
             "focal_details": [
@@ -329,6 +305,32 @@
                     "focal_method_names": [
                         "createScript(java.lang.String, java.lang.String[])",
                         "createScript(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.jexl3.ExceptionTest",
+            "method_signature": "testWrappedExmore()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlEngine",
+                    "focal_method_names": [
+                        "setProperty(java.lang.Object, java.lang.String, java.lang.Object)",
+                        "getProperty(java.lang.Object, java.lang.String)",
+                        "invokeMethod(java.lang.Object, java.lang.String, java.lang.Object[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlException.Property",
+                    "focal_method_names": [
+                        "getCause()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.jexl3.JexlException.Method",
+                    "focal_method_names": [
+                        "getCause()"
                     ]
                 }
             ]

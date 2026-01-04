@@ -34,28 +34,6 @@
     ],
     "tests_with_more_than_five_to_ten_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
-            "method_signature": "testSetPasswordString()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS",
-                    "focal_method_names": [
-                        "setPassword(java.lang.String)",
-                        "setUser(java.lang.String)",
-                        "setUrl(java.lang.String)",
-                        "setDriver(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory",
-                    "focal_method_names": [
-                        "getPasswordCharArray()",
-                        "setPassword(java.lang.String)"
-                    ]
-                }
-            ]
-        },
-        {
             "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
             "method_signature": "testDefaultReadOnly()",
             "focal_details": [

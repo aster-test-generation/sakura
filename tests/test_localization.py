@@ -9,10 +9,20 @@ from nltest.nl2test.generation.localization import (
     LocalizationTools,
 )
 from nltest.nl2test.generation.localization.tools.base import BaseLocalizationTools
-from nltest.nl2test.generation.localization.tools.gherkin import GherkinLocalizationTools
-from nltest.nl2test.generation.localization.tools.grammatical import GrammaticalLocalizationTools
+from nltest.nl2test.generation.localization.tools.gherkin import (
+    GherkinLocalizationTools,
+)
+from nltest.nl2test.generation.localization.tools.grammatical import (
+    GrammaticalLocalizationTools,
+)
 from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
-from nltest.nl2test.models import AgentState, AtomicBlock, AtomicBlockList, NL2TestInput, LocalizedScenario
+from nltest.nl2test.models import (
+    AgentState,
+    AtomicBlock,
+    AtomicBlockList,
+    NL2TestInput,
+    LocalizedScenario,
+)
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
     Scenario,
@@ -45,9 +55,7 @@ class TestLocalizationAgent:
             parallelizable=True, max_iters=max_iters_parallel
         )
         pretty_print("Parallelizable prompt", rendered_parallel)
-        expected_cap_parallel = (
-            f"You must complete within at most {max_iters_parallel} model step(s) (iterations)."
-        )
+        expected_cap_parallel = f"You must complete within at most {max_iters_parallel} model step(s) (iterations)."
         assert expected_cap_parallel in rendered_parallel
         assert "You may parallelize tool calls" in rendered_parallel
         assert "Do not parallelize tool calls" not in rendered_parallel
@@ -419,8 +427,8 @@ class TestLocalizationGrader:
 
         project_root = Path(self.config.get("project", "base_project_dir"))
         common_analysis = CommonAnalysis(self.analysis)
-        _, application_classes = (
-            common_analysis.get_test_methods_classes_and_application_classes()
+        _, application_classes, _ = (
+            common_analysis.categorize_classes()
         )
 
         grader = LocalizationGrader(
@@ -641,7 +649,9 @@ class TestLocalizationToolInjection:
         tool_builder = BaseLocalizationTools(**deps)
         tools, _ = tool_builder.all()
 
-        reachable_tool = next(t for t in tools if t.name == "get_reachable_methods_in_class")
+        reachable_tool = next(
+            t for t in tools if t.name == "get_reachable_methods_in_class"
+        )
         assert reachable_tool is not None
 
     def test_get_class_details_tool_exists(self):
@@ -659,5 +669,7 @@ class TestLocalizationToolInjection:
         tool_builder = BaseLocalizationTools(**deps)
         tools, _ = tool_builder.all()
 
-        inherited_tool = next(t for t in tools if t.name == "get_inherited_library_classes")
+        inherited_tool = next(
+            t for t in tools if t.name == "get_inherited_library_classes"
+        )
         assert inherited_tool is not None

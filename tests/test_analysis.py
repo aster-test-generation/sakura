@@ -36,9 +36,9 @@ def test_focal_classes_and_methods_for_specific_test(petclinic_analysis):
         qualified_class_name
     )
 
-    _, application_classes = CommonAnalysis(
+    _, application_classes, _ = CommonAnalysis(
         analysis
-    ).get_test_methods_classes_and_application_classes()
+    ).categorize_classes()
 
     from hamster.code_analysis.focal_class_method.focal_class_method import (
         FocalClassMethod,
@@ -109,9 +109,9 @@ def test_compare_focal_classes_and_methods(petclinic_analysis):
             analysis
         ).get_setup_methods(qualified_class_name)
 
-        _, application_classes = CommonAnalysis(
+        _, application_classes, _ = CommonAnalysis(
             analysis
-        ).get_test_methods_classes_and_application_classes()
+        ).categorize_classes()
 
         from hamster.code_analysis.focal_class_method.focal_class_method import (
             FocalClassMethod,

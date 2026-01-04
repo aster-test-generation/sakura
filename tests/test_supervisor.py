@@ -13,7 +13,9 @@ from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
 )
 from nltest.nl2test.generation.supervisor.tools.base import BaseSupervisorTools
 from nltest.nl2test.generation.supervisor.tools.gherkin import GherkinSupervisorTools
-from nltest.nl2test.generation.supervisor.tools.grammatical import GrammaticalSupervisorTools
+from nltest.nl2test.generation.supervisor.tools.grammatical import (
+    GrammaticalSupervisorTools,
+)
 from nltest.nl2test.models import AgentState
 from nltest.nl2test.models.decomposition import DecompositionMode, LocalizedScenario
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
@@ -120,7 +122,9 @@ class TestSupervisorAgent:
 
         # Get application classes for grading
         cmn = CommonAnalysis(new_analysis)
-        _, application_classes = cmn.get_test_methods_classes_and_application_classes()
+        _, application_classes, _ = (
+            cmn.categorize_classes()
+        )
 
         # Gather compilation errors
         compilation_errors = JavaMavenCompilation(project_root).get_compilation_errors()
@@ -211,7 +215,9 @@ class TestSupervisorToolInjection:
         mock_llm = MagicMock()
         mock_llm.parse_tool_args = lambda x: x
 
-        tool_builder = GrammaticalSupervisorTools(llm=mock_llm, project_root="/tmp/test")
+        tool_builder = GrammaticalSupervisorTools(
+            llm=mock_llm, project_root="/tmp/test"
+        )
         tools, allow_duplicates = tool_builder.all()
 
         tool_names = {t.name for t in tools}

@@ -1,15 +1,15 @@
-from typing import Dict, Tuple, List, Union, Optional
 from pathlib import Path
+from typing import List, Optional, Tuple, Union
 
-from cldk.analysis.java import JavaAnalysis
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
+from cldk.analysis.java import JavaAnalysis
 
+from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.nl2test.generation.localization.orchestrators import (
-    GrammaticalLocalizationOrchestrator,
     GherkinLocalizationOrchestrator,
+    GrammaticalLocalizationOrchestrator,
 )
-from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
 from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
     GherkinSupervisorOrchestrator,
 )
@@ -18,43 +18,39 @@ from nltest.nl2test.generation.supervisor.orchestrators.grammatical import (
 )
 from nltest.nl2test.models import (
     AgentState,
-    NL2TestInput,
     AtomicBlock,
-    GrammaticalBlock,
-    GrammaticalBlockList,
     AtomicBlockList,
-    NL2LocalizationOutput,
-    Scenario,
-    LocalizedScenario,
+    GrammaticalBlockList,
     LocalizationEval,
+    LocalizedScenario,
+    NL2LocalizationOutput,
+    NL2TestCoverageEval,
+    NL2TestInput,
     NL2TestMetadata,
     NL2TestStructuralEval,
-    NL2TestCoverageEval,
+    Scenario,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
-from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
-from nltest.utils.models import AgentToolLog, ToolLog, NL2TestEval
-from nltest.nl2test.preprocessing.indexers import ClassIndexer
-from nltest.nl2test.preprocessing.indexers import MethodIndexer
-from nltest.nl2test.preprocessing.searchers import ClassSearcher
-from nltest.nl2test.preprocessing.searchers import MethodSearcher
+from nltest.nl2test.preprocessing.indexers import ClassIndexer, MethodIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.utils.llm import LLMClient, ClientType, UsageTracker
-from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
+from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
 from nltest.utils.evaluation import TestGrader
-from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
+from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
+from nltest.utils.llm import UsageTracker
+from nltest.utils.models import AgentToolLog, NL2TestEval, ToolLog
 
 
 class Pipeline:
     def __init__(
-            self,
-            analysis: JavaAnalysis,
-            *,
-            project_root: Path,
-            analysis_dir: Path,
-            decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
+        self,
+        analysis: JavaAnalysis,
+        *,
+        project_root: Path,
+        analysis_dir: Path,
+        decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
     ):
         self.analysis = analysis
         self.project_root = Path(project_root)
@@ -69,10 +65,8 @@ class Pipeline:
         self.class_searcher: Optional[ClassSearcher] = None
 
         # Initialize TestGrader with current analysis and application classes
-        _cmn = CommonAnalysis(self.analysis)
-        _test_map, _application_classes = (
-            _cmn.get_test_methods_classes_and_application_classes()
-        )
+        _common_analysis = CommonAnalysis(self.analysis)
+        _, _application_classes, _ = _common_analysis.categorize_classes()
         self.application_classes = _application_classes
         self.test_grader = TestGrader(
             analysis=self.analysis,
@@ -88,9 +82,9 @@ class Pipeline:
         )
 
     def run_preprocessing(
-            self,
-            *,
-            exclude_test_dirs: bool = False,
+        self,
+        *,
+        exclude_test_dirs: bool = False,
     ) -> Tuple[MethodSearcher, ClassSearcher]:
         # Build search indices with optional filtering of test sources
         self.method_searcher = self.method_indexer.build_index(
@@ -103,9 +97,9 @@ class Pipeline:
         return self.method_searcher, self.class_searcher
 
     def decompose_natural_language(
-            self,
-            nl_description: str,
-            usage_tracker: UsageTracker | None = None,
+        self,
+        nl_description: str,
+        usage_tracker: UsageTracker | None = None,
     ) -> Union[GrammaticalBlockList, Scenario]:
         """Decompose natural language based on pipeline decomposition mode.
 
@@ -118,11 +112,11 @@ class Pipeline:
         return nl_decomposer.decompose(nl_description)
 
     def run_localization_agent(
-            self,
-            nl2_input: NL2TestInput,
-            blocks: Union[
-                GrammaticalBlockList, Scenario, AtomicBlockList, LocalizedScenario
-            ],
+        self,
+        nl2_input: NL2TestInput,
+        blocks: Union[
+            GrammaticalBlockList, Scenario, AtomicBlockList, LocalizedScenario
+        ],
     ) -> Tuple[Union[AtomicBlockList, LocalizedScenario], str]:
         if not self.method_searcher or not self.class_searcher:
             raise RuntimeError("Preprocessing must be run before localization agent")
@@ -161,24 +155,24 @@ class Pipeline:
             blocks, instructions=instructions
         )
         if self.decomposition_mode == DecompositionMode.GHERKIN:
-            assert (
-                    updated_state.localized_scenario is not None
-            ), "Localization agent did not return LocalizedScenario"
+            assert updated_state.localized_scenario is not None, (
+                "Localization agent did not return LocalizedScenario"
+            )
             return (
                 updated_state.localized_scenario,
                 updated_state.final_comments or "No comments.",
             )
         else:
-            assert (
-                    updated_state.atomic_blocks is not None
-            ), "Localization agent did not return AtomicBlockList"
+            assert updated_state.atomic_blocks is not None, (
+                "Localization agent did not return AtomicBlockList"
+            )
             return (
                 updated_state.atomic_blocks,
                 updated_state.final_comments or "No comments.",
             )
 
     def run_localization_evaluation_pipeline(
-            self, nl2_input: NL2TestInput
+        self, nl2_input: NL2TestInput
     ) -> NL2LocalizationOutput:
         # Ensure preprocessing was run
         if not self.method_searcher or not self.class_searcher:
@@ -228,14 +222,16 @@ class Pipeline:
             tool_name: sum(arg_counts.values())
             for tool_name, arg_counts in state.total_tool_calls.items()
         }
-        tool_trajectories = [trajectory.copy() for trajectory in state.tool_trajectories]
+        tool_trajectories = [
+            trajectory.copy() for trajectory in state.tool_trajectories
+        ]
         return AgentToolLog(
             tool_counts=tool_counts,
             tool_trajectories=tool_trajectories,
         )
 
     def _localization_eval_from_state(
-            self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
+        self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
     ) -> LocalizationEval:
         localization_eval = self._empty_localization_eval(nl2_input)
         if not supervisor_state:
@@ -255,16 +251,14 @@ class Pipeline:
             return localization_eval
 
     def _build_tool_log(
-            self,
-            supervisor_state: AgentState | None,
-            localization_state: AgentState | None,
-            composition_state: AgentState | None,
+        self,
+        supervisor_state: AgentState | None,
+        localization_state: AgentState | None,
+        composition_state: AgentState | None,
     ) -> ToolLog:
         return ToolLog(
             supervisor_tool_log=self._agent_tool_log_from_state(supervisor_state),
-            localization_tool_log=self._agent_tool_log_from_state(
-                localization_state
-            ),
+            localization_tool_log=self._agent_tool_log_from_state(localization_state),
             composition_tool_log=self._agent_tool_log_from_state(composition_state),
         )
 
@@ -308,6 +302,9 @@ class Pipeline:
         return self.analysis
 
     def run_nl2test(self, nl2_input: NL2TestInput) -> NL2TestEval:
+        if not self.method_searcher or not self.class_searcher:
+            raise Exception("Preprocessing not completed...")
+
         run_usage_tracker = UsageTracker()
 
         # Decompose into initial blocks
@@ -350,8 +347,8 @@ class Pipeline:
             )
 
         try:
-            supervisor_state, localization_state, composition_state = supervisor.assign_task(
-                sup_blocks
+            supervisor_state, localization_state, composition_state = (
+                supervisor.assign_task(sup_blocks)
             )
         except ProjectCompilationError as exc:
             raise ProjectCompilationError(
@@ -394,8 +391,12 @@ class Pipeline:
             self.localization_grader.set_analysis(new_analysis)
 
             # Gather erroneous files and pass to grader
-            compilation_errors: List[CompilationError] = JavaMavenCompilation(self.project_root).get_compilation_errors()
-            erroneous_files = [compilation_error.file for compilation_error in compilation_errors]
+            compilation_errors: List[CompilationError] = JavaMavenCompilation(
+                self.project_root
+            ).get_compilation_errors()
+            erroneous_files = [
+                compilation_error.file for compilation_error in compilation_errors
+            ]
             self.test_grader.set_project_erroneous_files(erroneous_files)
 
             # Build NL2TestMetadata for the predicted class; code filled after grading
@@ -405,9 +406,7 @@ class Pipeline:
                 method_signature=method_signature or None,
             )
 
-            eval_result: NL2TestEval = self.test_grader.grade(
-                nl2_input, nl2_metadata
-            )
+            eval_result: NL2TestEval = self.test_grader.grade(nl2_input, nl2_metadata)
 
             localization_eval: LocalizationEval = self._localization_eval_from_state(
                 supervisor_state, nl2_input

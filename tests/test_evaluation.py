@@ -24,7 +24,9 @@ def eager_analysis(petclinic_paths):
 
 def _build_grader(analysis, project_root):
     common = CommonAnalysis(analysis)
-    _, application_classes = common.get_test_methods_classes_and_application_classes()
+    _, application_classes, _ = (
+        common.categorize_classes()
+    )
     erroneous_files = JavaCompilation.get_erroneous_files(project_root)
     return TestGrader(
         analysis=analysis,
@@ -76,22 +78,22 @@ def test_test_grader_petclinic(petclinic_paths):
         eager=False,
     )
 
-    qualified_class_name = "org.springframework.samples.petclinic.service.ClinicServiceTests"
+    qualified_class_name = (
+        "org.springframework.samples.petclinic.service.ClinicServiceTests"
+    )
     method_signature = "shouldUpdateOwner()"
 
-    second_qualified_class_name = "org.springframework.samples.petclinic.owner.OwnerControllerTests"
+    second_qualified_class_name = (
+        "org.springframework.samples.petclinic.owner.OwnerControllerTests"
+    )
     second_method_signature = "testProcessUpdateOwnerFormHasErrors()"
 
     assert analysis.get_class(qualified_class_name) is not None
-    assert (
-            analysis.get_method(qualified_class_name, method_signature) is not None
-    )
+    assert analysis.get_method(qualified_class_name, method_signature) is not None
     assert analysis.get_class(second_qualified_class_name) is not None
     assert (
-            analysis.get_method(
-                second_qualified_class_name, second_method_signature
-            )
-            is not None
+        analysis.get_method(second_qualified_class_name, second_method_signature)
+        is not None
     )
 
     grader = _build_grader(analysis, petclinic_paths.project_root)

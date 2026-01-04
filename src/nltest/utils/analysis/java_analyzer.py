@@ -247,53 +247,22 @@ class CommonAnalysis:
                 valid_methods.append(method_details)
         return sorted(valid_methods, key=lambda x: len(x.signature))
 
-    def get_test_methods_classes_and_application_classes(
+    def categorize_classes(
         self,
-    ) -> Tuple[Dict[str, List[str]], List[str]]:
+    ) -> Tuple[Dict[str, List[str]], List[str], List[str]]:
         """
-        Get test methods, classes, and application classes.
+        Categorize all classes into test classes, application classes, and test utility classes.
+
+        Test utility classes are classes located in test directories (e.g., src/test/java) that
+        do not contain any test methods.
+
         Returns:
-            Tuple[Dict[str, List[str]], List[str]]: Dictionary of test classes and test methods, and list of application classes.
+            Tuple containing:
+                - Dict[str, List[str]]: Mapping of test class names to their test method signatures
+                - List[str]: Application class names (production code)
+                - List[str]: Test utility class names (test helpers without test methods)
         """
-        test_classes_methods = {}
-        application_classes = []
-
-        for q_class in self.analysis.get_classes():
-            class_details = self.analysis.get_class(q_class)
-
-            # Skip abstract classes
-            if (
-                class_details
-                and class_details.modifiers
-                and "abstract" in class_details.modifiers
-            ):
-                continue
-
-            testing_frameworks = self.get_testing_frameworks_for_class(q_class)
-            if not testing_frameworks:
-                application_classes.append(q_class)
-                continue
-
-            # Get all reachable test methods (direct + inherited)
-            try:
-                reachable_test_methods = Reachability(
-                    self.analysis
-                ).get_reachable_test_methods(q_class, testing_frameworks)
-            except ClassNotFoundError:
-                application_classes.append(q_class)
-                continue
-
-            # Flatten to list of method signatures
-            test_methods = []
-            for declaring_class, method_sigs in reachable_test_methods.items():
-                test_methods.extend(method_sigs)
-
-            if test_methods:
-                test_classes_methods[q_class] = test_methods
-            else:
-                application_classes.append(q_class)
-
-        return test_classes_methods, application_classes
+        return self._hamster.categorize_classes()
 
     def is_subclass_of(self, sub_class: str, super_class: str) -> bool:
         return self._hamster.is_subclass_of(sub_class, super_class)
@@ -389,9 +358,10 @@ class CommonAnalysis:
         else:
             return "same_package"
 
+    # DEPRECATED
     def get_complicated_focal_tests(self) -> Dict[str, List[str]]:
-        test_class_map, application_classes = (
-            self.get_test_methods_classes_and_application_classes()
+        test_class_map, application_classes, _ = (
+            self.categorize_classes()
         )
         complicated_tests = {}
 

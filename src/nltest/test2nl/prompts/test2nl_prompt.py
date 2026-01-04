@@ -176,36 +176,37 @@ class Test2NLPrompt:
                 FieldDeclarationExtractor.extract(field_declaration)
             )
 
-        # method_code_str: str = yaml.dump(method.model_dump(), sort_keys=False, indent=4)
-        method_code_str: str = json.dumps(method.model_dump(), indent=4)
-        # setup_methods_str: List[str] = [yaml.dump(setup_context.model_dump(), sort_keys=False, indent=4) for
-        #                                 setup_context in setup_methods]
+        method_code_str: str = json.dumps(
+            method.model_dump(exclude_none=True), separators=(",", ":")
+        )
         setup_methods_str: List[str] = [
-            json.dumps(setup_context.model_dump(), indent=4)
+            json.dumps(
+                setup_context.model_dump(exclude_none=True), separators=(",", ":")
+            )
             for setup_context in setup_methods
         ]
-        # teardown_methods_str: List[str] = [yaml.dump(teardown_context.model_dump(), sort_keys=False, indent=4) for
-        #                                    teardown_context in teardown_methods]
         teardown_methods_str: List[str] = [
-            json.dumps(teardown_context.model_dump(), indent=4)
+            json.dumps(
+                teardown_context.model_dump(exclude_none=True), separators=(",", ":")
+            )
             for teardown_context in teardown_methods
         ]
-        # field_declarations_str: List[str] = [yaml.dump(field_context.model_dump(), sort_keys=False, indent=4) for
-        #                                      field_context in field_declarations]
         field_declarations_str: List[str] = [
-            json.dumps(field_context.model_dump(), indent=4)
+            json.dumps(
+                field_context.model_dump(exclude_none=True), separators=(",", ":")
+            )
             for field_context in field_declarations
         ]
-        # helper_methods_str: List[str] = [yaml.dump(helper_context.model_dump(), sort_keys=False, indent=4) for
-        #                                  helper_context in helper_methods]
         helper_methods_str: List[str] = [
-            json.dumps(helper_context.model_dump(), indent=4)
+            json.dumps(
+                helper_context.model_dump(exclude_none=True), separators=(",", ":")
+            )
             for helper_context in helper_methods
         ]
-        # referenced_classes_str: List[str] = [yaml.dump(referenced_context.model_dump(), sort_keys=False, indent=4) for
-        #                                      referenced_context in referenced_classes]
         referenced_classes_str: List[str] = [
-            json.dumps(referenced_context.model_dump(), indent=4)
+            json.dumps(
+                referenced_context.model_dump(exclude_none=True), separators=(",", ":")
+            )
             for referenced_context in referenced_classes
         ]
         class_annotation_str: str = (

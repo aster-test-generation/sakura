@@ -29,7 +29,7 @@ class MethodExtractor:
             raw_code = CommonAnalysis.get_complete_method_code(
                 method_details.declaration, method_details.code
             )
-            code = f"```java\n{raw_code.strip()}\n```"
+            code = raw_code.strip()
             is_getter_or_setter = False
         else:
             code = None

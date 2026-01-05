@@ -36,9 +36,7 @@ def test_focal_classes_and_methods_for_specific_test(petclinic_analysis):
         qualified_class_name
     )
 
-    _, application_classes, _ = CommonAnalysis(
-        analysis
-    ).categorize_classes()
+    _, application_classes, _ = CommonAnalysis(analysis).categorize_classes()
 
     from hamster.code_analysis.focal_class_method.focal_class_method import (
         FocalClassMethod,
@@ -109,9 +107,7 @@ def test_compare_focal_classes_and_methods(petclinic_analysis):
             analysis
         ).get_setup_methods(qualified_class_name)
 
-        _, application_classes, _ = CommonAnalysis(
-            analysis
-        ).categorize_classes()
+        _, application_classes, _ = CommonAnalysis(analysis).categorize_classes()
 
         from hamster.code_analysis.focal_class_method.focal_class_method import (
             FocalClassMethod,
@@ -239,3 +235,144 @@ def test_compare_focal_classes_and_methods(petclinic_analysis):
         f"GT only: {gt_focal_class_names - pred_focal_class_names}\n"
         f"Pred only: {pred_focal_class_names - gt_focal_class_names}"
     )
+
+
+class TestCategorizeClasses:
+    """Tests for CommonAnalysis.categorize_classes() using Spring PetClinic."""
+
+    def test_categorize_classes_returns_tuple(self, petclinic_analysis):
+        """Test that categorize_classes returns a 3-tuple with correct types."""
+        test_class_map, application_classes, test_utility_classes = CommonAnalysis(
+            petclinic_analysis
+        ).categorize_classes()
+
+        assert isinstance(test_class_map, dict)
+        assert isinstance(application_classes, list)
+        assert isinstance(test_utility_classes, list)
+
+    def test_application_classes_contains_domain_classes(self, petclinic_analysis):
+        """Test that application_classes includes known domain classes from src/main."""
+        _, application_classes, _ = CommonAnalysis(
+            petclinic_analysis
+        ).categorize_classes()
+
+        expected_app_classes = [
+            "org.springframework.samples.petclinic.owner.Owner",
+            "org.springframework.samples.petclinic.owner.Pet",
+            "org.springframework.samples.petclinic.owner.PetType",
+            "org.springframework.samples.petclinic.owner.Visit",
+            "org.springframework.samples.petclinic.vet.Vet",
+            "org.springframework.samples.petclinic.vet.Specialty",
+            "org.springframework.samples.petclinic.model.BaseEntity",
+            "org.springframework.samples.petclinic.model.Person",
+        ]
+        for expected in expected_app_classes:
+            assert expected in application_classes, (
+                f"Expected application class {expected} not found"
+            )
+
+    def test_application_classes_excludes_test_classes(self, petclinic_analysis):
+        """Test that application_classes does not include test classes."""
+        _, application_classes, _ = CommonAnalysis(
+            petclinic_analysis
+        ).categorize_classes()
+
+        test_class_names = [
+            "org.springframework.samples.petclinic.service.ClinicServiceTests",
+            "org.springframework.samples.petclinic.owner.OwnerControllerTests",
+            "org.springframework.samples.petclinic.vet.VetControllerTests",
+        ]
+        for test_class in test_class_names:
+            assert test_class not in application_classes, (
+                f"Test class {test_class} should not be in application_classes"
+            )
+
+    def test_test_utility_classes_contains_helper_classes(self, petclinic_analysis):
+        """Test that test_utility_classes includes classes in test dirs without test methods."""
+        _, _, test_utility_classes = CommonAnalysis(
+            petclinic_analysis
+        ).categorize_classes()
+
+        expected_utility_classes = [
+            "org.springframework.samples.petclinic.service.EntityUtils",
+            "org.springframework.samples.petclinic.MysqlTestApplication",
+        ]
+        for expected in expected_utility_classes:
+            assert expected in test_utility_classes, (
+                f"Expected test utility class {expected} not found"
+            )
+
+    def test_test_utility_classes_excludes_test_classes(self, petclinic_analysis):
+        """Test that test_utility_classes does not include actual test classes."""
+        _, _, test_utility_classes = CommonAnalysis(
+            petclinic_analysis
+        ).categorize_classes()
+
+        test_class_names = [
+            "org.springframework.samples.petclinic.service.ClinicServiceTests",
+            "org.springframework.samples.petclinic.owner.OwnerControllerTests",
+        ]
+        for test_class in test_class_names:
+            assert test_class not in test_utility_classes, (
+                f"Test class {test_class} should not be in test_utility_classes"
+            )
+
+    def test_test_class_map_contains_test_classes(self, petclinic_analysis):
+        """Test that test_class_map includes test classes with their test methods."""
+        test_class_map, _, _ = CommonAnalysis(petclinic_analysis).categorize_classes()
+
+        expected_test_class = (
+            "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        )
+        assert expected_test_class in test_class_map, (
+            f"Expected test class {expected_test_class} not found in test_class_map"
+        )
+
+        test_methods = test_class_map[expected_test_class]
+        assert isinstance(test_methods, list)
+        assert len(test_methods) > 0, "Test class should have test methods"
+        assert "shouldInsertPetIntoDatabaseAndGenerateId()" in test_methods
+
+    def test_categorized_classes_fixture(self, petclinic_categorized_classes):
+        """Test that the petclinic_categorized_classes fixture returns valid data."""
+        application_classes, test_utility_classes = petclinic_categorized_classes
+
+        assert isinstance(application_classes, list)
+        assert isinstance(test_utility_classes, list)
+        assert len(application_classes) > 0, "Should have application classes"
+
+        assert (
+            "org.springframework.samples.petclinic.owner.Owner" in application_classes
+        )
+        assert (
+            "org.springframework.samples.petclinic.service.EntityUtils"
+            in test_utility_classes
+        )
+
+
+class TestReachability:
+    """Tests for Reachability helper method detection."""
+
+    def test_get_helper_methods_includes_entity_utils(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
+        """Test that get_helper_methods for ClinicServiceTests returns EntityUtils."""
+        from nltest.utils.analysis import Reachability
+
+        _, test_utility_classes = petclinic_categorized_classes
+        qualified_class_name = (
+            "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        )
+        method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+
+        reachability = Reachability(petclinic_analysis)
+        helper_methods = reachability.get_helper_methods(
+            qualified_class_name,
+            method_signature,
+            test_utility_classes=test_utility_classes,
+        )
+
+        entity_utils_class = "org.springframework.samples.petclinic.service.EntityUtils"
+        assert entity_utils_class in helper_methods, (
+            f"Expected {entity_utils_class} in helper methods, got: {list(helper_methods.keys())}"
+        )

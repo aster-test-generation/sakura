@@ -360,9 +360,7 @@ class CommonAnalysis:
 
     # DEPRECATED
     def get_complicated_focal_tests(self) -> Dict[str, List[str]]:
-        test_class_map, application_classes, _ = (
-            self.categorize_classes()
-        )
+        test_class_map, application_classes, _ = self.categorize_classes()
         complicated_tests = {}
 
         for test_class in test_class_map:
@@ -418,7 +416,7 @@ class CommonAnalysis:
     def extract_non_parameterized_types(parameterized_type: str) -> List[str]:
         pattern = re.compile(
             r"[\w\.]+\.[A-Z]\w*"
-        )  # Extracts all types ending with a capital
+        )  # Extracts all types ending with a capital word and having a period
         non_parameterized_types = pattern.findall(parameterized_type)
         return non_parameterized_types
 
@@ -522,6 +520,8 @@ class Reachability:
         depth: int = constants.CONTEXT_SEARCH_DEPTH,
         add_extended_class: bool = False,
         allow_repetition: bool = False,
+        only_ascii: bool = True,
+        test_utility_classes: List[str] | None = None,
     ) -> Dict[str, List[str]]:
         """
         Retrieves the helper methods reachable from the given method within the specified depth.
@@ -535,6 +535,8 @@ class Reachability:
             depth: The depth for search in call hierarchy.
             add_extended_class: If set to True, include methods from classes extended by the given class.
             allow_repetition: If set to True, allow visiting the same method multiple times in the same depth level.
+            only_ascii: If set to True, only include methods with ASCII characters.
+            test_utility_classes: List of test utility class names to include in helper method search.
 
         Returns:
             Dict[str, List[str]]: A map from class names to method signatures of helper methods.
@@ -545,6 +547,8 @@ class Reachability:
             depth,
             add_extended_class,
             allow_repetition,
+            only_ascii,
+            test_utility_classes,
         )
 
     def get_concrete_classes(self, interface_class: str) -> List[str]:

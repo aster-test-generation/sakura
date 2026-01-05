@@ -9,9 +9,20 @@ from nltest.utils.analysis import CommonAnalysis, Reachability
 
 
 class DescriptionGenerator:
-    def __init__(self, analysis: JavaAnalysis) -> None:
+    def __init__(
+        self,
+        analysis: JavaAnalysis,
+        application_classes: List[str] | None = None,
+        test_utility_classes: List[str] | None = None,
+    ) -> None:
         self.analysis = analysis
-        self.test2nl_prompt = Test2NLPrompt(self.analysis)
+        self._application_classes = application_classes if application_classes else []
+        self._test_utility_classes = (
+            test_utility_classes if test_utility_classes else []
+        )
+        self.test2nl_prompt = Test2NLPrompt(
+            self.analysis, self._application_classes, self._test_utility_classes
+        )
 
     def generate_for_method(
         self,

@@ -3,9 +3,9 @@ from typing import List
 import pytest
 
 from nltest.test2nl.extractors import (
+    ClassExtractor,
     FieldDeclarationExtractor,
     MethodExtractor,
-    ReferencedClassExtractor,
 )
 from nltest.test2nl.model.models import (
     AbstractionLevel,
@@ -198,11 +198,14 @@ class TestDescriptionContextExtraction:
     Using Spring PetClinic resources.
     """
 
-    def test_field_declaration_extractor(self, petclinic_analysis):
+    def test_field_declaration_extractor(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting fields from Owner class.
         Owner class has private fields: address, city, telephone, pets.
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
         class_details = petclinic_analysis.get_class(qualified_class_name)
         assert class_details is not None, f"Class {qualified_class_name} not found"
@@ -218,7 +221,8 @@ class TestDescriptionContextExtraction:
         )
         assert address_field is not None, "Field 'address' not found in Owner class"
 
-        field_info = FieldDeclarationExtractor.extract(address_field)
+        extractor = FieldDeclarationExtractor(petclinic_analysis, application_classes)
+        field_info = extractor.extract(address_field)
 
         assert field_info is not None
         assert field_info.variables is not None
@@ -231,16 +235,19 @@ class TestDescriptionContextExtraction:
         assert any("Column" in a for a in field_info.annotations)
         assert any("NotBlank" in a for a in field_info.annotations)
 
-    def test_method_extractor_test_method(self, petclinic_analysis):
+    def test_method_extractor_test_method(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting a test method: ClinicServiceTests.shouldInsertPetIntoDatabaseAndGenerateId
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = (
             "org.springframework.samples.petclinic.service.ClinicServiceTests"
         )
         method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
 
-        extractor = MethodExtractor(petclinic_analysis)
+        extractor = MethodExtractor(petclinic_analysis, application_classes)
         method_context = extractor.extract(
             qualified_class_name, method_signature, complete_methods=True
         )
@@ -259,14 +266,17 @@ class TestDescriptionContextExtraction:
         # Verify assertions are detected (uses assertThat from AssertJ)
         assert any(cs.is_assertion for cs in method_context.call_sites)
 
-    def test_method_extractor_domain_method(self, petclinic_analysis):
+    def test_method_extractor_domain_method(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting a domain method: Owner.addPet(Pet pet)
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
         method_signature = "addPet(org.springframework.samples.petclinic.owner.Pet)"
 
-        extractor = MethodExtractor(petclinic_analysis)
+        extractor = MethodExtractor(petclinic_analysis, application_classes)
         method_context = extractor.extract(
             qualified_class_name, method_signature, complete_methods=True
         )
@@ -280,14 +290,17 @@ class TestDescriptionContextExtraction:
         assert "getPets" in call_methods
         assert "add" in call_methods
 
-    def test_method_extractor_getter(self, petclinic_analysis):
+    def test_method_extractor_getter(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting a getter: Owner.getAddress()
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
         method_signature = "getAddress()"
 
-        extractor = MethodExtractor(petclinic_analysis)
+        extractor = MethodExtractor(petclinic_analysis, application_classes)
         method_context = extractor.extract(
             qualified_class_name, method_signature, complete_methods=True
         )
@@ -297,13 +310,16 @@ class TestDescriptionContextExtraction:
         # Code should be None for getter/setter even if complete_methods=True
         assert method_context.code is None
 
-    def test_referenced_class_extractor(self, petclinic_analysis):
+    def test_referenced_class_extractor(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting referenced class info: Owner (no filter)
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
 
-        extractor = ReferencedClassExtractor(petclinic_analysis)
+        extractor = ClassExtractor(petclinic_analysis, application_classes)
         ref_class = extractor.extract(qualified_class_name, complete_methods=False)
 
         assert ref_class.qualified_class_name == qualified_class_name
@@ -317,8 +333,8 @@ class TestDescriptionContextExtraction:
         assert any("Table" in a for a in ref_class.annotations)
 
         # Check methods exist (no filter = all methods included)
-        assert ref_class.class_methods is not None
-        method_sigs = [m.method_signature for m in ref_class.class_methods]
+        assert ref_class.relevant_class_methods is not None
+        method_sigs = [m.method_signature for m in ref_class.relevant_class_methods]
         assert "getAddress()" in method_sigs
         assert "setAddress(java.lang.String)" in method_sigs
         assert "addPet(org.springframework.samples.petclinic.owner.Pet)" in method_sigs
@@ -330,14 +346,17 @@ class TestDescriptionContextExtraction:
                 assert fd.modifiers is not None
                 assert "public" in fd.modifiers
 
-    def test_referenced_class_extractor_with_filter(self, petclinic_analysis):
+    def test_referenced_class_extractor_with_filter(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting referenced class with called_method_names filter.
         Only methods in the filter (plus constructors) should be included.
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
 
-        extractor = ReferencedClassExtractor(petclinic_analysis)
+        extractor = ClassExtractor(petclinic_analysis, application_classes)
         called_methods = {"getAddress", "addPet"}
         ref_class = extractor.extract(
             qualified_class_name,
@@ -345,8 +364,8 @@ class TestDescriptionContextExtraction:
             called_method_names=called_methods,
         )
 
-        assert ref_class.class_methods is not None
-        method_sigs = [m.method_signature for m in ref_class.class_methods]
+        assert ref_class.relevant_class_methods is not None
+        method_sigs = [m.method_signature for m in ref_class.relevant_class_methods]
 
         # Filtered methods should be included
         assert "getAddress()" in method_sigs
@@ -357,14 +376,17 @@ class TestDescriptionContextExtraction:
         assert "getCity()" not in method_sigs
 
     def test_referenced_class_extractor_constructors_always_included(
-        self, petclinic_analysis
+        self, petclinic_analysis, petclinic_categorized_classes
     ):
         """
         Test that constructors are always included regardless of filter.
         """
-        qualified_class_name = "org.springframework.samples.petclinic.owner.Pet"
+        application_classes, _ = petclinic_categorized_classes
+        qualified_class_name = (
+            "org.springframework.samples.petclinic.owner.PetController"
+        )
 
-        extractor = ReferencedClassExtractor(petclinic_analysis)
+        extractor = ClassExtractor(petclinic_analysis, application_classes)
         # Filter with a method that doesn't exist - should still include constructors
         called_methods = {"nonExistentMethod"}
         ref_class = extractor.extract(
@@ -373,22 +395,26 @@ class TestDescriptionContextExtraction:
             called_method_names=called_methods,
         )
 
-        assert ref_class.class_methods is not None
-        method_sigs = [m.method_signature for m in ref_class.class_methods]
+        assert ref_class.relevant_class_methods is not None
+        method_sigs = [m.method_signature for m in ref_class.relevant_class_methods]
 
         # Constructors should always be included (Pet class has a constructor)
         has_constructor = any(
-            sig.startswith("Pet(") or sig.startswith("<init>") for sig in method_sigs
+            sig.startswith("PetController") or sig.startswith("<init>")
+            for sig in method_sigs
         )
         assert has_constructor, f"Constructor not found in: {method_sigs}"
 
-    def test_referenced_class_extractor_empty_filter(self, petclinic_analysis):
+    def test_referenced_class_extractor_empty_filter(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
         """
         Test extracting with empty filter - only constructors should be included.
         """
+        application_classes, _ = petclinic_categorized_classes
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
 
-        extractor = ReferencedClassExtractor(petclinic_analysis)
+        extractor = ClassExtractor(petclinic_analysis, application_classes)
         ref_class = extractor.extract(
             qualified_class_name,
             complete_methods=False,
@@ -401,10 +427,108 @@ class TestDescriptionContextExtraction:
         assert ref_class.annotations is not None
 
         # With empty filter, only constructors should be included
-        if ref_class.class_methods:
-            for method in ref_class.class_methods:
+        if ref_class.relevant_class_methods:
+            for method in ref_class.relevant_class_methods:
                 method_name = method.method_signature.split("(")[0]
                 assert method_name == "Owner" or method_name == "<init>", (
                     f"Non-constructor method {method.method_signature} "
                     "should not be included with empty filter"
                 )
+
+    def test_entity_utils_call_site_is_helper(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
+        """
+        Test that EntityUtils.getById call site has is_helper=True.
+        EntityUtils is a test utility class (in src/test/java) but not an application class.
+        """
+        application_classes, _ = petclinic_categorized_classes
+        qualified_class_name = (
+            "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        )
+        method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+
+        extractor = MethodExtractor(petclinic_analysis, application_classes)
+        method_context = extractor.extract(
+            qualified_class_name, method_signature, complete_methods=True
+        )
+
+        # Find the getById call site (called on EntityUtils)
+        entity_utils_class = "org.springframework.samples.petclinic.service.EntityUtils"
+        get_by_id_calls = [
+            cs
+            for cs in method_context.call_sites
+            if cs.method_name == "getById" and cs.receiver_type == entity_utils_class
+        ]
+
+        assert len(get_by_id_calls) > 0, (
+            f"Expected at least one getById call on EntityUtils, "
+            f"found call sites: {[(cs.method_name, cs.receiver_type) for cs in method_context.call_sites]}"
+        )
+
+        # Verify is_helper is True for EntityUtils calls
+        for call_site in get_by_id_calls:
+            assert call_site.is_helper is True, (
+                f"Expected is_helper=True for EntityUtils.getById call, "
+                f"got is_helper={call_site.is_helper}"
+            )
+
+    def test_entity_utils_is_test_utility_class(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
+        """
+        Test that EntityUtils is categorized as a test utility class,
+        not an application class.
+        """
+        application_classes, test_utility_classes = petclinic_categorized_classes
+        entity_utils_class = "org.springframework.samples.petclinic.service.EntityUtils"
+
+        # EntityUtils should NOT be in application_classes
+        assert entity_utils_class not in application_classes, (
+            "EntityUtils should not be an application class"
+        )
+
+        # EntityUtils should be in test_utility_classes
+        assert entity_utils_class in test_utility_classes, (
+            "EntityUtils should be a test utility class"
+        )
+
+        # Verify the class exists in the analysis
+        class_details = petclinic_analysis.get_class(entity_utils_class)
+        assert class_details is not None, "EntityUtils class not found in analysis"
+
+    def test_application_class_call_site_not_helper(
+        self, petclinic_analysis, petclinic_categorized_classes
+    ):
+        """
+        Test that calls to application classes have is_helper=False.
+        Owner is an application class, so calls to Owner methods should not be helpers.
+        """
+        application_classes, _ = petclinic_categorized_classes
+        qualified_class_name = (
+            "org.springframework.samples.petclinic.service.ClinicServiceTests"
+        )
+        method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+
+        extractor = MethodExtractor(petclinic_analysis, application_classes)
+        method_context = extractor.extract(
+            qualified_class_name, method_signature, complete_methods=True
+        )
+
+        # Find calls to Owner methods (an application class)
+        owner_class = "org.springframework.samples.petclinic.owner.Owner"
+        owner_calls = [
+            cs for cs in method_context.call_sites if cs.receiver_type == owner_class
+        ]
+
+        assert len(owner_calls) > 0, (
+            f"Expected at least one call on Owner class, "
+            f"found call sites: {[(cs.method_name, cs.receiver_type) for cs in method_context.call_sites]}"
+        )
+
+        # Verify is_helper is False for application class calls
+        for call_site in owner_calls:
+            assert call_site.is_helper is False, (
+                f"Expected is_helper=False for Owner.{call_site.method_name} call, "
+                f"got is_helper={call_site.is_helper}"
+            )

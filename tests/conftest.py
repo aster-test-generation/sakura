@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 from nltest.test2nl import Pipeline as Test2NLPipeline
 from nltest.test2nl.generation import DescriptionGenerator
 from nltest.test2nl.prompts import RoundTripPrompt, Test2NLPrompt
+from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.config import Config, init_config
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.utils.llm.model import Provider
@@ -145,10 +146,23 @@ def petclinic_config(petclinic_paths: ProjectPaths) -> Generator[Config, None, N
 
 
 @pytest.fixture(scope="session")
+def petclinic_categorized_classes(
+    petclinic_analysis: JavaAnalysis,
+) -> tuple[list[str], list[str]]:
+    _, application_classes, test_utility_classes = CommonAnalysis(
+        petclinic_analysis
+    ).categorize_classes()
+    return application_classes, test_utility_classes
+
+
+@pytest.fixture(scope="session")
 def petclinic_test2nl_prompt(
-    petclinic_analysis: JavaAnalysis, petclinic_session_config: Config
+    petclinic_analysis: JavaAnalysis,
+    petclinic_session_config: Config,
+    petclinic_categorized_classes: tuple[list[str], list[str]],
 ) -> Test2NLPrompt:
-    return Test2NLPrompt(petclinic_analysis)
+    application_classes, test_utility_classes = petclinic_categorized_classes
+    return Test2NLPrompt(petclinic_analysis, application_classes, test_utility_classes)
 
 
 @pytest.fixture(scope="session")
@@ -188,8 +202,12 @@ def petclinic_session_config(
 def petclinic_desc_generator(
     petclinic_analysis: JavaAnalysis,
     petclinic_session_config: Config,
+    petclinic_categorized_classes: tuple[list[str], list[str]],
 ) -> DescriptionGenerator:
-    return DescriptionGenerator(petclinic_analysis)
+    application_classes, test_utility_classes = petclinic_categorized_classes
+    return DescriptionGenerator(
+        petclinic_analysis, application_classes, test_utility_classes
+    )
 
 
 @pytest.fixture(scope="session")

@@ -55,14 +55,14 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
     """
 
     def __init__(
-            self,
-            *,
-            analysis: JavaAnalysis,
-            method_searcher: MethodSearcher,
-            class_searcher: ClassSearcher,
-            structured_llm: LLMClient,
-            project_root: str,
-            nl2_input: NL2TestInput,
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        structured_llm: LLMClient,
+        project_root: str,
+        nl2_input: NL2TestInput,
     ) -> None:
         CommonJavaAnalysisTools.__init__(self, analysis=analysis)
         CommonSearchTools.__init__(self, class_searcher=class_searcher)
@@ -99,8 +99,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_class_fields_tool(self) -> StructuredTool:
         """Get field declarations for a class."""
+
         def _get_class_fields(
-                qualified_class_name: str,
+            qualified_class_name: str,
         ) -> List[Dict[str, Union[str, List[str]]]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -131,6 +132,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_class_imports_tool(self) -> StructuredTool:
         """Get imports for a class."""
+
         def _get_class_imports(qualified_class_name: str) -> List[str]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -153,8 +155,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_class_constructors_and_factories_tool(self) -> StructuredTool:
         """Get constructors and factory methods for a class."""
+
         def _get_class_constructors_and_factories(
-                qualified_class_name: str,
+            qualified_class_name: str,
         ) -> List[Dict[str, str]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -163,7 +166,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
-            class_constructors: List[str] = []
+            class_constructors: List[str] = list(
+                self.analysis.get_constructors(qualified_class_name)
+            )
             class_factories: List[str] = []
 
             for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
@@ -173,11 +178,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
                 if not method_details:
                     continue
 
-                if method_details.is_constructor:
-                    class_constructors.append(method_sig)
-                elif (
-                        "static" in method_details.modifiers
-                        and qualified_class_name == method_details.return_type
+                if (
+                    "static" in method_details.modifiers
+                    and qualified_class_name == method_details.return_type
                 ):
                     class_factories.append(method_sig)
 
@@ -205,6 +208,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_getters_and_setters_tool(self) -> StructuredTool:
         """Get getter and setter methods for a class."""
+
         def _get_getters_and_setters(qualified_class_name: str) -> List[str]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
@@ -236,6 +240,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
 
     def _make_get_maven_dependencies_tool(self) -> StructuredTool:
         """Get Maven dependencies from pom.xml."""
+
         def _get_maven_dependencies() -> List[Dict[str, str]]:
             deps = PomProcessor.identify_dependencies(self.project_root)
             return [
@@ -261,9 +266,13 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
             name="generate_test_code",
             description=textwrap.dedent(GENERATE_TEST_CODE_DESC).strip(),
             args_schema=GenerateTestCodeArgs,
-            returns_input_keys=["test_code", "qualified_class_name", "method_signature"],
+            returns_input_keys=[
+                "test_code",
+                "qualified_class_name",
+                "method_signature",
+            ],
             processing_note="Agent saves test file to filesystem and updates state.package, "
-                           "state.class_name, state.method_signature",
+            "state.class_name, state.method_signature",
         )
 
     def _make_finalize_tool(self) -> BaseTool:
@@ -279,5 +288,5 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
             args_schema=FinalizeCommentsArgs,
             returns_input_keys=["comments"],
             processing_note="Agent sets state.final_comments, state.finalize_called=True, "
-                           "and signals end of execution",
+            "and signals end of execution",
         )

@@ -50,19 +50,22 @@ class ClassExtractor:
 
         # Get methods for class (filtered if called_method_names provided)
         methods: List[MethodContext] = []
-        method_sigs = [
-            method_sig
-            for method_sig in self.analysis.get_methods_in_class(qualified_class_name)
-        ]
+
+        # Extract constructors (always included)
+        for constructor_sig in self.analysis.get_constructors(qualified_class_name):
+            methods.append(
+                self.method_extractor.extract(
+                    qualified_class_name, constructor_sig, complete_methods
+                )
+            )
+
+        # Extract non-constructor methods (filtered if called_method_names provided)
         for method_sig in self.analysis.get_methods_in_class(qualified_class_name):
             method_details = self.analysis.get_method(qualified_class_name, method_sig)
             if not method_details:
                 continue
-            method_name = method_sig.split("(")[0]
-            is_constructor = method_details.is_constructor or (
-                method_name == simple_class_name or method_name == "<init>"
-            )
-            if called_method_names is not None and not is_constructor:
+            if called_method_names is not None:
+                method_name = method_sig.split("(")[0]
                 if method_name not in called_method_names:
                     continue
             methods.append(

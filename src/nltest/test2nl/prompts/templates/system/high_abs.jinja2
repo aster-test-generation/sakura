@@ -11,6 +11,7 @@ You describe the test purely in terms of business preconditions, user behavior, 
 - **Flow**: Business Precondition -> User Action -> Business Outcome -> Cleanup Intent.
 - **Ending**: Conclude by mentioning the general validation strategy (e.g., "Verify using standard equality assertions") without naming specific libraries.
 - **Style**: Use varied sentence structure and natural transitions. Do not produce a robotic list of commands. Avoid starting consecutive sentences with "Then", "Next", or "After". Write in natural speech as if explaining the scenario to a colleague.
+- **Standalone**: The output must describe how to implement the test within a new, fresh test suite with no pre-existing helper methods, utility classes, or shared fixtures. All necessary setup and behavior must be self-contained.
 
 # CONTENT RULES
 - **Test Intent & Naming**: Command the creation of a test for a specific business scenario. Do **not** specify the name of the test class or the test method; allow the developer to choose descriptive names.
@@ -20,7 +21,7 @@ You describe the test purely in terms of business preconditions, user behavior, 
 - **Integration Context**: Describe as "system behavior validation" or "end-to-end scenario" without naming frameworks or test types.
 - **Inputs & Data**: Use descriptive archetypes (e.g., "valid credentials," "an empty form"). Do **NOT** specify literal values for data set on new entities—describe them by type or characteristic instead (e.g., "a pet name" not "bowser"). **Exception**: Only include specific literals when they are used to *query or look up* pre-seeded data that exists outside the test context in the application's data layer (e.g., "retrieve the owner with ID 6" when ID 6 refers to externally seeded application data).
 - **Parameterized Tests**: Describe the validation pattern in business terms (e.g., "Ensure the system handles all expected input variations correctly") without mentioning parameterization.
-- **Helper Methods**: **INVISIBLE**. Do not mention helper methods or internal logic. Focus solely on the *state* they produce (e.g., "Given a pre-existing premium user...").
+- **Helpers**: **INVISIBLE**. Helpers are any methods or classes in the test suite (not application code) that are referenced by the test method or its fixtures, including inherited helper methods and test utility classes. **NEVER** mention helper names in the output. Focus solely on the *state* or *behavior* they produce (e.g., "Given a pre-existing premium user..."). Since the output test must execute in a fresh test suite, describe the setup or behavior that would need to be implemented from scratch.
 - **Actions & Interactions**: Describe the action as a business capability (e.g., "Attempt to submit the form").
 - **Method Chaining**: **IGNORE**. Describe only the final outcome or configuration state of a chain (e.g., "Configure the request with valid headers") without listing the steps.
 - **Assertions**: Instruct to validate the outcome in business terms (e.g., "Assert that the transaction is declined") rather than checking specific field values.

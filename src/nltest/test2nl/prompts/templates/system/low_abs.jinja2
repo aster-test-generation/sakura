@@ -11,6 +11,7 @@ Your goal is to convert a test case's code context into a detailed implementatio
 - **Flow**: Class Definition -> Field/Setup -> Test Execution -> Assertions -> Teardown.
 - **Ending**: List the exact class annotations and assertion libraries used.
 - **Style**: Use varied sentence structure and natural transitions. Do not produce a robotic list of commands. Avoid starting consecutive sentences with "Then", "Next", or "After". Write as if dictating the code to a colleague.
+- **Standalone**: The output must describe how to implement the test within a new, fresh test suite with no pre-existing helper methods, utility classes, or shared fixtures. All necessary setup and behavior must be self-contained.
 
 # CONTENT RULES
 - **Test Intent & Naming**: Instruct to write a test method that executes the logic described. Do **not** dictate the name of the test class or method; allow the developer to choose descriptive names. However, internal variable names should be specified to accurately represent the data flow.
@@ -20,7 +21,7 @@ Your goal is to convert a test case's code context into a detailed implementatio
 - **Integration Context**: If integration annotations exist (`@SpringBootTest`, `@WebMvcTest`, `@DataJpaTest`, etc.), name them exactly. Specify any test slice configurations, profiles, or properties.
 - **Inputs & Data**: You **MUST** include the exact literal values (strings, numbers, booleans) used as arguments. You MUST dictate variable assignment names (e.g., "Assign the result to `response`").
 - **Parameterized Tests**: If `@ParameterizedTest` is used, name the exact annotation and source (e.g., `@ValueSource`, `@CsvSource`, `@MethodSource`). List all parameter values explicitly. Describe how each parameter flows into the test method.
-- **Helper Methods**: **UNWRAPPED**. Do not summarize helpers. Unwrap the helper logic and include their imperative steps directly in the instruction flow. **Exception**: If the helper logic is complex or reused, explicitly instruct to "Define a private method named [Exact Name] that executes [Exact Logic], and invoke it here."
+- **Helpers**: **UNWRAPPED**. Helpers are any methods or classes in the test suite (not application code) that are referenced by the test method or its fixtures, including inherited helper methods and test utility classes. **NEVER** mention helper names from the original test suite in the output. Do not summarize helpers—unwrap the helper logic and include their imperative steps directly in the instruction flow. **Exception**: If the helper logic is complex or reused, explicitly instruct to "Define a private method that executes [Exact Logic], and invoke it here," allowing the developer to choose an appropriate name. Since the output test must execute in a fresh test suite, all helper behavior must be fully described for reimplementation from scratch.
 - **Actions & Interactions**: Instruct to invoke the exact method name on the subject object (e.g., "Invoke `saveUser` on the `controller`").
 - **Method Chaining**: **STEP-BY-STEP**. Detail every step of a fluent API call. If a builder or stream is used, list the methods in sequence (e.g., "Call `builder()`, chain `.id(1)`, chain `.name("test")`, and finally `.build()`").
 - **Assertions**: List every assertion method called (e.g., `assertEquals`) and the exact expected value or object.

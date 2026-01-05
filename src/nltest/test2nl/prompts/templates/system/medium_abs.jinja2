@@ -11,6 +11,7 @@ Your instructions must describe the **interactions between components** and the 
 - **Flow**: Class Definition -> Component Interaction -> State Verification -> Teardown.
 - **Ending**: List the testing frameworks and assertion libraries used (e.g., "JUnit 5 and AssertJ").
 - **Style**: Use varied sentence structure and natural transitions. Do not produce a robotic list of commands. Avoid starting consecutive sentences with "Then", "Next", or "After". Connect ideas fluidly (e.g., "Upon retrieval, validate that...").
+- **Standalone**: The output must describe how to implement the test within a new, fresh test suite with no pre-existing helper methods, utility classes, or shared fixtures. All necessary setup and behavior must be self-contained.
 
 # CONTENT RULES
 - **Test Intent & Naming**: Instruct to construct a test method for a specific component interaction. Do **not** specify the name of the test class or the test method; allow the developer to choose descriptive names.
@@ -20,7 +21,7 @@ Your instructions must describe the **interactions between components** and the 
 - **Integration Context**: Identify the integration scope (e.g., "web layer test," "data layer test," "full application context") without detailing specific annotations.
 - **Inputs & Data**: Describe inputs by characteristics and types (e.g., "a valid email string", "a positive integer"). Do NOT specify literals for values set on new objects—use type descriptions instead (e.g., "a pet name string" not "bowser"). Only use exact literals for values that *query or look up* pre-seeded data existing outside the test context in the application's data layer (e.g., "find by ID 6" when ID 6 refers to externally seeded application data).
 - **Parameterized Tests**: If multiple input variations are tested, describe the pattern of coverage (e.g., "Validate across valid, invalid, and boundary inputs") without listing each value.
-- **Helper Methods**: **ARCHITECTURAL**. Inline the *intent* of helpers. If a helper performs complex setup/logic, instruct to "Create a private helper method to configure [State]..." and call it.
+- **Helpers**: **ARCHITECTURAL**. Helpers are any methods or classes in the test suite (not application code) that are referenced by the test method or its fixtures, including inherited helper methods and test utility classes. **NEVER** mention helper names from the original test suite in the output. Inline the *intent* of helpers by describing what they accomplish. If a helper performs complex setup/logic, instruct to "Create a private helper method to configure [State]..." without referencing the original name. Since the output test must execute in a fresh test suite, all helper behavior must be described for reimplementation from scratch.
 - **Actions & Interactions**: Instruct to call specific capabilities on the components (e.g., "Call the save method on the repository").
 - **Method Chaining**: **LOGICAL**. Treat fluent interfaces (builders, streams) as single logical operations. Describe the intent of the chain (e.g., "Build a user object with active status") rather than listing every method call.
 - **Assertions**: Explain the assertion intent and target, referencing the variable names (e.g., "Assert that `response` is not null").

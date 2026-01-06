@@ -307,14 +307,14 @@ class Test2NLPrompt:
             f"{abs_level}_abs.jinja2", "chat"
         )
         rendered_prompt = chat_template.render(
-            method_code=method_context_str,
-            setup_methods=setup_methods_str,
-            teardown_methods=teardown_methods_str,
-            method_annotations=method_annotation_str,
             class_annotations=class_annotation_str,
             field_declarations=field_declarations_str,
+            setup_methods=setup_methods_str,
+            method_annotations=method_annotation_str,
+            test_method=method_context_str,
             helper_methods=helper_methods_str,
-            custom_classes=referenced_classes_str,
+            teardown_methods=teardown_methods_str,
+            application_classes=referenced_classes_str,
         )
         return rendered_prompt
 

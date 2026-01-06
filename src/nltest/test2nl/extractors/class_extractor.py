@@ -75,7 +75,7 @@ class ClassExtractor:
             )
 
         # Get comments for the compilation unit -> May contain semantic information about the class
-        compilation_comments = [
+        javadoc_comments = [
             comment.content
             for comment in compilation_unit.comments
             if comment.content and comment.is_javadoc
@@ -89,5 +89,5 @@ class ClassExtractor:
             modifiers=modifiers,
             field_declarations=field_declarations if field_declarations else None,
             relevant_class_methods=methods if methods else None,
-            javadoc=compilation_comments if compilation_comments else None,
+            javadoc=javadoc_comments if javadoc_comments else None,
         )

@@ -94,8 +94,8 @@
                 {
                     "focal_class": "org.apache.commons.cli.Option",
                     "focal_method_names": [
-                        "setValueSeparator(char)",
-                        "processValue(java.lang.String)"
+                        "processValue(java.lang.String)",
+                        "setValueSeparator(char)"
                     ]
                 }
             ]
@@ -171,9 +171,9 @@
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
                         "getRequiredOptions()",
-                        "addOption(org.apache.commons.cli.Option)",
+                        "addOptionGroup(org.apache.commons.cli.OptionGroup)",
                         "getOption(java.lang.String)",
-                        "addOptionGroup(org.apache.commons.cli.OptionGroup)"
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 },
                 {
@@ -235,15 +235,15 @@
                 {
                     "focal_class": "org.apache.commons.cli.CommandLine",
                     "focal_method_names": [
-                        "getArgList()",
-                        "hasOption(java.lang.String)"
+                        "hasOption(java.lang.String)",
+                        "getArgList()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
-                        "addOption(org.apache.commons.cli.Option)",
-                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 }
             ]
@@ -259,8 +259,8 @@
                 {
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
-                        "addOption(org.apache.commons.cli.Option)",
-                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 },
                 {
@@ -292,8 +292,8 @@
                 {
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
-                        "addOption(org.apache.commons.cli.Option)",
-                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 },
                 {
@@ -327,15 +327,15 @@
                 {
                     "focal_class": "org.apache.commons.cli.CommandLine",
                     "focal_method_names": [
-                        "getArgList()",
-                        "hasOption(java.lang.String)"
+                        "hasOption(java.lang.String)",
+                        "getArgList()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
-                        "addOption(org.apache.commons.cli.Option)",
-                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 }
             ]
@@ -356,9 +356,9 @@
                 {
                     "focal_class": "org.apache.commons.cli.help.HelpFormatter.Builder",
                     "focal_method_names": [
+                        "setShowSince(boolean)",
                         "setHelpAppendable(org.apache.commons.cli.help.HelpAppendable)",
-                        "get()",
-                        "setShowSince(boolean)"
+                        "get()"
                     ]
                 },
                 {
@@ -420,8 +420,8 @@
                 {
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
-                        "addOption(org.apache.commons.cli.Option)",
-                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 },
                 {
@@ -472,17 +472,17 @@
                 {
                     "focal_class": "org.apache.commons.cli.Options",
                     "focal_method_names": [
-                        "addOption(org.apache.commons.cli.Option)",
-                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)"
+                        "addOption(java.lang.String, java.lang.String, boolean, java.lang.String)",
+                        "addOption(org.apache.commons.cli.Option)"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.cli.DeprecatedAttributes.Builder",
                     "focal_method_names": [
-                        "get()",
+                        "setDescription(java.lang.String)",
                         "setForRemoval(boolean)",
-                        "setSince(java.lang.String)",
-                        "setDescription(java.lang.String)"
+                        "get()",
+                        "setSince(java.lang.String)"
                     ]
                 },
                 {

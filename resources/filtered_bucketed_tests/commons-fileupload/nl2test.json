@@ -51,10 +51,10 @@
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
                     "focal_method_names": [
-                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
-                        "get()",
                         "setInputStream(java.io.InputStream)",
-                        "setBoundary(byte[])"
+                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
+                        "setBoundary(byte[])",
+                        "get()"
                     ]
                 },
                 {
@@ -74,10 +74,10 @@
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
                     "focal_method_names": [
+                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
+                        "setBufferSize(int)",
                         "get()",
                         "setBoundary(byte[])",
-                        "setBufferSize(int)",
-                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
                         "setInputStream(java.io.InputStream)"
                     ]
                 },
@@ -96,20 +96,20 @@
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.MultipartInput",
                     "focal_method_names": [
-                        "builder()",
                         "readHeaders()",
-                        "readBoundary()",
                         "skipPreamble()",
+                        "builder()",
+                        "readBoundary()",
                         "readBodyData(java.io.OutputStream)"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
                     "focal_method_names": [
-                        "get()",
                         "setInputStream(java.io.InputStream)",
                         "setBoundary(byte[])",
-                        "setMaxPartHeaderSize(int)"
+                        "setMaxPartHeaderSize(int)",
+                        "get()"
                     ]
                 }
             ]
@@ -121,10 +121,10 @@
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.MultipartInput.Builder",
                     "focal_method_names": [
+                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
+                        "setBufferSize(int)",
                         "get()",
                         "setBoundary(byte[])",
-                        "setBufferSize(int)",
-                        "setProgressNotifier(org.apache.commons.fileupload2.core.MultipartInput.ProgressNotifier)",
                         "setInputStream(java.io.InputStream)"
                     ]
                 },
@@ -152,20 +152,20 @@
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.DiskFileItem",
                     "focal_method_names": [
-                        "get()",
-                        "getOutputStream()",
+                        "getSize()",
                         "isInMemory()",
+                        "get()",
                         "getString()",
-                        "getSize()"
+                        "getOutputStream()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.DiskFileItemFactory.Builder",
                     "focal_method_names": [
-                        "setBufferSize(int)",
                         "setPath(java.nio.file.Path)",
-                        "get()",
-                        "setCharset(java.nio.charset.Charset)"
+                        "setBufferSize(int)",
+                        "setCharset(java.nio.charset.Charset)",
+                        "get()"
                     ]
                 },
                 {
@@ -190,20 +190,20 @@
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.DiskFileItem",
                     "focal_method_names": [
-                        "get()",
-                        "getOutputStream()",
+                        "getSize()",
                         "isInMemory()",
+                        "get()",
                         "getString()",
-                        "getSize()"
+                        "getOutputStream()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.fileupload2.core.DiskFileItemFactory.Builder",
                     "focal_method_names": [
                         "setPath(java.nio.file.Path)",
-                        "get()",
                         "setThreshold(int)",
-                        "setCharset(java.nio.charset.Charset)"
+                        "setCharset(java.nio.charset.Charset)",
+                        "get()"
                     ]
                 },
                 {

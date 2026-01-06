@@ -4,23 +4,6 @@
         "new_test_method_count": 15
     },
     "new_tests": {
-        "org.apache.commons.exec.StandAloneTest": [
-            "testDefaultExecutorFromFile()",
-            "testDefaultExecutorBuilderFromPath()",
-            "testDefaultExecutorFromPath()"
-        ],
-        "org.apache.commons.exec.DefaultExecutorTest": [
-            "testExecuteStability()"
-        ],
-        "org.apache.commons.exec.TimeoutObserverTest": [
-            "testAccept()",
-            "testTimeoutOccurred()"
-        ],
-        "org.apache.commons.exec.OSTest": [
-            "testIsVersion()",
-            "testIsArchMacOs()",
-            "testIsArch()"
-        ],
         "org.apache.commons.exec.issues.Exec36Test": [
             "testExec36Part6()",
             "testExec36Part4()",
@@ -29,11 +12,28 @@
         "org.apache.commons.exec.ExecuteWatchdogTest": [
             "testBuilder()"
         ],
+        "org.apache.commons.exec.OSTest": [
+            "testIsVersion()",
+            "testIsArchMacOs()",
+            "testIsArch()"
+        ],
         "org.apache.commons.exec.util.StringUtilTest": [
             "testQuoteArgument()"
         ],
+        "org.apache.commons.exec.StandAloneTest": [
+            "testDefaultExecutorFromFile()",
+            "testDefaultExecutorBuilderFromPath()",
+            "testDefaultExecutorFromPath()"
+        ],
+        "org.apache.commons.exec.TimeoutObserverTest": [
+            "testAccept()",
+            "testTimeoutOccurred()"
+        ],
         "org.apache.commons.exec.WatchdogTest": [
             "testBuilder()"
+        ],
+        "org.apache.commons.exec.DefaultExecutorTest": [
+            "testExecuteStability()"
         ]
     }
 }

@@ -139,8 +139,8 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.StatUtils",
                     "focal_method_names": [
-                        "sum(double[])",
-                        "sum(double[], int, int)"
+                        "sum(double[], int, int)",
+                        "sum(double[])"
                     ]
                 }
             ]
@@ -158,9 +158,9 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance",
                     "focal_method_names": [
-                        "copy()",
                         "setBiasCorrected(boolean)",
-                        "setVarianceDirection(org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction)"
+                        "setVarianceDirection(org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction)",
+                        "copy()"
                     ]
                 }
             ]
@@ -172,8 +172,8 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator",
                     "focal_method_names": [
-                        "interpolate(double[], double[], double, double)",
-                        "interpolate(double[], double[])"
+                        "interpolate(double[], double[])",
+                        "interpolate(double[], double[], double, double)"
                     ]
                 },
                 {
@@ -248,9 +248,9 @@
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.Statistics.StorelessSumOfSquares",
                     "focal_method_names": [
                         "create()",
-                        "evaluate(double[], int, int)",
                         "evaluate(double[])",
                         "incrementAll(double[], int, int)",
+                        "evaluate(double[], int, int)",
                         "incrementAll(double[])"
                     ]
                 }
@@ -266,29 +266,29 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatistics",
                     "focal_method_names": [
-                        "getQuadraticMean()",
-                        "getSumsq()",
-                        "getVariance()",
-                        "getKurtosis()",
-                        "getStandardDeviation()",
-                        "getMean()",
-                        "getSkewness()",
-                        "getMin()",
-                        "getGeometricMean()",
                         "getMax()",
-                        "getSum()"
+                        "getVariance()",
+                        "getStandardDeviation()",
+                        "getSkewness()",
+                        "getSum()",
+                        "getSumsq()",
+                        "getMean()",
+                        "getKurtosis()",
+                        "getQuadraticMean()",
+                        "getMin()",
+                        "getGeometricMean()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.StatUtils",
                     "focal_method_names": [
+                        "geometricMean(double[])",
+                        "variance(double[])",
+                        "mean(double[])",
                         "sumSq(double[])",
                         "max(double[])",
-                        "variance(double[])",
                         "sum(double[])",
-                        "min(double[])",
-                        "mean(double[])",
-                        "geometricMean(double[])"
+                        "min(double[])"
                     ]
                 },
                 {
@@ -306,24 +306,24 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
                     "focal_method_names": [
-                        "getMinImpl()",
-                        "addValue(double)",
-                        "getMeanImpl()",
+                        "setMinImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
+                        "setMaxImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
+                        "getMax()",
+                        "getVarianceImpl()",
                         "getVariance()",
+                        "getSumImpl()",
+                        "getSum()",
+                        "getMeanImpl()",
+                        "copy()",
                         "setSumImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
                         "setMeanImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
-                        "setMinImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
-                        "getMin()",
-                        "setMaxImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
-                        "getMean()",
-                        "getSumImpl()",
-                        "getVarianceImpl()",
                         "setVarianceImpl(org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic)",
-                        "getMax()",
+                        "getMean()",
+                        "clear()",
+                        "getMinImpl()",
+                        "addValue(double)",
                         "getMaxImpl()",
-                        "getSum()",
-                        "copy()",
-                        "clear()"
+                        "getMin()"
                     ]
                 },
                 {
@@ -341,22 +341,22 @@
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatistics",
                     "focal_method_names": [
+                        "getMax()",
                         "getVariance()",
                         "getStandardDeviation()",
+                        "getSum()",
                         "getMean()",
-                        "getMin()",
-                        "getMax()",
-                        "getSum()"
+                        "getMin()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.math4.legacy.stat.StatUtils",
                     "focal_method_names": [
-                        "max(double[])",
                         "variance(double[])",
+                        "mean(double[])",
+                        "max(double[])",
                         "sum(double[])",
-                        "min(double[])",
-                        "mean(double[])"
+                        "min(double[])"
                     ]
                 },
                 {

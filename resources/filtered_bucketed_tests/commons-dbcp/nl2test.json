@@ -24,8 +24,8 @@
                 {
                     "focal_class": "org.apache.commons.dbcp2.datasources.UserPassKey",
                     "focal_method_names": [
-                        "clear()",
                         "getPasswordCharArray()",
+                        "clear()",
                         "getUserName()"
                     ]
                 }
@@ -40,15 +40,15 @@
                 {
                     "focal_class": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource",
                     "focal_method_names": [
-                        "setDefaultReadOnly(java.lang.Boolean)",
-                        "setPerUserMaxWait(java.lang.String, java.time.Duration)",
-                        "setDefaultMaxWait(java.time.Duration)",
-                        "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
                         "setDefaultMaxTotal(int)",
-                        "setDefaultAutoCommit(java.lang.Boolean)",
-                        "setDefaultTransactionIsolation(int)",
+                        "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                        "setPerUserMaxWait(java.lang.String, java.time.Duration)",
                         "isDefaultReadOnly()",
-                        "setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)"
+                        "setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                        "setDefaultReadOnly(java.lang.Boolean)",
+                        "setDefaultMaxWait(java.time.Duration)",
+                        "setDefaultAutoCommit(java.lang.Boolean)",
+                        "setDefaultTransactionIsolation(int)"
                     ]
                 }
             ]

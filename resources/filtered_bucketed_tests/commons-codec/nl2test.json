@@ -3,6 +3,18 @@
     "tests_with_one_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+            "method_signature": "testKnownDecodings()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Base64",
+                    "focal_method_names": [
+                        "decodeBase64(byte[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
             "method_signature": "testIsArrayByteBase64(byte[], boolean)",
             "focal_details": [
                 {
@@ -172,6 +184,37 @@
             ]
         },
         {
+            "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+            "method_signature": "testRfc4648Section10Encode()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Base64",
+                    "focal_method_names": [
+                        "encodeBase64String(byte[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.codec.binary.StringUtils",
+                    "focal_method_names": [
+                        "getBytesUtf8(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+            "method_signature": "testIsUrlSafe()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Base64",
+                    "focal_method_names": [
+                        "isUrlSafe()",
+                        "isBase64(byte[])"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.codec.binary.Base32OutputStreamTest",
             "method_signature": "testBuilder()",
             "focal_details": [
@@ -253,8 +296,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.DecoderException",
                     "focal_method_names": [
-                        "getMessage()",
-                        "getCause()"
+                        "getCause()",
+                        "getMessage()"
                     ]
                 }
             ]
@@ -288,8 +331,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.HmacUtils",
                     "focal_method_names": [
-                        "hmacHex(java.io.InputStream)",
-                        "isAvailable(org.apache.commons.codec.digest.HmacAlgorithms)"
+                        "isAvailable(org.apache.commons.codec.digest.HmacAlgorithms)",
+                        "hmacHex(java.io.InputStream)"
                     ]
                 }
             ]
@@ -305,8 +348,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.HmacUtils",
                     "focal_method_names": [
-                        "hmacHex(java.io.File)",
-                        "isAvailable(org.apache.commons.codec.digest.HmacAlgorithms)"
+                        "isAvailable(org.apache.commons.codec.digest.HmacAlgorithms)",
+                        "hmacHex(java.io.File)"
                     ]
                 }
             ]
@@ -351,27 +394,6 @@
     "tests_with_more_than_two_to_five_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
-            "method_signature": "testShake128_256(java.lang.String, int, java.lang.String)",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.codec.binary.Hex",
-                    "focal_method_names": [
-                        "decodeHex(java.lang.String)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.codec.digest.DigestUtils",
-                    "focal_method_names": [
-                        "shake128_256(java.io.InputStream)",
-                        "shake128_256Hex(byte[])",
-                        "shake128_256(byte[])",
-                        "shake128_256Hex(java.io.InputStream)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
             "method_signature": "testShake256_512(java.lang.String, int, java.lang.String)",
             "focal_details": [
                 {
@@ -383,10 +405,10 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
-                        "shake256_512(java.io.InputStream)",
                         "shake256_512Hex(byte[])",
                         "shake256_512(byte[])",
-                        "shake256_512Hex(java.io.InputStream)"
+                        "shake256_512Hex(java.io.InputStream)",
+                        "shake256_512(java.io.InputStream)"
                     ]
                 }
             ]
@@ -399,9 +421,9 @@
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
                         "getSha3_256Digest()",
-                        "getSha3_224Digest()",
+                        "getSha3_384Digest()",
                         "getSha3_512Digest()",
-                        "getSha3_384Digest()"
+                        "getSha3_224Digest()"
                     ]
                 }
             ]
@@ -423,44 +445,24 @@
     ],
     "tests_with_more_than_five_to_ten_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
-            "method_signature": "testGetDigests()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.codec.digest.DigestUtils",
-                    "focal_method_names": [
-                        "getSha256Digest()",
-                        "getSha384Digest()",
-                        "getMd2Digest()",
-                        "getSha1Digest()",
-                        "getMd5Digest()",
-                        "getShaDigest()",
-                        "getSha512_224Digest()",
-                        "getSha512Digest()",
-                        "getSha512_256Digest()"
-                    ]
-                }
-            ]
-        },
-        {
             "qualified_class_name": "org.apache.commons.codec.digest.Crc16Test",
             "method_signature": "testModbusCustom()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
-                        "reset()",
-                        "getValue()",
+                        "setTable(int[])",
                         "get()",
                         "setInit(int)",
-                        "setTable(int[])"
+                        "getValue()",
+                        "reset()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16",
                     "focal_method_names": [
-                        "getModbusTable()",
-                        "builder()"
+                        "builder()",
+                        "getModbusTable()"
                     ]
                 }
             ]
@@ -472,18 +474,18 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
-                        "reset()",
-                        "getValue()",
+                        "setTable(int[])",
                         "get()",
                         "setInit(int)",
-                        "setTable(int[])"
+                        "getValue()",
+                        "reset()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16",
                     "focal_method_names": [
-                        "getModbusTable()",
-                        "builder()"
+                        "builder()",
+                        "getModbusTable()"
                     ]
                 }
             ]
@@ -495,18 +497,18 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
-                        "reset()",
-                        "getValue()",
+                        "setTable(int[])",
                         "get()",
                         "setInit(int)",
-                        "setTable(int[])"
+                        "getValue()",
+                        "reset()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16",
                     "focal_method_names": [
-                        "getModbusTable()",
-                        "builder()"
+                        "builder()",
+                        "getModbusTable()"
                     ]
                 }
             ]
@@ -519,16 +521,16 @@
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
                         "get()",
+                        "setTable(int[])",
                         "getValue()",
-                        "setInit(int)",
-                        "setTable(int[])"
+                        "setInit(int)"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16",
                     "focal_method_names": [
-                        "getModbusTable()",
-                        "builder()"
+                        "builder()",
+                        "getModbusTable()"
                     ]
                 }
             ]
@@ -540,18 +542,18 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
-                        "update(int)",
-                        "getValue()",
+                        "setTable(int[])",
                         "get()",
+                        "update(int)",
                         "setInit(int)",
-                        "setTable(int[])"
+                        "getValue()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16",
                     "focal_method_names": [
-                        "getModbusTable()",
-                        "builder()"
+                        "builder()",
+                        "getModbusTable()"
                     ]
                 }
             ]

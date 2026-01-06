@@ -4,6 +4,40 @@
         "new_test_method_count": 31
     },
     "new_tests": {
+        "org.apache.commons.jexl3.LambdaTest": [
+            "testRefCapture5()",
+            "testRefCapture6()"
+        ],
+        "org.apache.commons.jexl3.BlockTest": [
+            "testSetVSBlock()"
+        ],
+        "org.apache.commons.jexl3.Issues400Test": [
+            "testSQLTranspose()",
+            "testIssue447()",
+            "testIssue442()",
+            "test450()",
+            "testIssue441()",
+            "test438()",
+            "test437b()",
+            "testSQLNoChange()"
+        ],
+        "org.apache.commons.jexl3.internal.FqcnTest": [
+            "testFqcn()",
+            "testBadImport1()",
+            "testBadImport0()"
+        ],
+        "org.apache.commons.jexl3.SideEffectTest": [
+            "testSideEffectArray()"
+        ],
+        "org.apache.commons.jexl3.internal.SourceCacheTest": [
+            "testInterpolationCache()",
+            "testSource()",
+            "testMetaCache()",
+            "testSourceCache()"
+        ],
+        "org.apache.commons.jexl3.ExceptionTest": [
+            "testWrappedExmore()"
+        ],
         "org.apache.commons.jexl3.SwitchTest": [
             "testSwitchExpression1()",
             "testSwitchStatement1()",
@@ -16,40 +50,6 @@
             "testSwitchExpression()",
             "testSwitchExpressionFail()",
             "test440e()"
-        ],
-        "org.apache.commons.jexl3.LambdaTest": [
-            "testRefCapture5()",
-            "testRefCapture6()"
-        ],
-        "org.apache.commons.jexl3.internal.FqcnTest": [
-            "testFqcn()",
-            "testBadImport1()",
-            "testBadImport0()"
-        ],
-        "org.apache.commons.jexl3.ExceptionTest": [
-            "testWrappedExmore()"
-        ],
-        "org.apache.commons.jexl3.Issues400Test": [
-            "testSQLTranspose()",
-            "testIssue447()",
-            "testIssue442()",
-            "test450()",
-            "testIssue441()",
-            "test438()",
-            "test437b()",
-            "testSQLNoChange()"
-        ],
-        "org.apache.commons.jexl3.internal.SourceCacheTest": [
-            "testInterpolationCache()",
-            "testSource()",
-            "testMetaCache()",
-            "testSourceCache()"
-        ],
-        "org.apache.commons.jexl3.SideEffectTest": [
-            "testSideEffectArray()"
-        ],
-        "org.apache.commons.jexl3.BlockTest": [
-            "testSetVSBlock()"
         ]
     }
 }

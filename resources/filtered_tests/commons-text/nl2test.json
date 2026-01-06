@@ -4,29 +4,27 @@
         "new_test_method_count": 32
     },
     "new_tests": {
-        "org.apache.commons.text.similarity.JaroWinklerDistanceTest": [
-            "testApply_SimilarityInputNull()"
-        ],
-        "org.apache.commons.text.lookup.StringLookupFactoryTest": [
-            "testAddDefaultStringLookupsNull()",
-            "testDefault()"
+        "org.apache.commons.text.similarity.LevenshteinResultsTest": [
+            "testEqualsSameObject()"
         ],
         "org.apache.commons.text.similarity.LevenshteinDetailedDistanceTest": [
             "testApplyWithNullString()"
         ],
-        "org.apache.commons.text.similarity.HammingDistanceTest": [
-            "testHammingDistance_nullLeftValue()",
-            "testHammingDistance(java.lang.Class)",
-            "testHammingDistance_nullRightValue()"
+        "org.apache.commons.text.similarity.JaroWinklerDistanceTest": [
+            "testApply_SimilarityInputNull()"
         ],
-        "org.apache.commons.text.similarity.LevenshteinResultsTest": [
-            "testEqualsSameObject()"
+        "org.apache.commons.text.RandomStringGeneratorTest": [
+            "testChangeOfFilter()",
+            "testSelectFromCharVarargs3(boolean)",
+            "testPasswordExample()"
         ],
-        "org.apache.commons.text.WordUtilsTest": [
-            "testLANG673()"
+        "org.apache.commons.text.similarity.JaroWinklerSimilarityTest": [
+            "testGetJaroWinklerSimilarity_StringNull()",
+            "testApply_NullSimilarityInput()",
+            "testApply_SimilarityInputNull()"
         ],
-        "org.apache.commons.text.TextStringBuilderAppendInsertTest": [
-            "testInsertAtEnd()"
+        "org.apache.commons.text.TextStringBuilderTest": [
+            "testConstructorDefault()"
         ],
         "org.apache.commons.text.lookup.XmlStringLookupTest": [
             "testNoFeaturesDefault()",
@@ -34,21 +32,20 @@
             "testToString()",
             "testNull()"
         ],
-        "org.apache.commons.text.RandomStringGeneratorTest": [
-            "testChangeOfFilter()",
-            "testSelectFromCharVarargs3(boolean)",
-            "testPasswordExample()"
-        ],
         "org.apache.commons.text.StringSubstitutorTest": [
             "testDetectsCyclicSubstitution()"
         ],
-        "org.apache.commons.text.similarity.JaroWinklerSimilarityTest": [
-            "testGetJaroWinklerSimilarity_StringNull()",
-            "testApply_NullSimilarityInput()",
-            "testApply_SimilarityInputNull()"
+        "org.apache.commons.text.similarity.HammingDistanceTest": [
+            "testHammingDistance_nullLeftValue()",
+            "testHammingDistance(java.lang.Class)",
+            "testHammingDistance_nullRightValue()"
         ],
-        "org.apache.commons.text.translate.CharSequenceTranslatorTest": [
-            "testWith()"
+        "org.apache.commons.text.TextStringBuilderAppendInsertTest": [
+            "testInsertAtEnd()"
+        ],
+        "org.apache.commons.text.lookup.StringLookupFactoryTest": [
+            "testAddDefaultStringLookupsNull()",
+            "testDefault()"
         ],
         "org.apache.commons.text.similarity.DamerauLevenshteinDistanceTest": [
             "testCalculateDamerauLevenshteinDistance_SimilarityInput(java.lang.String, java.lang.String, int, int, java.lang.Class)",
@@ -61,8 +58,11 @@
             "testNullInputsThrowLimited()",
             "testGetThresholdDirectlyAfterObjectInstantiation()"
         ],
-        "org.apache.commons.text.TextStringBuilderTest": [
-            "testConstructorDefault()"
+        "org.apache.commons.text.translate.CharSequenceTranslatorTest": [
+            "testWith()"
+        ],
+        "org.apache.commons.text.WordUtilsTest": [
+            "testLANG673()"
         ]
     }
 }

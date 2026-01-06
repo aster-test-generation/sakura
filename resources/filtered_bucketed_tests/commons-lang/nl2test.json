@@ -2,42 +2,6 @@
     "dataset_name": "commons-lang",
     "tests_with_one_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.lang3.reflect.TypeUtilsTest",
-            "method_signature": "testToString()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.reflect.TypeUtils",
-                    "focal_method_names": [
-                        "toString(java.lang.reflect.Type)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.reflect.TypeUtilsTest",
-            "method_signature": "testNormalizeUpperBounds_LANG_820()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.reflect.TypeUtils",
-                    "focal_method_names": [
-                        "normalizeUpperBounds(java.lang.reflect.Type[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.reflect.TypeUtilsTest",
-            "method_signature": "testNormalizeUpperBounds()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.reflect.TypeUtils",
-                    "focal_method_names": [
-                        "normalizeUpperBounds(java.lang.reflect.Type[])"
-                    ]
-                }
-            ]
-        },
-        {
             "qualified_class_name": "org.apache.commons.lang3.StringUtilsAbbreviateTest",
             "method_signature": "testAbbreviate_StringIntInt()",
             "focal_details": [
@@ -201,18 +165,6 @@
                     "focal_class": "org.apache.commons.lang3.RegExUtils",
                     "focal_method_names": [
                         "removeAll(java.lang.String, java.util.regex.Pattern)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.RandomStringUtilsTest",
-            "method_signature": "testHugeStrings(int)",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.RandomStringUtils",
-                    "focal_method_names": [
-                        "random(int)"
                     ]
                 }
             ]
@@ -435,42 +387,6 @@
         },
         {
             "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShiftObjectArrayNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "shift(java.lang.Object[], int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShiftBooleanArrayNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "shift(boolean[], int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShiftFloatArrayNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "shift(float[], int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
             "method_signature": "testToPrimitiveArrayViaObjectArray()",
             "focal_details": [
                 {
@@ -483,48 +399,12 @@
         },
         {
             "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShiftDoubleArrayNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "shift(double[], int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShiftIntArrayNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "shift(int[], int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
             "method_signature": "testShiftRangeBoolean()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.lang3.ArrayUtils",
                     "focal_method_names": [
                         "shift(boolean[], int, int, int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShiftShortArrayNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "shift(short[], int)"
                     ]
                 }
             ]
@@ -561,6 +441,18 @@
                     "focal_class": "org.apache.commons.lang3.builder.ReflectionDiffBuilder",
                     "focal_method_names": [
                         "build()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.lang3.SystemUtilsTest",
+            "method_signature": "testJavaAwtHeadless()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.lang3.SystemUtils",
+                    "focal_method_names": [
+                        "isJavaAwtHeadless()"
                     ]
                 }
             ]
@@ -753,26 +645,13 @@
     "tests_with_two_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.lang3.reflect.TypeUtilsTest",
-            "method_signature": "testParameterizeVarArgs()",
+            "method_signature": "testParameterizeWithOwnerVarArgsNullPointerException()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.lang3.reflect.TypeUtils",
                     "focal_method_names": [
                         "parameterize(java.lang.Class, java.lang.reflect.Type[])",
-                        "equals(java.lang.reflect.Type, java.lang.reflect.Type)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.reflect.TypeUtilsTest",
-            "method_signature": "testUnrollVariables()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.reflect.TypeUtils",
-                    "focal_method_names": [
-                        "parameterize(java.lang.Class, java.lang.reflect.Type[])",
-                        "unrollVariables(java.util.Map, java.lang.reflect.Type)"
+                        "parameterizeWithOwner(java.lang.reflect.Type, java.lang.Class, java.lang.reflect.Type[])"
                     ]
                 }
             ]
@@ -802,8 +681,8 @@
                 {
                     "focal_class": "org.apache.commons.lang3.time.FastDateFormat",
                     "focal_method_names": [
-                        "getInstance(java.lang.String, java.util.Locale)",
-                        "parse(java.lang.String)"
+                        "parse(java.lang.String)",
+                        "getInstance(java.lang.String, java.util.Locale)"
                     ]
                 }
             ]
@@ -815,8 +694,8 @@
                 {
                     "focal_class": "org.apache.commons.lang3.StringUtils",
                     "focal_method_names": [
-                        "abbreviate(java.lang.String, int)",
-                        "abbreviate(java.lang.String, java.lang.String, int)"
+                        "abbreviate(java.lang.String, java.lang.String, int)",
+                        "abbreviate(java.lang.String, int)"
                     ]
                 }
             ]
@@ -854,8 +733,8 @@
                 {
                     "focal_class": "org.apache.commons.lang3.reflect.MethodUtils",
                     "focal_method_names": [
-                        "invokeStaticMethod(java.lang.Class, java.lang.String, java.lang.Object[])",
-                        "invokeMethod(java.lang.Object, java.lang.String, java.lang.Object[])"
+                        "invokeMethod(java.lang.Object, java.lang.String, java.lang.Object[])",
+                        "invokeStaticMethod(java.lang.Class, java.lang.String, java.lang.Object[])"
                     ]
                 }
             ]
@@ -1101,8 +980,8 @@
                 {
                     "focal_class": "org.apache.commons.lang3.tuple.ImmutableTriple",
                     "focal_method_names": [
-                        "nullTriple()",
-                        "of(java.lang.Object, java.lang.Object, java.lang.Object)"
+                        "of(java.lang.Object, java.lang.Object, java.lang.Object)",
+                        "nullTriple()"
                     ]
                 }
             ]
@@ -1240,9 +1119,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.time.FastDateFormat",
                     "focal_method_names": [
-                        "getInstance(java.lang.String)",
+                        "getInstance(java.lang.String, java.util.TimeZone)",
                         "format(java.util.Calendar)",
-                        "getInstance(java.lang.String, java.util.TimeZone)"
+                        "getInstance(java.lang.String)"
                     ]
                 }
             ]
@@ -1254,9 +1133,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.function.FailableByteConsumer",
                     "focal_method_names": [
+                        "accept(byte)",
                         "nop()",
-                        "andThen(org.apache.commons.lang3.function.FailableByteConsumer)",
-                        "accept(byte)"
+                        "andThen(org.apache.commons.lang3.function.FailableByteConsumer)"
                     ]
                 }
             ]
@@ -1268,9 +1147,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.function.ByteConsumer",
                     "focal_method_names": [
+                        "accept(byte)",
                         "nop()",
-                        "andThen(org.apache.commons.lang3.function.ByteConsumer)",
-                        "accept(byte)"
+                        "andThen(org.apache.commons.lang3.function.ByteConsumer)"
                     ]
                 }
             ]
@@ -1282,16 +1161,16 @@
                 {
                     "focal_class": "org.apache.commons.lang3.time.StopWatch",
                     "focal_method_names": [
+                        "unsplit()",
                         "stop()",
-                        "start()",
-                        "unsplit()"
+                        "start()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.lang3.time.StopWatch.Split",
                     "focal_method_names": [
-                        "getLabel()",
-                        "getDuration()"
+                        "getDuration()",
+                        "getLabel()"
                     ]
                 }
             ]
@@ -1303,25 +1182,11 @@
                 {
                     "focal_class": "org.apache.commons.lang3.time.StopWatch",
                     "focal_method_names": [
-                        "createStarted()",
                         "create()",
+                        "unsplit()",
                         "split()",
                         "start()",
-                        "unsplit()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testShuffleString()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "clone(java.lang.Object[])",
-                        "shuffle(java.lang.Object[])",
-                        "contains(java.lang.Object[], java.lang.Object)"
+                        "createStarted()"
                     ]
                 }
             ]
@@ -1333,9 +1198,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.builder.Diff",
                     "focal_method_names": [
-                        "getKey()",
                         "getValue()",
-                        "toString()"
+                        "toString()",
+                        "getKey()"
                     ]
                 },
                 {
@@ -1359,9 +1224,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.builder.Diff",
                     "focal_method_names": [
-                        "getKey()",
                         "getValue()",
-                        "toString()"
+                        "toString()",
+                        "getKey()"
                     ]
                 },
                 {
@@ -1385,9 +1250,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.builder.Diff",
                     "focal_method_names": [
-                        "getKey()",
                         "getValue()",
-                        "toString()"
+                        "toString()",
+                        "getKey()"
                     ]
                 },
                 {
@@ -1455,9 +1320,9 @@
                 {
                     "focal_class": "org.apache.commons.lang3.concurrent.locks.LockingVisitors.ReentrantLockVisitor.Builder",
                     "focal_method_names": [
-                        "setObject(java.lang.Object)",
                         "get()",
-                        "setLock(java.util.concurrent.locks.ReentrantLock)"
+                        "setLock(java.util.concurrent.locks.ReentrantLock)",
+                        "setObject(java.lang.Object)"
                     ]
                 }
             ]
@@ -1469,57 +1334,15 @@
                 {
                     "focal_class": "org.apache.commons.lang3.ClassUtils",
                     "focal_method_names": [
-                        "getClass(java.lang.String, boolean)",
+                        "getClass(java.lang.String)",
                         "getClass(java.lang.ClassLoader, java.lang.String)",
-                        "getClass(java.lang.String)"
+                        "getClass(java.lang.String, boolean)"
                     ]
                 }
             ]
         }
     ],
     "tests_with_more_than_five_to_ten_focal_methods": [
-        {
-            "qualified_class_name": "org.apache.commons.lang3.reflect.TypeUtilsTest",
-            "method_signature": "testEquals()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.reflect.TypeUtils.WildcardTypeBuilder",
-                    "focal_method_names": [
-                        "build()",
-                        "withUpperBounds(java.lang.reflect.Type[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.lang3.reflect.TypeUtils",
-                    "focal_method_names": [
-                        "wildcardType()",
-                        "parameterize(java.lang.Class, java.lang.reflect.Type[])",
-                        "genericArrayType(java.lang.reflect.Type)",
-                        "equals(java.lang.reflect.GenericArrayType, java.lang.reflect.Type)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.ArrayUtilsTest",
-            "method_signature": "testToPrimitiveArray()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.ArrayUtils",
-                    "focal_method_names": [
-                        "toPrimitive(java.lang.Boolean[])",
-                        "toPrimitive(java.lang.Short[])",
-                        "toPrimitive(java.lang.Long[])",
-                        "toPrimitive(java.lang.Byte[])",
-                        "toPrimitive(java.lang.Float[])",
-                        "toPrimitive(java.lang.Integer[])",
-                        "toPrimitive(java.lang.Object)",
-                        "toPrimitive(java.lang.Double[])",
-                        "toPrimitive(java.lang.Character[])"
-                    ]
-                }
-            ]
-        },
         {
             "qualified_class_name": "org.apache.commons.lang3.concurrent.BackgroundInitializerTest",
             "method_signature": "testBuilderThenGetFailures()",
@@ -1528,40 +1351,17 @@
                     "focal_class": "org.apache.commons.lang3.concurrent.BackgroundInitializer",
                     "focal_method_names": [
                         "isInitialized()",
-                        "builder()",
                         "start()",
-                        "isStarted()"
+                        "isStarted()",
+                        "builder()"
                     ]
                 },
                 {
                     "focal_class": "org.apache.commons.lang3.concurrent.BackgroundInitializer.Builder",
                     "focal_method_names": [
+                        "setInitializer(org.apache.commons.lang3.function.FailableSupplier)",
                         "setCloser(org.apache.commons.lang3.function.FailableConsumer)",
-                        "setExternalExecutor(java.util.concurrent.ExecutorService)",
-                        "setInitializer(org.apache.commons.lang3.function.FailableSupplier)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.lang3.concurrent.BackgroundInitializerTest",
-            "method_signature": "testBuilder()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.lang3.concurrent.BackgroundInitializer",
-                    "focal_method_names": [
-                        "isInitialized()",
-                        "builder()",
-                        "isStarted()"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.lang3.concurrent.BackgroundInitializer.Builder",
-                    "focal_method_names": [
-                        "setCloser(org.apache.commons.lang3.function.FailableConsumer)",
-                        "setExternalExecutor(java.util.concurrent.ExecutorService)",
-                        "get()",
-                        "setInitializer(org.apache.commons.lang3.function.FailableSupplier)"
+                        "setExternalExecutor(java.util.concurrent.ExecutorService)"
                     ]
                 }
             ]

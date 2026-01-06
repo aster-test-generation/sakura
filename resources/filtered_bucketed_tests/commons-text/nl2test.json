@@ -227,8 +227,8 @@
                 {
                     "focal_class": "org.apache.commons.text.translate.CharSequenceTranslator",
                     "focal_method_names": [
-                        "with(org.apache.commons.text.translate.CharSequenceTranslator[])",
-                        "translate(java.lang.CharSequence, int, java.io.Writer)"
+                        "translate(java.lang.CharSequence, int, java.io.Writer)",
+                        "with(org.apache.commons.text.translate.CharSequenceTranslator[])"
                     ]
                 }
             ]
@@ -242,8 +242,8 @@
                 {
                     "focal_class": "org.apache.commons.text.similarity.DamerauLevenshteinDistance",
                     "focal_method_names": [
-                        "apply(java.lang.CharSequence, java.lang.CharSequence)",
-                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)"
+                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)",
+                        "apply(java.lang.CharSequence, java.lang.CharSequence)"
                     ]
                 },
                 {
@@ -261,8 +261,8 @@
                 {
                     "focal_class": "org.apache.commons.text.similarity.DamerauLevenshteinDistance",
                     "focal_method_names": [
-                        "apply(java.lang.CharSequence, java.lang.CharSequence)",
-                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)"
+                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)",
+                        "apply(java.lang.CharSequence, java.lang.CharSequence)"
                     ]
                 },
                 {
@@ -284,16 +284,16 @@
                     "focal_class": "org.apache.commons.text.TextStringBuilder",
                     "focal_method_names": [
                         "insert(int, boolean)",
-                        "toString()",
-                        "insert(int, float)",
-                        "insert(int, double)",
-                        "insert(int, char[])",
                         "insert(int, char)",
-                        "insert(int, char[], int, int)",
-                        "insert(int, long)",
                         "insert(int, int)",
+                        "insert(int, double)",
                         "insert(int, java.lang.Object)",
-                        "insert(int, java.lang.String)"
+                        "insert(int, char[])",
+                        "insert(int, long)",
+                        "insert(int, float)",
+                        "insert(int, java.lang.String)",
+                        "insert(int, char[], int, int)",
+                        "toString()"
                     ]
                 }
             ]

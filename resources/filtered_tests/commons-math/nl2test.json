@@ -4,34 +4,8 @@
         "new_test_method_count": 27
     },
     "new_tests": {
-        "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest": [
-            "testUnsupportedMethods()",
-            "testUnsupportedStorelessMethods()",
-            "testPercentile()",
-            "testInvalidPercentileThrows(double)"
-        ],
-        "org.apache.commons.math4.legacy.stat.StatUtilsTest": [
-            "testSum()"
-        ],
-        "org.apache.commons.math4.legacy.linear.RealVectorTest": [
-            "testSparseIteratorEmptyVector()"
-        ],
-        "org.apache.commons.math4.legacy.util.ComplexFormatAbstractTest": [
-            "testParseMissingImaginaryCharacter()"
-        ],
-        "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest": [
-            "testMath1674()"
-        ],
         "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest": [
             "testAllPointsIdentical()"
-        ],
-        "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest": [
-            "testSetterAll()",
-            "testEmpty()"
-        ],
-        "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest": [
-            "testProperties()",
-            "testCopy()"
         ],
         "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest": [
             "testIntegral()",
@@ -41,7 +15,8 @@
             "testArrayLengthMismatch()",
             "testInterpolateLinearDegenerateTwoSegment()"
         ],
-        "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest": [
+        "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest": [
+            "testSetterAll()",
             "testEmpty()"
         ],
         "org.apache.commons.math4.legacy.stat.descriptive.WeightedEvaluationAbstractTest": [
@@ -52,6 +27,31 @@
             "testEmptyEvaluation()",
             "testUnweightedEvaluation()",
             "testWeightedConsistency()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest": [
+            "testUnsupportedMethods()",
+            "testUnsupportedStorelessMethods()",
+            "testPercentile()",
+            "testInvalidPercentileThrows(double)"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest": [
+            "testEmpty()"
+        ],
+        "org.apache.commons.math4.legacy.stat.StatUtilsTest": [
+            "testSum()"
+        ],
+        "org.apache.commons.math4.legacy.util.ComplexFormatAbstractTest": [
+            "testParseMissingImaginaryCharacter()"
+        ],
+        "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest": [
+            "testProperties()",
+            "testCopy()"
+        ],
+        "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest": [
+            "testMath1674()"
+        ],
+        "org.apache.commons.math4.legacy.linear.RealVectorTest": [
+            "testSparseIteratorEmptyVector()"
         ]
     }
 }

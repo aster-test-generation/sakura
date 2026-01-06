@@ -1,22 +1,9 @@
 {
     "summary": {
         "new_test_class_count": 14,
-        "new_test_method_count": 39
+        "new_test_method_count": 40
     },
     "new_tests": {
-        "org.apache.commons.codec.binary.Base16InputStreamTest": [
-            "testBuilder()"
-        ],
-        "org.apache.commons.codec.digest.DigestUtilsTest": [
-            "testShake128_256(java.lang.String, int, java.lang.String)",
-            "testDigestDeprecated()",
-            "testShake128_256_String()",
-            "testShake256_512(java.lang.String, int, java.lang.String)",
-            "testGetDigests()",
-            "testGetDigestsJava25()",
-            "testShake256_512_String()",
-            "testGetDigestsJava9()"
-        ],
         "org.apache.commons.codec.digest.Crc16Test": [
             "testModbusDefault(java.lang.String, long)",
             "testIbmSdlcDefault(java.lang.String, long)",
@@ -35,31 +22,34 @@
             "testMaximDefault(java.lang.String, long)",
             "testUpdateInt()"
         ],
-        "org.apache.commons.codec.language.DaitchMokotoffSoundexTest": [
-            "testEncodeIgnoreNonLetters(int)",
-            "testEncodeIgnoreTrimmable()"
-        ],
-        "org.apache.commons.codec.binary.Base32InputStreamTest": [
-            "testBase32EmptyInputStreamMimeChuckSize()",
-            "testBuilder()"
-        ],
         "org.apache.commons.codec.language.bm.RuleTest": [
             "testParsePhonemeExprLang311()"
         ],
-        "org.apache.commons.codec.language.MatchRatingApproachEncoderTest": [
-            "testCompareWithWhitespace()"
-        ],
-        "org.apache.commons.codec.binary.Base64Test": [
-            "testIsArrayByteBase64(byte[], boolean)"
-        ],
-        "org.apache.commons.codec.binary.Base64OutputStreamTest": [
+        "org.apache.commons.codec.binary.Base16InputStreamTest": [
             "testBuilder()"
         ],
         "org.apache.commons.codec.DecoderExceptionTest": [
             "testConstructorStringObjectArray()"
         ],
+        "org.apache.commons.codec.binary.Base64Test": [
+            "testKnownDecodings()",
+            "testIsArrayByteBase64(byte[], boolean)",
+            "testRfc4648Section10Encode()",
+            "testRfc4648Section10EncodeDecode(java.lang.String)",
+            "testIsUrlSafe()"
+        ],
         "org.apache.commons.codec.binary.Base16OutputStreamTest": [
             "testBuilder()"
+        ],
+        "org.apache.commons.codec.binary.Base64OutputStreamTest": [
+            "testBuilder()"
+        ],
+        "org.apache.commons.codec.language.MatchRatingApproachEncoderTest": [
+            "testCompareWithWhitespace()"
+        ],
+        "org.apache.commons.codec.language.DaitchMokotoffSoundexTest": [
+            "testEncodeIgnoreNonLetters(int)",
+            "testEncodeIgnoreTrimmable()"
         ],
         "org.apache.commons.codec.binary.Base32OutputStreamTest": [
             "testBuilder()"
@@ -68,7 +58,18 @@
             "testMacHexInputStream(org.apache.commons.codec.digest.HmacAlgorithms, byte[], java.lang.String)",
             "testMacHexFile(org.apache.commons.codec.digest.HmacAlgorithms, byte[], java.lang.String)"
         ],
+        "org.apache.commons.codec.digest.DigestUtilsTest": [
+            "testShake128_256_String()",
+            "testShake256_512(java.lang.String, int, java.lang.String)",
+            "testGetDigestsJava25()",
+            "testShake256_512_String()",
+            "testGetDigestsJava9()"
+        ],
         "org.apache.commons.codec.binary.Base64InputStreamTest": [
+            "testBuilder()"
+        ],
+        "org.apache.commons.codec.binary.Base32InputStreamTest": [
+            "testBase32EmptyInputStreamMimeChuckSize()",
             "testBuilder()"
         ]
     }

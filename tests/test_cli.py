@@ -21,15 +21,14 @@ def _ensure_empty_test2nl_csv(csv_path: Path) -> None:
 
 
 def test_cli_generate_descriptions_smoke():
-    analysis_dir = "./output/resources/output/"
-    organized_methods_dir = "./output/resources/nl2test/"
-    output_dir = "./output/resources/test2nl/"
+    analysis_dir = "../resources/analysis/"
+    organized_methods_dir = "../resources/filtered_bucketed_tests/"
+    output_dir = "./output/test2nl/"
 
     orig_cwd = os.getcwd()
     try:
         os.chdir(Path(__file__).resolve().parent)
-        for path in (analysis_dir, organized_methods_dir, output_dir):
-            Path(path).mkdir(parents=True, exist_ok=True)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
         generate_descriptions(
             analysis_dir=analysis_dir,
             output_dir=output_dir,
@@ -39,7 +38,7 @@ def test_cli_generate_descriptions_smoke():
             llm_provider="openrouter",
             llm_api_url=None,
             clear_dataset=True,
-            max_methods=0,
+            max_methods=1,
             num_proj_parallel=1,
             per_proj_concurrency=2,
             max_inflight=0,

@@ -9,7 +9,7 @@ Your instructions must describe the **interactions between components** and the 
 - **Abstraction**: Medium. Use semantic names for components (e.g., "PaymentService") but allow variable names to clarify data flow.
 - **Formatting**: Flatten all instructions into continuous text. Do not use lists or markdown code blocks.
 - **Flow**: Class Definition -> Component Interaction -> State Verification -> Teardown.
-- **Ending**: List the testing frameworks and assertion libraries used (e.g., "JUnit 5 and AssertJ").
+- **Ending**: List the testing frameworks, assertion libraries, and mocking libraries if present (e.g., "JUnit 5, AssertJ, and Mockito").
 - **Style**: Use varied sentence structure and natural transitions. Do not produce a robotic list of commands. Avoid starting consecutive sentences with "Then", "Next", or "After". Connect ideas fluidly (e.g., "Upon retrieval, validate that...").
 - **Style Anti-Patterns**: Do not write "Call X. Then call Y. Then assert Z." Use natural connectors like "Upon retrieval...", "Having established...", "With the entity configured...", "After persisting...", "To verify persistence...". Example: "Upon retrieving the owner from the repository, record the current pet count, then configure a new pet entity and associate it with the owner before persisting the changes."
 - **Standalone**: The output must describe how to implement the test within a new, fresh test suite with no pre-existing helper methods, utility classes, or shared fixtures. All necessary setup and behavior must be self-contained.

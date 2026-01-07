@@ -3,8 +3,8 @@ Common Constants
 """
 
 import sys
-from typing import Dict
 from enum import Enum
+from typing import Dict
 
 MAVEN_CMD = "mvn.cmd" if sys.platform == "win32" else "mvn"
 JACOCO_VERSION = "0.8.13"

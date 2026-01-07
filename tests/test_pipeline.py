@@ -29,13 +29,19 @@ from nltest.utils.utilities import test2nl_entry_to_nl2test_input
 
 class TestTest2NLPipeline:
     @pytest.fixture(autouse=True)
-    def _inject(self, test2nl_context):
-        self.pipeline = test2nl_context.pipeline
-        self.analysis = test2nl_context.analysis
-        self.data_manager = test2nl_context.data_manager
-        self.project_name = test2nl_context.project_name
-        self.project_root = test2nl_context.project_root
-        self.output_dir = test2nl_context.output_dir
+    def _inject(self, petclinic_analysis, petclinic_paths):
+        self.analysis = petclinic_analysis
+        self.project_name = petclinic_paths.project_name
+        self.project_root = petclinic_paths.project_root
+        self.output_dir = petclinic_paths.project_output_dir
+        
+        # Initialize pipeline directly
+        self.pipeline = Test2NLPipeline(
+            self.analysis,
+            self.project_name,
+            self.output_dir,
+            self.project_root,
+        )
 
     def test_all_low_abs(self):
         self.pipeline.reset_dataset()
@@ -44,12 +50,12 @@ class TestTest2NLPipeline:
 
 class TestNL2TestPipeline:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
-        self.config = nl2test_context.config
-        self.project_root = nl2test_context.project_root
-        self.project_name = nl2test_context.project_name
-        self.output_dir = nl2test_context.output_dir
+    def _inject(self, petclinic_analysis, petclinic_config, petclinic_paths):
+        self.analysis = petclinic_analysis
+        self.config = petclinic_config
+        self.project_root = petclinic_paths.project_root
+        self.project_name = petclinic_paths.project_name
+        self.output_dir = petclinic_paths.project_output_dir
 
     def test_pipeline_run_localization_pipeline_grammatical(self):
         """Test the pipeline's run_localization_agent method with a petclinic-based test case."""

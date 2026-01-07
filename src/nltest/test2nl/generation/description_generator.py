@@ -6,38 +6,43 @@ from hamster.code_analysis.model.models import TestingFramework
 from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo
 from nltest.test2nl.prompts import Test2NLPrompt
 from nltest.utils.analysis import CommonAnalysis, Reachability
-from nltest.utils.config import Config
 
 
 class DescriptionGenerator:
-    def __init__(self, analysis: JavaAnalysis) -> None:
-        # Get model temperature from config. This prompt uses the summarization client.
-        config = Config()
-        self.temp = config.get("llm", "summarization_temp")
-
+    def __init__(
+        self,
+        analysis: JavaAnalysis,
+        application_classes: List[str] | None = None,
+        test_utility_classes: List[str] | None = None,
+    ) -> None:
         self.analysis = analysis
+        self._application_classes = application_classes if application_classes else []
+        self._test_utility_classes = (
+            test_utility_classes if test_utility_classes else []
+        )
+        self.test2nl_prompt = Test2NLPrompt(
+            self.analysis, self._application_classes, self._test_utility_classes
+        )
 
-        self.test2nl_prompt = Test2NLPrompt(self.analysis)
-
-    # Entry point for Test2NL dataset creation with pre-bucketed test methods.
     def generate_for_method(
         self,
         method_signature: str,
         qualified_class_name: str,
         abstraction: AbstractionLevel = AbstractionLevel.HIGH,
     ) -> TestDescriptionInfo | None:
+        temperature = abstraction.get_temperature()
         test_desc, prompt, is_successful = self.test2nl_prompt.generate(
-            method_signature, qualified_class_name, abstraction
+            method_signature, qualified_class_name, abstraction, temperature=temperature
         )
 
-        if not is_successful:
+        if not is_successful or test_desc is None:
             return None
 
         generated_description = TestDescriptionInfo(
             description=test_desc,
             prompt=prompt,
             abstraction_level=abstraction,
-            temperature=self.temp,
+            temperature=temperature,
             method_signature=method_signature,
             qualified_class_name=qualified_class_name,
         )

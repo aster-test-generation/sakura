@@ -1,10 +1,10 @@
-### ROLE
-You are a skilled software architect outlining a Java test with moderate detail for behavioral reproduction.
+# TASK
+Generate one concise paragraph at a **Medium Abstraction Level** (Architectural/Component focus) that follows the system instructions.
 
-### CODE CONTEXT
+# CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
 
-#### Setup Methods
+## Setup Methods
 {%- if setup_methods %}
 {%- for setup_method in setup_methods %}
 - Setup Method #{{ loop.index }} -
@@ -14,7 +14,7 @@ You are a skilled software architect outlining a Java test with moderate detail 
 None
 {%- endif %}
 
-#### Teardown Methods
+## Teardown Methods
 {%- if teardown_methods %}
 {%- for teardown_method in teardown_methods %}
 - Teardown Method #{{ loop.index }} -
@@ -24,19 +24,17 @@ None
 None
 {%- endif %}
 
-#### Test Method Annotations
+## Test Method Annotations
 {%- if method_annotations %}
 {{ method_annotations }}
 {%- else %}
 None
 {%- endif %}
 
-#### Test Method Code
-```
+## Test Method Code
 {{ method_code }}
-```
 
-#### Helper Methods
+## Helper Methods
 {%- if helper_methods %}
 {%- for helper_method in helper_methods %}
 - Helper Method #{{ loop.index }} -
@@ -46,14 +44,14 @@ None
 None
 {%- endif %}
 
-#### Test Class Annotations
+## Test Class Annotations
 {%- if class_annotations %}
 {{ class_annotations }}
 {%- else %}
 None
 {%- endif %}
 
-#### Test Class Fields
+## Test Class Fields
 {%- if field_declarations %}
 {%- for field_declaration in field_declarations %}
 - Field Declaration #{{ loop.index }} -
@@ -63,7 +61,7 @@ None
 None
 {%- endif %}
 
-#### Application Classes & Methods Used
+## Application Classes & Methods Used
 {%- if custom_classes %}
 {%- for custom_class in custom_classes %}
 - Class #{{ loop.index }} -
@@ -73,19 +71,7 @@ None
 None
 {%- endif %}
 
-### TASK
-Write exactly one paragraph with moderate detail describing the scenario, logical flow, and expected results, and name the frameworks used.
-
-### INCLUDE
-- Purpose and responsibilities being exercised.
-- Conceptual objects (e.g., "a list of users", "a configuration object") and the flow among components.
-- High-level interactions (service calls, validations, lookups).
-- Expected functional outcome(s).
-- The Java testing frameworks used.
-
-### EXCLUDE
-- Any class/method/variable names.
-- Specific types or data structures; testing framework syntax; or literal values.
-
-### OUTPUT REQUIREMENTS
-- One paragraph only. Begin with a directive phrase. No lists, headings, or code.
+# OUTPUT
+Produce a one-paragraph imperative instruction on how to reproduce the test case using semantic component names.
+Reference component types (services, repositories, controllers) without naming variable instances.
+Organize instructions chronologically: setup/preconditions first, then test actions and assertions **as they occur interwoven in the code**, and finally any teardown steps.

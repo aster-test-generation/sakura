@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Generator
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from dotenv import load_dotenv
 from nltest.test2nl import Pipeline as Test2NLPipeline
 from nltest.test2nl.generation import DescriptionGenerator
 from nltest.test2nl.prompts import RoundTripPrompt, Test2NLPrompt
+from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.config import Config, init_config
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.utils.llm.model import Provider
@@ -26,46 +28,6 @@ class ProjectPaths:
     output_root: Path
     project_output_dir: Path
     project_name: str
-
-
-@dataclass
-class NL2TestContext:
-    analysis: JavaAnalysis
-    config: Config
-    project_name: str
-    project_root: Path
-    resources_dir: Path
-    output_dir: Path
-
-
-@dataclass
-class Test2NLContext:
-    base: NL2TestContext
-    pipeline: Test2NLPipeline
-    desc_generator: DescriptionGenerator
-    data_manager: StructuredDataManager
-    test2nl_prompt: Test2NLPrompt
-    roundtrip_prompt: RoundTripPrompt
-
-    @property
-    def analysis(self) -> JavaAnalysis:
-        return self.base.analysis
-
-    @property
-    def config(self) -> Config:
-        return self.base.config
-
-    @property
-    def project_name(self) -> str:
-        return self.base.project_name
-
-    @property
-    def project_root(self) -> Path:
-        return self.base.project_root
-
-    @property
-    def output_dir(self) -> Path:
-        return self.base.output_dir
 
 
 def _resolve_provider(env_var: str, default: Provider) -> Provider:
@@ -85,24 +47,23 @@ def _env_bool(env_var: str, default: bool) -> bool:
     return raw.lower() in {"1", "true", "yes", "on"}
 
 
-@pytest.fixture(scope="session")
-def project_paths() -> ProjectPaths:
+def get_project_paths(project_name: str) -> ProjectPaths:
+    """Helper to construct paths for a specific project."""
     load_dotenv()
     tests_dir = Path(__file__).resolve().parent
     repo_root = tests_dir.parent
     resources_dir = tests_dir / "resources"
 
-    # TEST_PROJECT_ROOT is relative to repo root
-    test_project_root = os.getenv("TEST_PROJECT_ROOT")
-    project_root = repo_root / test_project_root
+    candidate_path = resources_dir / project_name
+    if not candidate_path.exists():
+        candidate_path = repo_root / project_name
 
-    # Derive project name from project root
-    project_name = project_root.name
+    project_root = candidate_path
 
     if not project_root.is_dir():
         raise RuntimeError(
             f"Project root directory {project_root} does not exist. "
-            "Ensure test datasets are initialized."
+            "Ensure test datasets are initialized in tests/resources/ or repo root."
         )
 
     output_root = tests_dir / "output"
@@ -119,18 +80,19 @@ def project_paths() -> ProjectPaths:
     )
 
 
-@pytest.fixture(scope="session")
-def analysis(project_paths: ProjectPaths) -> JavaAnalysis:
+def get_analysis(project_paths: ProjectPaths) -> JavaAnalysis:
+    """Helper to create analysis for a project."""
     return CLDK(language="java").analysis(
         project_path=project_paths.project_root,
         analysis_backend_path=None,
         analysis_level=AnalysisLevel.symbol_table,
         analysis_json_path=project_paths.project_output_dir,
-        eager=True,
+        eager=False,
     )
 
 
-def _init_test_config(project_paths: ProjectPaths) -> Config:
+def init_test_config(project_paths: ProjectPaths) -> Config:
+    """Helper to initialize config for a project."""
     llm_model = os.getenv("TEST_LLM_MODEL", "google/gemini-2.5-flash")
     emb_model = os.getenv("TEST_EMB_MODEL", "nomic-embed-text:v1.5")
     llm_provider = _resolve_provider("TEST_LLM_PROVIDER", Provider.OPENROUTER)
@@ -140,6 +102,7 @@ def _init_test_config(project_paths: ProjectPaths) -> Config:
     llm_api_key = os.getenv("LLM_API_KEY")
     emb_api_key = os.getenv("EMB_API_KEY")
 
+    Config.reset()
     return init_config(
         project_name=project_paths.project_name,
         base_project_dir=str(project_paths.resources_dir),
@@ -157,42 +120,96 @@ def _init_test_config(project_paths: ProjectPaths) -> Config:
     )
 
 
+# --- Spring PetClinic Fixtures ---
+
+
+@pytest.fixture(scope="session")
+def petclinic_paths() -> ProjectPaths:
+    return get_project_paths("spring-petclinic")
+
+
+@pytest.fixture(scope="session")
+def petclinic_analysis(petclinic_paths: ProjectPaths) -> JavaAnalysis:
+    return get_analysis(petclinic_paths)
+
+
 @pytest.fixture
-def nl2test_context(project_paths: ProjectPaths, analysis: JavaAnalysis):
-    Config.reset()
-    config = _init_test_config(project_paths)
-    ctx = NL2TestContext(
-        analysis=analysis,
-        config=config,
-        project_name=project_paths.project_name,
-        project_root=project_paths.project_root,
-        resources_dir=project_paths.resources_dir,
-        output_dir=project_paths.project_output_dir,
-    )
+def petclinic_config(petclinic_paths: ProjectPaths) -> Generator[Config, None, None]:
+    """
+    Function-scoped fixture to ensure config is clean for each test.
+    """
+    config = init_test_config(petclinic_paths)
     try:
-        yield ctx
+        yield config
     finally:
         Config.reset()
 
 
-@pytest.fixture
-def test2nl_context(nl2test_context: NL2TestContext) -> Test2NLContext:
-    pipeline = Test2NLPipeline(
-        nl2test_context.analysis,
-        nl2test_context.project_name,
-        nl2test_context.output_dir,
-        nl2test_context.project_root,
-    )
-    desc_generator = DescriptionGenerator(nl2test_context.analysis)
-    data_manager = StructuredDataManager(nl2test_context.output_dir)
-    test2nl_prompt = Test2NLPrompt(nl2test_context.analysis)
-    roundtrip_prompt = RoundTripPrompt(nl2test_context.analysis)
+@pytest.fixture(scope="session")
+def petclinic_categorized_classes(
+    petclinic_analysis: JavaAnalysis,
+) -> tuple[list[str], list[str]]:
+    _, application_classes, test_utility_classes = CommonAnalysis(
+        petclinic_analysis
+    ).categorize_classes()
+    return application_classes, test_utility_classes
 
-    return Test2NLContext(
-        base=nl2test_context,
-        pipeline=pipeline,
-        desc_generator=desc_generator,
-        data_manager=data_manager,
-        test2nl_prompt=test2nl_prompt,
-        roundtrip_prompt=roundtrip_prompt,
+
+@pytest.fixture(scope="session")
+def petclinic_test2nl_prompt(
+    petclinic_analysis: JavaAnalysis,
+    petclinic_session_config: Config,
+    petclinic_categorized_classes: tuple[list[str], list[str]],
+) -> Test2NLPrompt:
+    application_classes, test_utility_classes = petclinic_categorized_classes
+    return Test2NLPrompt(petclinic_analysis, application_classes, test_utility_classes)
+
+
+@pytest.fixture(scope="session")
+def petclinic_roundtrip_prompt(
+    petclinic_analysis: JavaAnalysis, petclinic_session_config: Config
+) -> RoundTripPrompt:
+    return RoundTripPrompt(petclinic_analysis)
+
+
+@pytest.fixture(scope="session")
+def petclinic_test2nl_pipeline(
+    petclinic_analysis: JavaAnalysis,
+    petclinic_paths: ProjectPaths,
+    petclinic_session_config: Config,
+) -> Test2NLPipeline:
+    return Test2NLPipeline(
+        petclinic_analysis,
+        petclinic_paths.project_name,
+        petclinic_paths.project_output_dir,
+        petclinic_paths.project_root,
     )
+
+
+@pytest.fixture(scope="session")
+def petclinic_session_config(
+    petclinic_paths: ProjectPaths,
+) -> Generator[Config, None, None]:
+    """Session-scoped config for fixtures that need Config at session level."""
+    config = init_test_config(petclinic_paths)
+    try:
+        yield config
+    finally:
+        Config.reset()
+
+
+@pytest.fixture(scope="session")
+def petclinic_desc_generator(
+    petclinic_analysis: JavaAnalysis,
+    petclinic_session_config: Config,
+    petclinic_categorized_classes: tuple[list[str], list[str]],
+) -> DescriptionGenerator:
+    application_classes, test_utility_classes = petclinic_categorized_classes
+    return DescriptionGenerator(
+        petclinic_analysis, application_classes, test_utility_classes
+    )
+
+
+@pytest.fixture(scope="session")
+def petclinic_data_manager(petclinic_paths: ProjectPaths) -> StructuredDataManager:
+    return StructuredDataManager(petclinic_paths.project_output_dir)

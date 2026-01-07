@@ -9,8 +9,15 @@ from nltest.nl2test.generation.composition.orchestrators import (
 )
 from nltest.nl2test.generation.composition.tools.base import BaseCompositionTools
 from nltest.nl2test.generation.composition.tools.gherkin import GherkinCompositionTools
-from nltest.nl2test.generation.composition.tools.grammatical import GrammaticalCompositionTools
-from nltest.nl2test.models import NL2TestInput, LocalizedScenario, AbstractionLevel, AgentState
+from nltest.nl2test.generation.composition.tools.grammatical import (
+    GrammaticalCompositionTools,
+)
+from nltest.nl2test.models import (
+    NL2TestInput,
+    LocalizedScenario,
+    AbstractionLevel,
+    AgentState,
+)
 from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis
@@ -36,19 +43,23 @@ class TestCompositionAgent:
             f"You must complete within at most {iters_true} model step(s) (iterations)."
         )
         assert expected_true in rendered_true
-        assert "You may parallelize tool calls that do not depend on each other" in rendered_true
+        assert (
+            "You may parallelize tool calls that do not depend on each other"
+            in rendered_true
+        )
         assert "Do not parallelize tool calls" not in rendered_true
 
         # parallelizable False path
         iters_false = 6
         rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
         pretty_print("Not parallelizable prompt", rendered_false)
-        expected_false = (
-            f"You must complete within at most {iters_false} model step(s) (iterations)."
-        )
+        expected_false = f"You must complete within at most {iters_false} model step(s) (iterations)."
         assert expected_false in rendered_false
         assert "Do not parallelize tool calls" in rendered_false
-        assert "You may parallelize tool calls that do not depend on each other" not in rendered_false
+        assert (
+            "You may parallelize tool calls that do not depend on each other"
+            not in rendered_false
+        )
 
         # duplicate_tools path — mirror orchestrator formatting
         # Create simple tools using LangChain's StructuredTool (a BaseTool subclass)
@@ -76,7 +87,10 @@ class TestCompositionAgent:
             in rendered_with_dups
         )
         assert "Never repeat an identical {tool, args} pair" not in rendered_with_dups
-        assert "Duplicate tool calls are allowed only for the following tool names" not in rendered_true
+        assert (
+            "Duplicate tool calls are allowed only for the following tool names"
+            not in rendered_true
+        )
 
     def test_composition_chat_prompt_formatting(self):
         """Verify chat prompt formatting for composition Gherkin with placeholders."""
@@ -99,14 +113,16 @@ class TestCompositionAgent:
         assert "CURRENT LOCALIZED SCENARIO" in rendered
         assert "Compose a compilable and runnable Java test" in rendered
 
-    def test_composition_agent_gherkin(self, nl2test_context):
-        analysis = nl2test_context.analysis
-        config = nl2test_context.config
+    def test_composition_agent_gherkin(
+        self, petclinic_analysis, petclinic_config, petclinic_paths
+    ):
+        analysis = petclinic_analysis
+        config = petclinic_config
         method_searcher = MethodIndexer(analysis).build_index()
         class_searcher = ClassIndexer(analysis).build_index()
 
-        project_name = nl2test_context.project_name
-        project_root = nl2test_context.project_root
+        project_name = petclinic_paths.project_name
+        project_root = petclinic_paths.project_root
 
         # Tighten iteration limits for this test
         config.set("composition", "max_iters", 6)
@@ -298,7 +314,9 @@ class TestCompositionAgent:
         package = agent_state.package
         class_name = agent_state.class_name
 
-        assert updated_scenario is None or isinstance(updated_scenario, LocalizedScenario)
+        assert updated_scenario is None or isinstance(
+            updated_scenario, LocalizedScenario
+        )
         assert final_comments is None or isinstance(final_comments, str)
 
         # Pretty print selected package and class name before assertions
@@ -321,13 +339,15 @@ class TestCompositionAgent:
             project_path=project_root,
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=nl2test_context.output_dir,
+            analysis_json_path=petclinic_paths.project_output_dir,
             eager=True,
         )
 
         # Get application classes for grading
         cmn = CommonAnalysis(new_analysis)
-        _, application_classes = cmn.get_test_methods_classes_and_application_classes()
+        _, application_classes, _ = (
+            cmn.categorize_classes()
+        )
 
         # Gather compilation errors
         compilation_errors = JavaMavenCompilation(project_root).get_compilation_errors()
@@ -562,7 +582,9 @@ class TestCompositionToolInjection:
         grammatical_tools, _ = grammatical_builder.all()
 
         gherkin_view = next(t for t in gherkin_tools if t.name == "view_test_code")
-        grammatical_view = next(t for t in grammatical_tools if t.name == "view_test_code")
+        grammatical_view = next(
+            t for t in grammatical_tools if t.name == "view_test_code"
+        )
 
         gherkin_result = gherkin_view.func(
             qualified_class_name="org.example.Test",
@@ -585,7 +607,11 @@ class TestCompositionToolInjection:
         gherkin_tools, _ = gherkin_builder.all()
         grammatical_tools, _ = grammatical_builder.all()
 
-        gherkin_compile = next(t for t in gherkin_tools if t.name == "compile_and_execute_test")
-        grammatical_compile = next(t for t in grammatical_tools if t.name == "compile_and_execute_test")
+        gherkin_compile = next(
+            t for t in gherkin_tools if t.name == "compile_and_execute_test"
+        )
+        grammatical_compile = next(
+            t for t in grammatical_tools if t.name == "compile_and_execute_test"
+        )
 
         assert gherkin_compile.func() == grammatical_compile.func() == {}

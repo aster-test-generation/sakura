@@ -5,11 +5,17 @@ from typing import List
 
 from pydantic import BaseModel
 
+from nltest.utils.constants import ABSTRACTION_TEMPERATURES
+
 
 class AbstractionLevel(Enum):
     HIGH = "high"
     MEDIUM = "medium"
     LOW = "low"
+
+    def get_temperature(self) -> float:
+        """Return the temperature for this abstraction level."""
+        return ABSTRACTION_TEMPERATURES[self.value]
 
 
 class TrialType(Enum):
@@ -41,18 +47,18 @@ class RoundTripTest(BaseModel):
 class ReferencedClasses(BaseModel):
     """DEPRECATED"""
 
-    referenced_classes: List[ReferencedClass]
+    referenced_classes: List[ClassContext]
 
 
-class ReferencedClass(BaseModel):
+class ClassContext(BaseModel):
     simple_class_name: str
     qualified_class_name: str
     annotations: List[str] | None = None
     extends: List[str] | None = None
     modifiers: List[str] | None = None
     field_declarations: List[FieldDeclaration] | None = None
-    class_methods: List[MethodContext] | None = None
-    comments_in_class: List[str] | None = None  # Only Javadoc
+    relevant_class_methods: List[MethodContext] | None = None
+    javadoc: List[str] | None = None
 
 
 class FieldDeclaration(BaseModel):
@@ -60,12 +66,35 @@ class FieldDeclaration(BaseModel):
     type: str | None = None
     modifiers: List[str] | None = None
     annotations: List[str] | None = None
+    type_is_helper_class: bool | None = None
+
+
+class CallSiteInfo(BaseModel):
+    method_name: str
+    receiver_type: str
+    return_type: str
+    line_number: int
+    is_assertion: bool
+    is_helper: bool | None = None
+
+
+class VariableInfo(BaseModel):
+    name: str
+    type: str
+    initializer: str | None = None
+    line_number: int
+    type_is_helper_class: bool | None = None
 
 
 class MethodContext(BaseModel):
     method_signature: str
+    qualified_class_name: str | None = None
     is_getter_or_setter: bool | None = None
     code: str | None = None
+    call_sites: List[CallSiteInfo] = []
+    variable_declarations: List[VariableInfo] = []
+    thrown_exceptions: List[str] = []
+    javadoc: str | None = None
 
 
 class Test2NLEntry(BaseModel):

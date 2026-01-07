@@ -1,10 +1,10 @@
-### ROLE
-You are a meticulous test engineer producing an implementation-level narrative so a novice teammate can rebuild the test.
+# TASK
+Generate one concise paragraph at a **Low Abstraction Level** (High technical detail, implementation spec) that follows the system instructions.
 
-### CODE CONTEXT
+# CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
 
-#### Setup Methods
+## Setup Methods
 {%- if setup_methods %}
 {%- for setup_method in setup_methods %}
 - Setup Method #{{ loop.index }} -
@@ -14,7 +14,7 @@ You are a meticulous test engineer producing an implementation-level narrative s
 None
 {%- endif %}
 
-#### Teardown Methods
+## Teardown Methods
 {%- if teardown_methods %}
 {%- for teardown_method in teardown_methods %}
 - Teardown Method #{{ loop.index }} -
@@ -24,19 +24,17 @@ None
 None
 {%- endif %}
 
-#### Test Method Annotations
+## Test Method Annotations
 {%- if method_annotations %}
 {{ method_annotations }}
 {%- else %}
 None
 {%- endif %}
 
-#### Test Method Code
-```
+## Test Method Code
 {{ method_code }}
-```
 
-#### Helper Methods
+## Helper Methods
 {%- if helper_methods %}
 {%- for helper_method in helper_methods %}
 - Helper Method #{{ loop.index }} -
@@ -46,14 +44,14 @@ None
 None
 {%- endif %}
 
-#### Test Class Annotations
+## Test Class Annotations
 {%- if class_annotations %}
 {{ class_annotations }}
 {%- else %}
 None
 {%- endif %}
 
-#### Test Class Fields
+## Test Class Fields
 {%- if field_declarations %}
 {%- for field_declaration in field_declarations %}
 - Field Declaration #{{ loop.index }} -
@@ -63,7 +61,7 @@ None
 None
 {%- endif %}
 
-#### Application Classes & Methods Used
+## Application Classes & Methods Used
 {%- if custom_classes %}
 {%- for custom_class in custom_classes %}
 - Class #{{ loop.index }} -
@@ -73,21 +71,7 @@ None
 None
 {%- endif %}
 
-### TASK
-Write exactly one paragraph that fully specifies how to implement the test.
-
-### INCLUDE
-- A step-by-step narrative of the test's sequence: setup, invocation, interactions, assertions.
-- All classes, methods, and types involved (as named in the input), with each item's role (under test, mocked, helper, assertion target).
-- How dependencies are provided (e.g., injected vs. mocked/spied) and any configured behaviors/stubs.
-- How the method(s) under test are invoked, including what inputs/state are prepared (describe by purpose, not literal values).
-- The nature of interactions (internal logic, external API, database lookup, other services) at a high level, with how they're supported.
-- The expected outcome and the verification technique(s) (e.g., equality checks, truthiness, interaction verification).
-- The Java testing frameworks/tools used (e.g., JUnit 5, Mockito, AssertJ, Hamcrest), naming only those evidenced in the context.
-
-### EXCLUDE
-- The specific test method name.
-- Variable identifiers and literal values.
-
-### OUTPUT REQUIREMENTS
-- One paragraph only. Begin with a directive phrase. No lists, headings, or code.
+# OUTPUT
+Produce a one-paragraph imperative instruction on how to reproduce the test method code. Include exact literals, method names, and granular details.
+Ensure all literal values, constructor arguments, and method parameters from the code are represented exactly in the instruction.
+Organize instructions chronologically: setup/preconditions first, then test actions and assertions **as they occur interwoven in the code**, and finally any teardown steps.

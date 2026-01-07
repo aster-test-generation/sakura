@@ -33,6 +33,12 @@ AZURE_API_VERSION = "2024-12-01-preview"
 # for recursive helper search depth limit
 CONTEXT_SEARCH_DEPTH = 100
 
+ABSTRACTION_TEMPERATURES: dict[str, float] = {
+    "high": 0.7,
+    "medium": 0.5,
+    "low": 0.3,
+}
+
 SETUP_ANNOTATIONS = {  # Also check `setUp()` method for JUnit 3
     "@Before",
     "@BeforeClass",

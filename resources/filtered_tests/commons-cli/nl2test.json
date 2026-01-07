@@ -1,3 +1,50 @@
 {
-    "error": "'/Users/tylerstennett/Documents/repos/nltest/resources/datasets/commons-cli/src/test/java/org/apache/commons/cli/OptionCountTest.java'"
+    "summary": {
+        "new_test_class_count": 8,
+        "new_test_method_count": 26
+    },
+    "new_tests": {
+        "org.apache.commons.cli.help.HelpFormatterTest": [
+            "testPrintHelpXML()",
+            "testPrintOptions()",
+            "testSetOptionFormatBuilderTest()"
+        ],
+        "org.apache.commons.cli.help.TextHelpAppendableTest": [
+            "testGetStyleBuilder()",
+            "testAppendTitle()",
+            "testindexOfWrapPos()",
+            "testindexOfWrapPosWithWhitespace(java.lang.Character, boolean)"
+        ],
+        "org.apache.commons.cli.OptionTest": [
+            "testProcessValue()",
+            "testBuilderEmpty()"
+        ],
+        "org.apache.commons.cli.DefaultParserTest": [
+            "testParseSkipHappyPath()",
+            "testParseSkipNonHappyPath()",
+            "testDeprecated()",
+            "testLongOptionWithEqualsQuoteHandling()",
+            "testParameterized(java.lang.String, org.apache.commons.cli.CommandLineParser, java.lang.String[], java.lang.String, java.lang.String, java.lang.String)",
+            "testParseIgnoreNonHappyPath()",
+            "testBuilder()",
+            "testParseNullOption()",
+            "testLegacyStopAtNonOption()",
+            "testParseIgnoreHappyPath()"
+        ],
+        "org.apache.commons.cli.help.OptionFormatterTest": [
+            "testCli343Part2()",
+            "testCli343Part1()"
+        ],
+        "org.apache.commons.cli.HelpFormatterTest": [
+            "testDeprecatedFindWrapPosZeroWidth(int)",
+            "testDeprecatedPrintOptionsZeroWidth(int)"
+        ],
+        "org.apache.commons.cli.OptionsTest": [
+            "testRequiredOptionInGroupShouldNotBeInRequiredList()"
+        ],
+        "org.apache.commons.cli.MissingOptionExceptionTest": [
+            "testGetMissingOptions()",
+            "testGetMessage()"
+        ]
+    }
 }

@@ -1,5 +1,5 @@
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 # === CONFIGURATION CONSTANTS ===
@@ -16,7 +16,9 @@ ORGANIZED_METHODS_FILE_NAME = "nl2test.json"
 # CLI arguments
 LLM_MODEL = "x-ai/grok-4-fast"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
-LLM_PROVIDER: str | None = "openrouter"  # Supported providers: "openrouter", "ollama", "gcp"
+LLM_PROVIDER: str | None = (
+    "openrouter"  # Supported providers: "openrouter", "ollama", "gcp"
+)
 LLM_API_URL: str | None = None  # must be OpenAI API compatible
 
 CLEAR_DATASET = True
@@ -36,7 +38,7 @@ MAX_INFLIGHT = (
 #   - "tests_with_more_than_two_to_five_focal_methods"
 #   - "tests_with_more_than_five_to_ten_focal_methods"
 #   - "tests_with_more_than_ten_focal_methods"
-EXCLUDE_GROUPS: list[str] = ["tests_with_one_focal_methods"]
+EXCLUDE_GROUPS: list[str] = []
 
 
 def main() -> None:

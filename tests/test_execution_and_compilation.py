@@ -10,10 +10,10 @@ from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from nltest.utils.pretty.prints import pretty_print
 
 
-def test_get_compilation_errors_with_transient_test_file(project_paths):
-    compiler = JavaMavenCompilation(project_paths.project_root)
+def test_get_compilation_errors_with_transient_test_file(petclinic_paths):
+    compiler = JavaMavenCompilation(petclinic_paths.project_root)
     compiler.is_spring_project = True  # Skip spring-javaformat validation for generated files
-    manager = TestFileManager(project_paths.project_root)
+    manager = TestFileManager(petclinic_paths.project_root)
 
     initial_errors = compiler.get_compilation_errors()
     assert initial_errors == []
@@ -60,10 +60,10 @@ def test_get_compilation_errors_with_transient_test_file(project_paths):
     assert cleared_errors == []
 
 
-def test_get_execution_errors_with_transient_test_file(project_paths):
-    executor = JavaMavenExecution(project_paths.project_root)
+def test_get_execution_errors_with_transient_test_file(petclinic_paths):
+    executor = JavaMavenExecution(petclinic_paths.project_root)
     executor.is_spring_project = True
-    manager = TestFileManager(project_paths.project_root)
+    manager = TestFileManager(petclinic_paths.project_root)
 
     qualified_class = "org.springframework.samples.petclinic.TransientExecutionTest"
     passing_code = textwrap.dedent(
@@ -137,14 +137,14 @@ def test_get_execution_errors_with_transient_test_file(project_paths):
     finally:
         manager.delete_single(failing_saved, encode_class_name=False, strict=False)
 
-def test_compilation_of_specific(project_paths, nl2test_context):
-    compiler = JavaMavenCompilation(project_paths.project_root)
+def test_compilation_of_specific(petclinic_paths, petclinic_analysis):
+    compiler = JavaMavenCompilation(petclinic_paths.project_root)
     compiler.is_spring_project = True  # Skip spring-javaformat validation for generated files
 
     initial_errors = compiler.get_compilation_errors()
     assert initial_errors == []
 
-    analysis = nl2test_context.analysis
+    analysis = petclinic_analysis
     class_under_test = "org.springframework.samples.petclinic.owner.PetControllerUpdateTest"
     method_under_test = "testUpdatePetForm()"
 

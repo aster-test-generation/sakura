@@ -4,29 +4,29 @@
         "new_test_method_count": 12
     },
     "new_tests": {
+        "org.apache.commons.fileupload2.core.AbstractFileUploadTest": [
+            "testMultipartMixedNoBoundary()"
+        ],
         "org.apache.commons.fileupload2.core.DeferrableOutputStreamTest": [
             "testThresholdMinusOne()",
             "testThresholdZero()",
             "testExceedPositiveThreshold()"
         ],
-        "org.apache.commons.fileupload2.core.AbstractFileUploadTest": [
-            "testMultipartMixedNoBoundary()"
+        "org.apache.commons.fileupload2.core.DiskFileItemTest": [
+            "testStateModelWithThresholdZero()",
+            "testStateModelWithPositiveThreshold()"
+        ],
+        "org.apache.commons.fileupload2.core.QuotedPrintableDecoderTestCase": [
+            "testTruncatedEscape()"
         ],
         "org.apache.commons.fileupload2.core.AbstractSizesTest": [
             "testFilePartHeaderSizeMax()"
         ],
-        "org.apache.commons.fileupload2.core.DiskFileItemTest": [
-            "testStateModelWithPositiveThreshold()",
-            "testStateModelWithThresholdZero()"
-        ],
         "org.apache.commons.fileupload2.core.MultipartStreamTest": [
-            "testPartHeaderSizeMaxLimit()",
             "testSmallBuffer()",
+            "testPartHeaderSizeMaxLimit()",
             "testThreeParamConstructor()",
             "testTwoParamConstructor()"
-        ],
-        "org.apache.commons.fileupload2.core.QuotedPrintableDecoderTestCase": [
-            "testTruncatedEscape()"
         ]
     }
 }

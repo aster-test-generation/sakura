@@ -1,7 +1,60 @@
 {
     "dataset_name": "commons-net",
-    "tests_with_one_focal_methods": [],
-    "tests_with_two_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+            "method_signature": "testLoadResourceProperties()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.net.ftp.FTPClient",
+                    "focal_method_names": [
+                        "loadResourceProperties(java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_two_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+            "method_signature": "testResizeBuffer()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.net.tftp.TFTPClient",
+                    "focal_method_names": [
+                        "resetBuffersToSize(int)",
+                        "getPacketSize()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+            "method_signature": "testNewDatagram()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.net.tftp.TFTPReadRequestPacket",
+                    "focal_method_names": [
+                        "newDatagram()",
+                        "newDatagram(java.net.DatagramPacket, byte[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+            "method_signature": "testGetOptions()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.net.tftp.TFTPReadRequestPacket",
+                    "focal_method_names": [
+                        "getOptions()",
+                        "toString()"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],
     "tests_with_more_than_ten_focal_methods": []

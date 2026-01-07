@@ -18,9 +18,9 @@ import pytest
 
 class TestMethodSearch:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
-        self.config = nl2test_context.config
+    def _inject(self, petclinic_analysis, petclinic_config):
+        self.analysis = petclinic_analysis
+        self.config = petclinic_config
 
     def test_method_vector_store_single_method_ollama(self):
         qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
@@ -180,9 +180,9 @@ class TestMethodSearch:
 
 class TestProjectSearch:
     @pytest.fixture(autouse=True)
-    def _inject(self, nl2test_context):
-        self.analysis = nl2test_context.analysis
-        self.config = nl2test_context.config
+    def _inject(self, petclinic_analysis, petclinic_config):
+        self.analysis = petclinic_analysis
+        self.config = petclinic_config
 
     def test_proj_vector_store_single_search(self):
         proj_searcher: ProjectSearcher = ProjectIndexer(self.analysis).build_index()

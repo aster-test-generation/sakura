@@ -40,61 +40,6 @@
     ],
     "tests_with_two_focal_methods": [],
     "tests_with_more_than_two_to_five_focal_methods": [],
-    "tests_with_more_than_five_to_ten_focal_methods": [
-        {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
-            "method_signature": "testClearReuseCapacity()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
-                    "focal_method_names": [
-                        "setMaxTotalPerKey(int)",
-                        "setMaxWait(java.time.Duration)",
-                        "clear(java.lang.Object)",
-                        "setMaxTotal(int)",
-                        "returnObject(java.lang.Object, java.lang.Object)",
-                        "borrowObject(java.lang.Object)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
-            "method_signature": "testValidateOnCreateFailure()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.pool3.impl.GenericKeyedObjectPool",
-                    "focal_method_names": [
-                        "getNumIdle()",
-                        "setMaxTotal(int)",
-                        "getNumActive()",
-                        "setTestOnBorrow(boolean)",
-                        "borrowObject(java.lang.Object)",
-                        "addObject(java.lang.Object)",
-                        "setTestOnCreate(boolean)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory",
-            "method_signature": "testConstructorWithDefaults()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.pool3.impl.ResilientPooledObjectFactory",
-                    "focal_method_names": [
-                        "isMonitorRunning()",
-                        "setTimeBetweenChecks(java.time.Duration)",
-                        "getDefaultLogSize()",
-                        "getDefaultTimeBetweenChecks()",
-                        "setLogSize(int)",
-                        "getDefaultLookBack()",
-                        "getDefaultDelay()",
-                        "isAdderRunning()"
-                    ]
-                }
-            ]
-        }
-    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [],
     "tests_with_more_than_ten_focal_methods": []
 }

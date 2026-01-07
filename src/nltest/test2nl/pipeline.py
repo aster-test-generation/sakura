@@ -3,16 +3,17 @@ from typing import List
 
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.utils.file_io import StructuredDataManager, TestFileManager, TestFileInfo
-from nltest.utils.models import Method
 from nltest.test2nl.evaluation import RoundTripEvaluator
 from nltest.test2nl.generation import DescriptionGenerator, RoundTripGenerator
 from nltest.test2nl.model.models import (
     AbstractionLevel,
-    TestDescriptionInfo,
     RoundTripTest,
     Test2NLEntry,
+    TestDescriptionInfo,
 )
+from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.file_io import StructuredDataManager, TestFileInfo, TestFileManager
+from nltest.utils.models import Method
 
 
 class Pipeline:
@@ -21,11 +22,17 @@ class Pipeline:
         analysis: JavaAnalysis,
         project_name: str,
         output_dir: Path,
-        project_root: Path = None,
+        project_root: Path | None = None,
     ):
         self.project_name = project_name
         self.data_manager = StructuredDataManager(output_dir)
-        self.desc_generator = DescriptionGenerator(analysis)
+
+        _, application_classes, test_utility_classes = CommonAnalysis(
+            analysis
+        ).categorize_classes()
+        self.desc_generator = DescriptionGenerator(
+            analysis, application_classes, test_utility_classes
+        )
         self.rt_generator = RoundTripGenerator(analysis)
         if project_root:
             self.rt_evaluator = RoundTripEvaluator(project_root, output_dir)

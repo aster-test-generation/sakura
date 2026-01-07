@@ -47,8 +47,8 @@
                 {
                     "focal_class": "org.apache.commons.exec.Watchdog.Builder",
                     "focal_method_names": [
-                        "setThreadFactory(java.util.concurrent.ThreadFactory)",
                         "get()",
+                        "setThreadFactory(java.util.concurrent.ThreadFactory)",
                         "setTimeout(java.time.Duration)"
                     ]
                 },
@@ -67,8 +67,8 @@
                 {
                     "focal_class": "org.apache.commons.exec.ExecuteWatchdog.Builder",
                     "focal_method_names": [
-                        "setThreadFactory(java.util.concurrent.ThreadFactory)",
                         "get()",
+                        "setThreadFactory(java.util.concurrent.ThreadFactory)",
                         "setTimeout(java.time.Duration)"
                     ]
                 },
@@ -90,17 +90,17 @@
                 {
                     "focal_class": "org.apache.commons.exec.OS",
                     "focal_method_names": [
-                        "isFamilyDOS()",
-                        "isFamilyWinNT()",
                         "isFamilyOpenVms()",
+                        "isFamilyWinNT()",
                         "isFamilyOS400()",
-                        "isFamilyWindows()",
                         "isFamilyMac()",
-                        "isFamilyTandem()",
+                        "isFamilyWindows()",
                         "isFamilyZOS()",
-                        "isFamilyUnix()",
-                        "isFamilyWin9x()",
                         "isFamilyNetware()",
+                        "isFamilyTandem()",
+                        "isFamilyUnix()",
+                        "isFamilyDOS()",
+                        "isFamilyWin9x()",
                         "isFamilyOS2()"
                     ]
                 }

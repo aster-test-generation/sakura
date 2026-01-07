@@ -1,6 +1,19 @@
 {
     "dataset_name": "commons-validator",
-    "tests_with_one_focal_methods": [],
+    "tests_with_one_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+            "method_signature": "testGenericValidatorCircularDependency()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.validator.GenericValidator",
+                    "focal_method_names": [
+                        "isCreditCard(java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_two_focal_methods": [],
     "tests_with_more_than_two_to_five_focal_methods": [],
     "tests_with_more_than_five_to_ten_focal_methods": [],

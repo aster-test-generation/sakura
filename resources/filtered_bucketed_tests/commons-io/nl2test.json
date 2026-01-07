@@ -182,54 +182,6 @@
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
-            "method_signature": "testDirectoryAndFileContentEqualsDifferentFileSystemsZipVsZip()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.file.PathUtils",
-                    "focal_method_names": [
-                        "directoryAndFileContentEquals(java.nio.file.Path, java.nio.file.Path)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
-            "method_signature": "testContentEqualsFileSystemsMemVsMem(com.google.common.jimfs.Configuration)",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.file.PathUtils",
-                    "focal_method_names": [
-                        "copyDirectory(java.nio.file.Path, java.nio.file.Path, java.nio.file.CopyOption[])"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
-            "method_signature": "testDirectoryAndFileContentEqualsDifferentFileSystemsFileVsZip()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.file.PathUtils",
-                    "focal_method_names": [
-                        "directoryAndFileContentEquals(java.nio.file.Path, java.nio.file.Path)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
-            "method_signature": "testDirectoryAndFileContentEqualsDifferentFileSystemsZipVsZipEmpty()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.file.PathUtils",
-                    "focal_method_names": [
-                        "directoryAndFileContentEquals(java.nio.file.Path, java.nio.file.Path)"
-                    ]
-                }
-            ]
-        },
-        {
             "qualified_class_name": "org.apache.commons.io.channels.ByteArraySeekableByteChannelCompressTest",
             "method_signature": "testShouldThrowExceptionWhenSettingIncorrectPosition()",
             "focal_details": [
@@ -303,7 +255,7 @@
         },
         {
             "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
-            "method_signature": "testToByteArray_InputStream_Size_Truncated()",
+            "method_signature": "testCheckFromIndexSizeInvalidCases(int, int, int)",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.io.IO",
@@ -315,7 +267,7 @@
         },
         {
             "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
-            "method_signature": "testReadFully_InputStream_Offset_ArgumentsValidation(java.io.InputStream, byte[], int, int, java.lang.Class)",
+            "method_signature": "testCheckFromToIndexInvalidCases(int, int, int)",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.io.IO",
@@ -327,31 +279,7 @@
         },
         {
             "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
-            "method_signature": "testContentEqualsSequenceInputStream()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.IO",
-                    "focal_method_names": [
-                        "clear()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
-            "method_signature": "testRead_InputStream_Offset_ArgumentsValidation(java.io.InputStream, byte[], int, int, java.lang.Class)",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.IO",
-                    "focal_method_names": [
-                        "clear()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
-            "method_signature": "testToByteArray_InputStream_Size_BufferSize_Throws(int, int, java.lang.Class)",
+            "method_signature": "testCheckFromIndexSizeValidCases(int, int, int)",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.io.IO",
@@ -410,6 +338,42 @@
             ]
         },
         {
+            "qualified_class_name": "org.apache.commons.io.FileSystemTest",
+            "method_signature": "testNameLengthStrategyTruncate_Throws(org.apache.commons.io.FileSystem.NameLengthStrategy, int, java.lang.String, java.nio.charset.Charset, java.lang.String)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.FileSystem.NameLengthStrategy",
+                    "focal_method_names": [
+                        "truncate(java.lang.CharSequence, int, java.nio.charset.Charset)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.FileSystemTest",
+            "method_signature": "testNameLengthStrategyTruncate_Succeeds(org.apache.commons.io.FileSystem.NameLengthStrategy, int, java.lang.String, java.lang.String)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.FileSystem.NameLengthStrategy",
+                    "focal_method_names": [
+                        "truncate(java.lang.CharSequence, int, java.nio.charset.Charset)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.FileSystemTest",
+            "method_signature": "testReplacementWithNUL()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.FileSystem",
+                    "focal_method_names": [
+                        "toLegalFileName(java.lang.String, char)"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.io.IOUtilsConcurrentTest",
             "method_signature": "testConcurrentReaderTasks(org.apache.commons.io.function.IOConsumer)",
             "focal_details": [
@@ -422,13 +386,17 @@
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.io.IOUtilsConcurrentTest",
-            "method_signature": "testConcurrentInputStreamTasks(org.apache.commons.io.function.IOConsumer)",
+            "qualified_class_name": "org.apache.commons.io.file.CopyDirectoryVisitorTest",
+            "method_signature": "testCopyDirectoryFilters(org.apache.commons.io.file.Counters.PathCounters)",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.io.function.IOConsumer",
+                    "focal_class": "org.apache.commons.io.file.CopyDirectoryVisitor",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.io.file.PathUtils",
                     "focal_method_names": [
-                        "accept(java.lang.Object)"
+                        "visitFileTree(java.nio.file.FileVisitor<? super java.nio.file.Path>, java.nio.file.Path)"
                     ]
                 }
             ]
@@ -665,8 +633,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openInputStream(java.io.File)"
+                        "openInputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -691,8 +659,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openInputStream(java.io.File)"
+                        "openInputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -704,8 +672,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -717,8 +685,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -730,8 +698,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openInputStream(java.io.File)"
+                        "openInputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -743,8 +711,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -769,8 +737,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -782,8 +750,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -795,8 +763,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -808,39 +776,8 @@
                 {
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
-                        "deleteDirectory(java.io.File)",
-                        "openOutputStream(java.io.File)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
-            "method_signature": "testContentEqualsFileSystemsMemVsZip(com.google.common.jimfs.Configuration)",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.file.PathUtils",
-                    "focal_method_names": [
-                        "copyDirectory(java.nio.file.Path, java.nio.file.Path, java.nio.file.CopyOption[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.io.file.Counters.PathCounters",
-                    "focal_method_names": [
-                        "getByteCounter()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.build.CharSequenceOriginTest",
-            "method_signature": "testGetReaderIgnoreCharsetNull()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.IOUtils",
-                    "focal_method_names": [
-                        "toString(java.io.Reader)",
-                        "resourceToString(java.lang.String, java.nio.charset.Charset)"
+                        "openOutputStream(java.io.File)",
+                        "deleteDirectory(java.io.File)"
                     ]
                 }
             ]
@@ -865,8 +802,8 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "close()",
-                        "position(long)"
+                        "position(long)",
+                        "close()"
                     ]
                 }
             ]
@@ -878,8 +815,8 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "write(java.nio.ByteBuffer)",
-                        "close()"
+                        "close()",
+                        "write(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -891,8 +828,8 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "read(java.nio.ByteBuffer)",
-                        "close()"
+                        "close()",
+                        "read(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -904,15 +841,15 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "close()",
-                        "truncate(long)"
+                        "truncate(long)",
+                        "close()"
                     ]
                 }
             ]
         },
         {
             "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
-            "method_signature": "testToByteArray_ThrowsIOExceptionOnHugeStream()",
+            "method_signature": "testToByteArray_InputStream_Size_Truncated()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.io.IO",
@@ -921,9 +858,85 @@
                     ]
                 },
                 {
-                    "focal_class": "org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream",
+                    "focal_class": "org.apache.commons.io.input.NullInputStream",
+                    "focal_method_names": []
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
                     "focal_method_names": [
-                        "size()"
+                        "toByteArray(java.io.InputStream, int)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
+            "method_signature": "testToByteArray_InputStream_SizeIllegal()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.IO",
+                    "focal_method_names": [
+                        "clear()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
+                    "focal_method_names": [
+                        "toByteArray(java.io.InputStream, long)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
+            "method_signature": "testToByteArray_URL()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.IO",
+                    "focal_method_names": [
+                        "clear()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
+                    "focal_method_names": [
+                        "toByteArray(java.net.URL)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
+            "method_signature": "testToByteArray_URI()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.IO",
+                    "focal_method_names": [
+                        "clear()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
+                    "focal_method_names": [
+                        "toByteArray(java.net.URI)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.IOUtilsTest",
+            "method_signature": "testCloseQuietly_Selector()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.IO",
+                    "focal_method_names": [
+                        "clear()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
+                    "focal_method_names": [
+                        "closeQuietly(java.nio.channels.Selector)"
                     ]
                 }
             ]
@@ -935,47 +948,8 @@
                 {
                     "focal_class": "org.apache.commons.io.input.UnsynchronizedBufferedReader",
                     "focal_method_names": [
-                        "close()",
-                        "read(char[], int, int)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.input.QueueInputStreamTest",
-            "method_signature": "testReadLineByLineQueue(java.lang.String)",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.input.QueueInputStream",
-                    "focal_method_names": [
-                        "newQueueOutputStream()",
-                        "builder()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.output.ProxyOutputStreamTest",
-            "method_signature": "testWriteByteArrayAtRepeat()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.output.ByteArrayOutputStream",
-                    "focal_method_names": [
-                        "toByteArray()",
-                        "size()"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.io.output.ProxyOutputStreamTest",
-            "method_signature": "testWriteByteArrayRepeat()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.output.ByteArrayOutputStream",
-                    "focal_method_names": [
-                        "toByteArray()",
-                        "size()"
+                        "read(char[], int, int)",
+                        "close()"
                     ]
                 }
             ]
@@ -987,8 +961,8 @@
                 {
                     "focal_class": "org.apache.commons.io.build.AbstractOrigin.ChannelOrigin",
                     "focal_method_names": [
-                        "getChannel(java.lang.Class, java.nio.file.OpenOption[])",
-                        "getReader(java.nio.charset.Charset)"
+                        "getReader(java.nio.charset.Charset)",
+                        "getChannel(java.lang.Class, java.nio.file.OpenOption[])"
                     ]
                 }
             ]
@@ -1000,8 +974,8 @@
                 {
                     "focal_class": "org.apache.commons.io.build.AbstractOrigin.ChannelOrigin",
                     "focal_method_names": [
-                        "getChannel(java.lang.Class, java.nio.file.OpenOption[])",
-                        "getWriter(java.nio.charset.Charset, java.nio.file.OpenOption[])"
+                        "getWriter(java.nio.charset.Charset, java.nio.file.OpenOption[])",
+                        "getChannel(java.lang.Class, java.nio.file.OpenOption[])"
                     ]
                 }
             ]
@@ -1013,8 +987,8 @@
                 {
                     "focal_class": "org.apache.commons.io.output.NullWriter",
                     "focal_method_names": [
-                        "write(char[])",
-                        "close()"
+                        "close()",
+                        "write(char[])"
                     ]
                 }
             ]
@@ -1026,21 +1000,18 @@
             "method_signature": "testTailerIgnoreTouch()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.io.RandomAccessFileMode",
-                    "focal_method_names": [
-                        "create(java.io.File)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.io.IOUtils",
-                    "focal_method_names": [
-                        "closeQuietly(java.io.Closeable)"
-                    ]
-                },
-                {
                     "focal_class": "org.apache.commons.io.input.Tailer",
                     "focal_method_names": [
                         "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.input.Tailer.Builder",
+                    "focal_method_names": [
+                        "setTailerListener(org.apache.commons.io.input.TailerListener)",
+                        "setDelayDuration(java.time.Duration)",
+                        "setFile(java.io.File)",
+                        "setStartThread(boolean)"
                     ]
                 }
             ]
@@ -1050,21 +1021,18 @@
             "method_signature": "testTailerReissueOnTouch()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.io.RandomAccessFileMode",
-                    "focal_method_names": [
-                        "create(java.io.File)"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.io.IOUtils",
-                    "focal_method_names": [
-                        "closeQuietly(java.io.Closeable)"
-                    ]
-                },
-                {
                     "focal_class": "org.apache.commons.io.input.Tailer",
                     "focal_method_names": [
                         "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.input.Tailer.Builder",
+                    "focal_method_names": [
+                        "setTailerListener(org.apache.commons.io.input.TailerListener)",
+                        "setDelayDuration(java.time.Duration)",
+                        "setFile(java.io.File)",
+                        "setStartThread(boolean)"
                     ]
                 }
             ]
@@ -1077,23 +1045,75 @@
                     "focal_class": "org.apache.commons.io.FileUtils",
                     "focal_method_names": [
                         "readLines(java.io.File)",
-                        "readLines(java.io.File, java.lang.String)",
-                        "deleteDirectory(java.io.File)"
+                        "deleteDirectory(java.io.File)",
+                        "readLines(java.io.File, java.lang.String)"
                     ]
                 }
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.io.input.BoundedInputStreamTest",
-            "method_signature": "testAvailableAfterClose(java.lang.String, java.io.InputStream, int)",
+            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
+            "method_signature": "testContentEqualsFileSystemsMemVsZip(com.google.common.jimfs.Configuration)",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.io.input.BoundedInputStream.Builder",
+                    "focal_class": "org.apache.commons.io.file.Counters.PathCounters",
                     "focal_method_names": [
-                        "setInputStream(java.io.InputStream)",
-                        "setPropagateClose(boolean)",
-                        "available()",
+                        "getByteCounter()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.file.PathUtils",
+                    "focal_method_names": [
+                        "copyDirectory(java.nio.file.Path, java.nio.file.Path, java.nio.file.CopyOption[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.file.Counters.Counter",
+                    "focal_method_names": [
                         "get()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.file.PathUtilsContentEqualsTest",
+            "method_signature": "testContentEqualsFileSystemsMemVsMem(com.google.common.jimfs.Configuration)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.file.Counters.Counter",
+                    "focal_method_names": [
+                        "get()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.file.Counters.PathCounters",
+                    "focal_method_names": [
+                        "getByteCounter()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.file.PathUtils",
+                    "focal_method_names": [
+                        "copyDirectory(java.nio.file.Path, java.nio.file.Path, java.nio.file.CopyOption[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.build.CharSequenceOriginTest",
+            "method_signature": "testGetReaderIgnoreCharsetNull()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.build.AbstractOrigin",
+                    "focal_method_names": [
+                        "getReader(java.nio.charset.Charset)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
+                    "focal_method_names": [
+                        "resourceToString(java.lang.String, java.nio.charset.Charset)",
+                        "toString(java.io.Reader)"
                     ]
                 }
             ]
@@ -1105,11 +1125,11 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "size()",
                         "wrap(byte[])",
+                        "truncate(long)",
                         "position(long)",
                         "position()",
-                        "truncate(long)"
+                        "size()"
                     ]
                 }
             ]
@@ -1121,9 +1141,9 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "read(java.nio.ByteBuffer)",
-                        "wrap(byte[])",
                         "truncate(long)",
+                        "wrap(byte[])",
+                        "read(java.nio.ByteBuffer)",
                         "size()"
                     ]
                 }
@@ -1136,11 +1156,11 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "size()",
                         "wrap(byte[])",
+                        "truncate(long)",
                         "position(long)",
                         "position()",
-                        "truncate(long)"
+                        "size()"
                     ]
                 }
             ]
@@ -1152,11 +1172,11 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "size()",
+                        "array()",
                         "write(java.nio.ByteBuffer)",
                         "position(long)",
                         "position()",
-                        "array()"
+                        "size()"
                     ]
                 }
             ]
@@ -1168,9 +1188,9 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "read(java.nio.ByteBuffer)",
+                        "position(long)",
                         "wrap(byte[])",
-                        "position(long)"
+                        "read(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -1182,8 +1202,8 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "wrap(byte[])",
                         "position(long)",
+                        "wrap(byte[])",
                         "size()"
                     ]
                 }
@@ -1196,10 +1216,10 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "array()",
+                        "truncate(long)",
                         "wrap(byte[])",
-                        "size()",
-                        "truncate(long)"
+                        "array()",
+                        "size()"
                     ]
                 }
             ]
@@ -1211,9 +1231,9 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
+                        "wrap(byte[])",
                         "position()",
-                        "read(java.nio.ByteBuffer)",
-                        "wrap(byte[])"
+                        "read(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -1225,11 +1245,11 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "size()",
                         "wrap(byte[])",
+                        "truncate(long)",
                         "position(long)",
                         "position()",
-                        "truncate(long)"
+                        "size()"
                     ]
                 }
             ]
@@ -1241,11 +1261,11 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "size()",
                         "wrap(byte[])",
+                        "truncate(long)",
                         "position(long)",
                         "position()",
-                        "truncate(long)"
+                        "size()"
                     ]
                 }
             ]
@@ -1257,9 +1277,9 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
+                        "wrap(byte[])",
                         "position()",
-                        "read(java.nio.ByteBuffer)",
-                        "wrap(byte[])"
+                        "read(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -1271,9 +1291,9 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "read(java.nio.ByteBuffer)",
-                        "wrap(byte[])",
                         "truncate(long)",
+                        "wrap(byte[])",
+                        "read(java.nio.ByteBuffer)",
                         "size()"
                     ]
                 }
@@ -1286,11 +1306,11 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "size()",
                         "wrap(byte[])",
+                        "truncate(long)",
                         "position(long)",
                         "position()",
-                        "truncate(long)"
+                        "size()"
                     ]
                 }
             ]
@@ -1302,10 +1322,10 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "position()",
-                        "read(java.nio.ByteBuffer)",
+                        "position(long)",
                         "wrap(byte[])",
-                        "position(long)"
+                        "position()",
+                        "read(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -1317,8 +1337,8 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "write(java.nio.ByteBuffer)",
                         "position()",
+                        "write(java.nio.ByteBuffer)",
                         "array()"
                     ]
                 }
@@ -1331,10 +1351,10 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "position()",
-                        "read(java.nio.ByteBuffer)",
+                        "position(long)",
                         "wrap(byte[])",
-                        "position(long)"
+                        "position()",
+                        "read(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -1383,20 +1403,21 @@
         },
         {
             "qualified_class_name": "org.apache.commons.io.input.QueueInputStreamTest",
-            "method_signature": "testBulkReadWaiting(java.lang.String)",
+            "method_signature": "testReadLineByLineQueue(java.lang.String)",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.io.input.QueueInputStream",
                     "focal_method_names": [
                         "newQueueOutputStream()",
-                        "builder()",
-                        "read(byte[], int, int)"
+                        "builder()"
                     ]
                 },
                 {
-                    "focal_class": "org.apache.commons.io.output.QueueOutputStream",
+                    "focal_class": "org.apache.commons.io.input.QueueInputStream.Builder",
                     "focal_method_names": [
-                        "write(byte[])"
+                        "get()",
+                        "setTimeout(java.time.Duration)",
+                        "setBlockingQueue(java.util.concurrent.BlockingQueue)"
                     ]
                 }
             ]
@@ -1408,9 +1429,9 @@
                 {
                     "focal_class": "org.apache.commons.io.function.IOStream",
                     "focal_method_names": [
-                        "count()",
+                        "isParallel()",
                         "adapt(java.util.stream.Stream)",
-                        "isParallel()"
+                        "count()"
                     ]
                 }
             ]
@@ -1422,9 +1443,9 @@
                 {
                     "focal_class": "org.apache.commons.io.function.IOStream",
                     "focal_method_names": [
-                        "forEach(org.apache.commons.io.function.IOConsumer)",
                         "forEachOrdered(org.apache.commons.io.function.IOConsumer)",
-                        "adapt(java.util.stream.Stream)"
+                        "adapt(java.util.stream.Stream)",
+                        "forEach(org.apache.commons.io.function.IOConsumer)"
                     ]
                 }
             ]
@@ -1436,11 +1457,11 @@
                 {
                     "focal_class": "org.apache.commons.io.function.IOStream",
                     "focal_method_names": [
+                        "of(java.lang.Object[])",
                         "forEachOrdered(org.apache.commons.io.function.IOConsumer)",
-                        "parallel()",
-                        "forEach(org.apache.commons.io.function.IOConsumer)",
                         "of(java.lang.Object)",
-                        "of(java.lang.Object[])"
+                        "parallel()",
+                        "forEach(org.apache.commons.io.function.IOConsumer)"
                     ]
                 }
             ]
@@ -1452,27 +1473,40 @@
                 {
                     "focal_class": "org.apache.commons.io.function.IOStream",
                     "focal_method_names": [
-                        "parallel()",
                         "count()",
-                        "adapt(java.util.stream.Stream)"
+                        "adapt(java.util.stream.Stream)",
+                        "parallel()"
                     ]
                 }
             ]
         },
         {
             "qualified_class_name": "org.apache.commons.io.output.ProxyOutputStreamTest",
-            "method_signature": "testWriteByteArrayAt()",
+            "method_signature": "testWriteByteArrayAtRepeat()",
             "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.io.output.ProxyOutputStream",
-                    "focal_method_names": [
-                        "write(byte[], int, int)"
-                    ]
-                },
                 {
                     "focal_class": "org.apache.commons.io.output.ByteArrayOutputStream",
                     "focal_method_names": [
+                        "write(int)",
                         "toByteArray()",
+                        "write(byte[])",
+                        "write(byte[], int, int)",
+                        "size()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.output.ProxyOutputStreamTest",
+            "method_signature": "testWriteByteArrayRepeat()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.output.ByteArrayOutputStream",
+                    "focal_method_names": [
+                        "write(int)",
+                        "toByteArray()",
+                        "write(byte[])",
+                        "write(byte[], int, int)",
                         "size()"
                     ]
                 }
@@ -1485,10 +1519,10 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "write(java.nio.ByteBuffer)",
-                        "array()",
+                        "position(long)",
                         "wrap(byte[])",
-                        "position(long)"
+                        "array()",
+                        "write(java.nio.ByteBuffer)"
                     ]
                 }
             ]
@@ -1506,15 +1540,120 @@
                 {
                     "focal_class": "org.apache.commons.io.channels.ByteArraySeekableByteChannel",
                     "focal_method_names": [
-                        "toByteArray()",
                         "position()",
                         "array()",
+                        "toByteArray()",
                         "size()"
                     ]
                 }
             ]
         }
     ],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.io.input.BoundedInputStreamTest",
+            "method_signature": "testRemaining(java.lang.String, long, long)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.input.BoundedInputStream",
+                    "focal_method_names": [
+                        "getRemaining()",
+                        "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.input.BoundedInputStream.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setByteArray(byte[])",
+                        "setMaxCount(long)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.IOUtils",
+                    "focal_method_names": [
+                        "skip(java.io.InputStream, long)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.input.QueueInputStreamTest",
+            "method_signature": "testBulkReadWaiting(java.lang.String)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.input.QueueInputStream",
+                    "focal_method_names": [
+                        "newQueueOutputStream()",
+                        "read(byte[], int, int)",
+                        "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.output.QueueOutputStream",
+                    "focal_method_names": [
+                        "write(byte[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.input.QueueInputStream.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setTimeout(java.time.Duration)",
+                        "setBlockingQueue(java.util.concurrent.BlockingQueue)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.IOUtilsConcurrentTest",
+            "method_signature": "testConcurrentInputStreamTasks(org.apache.commons.io.function.IOConsumer)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.function.IOConsumer",
+                    "focal_method_names": [
+                        "accept(java.lang.Object)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.input.ChecksumInputStream.Builder",
+                    "focal_method_names": [
+                        "get()",
+                        "setChecksum(java.util.zip.Checksum)",
+                        "setByteArray(byte[])",
+                        "setExpectedChecksumValue(long)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.input.ChecksumInputStream",
+                    "focal_method_names": [
+                        "builder()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.io.output.ProxyOutputStreamTest",
+            "method_signature": "testWriteByteArrayAt()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.io.output.ProxyOutputStream",
+                    "focal_method_names": [
+                        "write(byte[], int, int)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.io.output.ByteArrayOutputStream",
+                    "focal_method_names": [
+                        "write(int)",
+                        "toByteArray()",
+                        "write(byte[])",
+                        "write(byte[], int, int)",
+                        "size()"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": []
 }

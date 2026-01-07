@@ -2,30 +2,6 @@
     "dataset_name": "commons-csv",
     "tests_with_one_focal_methods": [
         {
-            "qualified_class_name": "org.apache.commons.csv.issues.JiraCsv257Test",
-            "method_signature": "testNoHeaderBuilder()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.csv.CSVParser",
-                    "focal_method_names": [
-                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)"
-                    ]
-                }
-            ]
-        },
-        {
-            "qualified_class_name": "org.apache.commons.csv.issues.JiraCsv257Test",
-            "method_signature": "testHeaderBuilder()",
-            "focal_details": [
-                {
-                    "focal_class": "org.apache.commons.csv.CSVParser",
-                    "focal_method_names": [
-                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)"
-                    ]
-                }
-            ]
-        },
-        {
             "qualified_class_name": "org.apache.commons.csv.JiraCsv318Test",
             "method_signature": "testDefaultStream()",
             "focal_details": [
@@ -94,6 +70,32 @@
                     "focal_class": "org.apache.commons.csv.CSVParser",
                     "focal_method_names": [
                         "iterator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVParserTest",
+            "method_signature": "testParsePathCharsetNullFormat()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "parse(java.nio.file.Path, java.nio.charset.Charset, org.apache.commons.csv.CSVFormat)",
+                        "forEach(java.util.function.Consumer)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVParserTest",
+            "method_signature": "testParseInputStreamCharsetNullFormat()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "parse(java.io.InputStream, java.nio.charset.Charset, org.apache.commons.csv.CSVFormat)",
+                        "forEach(java.util.function.Consumer)"
                     ]
                 }
             ]
@@ -175,8 +177,134 @@
                     ]
                 }
             ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.issues.JiraCsv257Test",
+            "method_signature": "testNoHeaderBuilder()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "setDelimiter(char)",
+                        "setIgnoreSurroundingSpaces(boolean)",
+                        "get()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat",
+                    "focal_method_names": [
+                        "builder()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.issues.JiraCsv257Test",
+            "method_signature": "testHeaderDepreacted()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat",
+                    "focal_method_names": [
+                        "withFirstRecordAsHeader()",
+                        "withIgnoreSurroundingSpaces()",
+                        "withDelimiter(char)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": []
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVParserTest",
+            "method_signature": "testStreamMaxRows(long)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "stream()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat",
+                    "focal_method_names": [
+                        "parse(java.io.Reader)",
+                        "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "setMaxRows(long)",
+                        "get()"
+                    ]
+                }
+            ]
         }
     ],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.commons.csv.issues.JiraCsv257Test",
+            "method_signature": "testHeaderBuilder()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat",
+                    "focal_method_names": [
+                        "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "setHeader(java.lang.String[])",
+                        "setSkipHeaderRecord(boolean)",
+                        "get()",
+                        "setIgnoreSurroundingSpaces(boolean)",
+                        "setDelimiter(char)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.csv.CSVParserTest",
+            "method_signature": "testGetRecordsMaxRows(long)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.csv.CSVParser",
+                    "focal_method_names": [
+                        "getRecords()",
+                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat",
+                    "focal_method_names": [
+                        "builder()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
+                    "focal_method_names": [
+                        "setMaxRows(long)",
+                        "setIgnoreSurroundingSpaces(boolean)",
+                        "get()"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": []
 }

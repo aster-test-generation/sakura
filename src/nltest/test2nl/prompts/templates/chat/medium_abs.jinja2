@@ -1,24 +1,31 @@
 # TASK
-Generate one concise paragraph at a low level of detail that follows the system instructions.
+Generate one concise paragraph at a **Medium Abstraction Level** (Architectural/Component focus) that follows the system instructions.
 
 # CODE CONTEXT
 [Only non-getter/setter methods are shown in full; getters/setters appear by signature.]
 
-## Setup Methods
-{%- if setup_methods %}
-{%- for setup_method in setup_methods %}
-- Setup Method #{{ loop.index }} -
-{{ setup_method }}
+## Test Class Annotations
+{%- if class_annotations %}
+{{ class_annotations }}
+{%- else %}
+None
+{%- endif %}
+
+## Test Class Field Declarations
+{%- if field_declarations %}
+{%- for field_declaration in field_declarations %}
+- Field Declaration #{{ loop.index }} -
+{{ field_declaration }}
 {%- endfor %}
 {%- else %}
 None
 {%- endif %}
 
-## Teardown Methods
-{%- if teardown_methods %}
-{%- for teardown_method in teardown_methods %}
-- Teardown Method #{{ loop.index }} -
-{{ teardown_method }}
+## Setup Method Context
+{%- if setup_methods %}
+{%- for setup_method in setup_methods %}
+- Setup Method #{{ loop.index }} -
+{{ setup_method }}
 {%- endfor %}
 {%- else %}
 None
@@ -31,12 +38,10 @@ None
 None
 {%- endif %}
 
-## Test Method Code
-```
-{{ method_code }}
-```
+## Test Method Context
+{{ test_method }}
 
-## Helper Methods
+## Helper Method Context
 {%- if helper_methods %}
 {%- for helper_method in helper_methods %}
 - Helper Method #{{ loop.index }} -
@@ -46,32 +51,25 @@ None
 None
 {%- endif %}
 
-## Test Class Annotations
-{%- if class_annotations %}
-{{ class_annotations }}
-{%- else %}
-None
-{%- endif %}
-
-## Test Class Fields
-{%- if field_declarations %}
-{%- for field_declaration in field_declarations %}
-- Field Declaration #{{ loop.index }} -
-{{ field_declaration }}
+## Teardown Method Context
+{%- if teardown_methods %}
+{%- for teardown_method in teardown_methods %}
+- Teardown Method #{{ loop.index }} -
+{{ teardown_method }}
 {%- endfor %}
 {%- else %}
 None
 {%- endif %}
 
 ## Application Classes & Methods Used
-{%- if custom_classes %}
-{%- for custom_class in custom_classes %}
-- Class #{{ loop.index }} -
-{{ custom_class }}
+{%- if application_classes %}
+{%- for app_class in application_classes %}
+- Application Class #{{ loop.index }} -
+{{ app_class }}
 {%- endfor %}
 {%- else %}
 None
 {%- endif %}
 
 # OUTPUT
-Produce a one paragraph instruction on how to reproduce the test method, using its code context. Follow the system instructions for the level of detail, and what to include in the natural language output.
+Produce a one-paragraph imperative instruction on how to reconstruct the test architecture. Focus on component interactions and data flow. Organize chronologically: setup first, then actions and verifications **interwoven as they occur**, and finally teardown.

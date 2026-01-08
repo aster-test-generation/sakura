@@ -95,7 +95,23 @@ Output: resources/missing_tests/<project>/nl2test.json
 python -m nltest.dataset_creation.find_missing_test2nl_entries
 ```
 
-### 7. Create Random Sample (Optional) (`create_random_sample_dataset.py`)
+### 7. Merge Test2NL Datasets (`merge_test2nl.py`)
+
+Merges two Test2NL CSV datasets into a single combined dataset with contiguous IDs. Useful for combining results from multiple Test2NL generation runs (e.g., after recovering missing entries).
+
+```
+Input:  resources/test2nl/old_filtered_dataset/test2nl.csv
+        resources/test2nl/missing_dataset/test2nl.csv
+Output: resources/test2nl/filtered_dataset/test2nl.csv
+```
+
+```bash
+python -m nltest.dataset_creation.merge_test2nl
+```
+
+The script offsets IDs in the second dataset by (max_id_of_first + 1) to ensure non-overlapping, contiguous IDs in the merged output.
+
+### 8. Create Random Sample (Optional) (`create_random_sample_dataset.py`)
 
 Generates random samples from each bucket for evaluation or debugging purposes.
 
@@ -131,4 +147,8 @@ resources/
   erroneous_tests/       # Tests that failed verification
   missing_tests/         # Tests missing from Test2NL output
   sampled_tests/         # Random samples for evaluation
+  test2nl/               # Test2NL generated descriptions
+    filtered_dataset/    # Current merged Test2NL output
+    old_filtered_dataset/  # Previous Test2NL output (for merging)
+    missing_dataset/     # Recovered missing Test2NL entries
 ```

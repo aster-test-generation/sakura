@@ -82,7 +82,7 @@ python -m nltest.dataset_creation.verify_dataset_tests
 
 ### 6. Find Missing Test2NL Entries (`find_missing_test2nl_entries.py`)
 
-Identifies tests in the bucketed dataset that are missing from the Test2NL output CSV. Used to recover from incomplete Test2NL generation runs (e.g., due to rate limits). Outputs missing tests in NL2TestDataset format for re-processing.
+Identifies tests in the bucketed dataset that are missing or incomplete in the Test2NL output CSV. A test is considered missing if it either doesn't exist in Test2NL at all, or if it lacks all three required abstraction levels (low, medium, high). Used to recover from incomplete Test2NL generation runs (e.g., due to rate limits or partial failures). Outputs missing tests in NL2TestDataset format for re-processing.
 
 ```
 Input:  resources/test2nl/filtered_dataset/test2nl.csv
@@ -109,9 +109,27 @@ Output: resources/test2nl/filtered_dataset/test2nl.csv
 python -m nltest.dataset_creation.merge_test2nl
 ```
 
-The script offsets IDs in the second dataset by (max_id_of_first + 1) to ensure non-overlapping, contiguous IDs in the merged output.
+The script handles duplicate entries by matching on `(project_name, qualified_class_name, method_signature, abstraction_level)`:
+- If an entry from the second dataset matches one in the first, it replaces the first's entry but preserves the original ID
+- Unique entries from the second dataset are appended with contiguous IDs starting after the first dataset's max ID
 
-### 8. Create Random Sample (Optional) (`create_random_sample_dataset.py`)
+### 8. Verify Test2NL Dataset (`verify_test2nl.py`)
+
+Validates the integrity of a Test2NL CSV dataset by checking:
+1. IDs are contiguous starting from 0 with no gaps
+2. All methods from the bucketed dataset are present with all three abstraction levels (low, medium, high)
+
+```
+Input:  resources/test2nl/filtered_dataset/test2nl.csv
+        resources/filtered_bucketed_tests/<project>/nl2test.json
+Output: Console output with validation results
+```
+
+```bash
+python -m nltest.dataset_creation.verify_test2nl
+```
+
+### 9. Create Random Sample (Optional) (`create_random_sample_dataset.py`)
 
 Generates random samples from each bucket for evaluation or debugging purposes.
 

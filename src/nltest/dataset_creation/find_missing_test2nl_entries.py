@@ -26,22 +26,28 @@ MISSING_TESTS_DIR = "resources/missing_tests"
 OUTPUT_FILE = "nl2test.json"
 
 
-def load_test2nl_entries(csv_path: Path) -> Set[Tuple[str, str, str]]:
+REQUIRED_ABSTRACTION_LEVELS = {"low", "medium", "high"}
+
+
+def load_test2nl_entries(csv_path: Path) -> Dict[Tuple[str, str, str], Set[str]]:
     """
-    Load Test2NL entries from CSV and return a set of
-    (project_name, qualified_class_name, method_signature) tuples.
+    Load Test2NL entries from CSV and return a dict mapping
+    (project_name, qualified_class_name, method_signature) to set of abstraction levels.
     """
-    entries: Set[Tuple[str, str, str]] = set()
+    entries: Dict[Tuple[str, str, str], Set[str]] = {}
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            entries.add(
-                (
-                    row["project_name"],
-                    row["qualified_class_name"],
-                    row["method_signature"],
-                )
+            key = (
+                row["project_name"],
+                row["qualified_class_name"],
+                row["method_signature"],
             )
+            abstraction_level = row.get("abstraction_level", "")
+            if key not in entries:
+                entries[key] = set()
+            if abstraction_level:
+                entries[key].add(abstraction_level)
     return entries
 
 
@@ -66,11 +72,15 @@ def get_all_tests_by_bucket(dataset: NL2TestDataset) -> Dict[str, List[Test]]:
 def find_missing_tests_for_project(
     project_name: str,
     bucketed_file: str,
-    test2nl_entries: Set[Tuple[str, str, str]],
+    test2nl_entries: Dict[Tuple[str, str, str], Set[str]],
     output_dir: str,
 ) -> Dict[str, Any] | None:
     """
     Find tests in the bucketed dataset that are missing from Test2NL entries.
+
+    A test is considered missing if:
+    1. It doesn't exist in Test2NL at all, or
+    2. It doesn't have all three abstraction levels (low, medium, high)
 
     Returns a dict with project stats or None if processing fails.
     """
@@ -83,6 +93,8 @@ def find_missing_tests_for_project(
 
     total_tests = 0
     missing_count = 0
+    completely_missing = 0
+    incomplete_abstractions = 0
 
     for bucket_name, tests in tests_by_bucket.items():
         for test in tests:
@@ -91,12 +103,19 @@ def find_missing_tests_for_project(
             if key not in test2nl_entries:
                 missing_by_bucket[bucket_name].append(test)
                 missing_count += 1
+                completely_missing += 1
+            elif test2nl_entries[key] != REQUIRED_ABSTRACTION_LEVELS:
+                missing_by_bucket[bucket_name].append(test)
+                missing_count += 1
+                incomplete_abstractions += 1
 
     if missing_count == 0:
         return {
             "project_name": project_name,
             "total_tests": total_tests,
             "missing_count": 0,
+            "completely_missing": 0,
+            "incomplete_abstractions": 0,
         }
 
     # Create output dataset with missing tests
@@ -127,6 +146,8 @@ def find_missing_tests_for_project(
         "project_name": project_name,
         "total_tests": total_tests,
         "missing_count": missing_count,
+        "completely_missing": completely_missing,
+        "incomplete_abstractions": incomplete_abstractions,
     }
 
 
@@ -136,6 +157,8 @@ def create_summary(output_dir: Path, results: List[Dict[str, Any] | None]) -> No
         "total_projects": 0,
         "projects_with_missing": 0,
         "total_missing_tests": 0,
+        "total_completely_missing": 0,
+        "total_incomplete_abstractions": 0,
         "total_tests": 0,
         "projects": {},
     }
@@ -147,13 +170,19 @@ def create_summary(output_dir: Path, results: List[Dict[str, Any] | None]) -> No
         summary["total_projects"] += 1
         summary["total_tests"] += result["total_tests"]
         missing_count = result["missing_count"]
+        completely_missing = result["completely_missing"]
+        incomplete_abstractions = result["incomplete_abstractions"]
 
         if missing_count > 0:
             summary["projects_with_missing"] += 1
             summary["total_missing_tests"] += missing_count
+            summary["total_completely_missing"] += completely_missing
+            summary["total_incomplete_abstractions"] += incomplete_abstractions
             summary["projects"][result["project_name"]] = {
                 "total": result["total_tests"],
                 "missing": missing_count,
+                "completely_missing": completely_missing,
+                "incomplete_abstractions": incomplete_abstractions,
             }
 
     summary["projects"] = dict(sorted(summary["projects"].items()))
@@ -167,6 +196,8 @@ def create_summary(output_dir: Path, results: List[Dict[str, Any] | None]) -> No
     print(f"  Projects with missing tests: {summary['projects_with_missing']}")
     print(f"  Total tests: {summary['total_tests']}")
     print(f"  Total missing tests: {summary['total_missing_tests']}")
+    print(f"    - Completely missing: {summary['total_completely_missing']}")
+    print(f"    - Incomplete abstractions: {summary['total_incomplete_abstractions']}")
     print(f"  Summary saved to: {summary_file}")
 
 
@@ -184,7 +215,13 @@ def process_projects(
     # Load Test2NL entries
     print(f"Loading Test2NL entries from {test2nl_file}...")
     test2nl_entries = load_test2nl_entries(test2nl_file)
+    complete_entries = sum(
+        1
+        for levels in test2nl_entries.values()
+        if levels == REQUIRED_ABSTRACTION_LEVELS
+    )
     print(f"  Loaded {len(test2nl_entries)} unique test entries")
+    print(f"  {complete_entries} entries have all abstraction levels")
 
     # Put entries in Ray object store for sharing across workers
     test2nl_ref = ray.put(test2nl_entries)

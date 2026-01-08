@@ -47,7 +47,7 @@ def _create_hamster_model(
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
             analysis_json_path=analysis_path,
-            eager=False,
+            eager=True,  # ENSURE CLDK IS REGENERATED
         )
         project_analysis = ProjectAnalysisInfo(
             analysis=cldk, dataset_name=proj_name

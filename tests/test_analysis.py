@@ -376,3 +376,41 @@ class TestReachability:
         assert entity_utils_class in helper_methods, (
             f"Expected {entity_utils_class} in helper methods, got: {list(helper_methods.keys())}"
         )
+
+
+class TestSimplifyMethodSignature:
+    """Tests for CommonAnalysis.simplify_method_signature()."""
+
+    def test_no_parameters_unchanged(self):
+        sig = "testMethod()"
+        result = CommonAnalysis.simplify_method_signature(sig)
+        assert result == "testMethod()"
+
+    def test_single_qualified_type(self):
+        sig = "addSpecialty(org.springframework.samples.petclinic.vet.Specialty)"
+        result = CommonAnalysis.simplify_method_signature(sig)
+        assert result == "addSpecialty(Specialty)"
+
+    def test_array_type_preserved(self):
+        sig = "main(java.lang.String[])"
+        result = CommonAnalysis.simplify_method_signature(sig)
+        assert result == "main(String[])"
+
+    def test_nested_generics_removed(self):
+        # Note: This might not be optimal behavior
+        sig = (
+            "method(java.util.Map<java.lang.String, java.util.List<java.lang.Integer>>)"
+        )
+        result = CommonAnalysis.simplify_method_signature(sig)
+        assert result == "method(Map)"
+
+    def test_real_cldk_signature_from_analysis(self, petclinic_analysis):
+        """Test with actual method signature from CLDK analysis."""
+        entity_utils_class = "org.springframework.samples.petclinic.service.EntityUtils"
+        original_sig = "getById(java.util.Collection, java.lang.Class, int)"
+
+        method = petclinic_analysis.get_method(entity_utils_class, original_sig)
+        assert method is not None, f"Method {original_sig} should exist in analysis"
+
+        simplified = CommonAnalysis.simplify_method_signature(original_sig)
+        assert simplified == "getById(Collection, Class, int)"

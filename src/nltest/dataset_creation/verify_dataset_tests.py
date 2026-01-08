@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -9,6 +10,7 @@ from cldk.analysis import AnalysisLevel
 from tqdm import tqdm
 
 from nltest.dataset_creation.model import NL2TestDataset, Test
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
 
 # Path constants
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
@@ -69,6 +71,13 @@ def _verify_project(
 
     for test in all_tests:
         method = analysis.get_method(test.qualified_class_name, test.method_signature)
+        if not method:
+            # Try simplified signature for cases with fully qualified types
+            simplified_sig = CommonAnalysis.simplify_method_signature(
+                test.method_signature
+            )
+            method = analysis.get_method(test.qualified_class_name, simplified_sig)
+
         if not method:
             erroneous.append(
                 {
@@ -142,6 +151,9 @@ def process_projects(
     Process all projects in tests_dir in parallel, verify tests against analysis,
     and output erroneous tests.
     """
+    # Clear previous results
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Collect valid projects and launch ray tasks

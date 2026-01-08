@@ -3,8 +3,10 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List
 
+import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
+from tqdm import tqdm
 
 from nltest.dataset_creation.model import NL2TestDataset, Test
 
@@ -32,29 +34,35 @@ def get_all_tests(dataset: NL2TestDataset) -> List[Test]:
     )
 
 
-def verify_project_tests(
-    dataset: NL2TestDataset,
-    analysis_path: Path,
-    project_path: Path,
-) -> List[Dict[str, str]]:
+@ray.remote
+def _verify_project(
+    project_name: str,
+    tests_file: str,
+    analysis_path: str,
+    project_path: str,
+    output_dir: str,
+) -> Dict[str, Any] | None:
     """
-    Verify all tests in a dataset can be found via CLDK analysis.
+    Verify all tests in a project can be found via CLDK analysis.
 
-    Returns a list of erroneous tests (those where get_method returns falsy).
+    Returns verification result dict or None if processing fails.
     """
+    with open(tests_file, "r", encoding="utf-8") as f:
+        tests_data = json.load(f)
+    dataset = NL2TestDataset(**tests_data)
+
     try:
         analysis = CLDK(
             language="java"
         ).analysis(
-            project_path=str(project_path),
+            project_path=project_path,
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=str(analysis_path),
+            analysis_json_path=analysis_path,
             eager=True,  # Reloads to ensure it is compliant with most recent project status
         )
-    except Exception as e:
-        print(f"  Failed to load analysis: {e}")
-        return []
+    except Exception:
+        return None
 
     erroneous: List[Dict[str, str]] = []
     all_tests = get_all_tests(dataset)
@@ -69,7 +77,59 @@ def verify_project_tests(
                 }
             )
 
-    return erroneous
+    # Write erroneous tests if any found
+    if erroneous:
+        project_output_dir = Path(output_dir) / project_name
+        project_output_dir.mkdir(parents=True, exist_ok=True)
+        output_file = project_output_dir / OUTPUT_FILE_NAME
+
+        erroneous_data = {
+            "project_name": project_name,
+            "erroneous_test_count": len(erroneous),
+            "erroneous_tests": erroneous,
+        }
+
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(erroneous_data, f, indent=2)
+
+    return {
+        "project_name": project_name,
+        "erroneous_count": len(erroneous),
+    }
+
+
+def _create_summary(output_dir: Path, results: List[Dict[str, Any] | None]) -> None:
+    """Create a summary.json with verification results per project."""
+    summary: Dict[str, Any] = {
+        "total_projects": 0,
+        "projects_with_errors": 0,
+        "total_erroneous_tests": 0,
+        "projects": {},
+    }
+
+    for result in results:
+        if result is None:
+            continue
+
+        summary["total_projects"] += 1
+        erroneous_count = result["erroneous_count"]
+
+        if erroneous_count > 0:
+            summary["projects_with_errors"] += 1
+            summary["total_erroneous_tests"] += erroneous_count
+            summary["projects"][result["project_name"]] = erroneous_count
+
+    summary["projects"] = dict(sorted(summary["projects"].items()))
+
+    summary_file = output_dir / "summary.json"
+    with open(summary_file, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+
+    print("\nVerification complete:")
+    print(f"  Total projects: {summary['total_projects']}")
+    print(f"  Projects with errors: {summary['projects_with_errors']}")
+    print(f"  Total erroneous tests: {summary['total_erroneous_tests']}")
+    print(f"  Summary saved to: {summary_file}")
 
 
 def process_projects(
@@ -79,17 +139,13 @@ def process_projects(
     output_dir: Path,
 ) -> None:
     """
-    Process all projects in tests_dir, verify tests against analysis, and output erroneous tests.
+    Process all projects in tests_dir in parallel, verify tests against analysis,
+    and output erroneous tests.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    summary: Dict[str, Any] = {
-        "total_projects": 0,
-        "projects_with_errors": 0,
-        "total_erroneous_tests": 0,
-        "projects": {},
-    }
-
+    # Collect valid projects and launch ray tasks
+    futures = []
     for project_name in sorted(os.listdir(tests_dir)):
         if project_name.startswith(".") or project_name.startswith("__"):
             continue
@@ -113,53 +169,26 @@ def process_projects(
             print(f"Skipping {project_name}: no source project found in datasets")
             continue
 
-        print(f"Processing {project_name}...")
-
-        with open(tests_file, "r", encoding="utf-8") as f:
-            tests_data = json.load(f)
-        dataset = NL2TestDataset(**tests_data)
-
-        erroneous_tests = verify_project_tests(
-            dataset,
-            project_analysis_path,
-            project_source_path,
+        futures.append(
+            _verify_project.remote(  # pyright: ignore[reportAttributeAccessIssue]
+                project_name,
+                str(tests_file),
+                str(project_analysis_path),
+                str(project_source_path),
+                str(output_dir),
+            )
         )
 
-        summary["total_projects"] += 1
+    # Process results as they complete
+    results: List[Dict[str, Any] | None] = []
+    with tqdm(total=len(futures), desc="Verifying projects...") as pbar:
+        while futures:
+            done, futures = ray.wait(futures, num_returns=1)
+            res = ray.get(done)
+            results.extend(res)
+            pbar.update(len(done))
 
-        if erroneous_tests:
-            summary["projects_with_errors"] += 1
-            summary["total_erroneous_tests"] += len(erroneous_tests)
-            summary["projects"][project_name] = len(erroneous_tests)
-
-            # Write erroneous tests for this project
-            project_output_dir = output_dir / project_name
-            project_output_dir.mkdir(parents=True, exist_ok=True)
-            output_file = project_output_dir / OUTPUT_FILE_NAME
-
-            erroneous_data = {
-                "project_name": project_name,
-                "erroneous_test_count": len(erroneous_tests),
-                "erroneous_tests": erroneous_tests,
-            }
-
-            with open(output_file, "w", encoding="utf-8") as f:
-                json.dump(erroneous_data, f, indent=2)
-
-            print(f"  Found {len(erroneous_tests)} erroneous tests -> {output_file}")
-        else:
-            print("  All tests verified successfully")
-
-    # Write summary
-    summary_file = output_dir / "summary.json"
-    with open(summary_file, "w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2)
-
-    print("\nVerification complete:")
-    print(f"  Total projects: {summary['total_projects']}")
-    print(f"  Projects with errors: {summary['projects_with_errors']}")
-    print(f"  Total erroneous tests: {summary['total_erroneous_tests']}")
-    print(f"  Summary saved to: {summary_file}")
+    _create_summary(output_dir, results)
 
 
 def main():

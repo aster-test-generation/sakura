@@ -68,6 +68,17 @@ def save_test2nl_entries(entries: List[Test2NLEntry], csv_path: Path) -> None:
             )
 
 
+def get_entry_key(entry: Test2NLEntry) -> tuple:
+    """Return the unique key for an entry (excluding id and is_bdd)."""
+    abstraction = entry.abstraction_level.value if entry.abstraction_level else None
+    return (
+        entry.project_name,
+        entry.qualified_class_name,
+        entry.method_signature,
+        abstraction,
+    )
+
+
 def main():
     first_csv = ROOT_DIR / FIRST_DATASET_DIR / TEST2NL_FILE
     second_csv = ROOT_DIR / SECOND_DATASET_DIR / TEST2NL_FILE
@@ -86,25 +97,40 @@ def main():
     second_entries = load_test2nl_entries(second_csv)
     print(f"  Loaded {len(second_entries)} entries")
 
-    # Get max ID from first dataset
+    # Build a map from key -> index in first_entries for quick lookup
+    first_key_to_idx: dict[tuple, int] = {}
+    for idx, entry in enumerate(first_entries):
+        first_key_to_idx[get_entry_key(entry)] = idx
+
+    # Separate second entries into replacements and new additions
+    replaced_count = 0
+    new_entries: List[Test2NLEntry] = []
+
+    for entry in second_entries:
+        key = get_entry_key(entry)
+        if key in first_key_to_idx:
+            # Replace entry in first dataset, keeping the original ID
+            idx = first_key_to_idx[key]
+            original_id = first_entries[idx].id
+            entry.id = original_id
+            first_entries[idx] = entry
+            replaced_count += 1
+        else:
+            new_entries.append(entry)
+
+    print(f"  Replaced {replaced_count} entries in first dataset")
+    print(f"  Found {len(new_entries)} new unique entries to add")
+
+    # Get max ID from first dataset for appending new entries
     max_id = max(entry.id for entry in first_entries)
     print(f"  Max ID in first dataset: {max_id}")
 
-    # Offset second dataset IDs to be contiguous with first dataset
-    id_offset = max_id + 1
-    print(f"  Offsetting second dataset IDs by {id_offset}...")
-    for entry in second_entries:
-        entry.id = entry.id + id_offset
+    # Assign contiguous IDs to new entries
+    for i, entry in enumerate(new_entries):
+        entry.id = max_id + 1 + i
 
-    # Verify IDs are non-overlapping
-    first_ids = {entry.id for entry in first_entries}
-    second_ids = {entry.id for entry in second_entries}
-    overlap = first_ids & second_ids
-    if overlap:
-        raise ValueError(f"ID overlap detected after offset: {overlap}")
-
-    # Merge datasets
-    merged_entries = first_entries + second_entries
+    # Merge: first dataset (with replacements) + new entries
+    merged_entries = first_entries + new_entries
     print(f"  Merged dataset contains {len(merged_entries)} entries")
 
     # Verify contiguous IDs
@@ -118,11 +144,9 @@ def main():
     print("  Done!")
 
     print("\nMerge complete:")
-    print(f"  First dataset: {len(first_entries)} entries (IDs 0-{max_id})")
-    print(
-        f"  Second dataset: {len(second_entries)} entries "
-        f"(IDs {id_offset}-{id_offset + len(second_entries) - 1})"
-    )
+    print(f"  First dataset: {len(first_entries)} entries")
+    print(f"  Entries replaced: {replaced_count}")
+    print(f"  New entries added: {len(new_entries)}")
     print(f"  Merged dataset: {len(merged_entries)} entries")
     print(f"  Output: {output_csv}")
 

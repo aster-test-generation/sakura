@@ -1,51 +1,32 @@
 {
     "summary": {
-        "new_test_class_count": 14,
-        "new_test_method_count": 32
+        "new_test_class_count": 21,
+        "new_test_method_count": 59
     },
     "new_tests": {
-        "org.apache.commons.text.similarity.LevenshteinResultsTest": [
-            "testEqualsSameObject()"
-        ],
-        "org.apache.commons.text.similarity.LevenshteinDetailedDistanceTest": [
-            "testApplyWithNullString()"
-        ],
-        "org.apache.commons.text.similarity.JaroWinklerDistanceTest": [
-            "testApply_SimilarityInputNull()"
-        ],
-        "org.apache.commons.text.RandomStringGeneratorTest": [
-            "testChangeOfFilter()",
-            "testSelectFromCharVarargs3(boolean)",
-            "testPasswordExample()"
-        ],
-        "org.apache.commons.text.similarity.JaroWinklerSimilarityTest": [
-            "testGetJaroWinklerSimilarity_StringNull()",
-            "testApply_NullSimilarityInput()",
-            "testApply_SimilarityInputNull()"
-        ],
-        "org.apache.commons.text.TextStringBuilderTest": [
-            "testConstructorDefault()"
-        ],
-        "org.apache.commons.text.lookup.XmlStringLookupTest": [
-            "testNoFeaturesDefault()",
-            "testOne()",
-            "testToString()",
-            "testNull()"
-        ],
-        "org.apache.commons.text.StringSubstitutorTest": [
-            "testDetectsCyclicSubstitution()"
-        ],
-        "org.apache.commons.text.similarity.HammingDistanceTest": [
-            "testHammingDistance_nullLeftValue()",
-            "testHammingDistance(java.lang.Class)",
-            "testHammingDistance_nullRightValue()"
+        "org.apache.commons.text.translate.CharSequenceTranslatorTest": [
+            "testIOException()",
+            "testWith()"
         ],
         "org.apache.commons.text.TextStringBuilderAppendInsertTest": [
             "testInsertAtEnd()"
         ],
-        "org.apache.commons.text.lookup.StringLookupFactoryTest": [
-            "testAddDefaultStringLookupsNull()",
-            "testDefault()"
+        "org.apache.commons.text.translate.OctalUnescaperTest": [
+            "testInvalid()",
+            "testHighLowSurrogate()"
+        ],
+        "org.apache.commons.text.similarity.EditDistanceFromTest": [
+            "testGetLeft()",
+            "testGetSimilarityScore()"
+        ],
+        "org.apache.commons.text.similarity.LevenshteinResultsTest": [
+            "testEqualsReturningFalse()",
+            "testEqualsWithDifferentObject()"
+        ],
+        "org.apache.commons.text.similarity.SimilarityScoreFromTest": [
+            "testGetLeft()",
+            "testGetSimilarityScore()",
+            "testFailsToCreateSimilarityScoreFromThrowsIllegalArgumentException()"
         ],
         "org.apache.commons.text.similarity.DamerauLevenshteinDistanceTest": [
             "testCalculateDamerauLevenshteinDistance_SimilarityInput(java.lang.String, java.lang.String, int, int, java.lang.Class)",
@@ -58,11 +39,71 @@
             "testNullInputsThrowLimited()",
             "testGetThresholdDirectlyAfterObjectInstantiation()"
         ],
-        "org.apache.commons.text.translate.CharSequenceTranslatorTest": [
-            "testWith()"
+        "org.apache.commons.text.similarity.LevenshteinDistanceTest": [
+            "testGetLevenshteinDistance_EmptyStringString()"
+        ],
+        "org.apache.commons.text.RandomStringGeneratorTest": [
+            "testChangeOfFilter()",
+            "testSelectFromCharVarargs3(boolean)",
+            "testPasswordExample()"
+        ],
+        "org.apache.commons.text.translate.UnicodeUnescaperTest": [
+            "testTooShort()"
+        ],
+        "org.apache.commons.text.similarity.JaroWinklerSimilarityTest": [
+            "testGetJaroWinklerSimilarity_StringNull()",
+            "testApply_NullSimilarityInput()",
+            "testApply_SimilarityInputNull()"
+        ],
+        "org.apache.commons.text.similarity.LongestCommonSubsequenceTest": [
+            "testLongestCommonSubstringLengthArray()"
+        ],
+        "org.apache.commons.text.similarity.JaccardSimilarityTest": [
+            "testGettingJaccardSimilaritySimilarityInputNull()",
+            "testGettingJaccardSimilarityStringNull()"
+        ],
+        "org.apache.commons.text.StringSubstitutorTest": [
+            "testDetectsCyclicSubstitution()",
+            "testToString()"
+        ],
+        "org.apache.commons.text.lookup.XmlStringLookupTest": [
+            "testInterpolatorSecureOnBla()",
+            "testInterpolatorExternalDtdOff()",
+            "testExternalEntityOff()",
+            "testInterpolatorExternalEntityOff()",
+            "testInterpolatorExternalEntityOnOverride()",
+            "testInterpolatorExternalEntityOffOverride()",
+            "testExternalEntityOn()",
+            "testInterpolatorExternalDtdOn()",
+            "testInterpolatorExternalEntityOn()"
+        ],
+        "org.apache.commons.text.similarity.JaroWinklerDistanceTest": [
+            "testApply_NullSimilarityInput()",
+            "testMatches()",
+            "testApply_SimilarityInputNull()",
+            "testMatchesDeprecated()"
+        ],
+        "org.apache.commons.text.translate.SinglePassTranslatorTest": [
+            "testTranslateThrowsIllegalArgumentExceptionWithNonAnonymousClass()"
+        ],
+        "org.apache.commons.text.TextStringBuilderTest": [
+            "testConstructorCharSequenceNull()"
         ],
         "org.apache.commons.text.WordUtilsTest": [
-            "testLANG673()"
+            "testIsDelimiterCodePoint()",
+            "testIsDelimiter()"
+        ],
+        "org.apache.commons.text.similarity.HammingDistanceTest": [
+            "testHammingDistance_nullLeftValue()",
+            "testHammingDistance(java.lang.Class)",
+            "testHammingDistance_nullRightValue()"
+        ],
+        "org.apache.commons.text.lookup.StringLookupFactoryTest": [
+            "testXmlStringLookupExternalEntityOff()",
+            "testDefault()",
+            "testClear()",
+            "testDeprecatedSingletons()",
+            "testXmlStringLookupExternalEntityOn()"
         ]
     }
 }

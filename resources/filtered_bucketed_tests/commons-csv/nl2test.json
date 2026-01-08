@@ -211,9 +211,9 @@
                 {
                     "focal_class": "org.apache.commons.csv.CSVFormat",
                     "focal_method_names": [
-                        "withFirstRecordAsHeader()",
                         "withIgnoreSurroundingSpaces()",
-                        "withDelimiter(char)"
+                        "withDelimiter(char)",
+                        "withFirstRecordAsHeader()"
                     ]
                 },
                 {
@@ -269,11 +269,11 @@
                 {
                     "focal_class": "org.apache.commons.csv.CSVFormat.Builder",
                     "focal_method_names": [
-                        "setHeader(java.lang.String[])",
-                        "setSkipHeaderRecord(boolean)",
-                        "get()",
                         "setIgnoreSurroundingSpaces(boolean)",
-                        "setDelimiter(char)"
+                        "setSkipHeaderRecord(boolean)",
+                        "setDelimiter(char)",
+                        "setHeader(java.lang.String[])",
+                        "get()"
                     ]
                 }
             ]
@@ -285,8 +285,8 @@
                 {
                     "focal_class": "org.apache.commons.csv.CSVParser",
                     "focal_method_names": [
-                        "getRecords()",
-                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)"
+                        "parse(java.lang.String, org.apache.commons.csv.CSVFormat)",
+                        "getRecords()"
                     ]
                 },
                 {

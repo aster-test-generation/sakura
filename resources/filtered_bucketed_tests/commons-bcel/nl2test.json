@@ -27,7 +27,141 @@
         }
     ],
     "tests_with_two_focal_methods": [],
-    "tests_with_more_than_two_to_five_focal_methods": [],
-    "tests_with_more_than_five_to_ten_focal_methods": [],
+    "tests_with_more_than_two_to_five_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+            "method_signature": "testGetSuperClasses(java.lang.Class)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.classfile.JavaClass",
+                    "focal_method_names": [
+                        "dump(java.lang.String)",
+                        "getSuperClasses()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.Repository",
+                    "focal_method_names": [
+                        "lookupClass(java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+            "method_signature": "testFindFieldCustomInterface1()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.Repository",
+                    "focal_method_names": [
+                        "lookupClass(java.lang.String)",
+                        "setRepository(org.apache.bcel.util.Repository)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.util.SyntheticRepository",
+                    "focal_method_names": [
+                        "getInstance(org.apache.bcel.util.ClassPath)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.classfile.JavaClass",
+                    "focal_method_names": [
+                        "dump(java.lang.String)",
+                        "findField(java.lang.String, org.apache.bcel.generic.Type)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+            "method_signature": "testGetAllInterfaces(java.lang.Class)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.classfile.JavaClass",
+                    "focal_method_names": [
+                        "dump(java.lang.String)",
+                        "getAllInterfaces()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.Repository",
+                    "focal_method_names": [
+                        "lookupClass(java.lang.String)"
+                    ]
+                }
+            ]
+        }
+    ],
+    "tests_with_more_than_five_to_ten_focal_methods": [
+        {
+            "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+            "method_signature": "testFindFieldCustomClass()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.classfile.JavaClass",
+                    "focal_method_names": [
+                        "dump(java.lang.String)",
+                        "findField(java.lang.String, org.apache.bcel.generic.Type)",
+                        "dump(java.io.OutputStream)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.classfile.ClassParser",
+                    "focal_method_names": [
+                        "parse()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.util.SyntheticRepository",
+                    "focal_method_names": [
+                        "storeClass(org.apache.bcel.classfile.JavaClass)",
+                        "getInstance()",
+                        "removeClass(org.apache.bcel.classfile.JavaClass)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.Repository",
+                    "focal_method_names": [
+                        "setRepository(org.apache.bcel.util.Repository)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+            "method_signature": "testFindFieldCustomInterface2()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.bcel.classfile.JavaClass",
+                    "focal_method_names": [
+                        "dump(java.lang.String)",
+                        "findField(java.lang.String, org.apache.bcel.generic.Type)",
+                        "dump(java.io.OutputStream)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.classfile.ClassParser",
+                    "focal_method_names": [
+                        "parse()"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.util.SyntheticRepository",
+                    "focal_method_names": [
+                        "storeClass(org.apache.bcel.classfile.JavaClass)",
+                        "getInstance()",
+                        "removeClass(org.apache.bcel.classfile.JavaClass)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.bcel.Repository",
+                    "focal_method_names": [
+                        "setRepository(org.apache.bcel.util.Repository)"
+                    ]
+                }
+            ]
+        }
+    ],
     "tests_with_more_than_ten_focal_methods": []
 }

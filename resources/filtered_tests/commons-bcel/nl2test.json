@@ -1,11 +1,26 @@
 {
     "summary": {
-        "new_test_class_count": 3,
-        "new_test_method_count": 8
+        "new_test_class_count": 5,
+        "new_test_method_count": 15
     },
     "new_tests": {
+        "org.apache.bcel.classfile.JavaClassTest": [
+            "testGetSuperClasses(java.lang.Class)",
+            "testFindFieldJavaLang(java.lang.Class)",
+            "testFindFieldCustomInterface1()",
+            "testFindFieldCustomClass()",
+            "testFindFieldCustomInterface2()",
+            "testGetAllInterfaces(java.lang.Class)"
+        ],
+        "org.apache.bcel.ConstTest": [
+            "testJava26()"
+        ],
         "org.apache.bcel.util.BCELifierTest": [
             "testJavapCompareJava25KnownBroken(java.lang.String)"
+        ],
+        "org.apache.bcel.util.ClassPathTest": [
+            "testGetResources()",
+            "testClose()"
         ],
         "org.apache.bcel.verifier.TransitiveHullTest": [
             "testC()",
@@ -13,10 +28,6 @@
             "testA()",
             "testB()",
             "testSelf()"
-        ],
-        "org.apache.bcel.util.ClassPathTest": [
-            "testGetResources()",
-            "testClose()"
         ]
     }
 }

@@ -135,6 +135,8 @@ class Test2NLPrompt:
             source_class: str, source_method_sig: str
         ) -> None:
             """Collect helper methods from a given method."""
+            if not self.analysis.get_method(source_class, source_method_sig):
+                return
             helpers_dict = self.reachability.get_helper_methods(
                 source_class,
                 source_method_sig,
@@ -161,13 +163,11 @@ class Test2NLPrompt:
 
         collect_helpers_from_method(qualified_class_name, method_signature)
         for setup_method in setup_methods:
-            collect_helpers_from_method(
-                qualified_class_name, setup_method.method_signature
-            )
+            source_class = setup_method.qualified_class_name or qualified_class_name
+            collect_helpers_from_method(source_class, setup_method.method_signature)
         for teardown_method in teardown_methods:
-            collect_helpers_from_method(
-                qualified_class_name, teardown_method.method_signature
-            )
+            source_class = teardown_method.qualified_class_name or qualified_class_name
+            collect_helpers_from_method(source_class, teardown_method.method_signature)
 
         # 5.b) Collect test utility classes using referenced classes
         # NOTE: Not implemented - unlikely scenario

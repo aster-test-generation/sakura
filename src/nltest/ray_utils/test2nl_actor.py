@@ -84,19 +84,20 @@ class Test2NLActor:
         """
         try:
             qualified_class_name = input_payload["qualified_class_name"]
-            method_signature = input_payload["method_signature"]
+            original_signature = input_payload["method_signature"]
 
-            # Check if method exists; fall back to simplified signature if not
-            if not self.analysis.get_method(qualified_class_name, method_signature):
+            # Check if method exists; fall back to simplified signature for lookup if not
+            method_signature = original_signature
+            if not self.analysis.get_method(qualified_class_name, original_signature):
                 simplified_sig = CommonAnalysis.simplify_method_signature(
-                    method_signature
+                    original_signature
                 )
                 if self.analysis.get_method(qualified_class_name, simplified_sig):
                     method_signature = simplified_sig
                 else:
                     return {
                         "success": False,
-                        "error": f"Method {input_payload['method_signature']} not found in class {qualified_class_name}",
+                        "error": f"Method {original_signature} not found in class {qualified_class_name}",
                         "input": input_payload,
                     }
 
@@ -124,6 +125,11 @@ class Test2NLActor:
                     "error": "No description generated",
                     "input": input_payload,
                 }
+
+            # Restore original signature in output if simplified was used for lookup
+            entry.method_signature = original_signature
+            desc.method_signature = original_signature
+
             return {
                 "success": True,
                 "entry": entry.model_dump(mode="json"),

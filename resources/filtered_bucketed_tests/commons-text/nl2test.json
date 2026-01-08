@@ -50,13 +50,25 @@
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
-            "method_signature": "testToString()",
+            "qualified_class_name": "org.apache.commons.text.translate.OctalUnescaperTest",
+            "method_signature": "testInvalid()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.text.lookup.XmlStringLookup",
+                    "focal_class": "org.apache.commons.text.translate.OctalUnescaper",
                     "focal_method_names": [
-                        "toString()"
+                        "translate(java.lang.CharSequence)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.translate.OctalUnescaperTest",
+            "method_signature": "testHighLowSurrogate()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.translate.OctalUnescaper",
+                    "focal_method_names": [
+                        "translate(java.lang.CharSequence)"
                     ]
                 }
             ]
@@ -69,6 +81,54 @@
                     "focal_class": "org.apache.commons.text.StringSubstitutor",
                     "focal_method_names": [
                         "replace(java.lang.Object, java.util.Map, java.lang.String, java.lang.String)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.StringSubstitutorTest",
+            "method_signature": "testToString()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "toString()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.similarity.JaroWinklerDistanceTest",
+            "method_signature": "testMatches()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.similarity.JaroWinklerSimilarity",
+                    "focal_method_names": [
+                        "matches(java.lang.CharSequence, java.lang.CharSequence)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.similarity.JaroWinklerDistanceTest",
+            "method_signature": "testMatchesDeprecated()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.similarity.JaroWinklerDistance",
+                    "focal_method_names": [
+                        "matches(java.lang.CharSequence, java.lang.CharSequence)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.similarity.LongestCommonSubsequenceTest",
+            "method_signature": "testLongestCommonSubstringLengthArray()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.similarity.LongestCommonSubsequence",
+                    "focal_method_names": [
+                        "longestCommonSubstringLengthArray(java.lang.CharSequence, java.lang.CharSequence)"
                     ]
                 }
             ]
@@ -87,12 +147,12 @@
         },
         {
             "qualified_class_name": "org.apache.commons.text.lookup.StringLookupFactoryTest",
-            "method_signature": "testAddDefaultStringLookupsNull()",
+            "method_signature": "testXmlStringLookupExternalEntityOff()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.text.lookup.StringLookupFactory",
                     "focal_method_names": [
-                        "addDefaultStringLookups(java.util.Map)"
+                        "xmlStringLookup()"
                     ]
                 }
             ]
@@ -105,6 +165,42 @@
                     "focal_class": "org.apache.commons.text.lookup.StringLookupFactory",
                     "focal_method_names": [
                         "addDefaultStringLookups(java.util.Map)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.StringLookupFactoryTest",
+            "method_signature": "testClear()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.lookup.StringLookupFactory",
+                    "focal_method_names": [
+                        "clear()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.StringLookupFactoryTest",
+            "method_signature": "testDeprecatedSingletons()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.lookup.StringLookupFactory",
+                    "focal_method_names": [
+                        "base64StringLookup()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.similarity.JaccardSimilarityTest",
+            "method_signature": "testGettingJaccardSimilarityStringNull()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.similarity.JaccardSimilarity",
+                    "focal_method_names": [
+                        "apply(java.lang.CharSequence, java.lang.CharSequence)"
                     ]
                 }
             ]
@@ -135,7 +231,19 @@
         },
         {
             "qualified_class_name": "org.apache.commons.text.similarity.LevenshteinResultsTest",
-            "method_signature": "testEqualsSameObject()",
+            "method_signature": "testEqualsReturningFalse()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.similarity.LevenshteinResults",
+                    "focal_method_names": [
+                        "equals(java.lang.Object)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.similarity.LevenshteinResultsTest",
+            "method_signature": "testEqualsWithDifferentObject()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.text.similarity.LevenshteinResults",
@@ -147,24 +255,48 @@
         },
         {
             "qualified_class_name": "org.apache.commons.text.WordUtilsTest",
-            "method_signature": "testLANG673()",
+            "method_signature": "testIsDelimiterCodePoint()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.text.WordUtils",
                     "focal_method_names": [
-                        "abbreviate(java.lang.String, int, int, java.lang.String)"
+                        "isDelimiter(int, char[])"
                     ]
                 }
             ]
         },
         {
-            "qualified_class_name": "org.apache.commons.text.similarity.LevenshteinDetailedDistanceTest",
-            "method_signature": "testApplyWithNullString()",
+            "qualified_class_name": "org.apache.commons.text.WordUtilsTest",
+            "method_signature": "testIsDelimiter()",
             "focal_details": [
                 {
-                    "focal_class": "org.apache.commons.text.similarity.LevenshteinDetailedDistance",
+                    "focal_class": "org.apache.commons.text.WordUtils",
                     "focal_method_names": [
-                        "apply(java.lang.CharSequence, java.lang.CharSequence)"
+                        "isDelimiter(char, char[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.translate.UnicodeUnescaperTest",
+            "method_signature": "testTooShort()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.translate.UnicodeUnescaper",
+                    "focal_method_names": [
+                        "translate(java.lang.CharSequence)"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.translate.CharSequenceTranslatorTest",
+            "method_signature": "testIOException()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.translate.CharSequenceTranslator",
+                    "focal_method_names": [
+                        "translate(java.lang.CharSequence)"
                     ]
                 }
             ]
@@ -208,14 +340,105 @@
     ],
     "tests_with_two_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorSecureOnBla()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorExternalDtdOff()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorExternalEntityOff()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorExternalEntityOnOverride()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorExternalEntityOffOverride()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorExternalDtdOn()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.text.lookup.XmlStringLookupTest",
+            "method_signature": "testInterpolatorExternalEntityOn()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.text.StringSubstitutor",
+                    "focal_method_names": [
+                        "replace(java.lang.String)",
+                        "createInterpolator()"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.text.TextStringBuilderTest",
-            "method_signature": "testConstructorDefault()",
+            "method_signature": "testConstructorCharSequenceNull()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.text.TextStringBuilder",
                     "focal_method_names": [
-                        "toCharArray()",
-                        "capacity()"
+                        "capacity()",
+                        "toCharArray()"
                     ]
                 }
             ]
@@ -242,8 +465,8 @@
                 {
                     "focal_class": "org.apache.commons.text.similarity.DamerauLevenshteinDistance",
                     "focal_method_names": [
-                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)",
-                        "apply(java.lang.CharSequence, java.lang.CharSequence)"
+                        "apply(java.lang.CharSequence, java.lang.CharSequence)",
+                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)"
                     ]
                 },
                 {
@@ -261,8 +484,8 @@
                 {
                     "focal_class": "org.apache.commons.text.similarity.DamerauLevenshteinDistance",
                     "focal_method_names": [
-                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)",
-                        "apply(java.lang.CharSequence, java.lang.CharSequence)"
+                        "apply(java.lang.CharSequence, java.lang.CharSequence)",
+                        "apply(org.apache.commons.text.similarity.SimilarityInput, org.apache.commons.text.similarity.SimilarityInput)"
                     ]
                 },
                 {
@@ -283,17 +506,17 @@
                 {
                     "focal_class": "org.apache.commons.text.TextStringBuilder",
                     "focal_method_names": [
-                        "insert(int, boolean)",
-                        "insert(int, char)",
-                        "insert(int, int)",
-                        "insert(int, double)",
-                        "insert(int, java.lang.Object)",
                         "insert(int, char[])",
                         "insert(int, long)",
+                        "insert(int, int)",
+                        "insert(int, char)",
                         "insert(int, float)",
+                        "insert(int, double)",
                         "insert(int, java.lang.String)",
+                        "toString()",
                         "insert(int, char[], int, int)",
-                        "toString()"
+                        "insert(int, boolean)",
+                        "insert(int, java.lang.Object)"
                     ]
                 }
             ]

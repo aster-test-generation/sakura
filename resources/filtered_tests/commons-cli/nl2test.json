@@ -1,23 +1,12 @@
 {
     "summary": {
-        "new_test_class_count": 8,
-        "new_test_method_count": 26
+        "new_test_class_count": 9,
+        "new_test_method_count": 29
     },
     "new_tests": {
-        "org.apache.commons.cli.help.HelpFormatterTest": [
-            "testPrintHelpXML()",
-            "testPrintOptions()",
-            "testSetOptionFormatBuilderTest()"
-        ],
-        "org.apache.commons.cli.help.TextHelpAppendableTest": [
-            "testGetStyleBuilder()",
-            "testAppendTitle()",
-            "testindexOfWrapPos()",
-            "testindexOfWrapPosWithWhitespace(java.lang.Character, boolean)"
-        ],
-        "org.apache.commons.cli.OptionTest": [
-            "testProcessValue()",
-            "testBuilderEmpty()"
+        "org.apache.commons.cli.MissingOptionExceptionTest": [
+            "testGetMissingOptions()",
+            "testGetMessage()"
         ],
         "org.apache.commons.cli.DefaultParserTest": [
             "testParseSkipHappyPath()",
@@ -31,20 +20,36 @@
             "testLegacyStopAtNonOption()",
             "testParseIgnoreHappyPath()"
         ],
-        "org.apache.commons.cli.help.OptionFormatterTest": [
-            "testCli343Part2()",
-            "testCli343Part1()"
-        ],
         "org.apache.commons.cli.HelpFormatterTest": [
             "testDeprecatedFindWrapPosZeroWidth(int)",
             "testDeprecatedPrintOptionsZeroWidth(int)"
         ],
+        "org.apache.commons.cli.help.TextHelpAppendableTest": [
+            "testMakeColumnQueueWithMultipleTrailingLineBreaks()",
+            "testMakeColumnQueue()"
+        ],
+        "org.apache.commons.cli.help.HelpFormatterTest": [
+            "verifyOptionGroupingOutput()",
+            "testPrintHelpHeader()",
+            "testPrintHelpWithIterableOptions()"
+        ],
+        "org.apache.commons.cli.help.OptionFormatterTest": [
+            "testCli343Part2()",
+            "testCli343Part1()"
+        ],
         "org.apache.commons.cli.OptionsTest": [
             "testRequiredOptionInGroupShouldNotBeInRequiredList()"
         ],
-        "org.apache.commons.cli.MissingOptionExceptionTest": [
-            "testGetMissingOptions()",
-            "testGetMessage()"
+        "org.apache.commons.cli.OptionTest": [
+            "testProcessValue()",
+            "testBuilderEmpty()"
+        ],
+        "org.apache.commons.cli.OptionCountTest": [
+            "testThreeSwitchesCompact()",
+            "testOneSwitch()",
+            "testNoSwitch()",
+            "testFiveSwitchesMixed()",
+            "testThreeSwitches()"
         ]
     }
 }

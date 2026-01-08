@@ -4,21 +4,19 @@
         "new_test_method_count": 18
     },
     "new_tests": {
-        "org.apache.commons.csv.JiraCsv318Test": [
-            "testDefaultStream()",
-            "testParallelIOStream()",
-            "testSequentialStream()",
-            "testParallelStream()",
-            "testParallelIOStreamSynchronizedPrinterNotUsed()"
-        ],
-        "org.apache.commons.csv.issues.JiraCsv254Test": [
-            "test()"
-        ],
         "org.apache.commons.csv.CSVFormatTest": [
             "testDelimiterStringLineBreakLfThrowsException1()",
             "testDelimiterCharLineBreakCrThrowsException1()",
             "testDelimiterStringLineBreakCrThrowsException1()",
             "testDelimiterCharLineBreakLfThrowsException1()"
+        ],
+        "org.apache.commons.csv.issues.JiraCsv254Test": [
+            "test()"
+        ],
+        "org.apache.commons.csv.issues.JiraCsv257Test": [
+            "testNoHeaderBuilder()",
+            "testHeaderBuilder()",
+            "testHeaderDepreacted()"
         ],
         "org.apache.commons.csv.CSVParserTest": [
             "testStreamMaxRows(long)",
@@ -29,10 +27,12 @@
         "org.apache.commons.csv.TokenTest": [
             "testToString(org.apache.commons.csv.Token.Type)"
         ],
-        "org.apache.commons.csv.issues.JiraCsv257Test": [
-            "testNoHeaderBuilder()",
-            "testHeaderBuilder()",
-            "testHeaderDepreacted()"
+        "org.apache.commons.csv.JiraCsv318Test": [
+            "testDefaultStream()",
+            "testParallelIOStream()",
+            "testSequentialStream()",
+            "testParallelStream()",
+            "testParallelIOStreamSynchronizedPrinterNotUsed()"
         ]
     }
 }

@@ -3,12 +3,12 @@
     "tests_with_one_focal_methods": [
         {
             "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
-            "method_signature": "testKnownDecodings()",
+            "method_signature": "testIsStringBase64Standard()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.codec.binary.Base64",
                     "focal_method_names": [
-                        "decodeBase64(byte[])"
+                        "isBase64Standard(java.lang.String)"
                     ]
                 }
             ]
@@ -21,6 +21,18 @@
                     "focal_class": "org.apache.commons.codec.binary.Base64",
                     "focal_method_names": [
                         "isArrayByteBase64(byte[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+            "method_signature": "testDecodeBase64DiffChars()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Base64",
+                    "focal_method_names": [
+                        "decodeBase64(java.lang.String)"
                     ]
                 }
             ]
@@ -185,31 +197,26 @@
         },
         {
             "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
-            "method_signature": "testRfc4648Section10Encode()",
+            "method_signature": "testDecodeBase64UrlDiffChars()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.codec.binary.Base64",
                     "focal_method_names": [
-                        "encodeBase64String(byte[])"
-                    ]
-                },
-                {
-                    "focal_class": "org.apache.commons.codec.binary.StringUtils",
-                    "focal_method_names": [
-                        "getBytesUtf8(java.lang.String)"
+                        "decodeBase64UrlSafe(java.lang.String)",
+                        "decodeBase64(java.lang.String)"
                     ]
                 }
             ]
         },
         {
             "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
-            "method_signature": "testIsUrlSafe()",
+            "method_signature": "testDecodeBase64StandardDiffChars()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.codec.binary.Base64",
                     "focal_method_names": [
-                        "isUrlSafe()",
-                        "isBase64(byte[])"
+                        "decodeBase64(java.lang.String)",
+                        "decodeBase64Standard(java.lang.String)"
                     ]
                 }
             ]
@@ -257,8 +264,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
-                        "shake128_256Hex(java.lang.String)",
-                        "shake128_256(java.lang.String)"
+                        "shake128_256(java.lang.String)",
+                        "shake128_256Hex(java.lang.String)"
                     ]
                 }
             ]
@@ -270,8 +277,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
-                        "getShake128_256Digest()",
-                        "getShake256_512Digest()"
+                        "getShake256_512Digest()",
+                        "getShake128_256Digest()"
                     ]
                 }
             ]
@@ -283,8 +290,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
-                        "shake256_512Hex(java.lang.String)",
-                        "shake256_512(java.lang.String)"
+                        "shake256_512(java.lang.String)",
+                        "shake256_512Hex(java.lang.String)"
                     ]
                 }
             ]
@@ -296,8 +303,8 @@
                 {
                     "focal_class": "org.apache.commons.codec.DecoderException",
                     "focal_method_names": [
-                        "getCause()",
-                        "getMessage()"
+                        "getMessage()",
+                        "getCause()"
                     ]
                 }
             ]
@@ -393,6 +400,67 @@
     ],
     "tests_with_more_than_two_to_five_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+            "method_signature": "testDecodeEncodeStandard(java.lang.String)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.StringUtils",
+                    "focal_method_names": [
+                        "getBytesUtf8(java.lang.String)",
+                        "newStringUsAscii(byte[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Base64",
+                    "focal_method_names": [
+                        "decodeBase64Standard(java.lang.String)",
+                        "encodeBase64String(byte[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.codec.binary.Base64Test",
+            "method_signature": "testDecodeEncodeUrl(java.lang.String)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.StringUtils",
+                    "focal_method_names": [
+                        "getBytesUtf8(java.lang.String)",
+                        "newStringUsAscii(byte[])"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Base64",
+                    "focal_method_names": [
+                        "decodeBase64UrlSafe(java.lang.String)",
+                        "encodeBase64URLSafeString(byte[])"
+                    ]
+                }
+            ]
+        },
+        {
+            "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
+            "method_signature": "testShake128_256(java.lang.String, int, java.lang.String)",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.binary.Hex",
+                    "focal_method_names": [
+                        "decodeHex(java.lang.String)"
+                    ]
+                },
+                {
+                    "focal_class": "org.apache.commons.codec.digest.DigestUtils",
+                    "focal_method_names": [
+                        "shake128_256Hex(byte[])",
+                        "shake128_256(byte[])",
+                        "shake128_256(java.io.InputStream)",
+                        "shake128_256Hex(java.io.InputStream)"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
             "method_signature": "testShake256_512(java.lang.String, int, java.lang.String)",
             "focal_details": [
@@ -405,10 +473,10 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
-                        "shake256_512Hex(byte[])",
-                        "shake256_512(byte[])",
                         "shake256_512Hex(java.io.InputStream)",
-                        "shake256_512(java.io.InputStream)"
+                        "shake256_512(byte[])",
+                        "shake256_512(java.io.InputStream)",
+                        "shake256_512Hex(byte[])"
                     ]
                 }
             ]
@@ -421,9 +489,9 @@
                     "focal_class": "org.apache.commons.codec.digest.DigestUtils",
                     "focal_method_names": [
                         "getSha3_256Digest()",
+                        "getSha3_224Digest()",
                         "getSha3_384Digest()",
-                        "getSha3_512Digest()",
-                        "getSha3_224Digest()"
+                        "getSha3_512Digest()"
                     ]
                 }
             ]
@@ -445,17 +513,37 @@
     ],
     "tests_with_more_than_five_to_ten_focal_methods": [
         {
+            "qualified_class_name": "org.apache.commons.codec.digest.DigestUtilsTest",
+            "method_signature": "testGetDigests()",
+            "focal_details": [
+                {
+                    "focal_class": "org.apache.commons.codec.digest.DigestUtils",
+                    "focal_method_names": [
+                        "getSha512_256Digest()",
+                        "getMd2Digest()",
+                        "getShaDigest()",
+                        "getSha256Digest()",
+                        "getSha384Digest()",
+                        "getSha1Digest()",
+                        "getMd5Digest()",
+                        "getSha512_224Digest()",
+                        "getSha512Digest()"
+                    ]
+                }
+            ]
+        },
+        {
             "qualified_class_name": "org.apache.commons.codec.digest.Crc16Test",
             "method_signature": "testModbusCustom()",
             "focal_details": [
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
+                        "getValue()",
+                        "reset()",
                         "setTable(int[])",
                         "get()",
-                        "setInit(int)",
-                        "getValue()",
-                        "reset()"
+                        "setInit(int)"
                     ]
                 },
                 {
@@ -474,11 +562,11 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
+                        "getValue()",
+                        "reset()",
                         "setTable(int[])",
                         "get()",
-                        "setInit(int)",
-                        "getValue()",
-                        "reset()"
+                        "setInit(int)"
                     ]
                 },
                 {
@@ -497,11 +585,11 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
+                        "getValue()",
+                        "reset()",
                         "setTable(int[])",
                         "get()",
-                        "setInit(int)",
-                        "getValue()",
-                        "reset()"
+                        "setInit(int)"
                     ]
                 },
                 {
@@ -520,10 +608,10 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
-                        "get()",
                         "setTable(int[])",
-                        "getValue()",
-                        "setInit(int)"
+                        "setInit(int)",
+                        "get()",
+                        "getValue()"
                     ]
                 },
                 {
@@ -542,11 +630,11 @@
                 {
                     "focal_class": "org.apache.commons.codec.digest.Crc16.Builder",
                     "focal_method_names": [
+                        "getValue()",
+                        "update(int)",
                         "setTable(int[])",
                         "get()",
-                        "update(int)",
-                        "setInit(int)",
-                        "getValue()"
+                        "setInit(int)"
                     ]
                 },
                 {

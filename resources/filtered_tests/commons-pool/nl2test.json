@@ -1,17 +1,34 @@
 {
     "summary": {
-        "new_test_class_count": 2,
-        "new_test_method_count": 5
+        "new_test_class_count": 5,
+        "new_test_method_count": 16
     },
     "new_tests": {
+        "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool": [
+            "testUnwrapInvocationTargetExceptionFalse()",
+            "testUnwrapInvocationTargetExceptionTrue()"
+        ],
+        "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool": [
+            "testClearReuseCapacity()",
+            "testValidateOnCreateFailure()"
+        ],
+        "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory": [
+            "testConstructorWithDefaults()"
+        ],
+        "org.apache.commons.pool3.impl.TestBaseGenericObjectPool": [
+            "testCollectDetailedStatisticsConfiguration()",
+            "testCollectDetailedStatisticsToggling()",
+            "testCollectDetailedStatisticsDisabled()",
+            "testStatsStoreConcurrentAccess()",
+            "testCollectDetailedStatisticsDefault()",
+            "testStatsStoreCircularBuffer()",
+            "testDetailedStatisticsConfigIntegration()",
+            "testCollectDetailedStatisticsEnabled()"
+        ],
         "org.apache.commons.pool3.PooledObjectTest": [
             "testGetObject()",
             "testNonNull()",
             "testIsNull()"
-        ],
-        "org.apache.commons.pool3.proxy.AbstractTestProxiedObjectPool": [
-            "testUnwrapInvocationTargetExceptionFalse()",
-            "testUnwrapInvocationTargetExceptionTrue()"
         ]
     }
 }

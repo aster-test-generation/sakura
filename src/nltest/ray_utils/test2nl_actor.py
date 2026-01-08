@@ -8,8 +8,9 @@ import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-from nltest.test2nl.pipeline import Pipeline as Test2NLPipeline
 from nltest.test2nl.model.models import AbstractionLevel
+from nltest.test2nl.pipeline import Pipeline as Test2NLPipeline
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
 from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 from nltest.utils.models import Method
@@ -82,9 +83,26 @@ class Test2NLActor:
         Expects payload with: qualified_class_name, method_signature, id (optional).
         """
         try:
+            qualified_class_name = input_payload["qualified_class_name"]
+            method_signature = input_payload["method_signature"]
+
+            # Check if method exists; fall back to simplified signature if not
+            if not self.analysis.get_method(qualified_class_name, method_signature):
+                simplified_sig = CommonAnalysis.simplify_method_signature(
+                    method_signature
+                )
+                if self.analysis.get_method(qualified_class_name, simplified_sig):
+                    method_signature = simplified_sig
+                else:
+                    return {
+                        "success": False,
+                        "error": f"Method {input_payload['method_signature']} not found in class {qualified_class_name}",
+                        "input": input_payload,
+                    }
+
             method = Method(
-                qualified_class_name=input_payload["qualified_class_name"],
-                method_signature=input_payload["method_signature"],
+                qualified_class_name=qualified_class_name,
+                method_signature=method_signature,
             )
             # id is optional; callers may override returned IDs when saving
             call_id = int(input_payload.get("id", 0))

@@ -467,6 +467,65 @@ class CommonAnalysis:
         return f"{callee_signature[:start]}{', '.join(simplified_elements)}{callee_signature[end:]}"
 
     @staticmethod
+    def simplify_method_signature(method_signature: str) -> str:
+        """
+        Simplifies a method signature by converting fully qualified parameter types to simple names.
+        Removes generic type parameters and preserves array/varargs markers.
+
+        Used for matching method signatures when CLDK returns simple type names but
+        we need fully qualified types.
+
+        Note: Does not differentiate standard library type vs. third-party type.
+
+        Example:
+            "testMethod(com.google.common.jimfs.Configuration, java.util.List<String>)"
+            becomes "testMethod(Configuration, List)"
+        """
+        paren_start = method_signature.find("(")
+        paren_end = method_signature.rfind(")")
+
+        if paren_start == -1 or paren_end == -1:
+            return method_signature
+
+        method_name = method_signature[:paren_start]
+        params_str = method_signature[paren_start + 1 : paren_end]
+
+        if not params_str.strip():
+            return method_signature
+
+        # Remove nested generics iteratively until none remain
+        while "<" in params_str:
+            new_params = re.sub(r"<[^<>]*>", "", params_str)
+            if new_params == params_str:
+                break
+            params_str = new_params
+
+        elements = params_str.split(",")
+        simplified = []
+
+        for element in elements:
+            element = element.strip()
+            if not element:
+                continue
+
+            # Handle array suffix and varargs
+            suffix = ""
+            while element.endswith("[]"):
+                suffix = "[]" + suffix
+                element = element[:-2]
+            if element.endswith("..."):
+                suffix = "..." + suffix
+                element = element[:-3]
+
+            # Simplify qualified name to simple name
+            if "." in element:
+                element = element.rsplit(".", 1)[-1]
+
+            simplified.append(element + suffix)
+
+        return f"{method_name}({', '.join(simplified)})"
+
+    @staticmethod
     def get_cldk_class_name(qualified_class_name: str) -> str:
         """
         Normalize inner class separators for CLDK lookups.

@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 from nltest.test2nl import Pipeline as Test2NLPipeline
 from nltest.test2nl.generation import DescriptionGenerator
-from nltest.test2nl.prompts import RoundTripPrompt, Test2NLPrompt
+from nltest.test2nl.prompts import Test2NLPrompt
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.config import Config, init_config
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
@@ -163,13 +163,6 @@ def petclinic_test2nl_prompt(
 ) -> Test2NLPrompt:
     application_classes, test_utility_classes = petclinic_categorized_classes
     return Test2NLPrompt(petclinic_analysis, application_classes, test_utility_classes)
-
-
-@pytest.fixture(scope="session")
-def petclinic_roundtrip_prompt(
-    petclinic_analysis: JavaAnalysis, petclinic_session_config: Config
-) -> RoundTripPrompt:
-    return RoundTripPrompt(petclinic_analysis)
 
 
 @pytest.fixture(scope="session")

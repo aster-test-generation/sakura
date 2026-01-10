@@ -2,22 +2,56 @@ from __future__ import annotations
 
 import json
 import re
-import uuid
-from typing import Any, Dict, Optional, Sequence, Union, Literal
 import textwrap
+import traceback
+import uuid
+from typing import Any, Dict, Literal, Optional, Sequence, Union
 
-from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, HumanMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from langchain_core.runnables import RunnableSerializable
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langchain_core.runnables import RunnableSerializable
 from pydantic import SecretStr
+from tenacity import (
+    RetryCallState,
+    retry,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential_jitter,
+)
+
+from nltest.utils.pretty.color_logger import RichLog
 
 from ..config.config import Config
-from .model import Provider, ClientType
 from ..exceptions import ConfigurationException
-from nltest.utils.pretty.color_logger import RichLog
-import traceback
+from .model import ClientType, Provider
 from .usage_tracker import UsageTracker
+
+
+def _is_retriable_error(exc: BaseException) -> bool:
+    """Check if exception is transient and worth retrying."""
+    status = getattr(exc, "status_code", None) or getattr(
+        getattr(exc, "response", None), "status_code", None
+    )
+    if status in {429, 500, 502, 503, 504}:
+        return True
+    if isinstance(exc, (ConnectionError, TimeoutError)):
+        return True
+    msg = str(exc).lower()
+    if "rate limit" in msg or "too many requests" in msg or "overloaded" in msg:
+        return True
+    return False
+
+
+def _log_retry_attempt(retry_state: RetryCallState) -> None:
+    """Log retry attempts for observability."""
+    attempt = retry_state.attempt_number
+    exc = retry_state.outcome.exception() if retry_state.outcome else None
+    wait = retry_state.next_action.sleep if retry_state.next_action else 0
+    RichLog.warn(
+        f"[LLMClient] Retry attempt {attempt} after {wait:.1f}s due to: "
+        f"{type(exc).__name__ if exc else 'unknown'}"
+    )
 
 
 class LLMClient:
@@ -84,6 +118,9 @@ class LLMClient:
         if "parallel_tool_calls" not in model_kwargs:
             model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
 
+        # Note: max_retries is omitted to let tenacity handle all retry logic
+        # with proper exponential backoff. Add max_retries here if you want
+        # LangChain's built-in HTTP-level retries to stack with tenacity.
         self._chat = ChatOpenAI(
             model=model,
             temperature=temp,
@@ -159,6 +196,19 @@ class LLMClient:
             ai_msg.tool_calls = normalized
         return ai_msg
 
+    @retry(
+        stop=stop_after_attempt(5),
+        wait=wait_exponential_jitter(initial=1, max=60),
+        retry=retry_if_exception(_is_retriable_error),
+        before_sleep=_log_retry_attempt,
+        reraise=True,
+    )
+    def _invoke_with_retry(
+        self, runnable: RunnableSerializable, messages: Sequence[BaseMessage]
+    ) -> Any:
+        """Internal method that performs the actual invocation with retry logic."""
+        return runnable.invoke(list(messages))
+
     def invoke_messages(
         self,
         messages: Sequence[BaseMessage],
@@ -185,30 +235,24 @@ class LLMClient:
             temperature=temperature,
         )
         try:
-            out = runnable.invoke(list(messages))
+            out = self._invoke_with_retry(runnable, messages)
         except Exception as e:
             err_type = type(e).__name__
             RichLog.error(
                 f"[LLMClient] {err_type} during invoke (provider={getattr(self._provider, 'value', self._provider)}, "
                 f"model={self._model}, base_url={self._base_url}, client={self._client_type.value}): {e}"
             )
-            # Traceback helps pinpoint issues inside LangChain/OpenAI stack.
             RichLog.debug(traceback.format_exc())
-
-            # Log options used for this call (debug only to avoid noise).
             RichLog.debug(
                 f"opts: tool_choice={tool_choice}, "
                 f"schema={'yes' if schema is not None else 'no'}, "
                 f"response_format={'yes' if response_format is not None else 'no'}, "
                 f"extra_model_kwargs={str(extra_model_kwargs)[:500]}"
             )
-            # Summarize message types for quick inspection
             msg_types = [type(m).__name__ for m in messages]
             RichLog.debug(f"messages: {','.join(msg_types)}")
-
             raise
 
-        # Record usage if we have token information
         if hasattr(out, "usage_metadata") and out.usage_metadata:
             self._usage_tracker.record(
                 input_tokens=out.usage_metadata.get("input_tokens", 0),

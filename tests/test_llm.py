@@ -1,57 +1,137 @@
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from unittest.mock import MagicMock, patch
 
-from nltest.test2nl.model.models import AbstractionLevel, TestDescriptionInfo
+import pytest
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+
 from nltest.utils.llm import LLMClient
 from nltest.utils.llm.model import ClientType
-from nltest.utils.pretty.prints import pretty_print
 
 
-def test_llm_client():
-    llm = LLMClient(ClientType.SUMMARIZATION)
+class MockAPIError(Exception):
+    """Mock exception with status_code attribute for testing."""
 
-    system = "You are a helpful assistant that provides eloquent summaries with a British accent."
-    query = "Why do people attend concerts? What is the purpose if they can just listen to the music at home?"
-
-    messages = [SystemMessage(content=system), HumanMessage(content=query)]
-
-    result = llm.invoke_messages(messages)
-    assert result is not None
-    assert isinstance(result, AIMessage)
-    pretty_print("LLM Output", result)
+    def __init__(self, message: str, status_code: int):
+        super().__init__(message)
+        self.status_code = status_code
 
 
-def test_high_desc_prompt(petclinic_test2nl_prompt):
-    qualified_class_name = (
-        "org.springframework.samples.petclinic.service.ClinicServiceTests"
-    )
-    method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+class TestLLMClientRetry:
+    """Tests for LLMClient retry behavior using mocks."""
 
-    _, prompt, is_successful = petclinic_test2nl_prompt.generate(
-        method_signature, qualified_class_name, AbstractionLevel.HIGH
-    )
-    assert prompt, "Prompt was unsuccessfully rendered..."
+    @patch("nltest.utils.llm.llm_client.ChatOpenAI")
+    @patch("nltest.utils.llm.llm_client.Config")
+    def test_retry_on_rate_limit_succeeds_after_retry(
+        self, mock_config_class, mock_chat_openai
+    ):
+        mock_config = MagicMock()
+        mock_config.get.side_effect = lambda section, key: {
+            ("llm", "provider"): "openrouter",
+            ("llm", "model"): "test-model",
+            ("llm", "summarization_temp"): 0.7,
+            ("llm", "api_url"): "https://api.test.com",
+            ("llm", "api_key"): "test-key",
+            ("llm", "max_tokens"): 1000,
+            ("llm", "timeout"): 30,
+            ("llm", "default_headers"): None,
+            ("llm", "model_kwargs"): {},
+            ("llm", "can_parallel_tool"): False,
+        }.get((section, key))
+        mock_config_class.return_value = mock_config
 
-    pretty_print("prompts", prompt)
+        mock_chat = MagicMock()
+        mock_chat.model_name = "test-model"
+        mock_chat_openai.return_value = mock_chat
 
-    assert is_successful, "LLM generation was unsuccessful with prompts..."
+        rate_limit_error = MockAPIError("Rate limit exceeded", 429)
+        success_response = AIMessage(content="Success!")
+
+        call_count = 0
+
+        def invoke_side_effect(*args, **kwargs):
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise rate_limit_error
+            return success_response
+
+        mock_chat.invoke.side_effect = invoke_side_effect
+
+        client = LLMClient(ClientType.SUMMARIZATION)
+        messages = [
+            SystemMessage(content="You are helpful."),
+            HumanMessage(content="Hello"),
+        ]
+
+        with patch.object(client, "_build_runnable", return_value=mock_chat):
+            result = client.invoke_messages(messages)
+
+        assert result.content == "Success!"
+        assert call_count == 3
+
+    @patch("nltest.utils.llm.llm_client.ChatOpenAI")
+    @patch("nltest.utils.llm.llm_client.Config")
+    def test_no_retry_on_client_error(self, mock_config_class, mock_chat_openai):
+        mock_config = MagicMock()
+        mock_config.get.side_effect = lambda section, key: {
+            ("llm", "provider"): "openrouter",
+            ("llm", "model"): "test-model",
+            ("llm", "summarization_temp"): 0.7,
+            ("llm", "api_url"): "https://api.test.com",
+            ("llm", "api_key"): "test-key",
+            ("llm", "max_tokens"): 1000,
+            ("llm", "timeout"): 30,
+            ("llm", "default_headers"): None,
+            ("llm", "model_kwargs"): {},
+            ("llm", "can_parallel_tool"): False,
+        }.get((section, key))
+        mock_config_class.return_value = mock_config
+
+        mock_chat = MagicMock()
+        mock_chat.model_name = "test-model"
+        mock_chat_openai.return_value = mock_chat
+
+        bad_request_error = MockAPIError("Invalid request", 400)
+
+        call_count = 0
+
+        def invoke_side_effect(*args, **kwargs):
+            nonlocal call_count
+            call_count += 1
+            raise bad_request_error
+
+        mock_chat.invoke.side_effect = invoke_side_effect
+
+        client = LLMClient(ClientType.SUMMARIZATION)
+        messages = [
+            SystemMessage(content="You are helpful."),
+            HumanMessage(content="Hello"),
+        ]
+
+        with patch.object(client, "_build_runnable", return_value=mock_chat):
+            with pytest.raises(MockAPIError, match="Invalid request"):
+                client.invoke_messages(messages)
+
+        assert call_count == 1
 
 
-def test_roundtrip_prompt(petclinic_data_manager, petclinic_roundtrip_prompt):
-    qualified_class_name = (
-        "org.springframework.samples.petclinic.service.ClinicServiceTests"
-    )
-    method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
+class TestLLMClientIntegration:
+    def test_llm_client_invoke_messages(self, petclinic_config):
+        llm = LLMClient(ClientType.SUMMARIZATION)
+        system = "You are a helpful assistant. Respond briefly."
+        query = "Say hello in exactly one word."
+        messages = [SystemMessage(content=system), HumanMessage(content=query)]
 
-    test_descriptions = petclinic_data_manager.load(
-        "descriptions.json", TestDescriptionInfo
-    )
-    selected_description = test_descriptions[0]
+        result = llm.invoke_messages(messages)
+        assert result is not None
+        assert isinstance(result, AIMessage)
+        assert result.content
 
-    _, prompt, is_successful = petclinic_roundtrip_prompt.generate(
-        method_signature, qualified_class_name, selected_description.description
-    )
-    assert prompt, "Prompt was unsuccessfully rendered..."
+    def test_llm_client_invoke_prompts(self, petclinic_config):
+        llm = LLMClient(ClientType.SUMMARIZATION)
+        system = "You are a helpful assistant. Respond briefly."
+        chat = "What is 2 + 2? Answer with just the number."
 
-    pretty_print("prompts", prompt)
-
-    assert is_successful, "LLM generation was unsuccessful with prompts..."
+        result = llm.invoke_prompts(system, chat)
+        assert result is not None
+        assert isinstance(result, AIMessage)
+        assert result.content

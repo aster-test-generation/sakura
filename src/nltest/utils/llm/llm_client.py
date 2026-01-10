@@ -3,16 +3,17 @@ from __future__ import annotations
 import json
 import re
 import uuid
-from typing import Any, Dict, Optional, Sequence, Tuple, Union, Literal
+from typing import Any, Dict, Optional, Sequence, Union, Literal
 import textwrap
 
 from langchain_core.messages import AIMessage, BaseMessage, SystemMessage, HumanMessage
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableSerializable
+from pydantic import SecretStr
 
 from ..config.config import Config
-from .model import Provider, LLMSettings, ClientType
+from .model import Provider, ClientType
 from ..exceptions import ConfigurationException
 from nltest.utils.pretty.color_logger import RichLog
 import traceback
@@ -87,8 +88,8 @@ class LLMClient:
             model=model,
             temperature=temp,
             max_tokens=max_tokens,
-            base_url=base_url,
-            api_key=api_key,
+            base_url=base_url.rstrip("/") if base_url else None,
+            api_key=SecretStr(api_key),
             timeout=timeout,
             default_headers=default_headers,
             model_kwargs=model_kwargs,

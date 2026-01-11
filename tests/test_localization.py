@@ -3,9 +3,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.nl2test.generation.localization import (
-    GrammaticalLocalizationOrchestrator,
     GherkinLocalizationOrchestrator,
+    GrammaticalLocalizationOrchestrator,
     LocalizationTools,
 )
 from nltest.nl2test.generation.localization.tools.base import BaseLocalizationTools
@@ -15,21 +16,20 @@ from nltest.nl2test.generation.localization.tools.gherkin import (
 from nltest.nl2test.generation.localization.tools.grammatical import (
     GrammaticalLocalizationTools,
 )
-from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.nl2test.models import (
     AgentState,
     AtomicBlock,
     AtomicBlockList,
-    NL2TestInput,
     LocalizedScenario,
+    NL2TestInput,
 )
 from nltest.nl2test.models.decomposition import (
-    DecompositionMode,
-    Scenario,
-    GrammaticalBlockList,
     AtomicBlockList,
+    DecompositionMode,
+    GrammaticalBlockList,
+    Scenario,
 )
-from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
+from nltest.nl2test.preprocessing.indexers import ClassIndexer, MethodIndexer
 from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.analysis import CommonAnalysis
@@ -281,130 +281,187 @@ class TestLocalizationGrader:
         self.config = petclinic_config
         self.project_root = petclinic_paths.project_root
 
-    def _petcontroller_localized_scenario_payload(self) -> dict:
+    def _clinicservice_insert_pet_payload(self) -> dict:
+        """
+        Payload for ClinicServiceTests.shouldInsertPetIntoDatabaseAndGenerateId().
+
+        This test validates that a new pet can be inserted into the database and
+        that an ID is generated for it. The focal methods involve Owner and Pet
+        entity operations plus repository calls.
+        """
         return {
             "testing_framework": "junit",
             "setup": [
                 {
                     "id": 0,
-                    "task": "Load Spring MVC test context for PetController and PetTypeFormatter using @WebMvcTest",
+                    "task": "Configure DataJpaTest context with OwnerRepository and PetTypeRepository",
                     "uses": "",
-                    "produces": "mock_mvc_context",
+                    "produces": "owners_repository, types_repository",
                     "candidate_methods": [],
                     "arg_bindings": [],
-                    "comments": "@WebMvcTest is an annotation, not a method.",
+                    "comments": "@DataJpaTest annotation configures test context.",
                     "external": False,
                 },
                 {
                     "id": 1,
-                    "task": "Disable test in native image and AOT modes",
-                    "uses": "mock_mvc_context",
-                    "produces": "",
-                    "candidate_methods": [],
-                    "arg_bindings": [],
-                    "comments": "Disabled annotations are not methods.",
-                    "external": False,
-                },
-                {
-                    "id": 2,
-                    "task": "Mock OwnerRepository.findPetTypes to return a PetType list",
-                    "uses": "mocked_owner_repository",
-                    "produces": "pet_types",
-                    "candidate_methods": [],
-                    "arg_bindings": [],
-                    "comments": "Mockito stubbing for findPetTypes.",
-                    "external": False,
-                },
-                {
-                    "id": 3,
-                    "task": "Mock OwnerRepository.findById to return an Owner",
-                    "uses": "mocked_owner_repository, TEST_OWNER_ID",
-                    "produces": "owner_with_pets",
+                    "task": "Find owner with ID 6 from repository",
+                    "uses": "owners_repository",
+                    "produces": "owner6",
                     "candidate_methods": [
                         {
-                            "declaring_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
+                            "declaring_class_name": "org.springframework.data.repository.CrudRepository",
                             "containing_class_name": "org.springframework.samples.petclinic.owner.OwnerRepository",
                             "method_signature": "findById(java.lang.Integer)",
                             "return_type": "java.util.Optional<org.springframework.samples.petclinic.owner.Owner>",
                         }
                     ],
-                    "arg_bindings": [{"arg_name": "id", "arg_value": "TEST_OWNER_ID"}],
-                    "comments": "Mockito stubbing for findById.",
+                    "arg_bindings": [{"arg_name": "id", "arg_value": "6"}],
+                    "comments": "Repository lookup for owner.",
                     "external": False,
                 },
                 {
-                    "id": 4,
-                    "task": "Prepare Owner instance with Pet for updating",
-                    "uses": "owner_with_pets, pet_types",
-                    "produces": "owner_with_pet_to_update",
-                    "candidate_methods": [],
+                    "id": 2,
+                    "task": "Get current pet count from owner",
+                    "uses": "owner6",
+                    "produces": "initial_pet_count",
+                    "candidate_methods": [
+                        {
+                            "declaring_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                            "containing_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                            "method_signature": "getPets()",
+                            "return_type": "java.util.List<org.springframework.samples.petclinic.owner.Pet>",
+                        }
+                    ],
                     "arg_bindings": [],
-                    "comments": "Data preparation, no direct method.",
-                    "external": False,
-                },
-                {
-                    "id": 5,
-                    "task": "Prepare pet details for update request",
-                    "uses": "owner_with_pet_to_update",
-                    "produces": "pet_details",
-                    "candidate_methods": [],
-                    "arg_bindings": [],
-                    "comments": "Setup data.",
+                    "comments": "Get pets to determine initial count.",
                     "external": False,
                 },
             ],
             "gherkin_groups": [
                 {
-                    "given": [],
-                    "when": [
+                    "given": [
                         {
-                            "id": 6,
-                            "task": "Perform POST request to /owners/{ownerId}/pets/{petId}/edit with pet details",
-                            "uses": "mock_mvc, TEST_OWNER_ID, TEST_PET_ID, pet_name, pet_type, pet_birth_date",
-                            "produces": "http_response",
+                            "id": 3,
+                            "task": "Create new Pet instance and set name to 'bowser'",
+                            "uses": "",
+                            "produces": "new_pet",
                             "candidate_methods": [
                                 {
-                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                    "containing_class_name": "org.springframework.samples.petclinic.owner.PetController",
-                                    "method_signature": "processUpdateForm(org.springframework.samples.petclinic.owner.Owner, org.springframework.samples.petclinic.owner.Pet, org.springframework.validation.BindingResult, org.springframework.web.servlet.mvc.support.RedirectAttributes)",
-                                    "return_type": "java.lang.String",
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "method_signature": "setName(java.lang.String)",
+                                    "return_type": "void",
                                 }
                             ],
                             "arg_bindings": [
-                                {"arg_name": "owner", "arg_value": "owner_with_pets"},
-                                {"arg_name": "pet", "arg_value": "pet_details"},
+                                {"arg_name": "name", "arg_value": "bowser"}
+                            ],
+                            "comments": "Pet entity setter.",
+                            "external": False,
+                        },
+                        {
+                            "id": 4,
+                            "task": "Retrieve all pet types from repository",
+                            "uses": "types_repository",
+                            "produces": "pet_types",
+                            "candidate_methods": [
                                 {
-                                    "arg_name": "result",
-                                    "arg_value": "new BindingResult()",
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.PetTypeRepository",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.PetTypeRepository",
+                                    "method_signature": "findPetTypes()",
+                                    "return_type": "java.util.Collection<org.springframework.samples.petclinic.owner.PetType>",
+                                }
+                            ],
+                            "arg_bindings": [],
+                            "comments": "Repository method to get pet types.",
+                            "external": False,
+                        },
+                        {
+                            "id": 5,
+                            "task": "Set pet type and birth date",
+                            "uses": "new_pet, pet_types",
+                            "produces": "configured_pet",
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "method_signature": "setType(org.springframework.samples.petclinic.owner.PetType)",
+                                    "return_type": "void",
                                 },
                                 {
-                                    "arg_name": "redirectAttributes",
-                                    "arg_value": "new RedirectAttributes()",
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "method_signature": "setBirthDate(java.time.LocalDate)",
+                                    "return_type": "void",
                                 },
                             ],
-                            "comments": "processUpdateForm is the focal method.",
+                            "arg_bindings": [],
+                            "comments": "Pet entity setters.",
                             "external": False,
-                        }
+                        },
+                    ],
+                    "when": [
+                        {
+                            "id": 6,
+                            "task": "Add pet to owner and save owner to repository",
+                            "uses": "owner6, configured_pet, owners_repository",
+                            "produces": "saved_owner",
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                                    "method_signature": "addPet(org.springframework.samples.petclinic.owner.Pet)",
+                                    "return_type": "void",
+                                },
+                            ],
+                            "arg_bindings": [
+                                {"arg_name": "pet", "arg_value": "configured_pet"}
+                            ],
+                            "comments": "Owner.addPet is the focal method for adding pet.",
+                            "external": False,
+                        },
                     ],
                     "then": [
                         {
                             "id": 7,
-                            "task": "Verify response has 3xx redirection status code",
-                            "uses": "http_response",
+                            "task": "Verify pet count increased by one",
+                            "uses": "saved_owner, initial_pet_count",
                             "produces": "",
-                            "candidate_methods": [],
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                                    "method_signature": "getPets()",
+                                    "return_type": "java.util.List<org.springframework.samples.petclinic.owner.Pet>",
+                                }
+                            ],
                             "arg_bindings": [],
-                            "comments": "Assertion helper; not a method under test.",
+                            "comments": "Assertion on pet list size.",
                             "external": False,
                         },
                         {
                             "id": 8,
-                            "task": "Verify view name is a redirection to the owner's details page",
-                            "uses": "http_response",
+                            "task": "Retrieve pet by name and verify ID was generated",
+                            "uses": "saved_owner",
                             "produces": "",
-                            "candidate_methods": [],
-                            "arg_bindings": [],
-                            "comments": "Assertion helper; not a method under test.",
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Owner",
+                                    "method_signature": "getPet(java.lang.String)",
+                                    "return_type": "org.springframework.samples.petclinic.owner.Pet",
+                                },
+                                {
+                                    "declaring_class_name": "org.springframework.samples.petclinic.model.BaseEntity",
+                                    "containing_class_name": "org.springframework.samples.petclinic.owner.Pet",
+                                    "method_signature": "getId()",
+                                    "return_type": "java.lang.Integer",
+                                },
+                            ],
+                            "arg_bindings": [
+                                {"arg_name": "name", "arg_value": "bowser"}
+                            ],
+                            "comments": "Verify pet ID is not null after save.",
                             "external": False,
                         },
                     ],
@@ -413,17 +470,93 @@ class TestLocalizationGrader:
             "teardown": [],
         }
 
-    def test_localization_grader_localized_scenario(self):
+    def _clinicservice_insert_pet_payload_relaxed(self) -> dict:
+        """
+        Payload with simplified class names and method signatures to test
+        relaxed semantic matching.
+
+        Uses simple class names (e.g., "Owner" instead of FQN) and method names
+        without parameter types to verify the grader's heuristic matching.
+        """
+        return {
+            "testing_framework": "junit",
+            "setup": [],
+            "gherkin_groups": [
+                {
+                    "given": [
+                        {
+                            "id": 0,
+                            "task": "Create and configure new pet",
+                            "uses": "",
+                            "produces": "new_pet",
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "Pet",
+                                    "containing_class_name": "Pet",
+                                    "method_signature": "setName(String)",
+                                    "return_type": "void",
+                                }
+                            ],
+                            "arg_bindings": [],
+                            "comments": "Relaxed matching test.",
+                            "external": False,
+                        },
+                    ],
+                    "when": [
+                        {
+                            "id": 1,
+                            "task": "Add pet to owner",
+                            "uses": "owner, new_pet",
+                            "produces": "updated_owner",
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "Owner",
+                                    "containing_class_name": "Owner",
+                                    "method_signature": "addPet(Pet)",
+                                    "return_type": "void",
+                                }
+                            ],
+                            "arg_bindings": [],
+                            "comments": "Relaxed matching for Owner.addPet.",
+                            "external": False,
+                        },
+                    ],
+                    "then": [
+                        {
+                            "id": 2,
+                            "task": "Verify pet ID generated",
+                            "uses": "updated_owner",
+                            "produces": "",
+                            "candidate_methods": [
+                                {
+                                    "declaring_class_name": "Owner",
+                                    "containing_class_name": "Owner",
+                                    "method_signature": "getPet(String)",
+                                    "return_type": "Pet",
+                                }
+                            ],
+                            "arg_bindings": [],
+                            "comments": "Relaxed matching for getPet.",
+                            "external": False,
+                        },
+                    ],
+                }
+            ],
+            "teardown": [],
+        }
+
+    def test_localization_grader_clinic_service_insert_pet(self):
+        """Test grading for ClinicServiceTests.shouldInsertPetIntoDatabaseAndGenerateId."""
         nl2_input = NL2TestInput(
-            qualified_class_name="org.springframework.samples.petclinic.owner.PetControllerTests",
-            method_signature="testProcessUpdateFormSuccess()",
-            description="Validate successful processing of a pet update form via PetController.",
+            qualified_class_name="org.springframework.samples.petclinic.service.ClinicServiceTests",
+            method_signature="shouldInsertPetIntoDatabaseAndGenerateId()",
+            description="Insert a new pet into the database and verify that an ID is generated.",
             project_name="spring-petclinic",
         )
 
-        localized_scenario_data = self._petcontroller_localized_scenario_payload()
-
-        localized_scenario = LocalizedScenario(**localized_scenario_data)
+        localized_scenario = LocalizedScenario(
+            **self._clinicservice_insert_pet_payload()
+        )
 
         project_root = Path(self.config.get("project", "base_project_dir"))
         common_analysis = CommonAnalysis(self.analysis)
@@ -441,15 +574,68 @@ class TestLocalizationGrader:
 
         results = grader.grade(localized_scenario, nl2_input)
 
-        pretty_print("Localization Results", results)
+        pretty_print("ClinicService Insert Pet - Localization Results", results)
 
         assert results.qualified_class_name == nl2_input.qualified_class_name
         assert results.method_signature == nl2_input.method_signature
-        assert results.tp >= 1
+        assert results.tp >= 1, "Expected at least one true positive match"
         assert 0.0 <= results.localization_recall <= 1.0
         assert (
             len(results.covered_focal_methods) + len(results.uncovered_focal_methods)
         ) == len(results.all_focal_methods)
+
+    def test_localization_grader_relaxed_matching(self):
+        """
+        Test that relaxed semantic matching works with simplified class/method names.
+
+        This validates that predictions using simple class names (e.g., 'Owner')
+        and method names without full parameter types (e.g., 'addPet(Pet)')
+        correctly match against fully qualified ground truth focal methods.
+        """
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.service.ClinicServiceTests",
+            method_signature="shouldInsertPetIntoDatabaseAndGenerateId()",
+            description="Insert a new pet into the database and verify that an ID is generated.",
+            project_name="spring-petclinic",
+        )
+
+        localized_scenario = LocalizedScenario(
+            **self._clinicservice_insert_pet_payload_relaxed()
+        )
+
+        project_root = Path(self.config.get("project", "base_project_dir"))
+        common_analysis = CommonAnalysis(self.analysis)
+        _, application_classes, test_utility_classes = (
+            common_analysis.categorize_classes()
+        )
+
+        grader = LocalizationGrader(
+            analysis=self.analysis,
+            project_root=project_root,
+            decomposition_mode=DecompositionMode.GHERKIN,
+            application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
+        )
+
+        results = grader.grade(localized_scenario, nl2_input)
+
+        pretty_print("Relaxed Matching - Localization Results", results)
+
+        # With relaxed matching, simple names like "Owner.addPet" should match
+        # against "org.springframework.samples.petclinic.owner.Owner.addPet(...)"
+        assert results.qualified_class_name == nl2_input.qualified_class_name
+        assert results.method_signature == nl2_input.method_signature
+
+        # The relaxed payload includes Owner.addPet, Owner.getPet, Pet.setName
+        # These should match focal methods if they exist in ground truth
+        if results.all_focal_methods:
+            assert results.tp >= 1, (
+                f"Relaxed matching should find at least one match. "
+                f"Covered: {results.covered_focal_methods}, "
+                f"All: {results.all_focal_methods}"
+            )
+
+        assert 0.0 <= results.localization_recall <= 1.0
 
 
 class TestLocalizationTools:

@@ -28,8 +28,15 @@ class BaseIndexer(ABC):
         else:
             api_url = self.config.get("emb", "api_url")
             if not api_url:
-                raise ValueError(f"API URL is missing in config for HTTP provider {provider.name}")
-            return HttpEmbedder(model_id=emb_model, api_url=api_url)
+                provider_name = provider.name if provider else "unknown"
+                raise ValueError(
+                    f"API URL is missing in config for HTTP provider {provider_name}"
+                )
+            try:
+                api_key = self.config.get("emb", "api_key")
+            except Exception:
+                api_key = None
+            return HttpEmbedder(model_id=emb_model, api_url=api_url, api_key=api_key)
 
     @abstractmethod
     def build_index(self, *, exclude_test_dirs: bool = False):

@@ -66,19 +66,24 @@ class Pipeline:
 
         # Initialize TestGrader with current analysis and application classes
         _common_analysis = CommonAnalysis(self.analysis)
-        _, _application_classes, _ = _common_analysis.categorize_classes()
+        _, _application_classes, _test_utility_classes = (
+            _common_analysis.categorize_classes()
+        )
         self.application_classes = _application_classes
+        self.test_utility_classes = _test_utility_classes
         self.test_grader = TestGrader(
             analysis=self.analysis,
             project_root=self.project_root,
             project_erroneous_files=[],
             application_classes=_application_classes,
+            test_utility_classes=_test_utility_classes,
         )
         self.localization_grader = LocalizationGrader(
             analysis=self.analysis,
             project_root=self.project_root,
             decomposition_mode=self.decomposition_mode,
             application_classes=_application_classes,
+            test_utility_classes=_test_utility_classes,
         )
 
     def run_preprocessing(
@@ -192,6 +197,7 @@ class Pipeline:
             project_root=self.project_root,
             decomposition_mode=self.decomposition_mode,
             application_classes=self.application_classes,
+            test_utility_classes=self.test_utility_classes,
         )
         evaluation_results = grader.grade(result, nl2_input)
 

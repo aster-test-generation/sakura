@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import singledispatchmethod
 from pathlib import Path
-from typing import Iterable, List, Sequence, Set, Tuple, Dict
+from typing import Dict, Iterable, List, Sequence, Set, Tuple
 
 from cldk.analysis.java import JavaAnalysis
 from hamster.code_analysis.focal_class_method.focal_class_method import (
@@ -14,7 +14,6 @@ from hamster.code_analysis.test_statistics import (
 
 from nltest.nl2test.models import AtomicBlockList, LocalizedScenario, NL2TestInput
 from nltest.nl2test.models.decomposition import (
-    CandidateMethod,
     DecompositionMode,
     LocalizationEval,
     LocalizedStep,
@@ -24,6 +23,8 @@ from nltest.utils.pretty.prints import pretty_print
 
 # Tuple[qualified_class_name, method_sig]
 FocalMethod = Tuple[str, str]
+# Tuple[simple_class_name, method_name] for relaxed matching
+SemanticKey = Tuple[str, str]
 
 
 class LocalizationGrader:
@@ -33,11 +34,13 @@ class LocalizationGrader:
         project_root: Path,
         decomposition_mode: DecompositionMode,
         application_classes: Sequence[str],
+        test_utility_classes: Sequence[str] | None = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
         self.application_classes = list(application_classes)
+        self.test_utility_classes: List[str] = list(test_utility_classes or [])
         self.common_analysis = CommonAnalysis(analysis)
 
     def set_analysis(self, analysis: JavaAnalysis) -> None:
@@ -46,9 +49,7 @@ class LocalizationGrader:
         self.common_analysis = CommonAnalysis(analysis)
 
     @singledispatchmethod
-    def grade(
-        self, obj, nl2_input: NL2TestInput
-    ) -> LocalizationEval:  
+    def grade(self, obj, nl2_input: NL2TestInput) -> LocalizationEval:
         raise TypeError("Unsupported input type for grade().")
 
     @grade.register
@@ -102,17 +103,14 @@ class LocalizationGrader:
 
     def _get_focal_methods(self, nl2_input: NL2TestInput) -> Set[FocalMethod]:
         try:
-            testing_frameworks = self.common_analysis.get_testing_frameworks_for_class(
-                nl2_input.qualified_class_name
-            )
-            setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(self.analysis).get_setup_methods(
-                nl2_input.qualified_class_name
-            )
+            setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(
+                self.analysis
+            ).get_setup_methods(nl2_input.qualified_class_name)
 
             focal_finder = FocalClassMethod(
-                self.analysis, self.application_classes
+                self.analysis, self.application_classes, self.test_utility_classes
             )
-            focal_classes, _, _, _ = focal_finder.identify_focal_class_and_ui_api_test(
+            focal_classes, _, _, _ = focal_finder.extract_test_scope(
                 nl2_input.qualified_class_name,
                 nl2_input.method_signature,
                 setup_methods,
@@ -124,7 +122,7 @@ class LocalizationGrader:
                     focal_methods.add((focal_class.focal_class, method_name))
 
             return focal_methods
-        except Exception as exc:  
+        except Exception as exc:
             pretty_print(
                 "Error getting focal methods",
                 {
@@ -135,22 +133,46 @@ class LocalizationGrader:
             )
             return set()
 
+    def _get_semantic_key(
+        self, qualified_class_name: str, method_signature: str
+    ) -> SemanticKey:
+        """
+        Extract a relaxed matching key from a focal method.
+        """
+        simple_class = qualified_class_name.split(".")[-1].split("$")[-1]
+        method_name = method_signature.split("(")[0].strip()
+        return (simple_class, method_name)
+
     def _collect_covered_methods(
         self, scenario: LocalizedScenario, focal_methods: Set[FocalMethod]
     ) -> Set[FocalMethod]:
+        """
+        Identifies which ground truth focal methods were predicted by the model.
+        """
         covered: Set[FocalMethod] = set()
+
+        # Multiple overloads may map to the same key
+        ground_truth_map: Dict[SemanticKey, Set[FocalMethod]] = {}
+        for gt_fqn, gt_sig in focal_methods:
+            key = self._get_semantic_key(gt_fqn, gt_sig)
+            ground_truth_map.setdefault(key, set()).add((gt_fqn, gt_sig))
+
         for step in self._iter_steps(scenario):
             candidates = self._collect_candidates(step)
-            for candidate in candidates:
-                if candidate in focal_methods:
-                    covered.add(candidate)
+            for pred_fqn, pred_sig in candidates:
+                pred_key = self._get_semantic_key(pred_fqn, pred_sig)
+                if pred_key in ground_truth_map:
+                    covered.update(ground_truth_map[pred_key])
+
         return covered
 
     def _collect_candidates(self, step: LocalizedStep) -> Set[FocalMethod]:
         results: Set[FocalMethod] = set()
         for candidate in step.candidate_methods or []:
             if candidate.containing_class_name and candidate.method_signature:
-                results.add((candidate.containing_class_name, candidate.method_signature))
+                results.add(
+                    (candidate.containing_class_name, candidate.method_signature)
+                )
         return results
 
     def _iter_steps(self, scenario: LocalizedScenario) -> Iterable[LocalizedStep]:

@@ -5,19 +5,10 @@ from pathlib import Path
 import pytest
 
 from nltest.cli import (
+    _load_nl2_inputs_by_project_from_csv,
     generate_descriptions,
     run_nl2test,
-    _load_nl2_inputs_by_project_from_csv,
 )
-
-
-def _ensure_empty_test2nl_csv(csv_path: Path) -> None:
-    csv_path.parent.mkdir(parents=True, exist_ok=True)
-    if not csv_path.exists():
-        csv_path.write_text(
-            "id,description,project_name,qualified_class_name,method_signature,abstraction_level,is_bdd\n",
-            encoding="utf-8",
-        )
 
 
 def test_cli_generate_descriptions_smoke():
@@ -49,18 +40,15 @@ def test_cli_generate_descriptions_smoke():
 
 
 def test_cli_run_nl2test_smoke():
-    base_project_dir = "./resources/"
-    base_analysis_dir = "./output/"
-    output_dir = "./output"
-    test2nl_file = "./output/resources/test2nl/test2nl.csv"
+    base_project_dir = "../resources/datasets/"
+    base_analysis_dir = "../resources/analysis/"
+    output_dir = "./output/"
+    test2nl_file = "../resources/test2nl/filtered_dataset/test2nl.csv"
 
     orig_cwd = os.getcwd()
     try:
         os.chdir(Path(__file__).resolve().parent)
-        Path(base_project_dir).mkdir(parents=True, exist_ok=True)
-        Path(base_analysis_dir).mkdir(parents=True, exist_ok=True)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
-        _ensure_empty_test2nl_csv(Path(test2nl_file))
 
         run_nl2test(
             base_project_dir=base_project_dir,
@@ -69,17 +57,17 @@ def test_cli_run_nl2test_smoke():
             reset_evaluation_results=True,
             test2nl_file=test2nl_file,
             llm_model="google/gemini-2.5-flash",
-            emb_model="nomic-embed-text:v1.5",
+            emb_model="qwen/qwen3-embedding-8b",
             decomposition_mode="gherkin",
-            supervisor_max_iters=5,
-            localization_max_iters=5,
-            composition_max_iters=5,
-            num_proj_parallel=1,
-            max_inflight=1,
-            max_entries=1,
+            supervisor_max_iters=7,
+            localization_max_iters=16,
+            composition_max_iters=16,
+            num_proj_parallel=2,
+            max_inflight=0,
+            max_entries=2,
             llm_provider="openrouter",
             llm_api_url=None,
-            emb_provider="ollama",
+            emb_provider="openrouter",
             emb_api_url=None,
         )
     finally:

@@ -33,11 +33,13 @@ class LocalizationGrader:
         project_root: Path,
         decomposition_mode: DecompositionMode,
         application_classes: Sequence[str],
+        test_utility_classes: Sequence[str] | None = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
         self.application_classes = list(application_classes)
+        self.test_utility_classes: List[str] = list(test_utility_classes or [])
         self.common_analysis = CommonAnalysis(analysis)
 
     def set_analysis(self, analysis: JavaAnalysis) -> None:
@@ -46,9 +48,7 @@ class LocalizationGrader:
         self.common_analysis = CommonAnalysis(analysis)
 
     @singledispatchmethod
-    def grade(
-        self, obj, nl2_input: NL2TestInput
-    ) -> LocalizationEval:  
+    def grade(self, obj, nl2_input: NL2TestInput) -> LocalizationEval:
         raise TypeError("Unsupported input type for grade().")
 
     @grade.register
@@ -105,14 +105,14 @@ class LocalizationGrader:
             testing_frameworks = self.common_analysis.get_testing_frameworks_for_class(
                 nl2_input.qualified_class_name
             )
-            setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(self.analysis).get_setup_methods(
-                nl2_input.qualified_class_name
-            )
+            setup_methods: Dict[str, List[str]] = SetupAnalysisInfo(
+                self.analysis
+            ).get_setup_methods(nl2_input.qualified_class_name)
 
             focal_finder = FocalClassMethod(
-                self.analysis, self.application_classes
+                self.analysis, self.application_classes, self.test_utility_classes
             )
-            focal_classes, _, _, _ = focal_finder.identify_focal_class_and_ui_api_test(
+            focal_classes, _, _, _ = focal_finder.extract_test_scope(
                 nl2_input.qualified_class_name,
                 nl2_input.method_signature,
                 setup_methods,
@@ -124,7 +124,7 @@ class LocalizationGrader:
                     focal_methods.add((focal_class.focal_class, method_name))
 
             return focal_methods
-        except Exception as exc:  
+        except Exception as exc:
             pretty_print(
                 "Error getting focal methods",
                 {
@@ -150,7 +150,9 @@ class LocalizationGrader:
         results: Set[FocalMethod] = set()
         for candidate in step.candidate_methods or []:
             if candidate.containing_class_name and candidate.method_signature:
-                results.add((candidate.containing_class_name, candidate.method_signature))
+                results.add(
+                    (candidate.containing_class_name, candidate.method_signature)
+                )
         return results
 
     def _iter_steps(self, scenario: LocalizedScenario) -> Iterable[LocalizedStep]:

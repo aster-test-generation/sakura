@@ -3,7 +3,10 @@ import pytest
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
-from nltest.nl2test.preprocessing.extractors import MethodSnippetExtractor
+from nltest.nl2test.preprocessing.extractors import (
+    ClassSnippetExtractor,
+    MethodSnippetExtractor,
+)
 from nltest.nl2test.preprocessing.indexers import (
     ClassIndexer,
     MethodIndexer,
@@ -363,3 +366,229 @@ class TestProjectSearch:
             desc_substr, i=1, j=num_similar
         )
         pretty_print("Get pet id", f"FOUND: {search_results}\nACTUAL: Pet.getId")
+
+
+class TestClassSnippetExtractor:
+    """Tests for ClassSnippetExtractor to verify all application classes are extracted."""
+
+    @pytest.fixture(autouse=True)
+    def _inject(self, petclinic_analysis: JavaAnalysis) -> None:
+        self.analysis = petclinic_analysis
+        self.extractor = ClassSnippetExtractor(petclinic_analysis)
+
+    def test_excludes_test_directory_classes(self) -> None:
+        """Verify that classes in src/test/java are excluded when exclude_test_dirs=True."""
+        snippets = self.extractor.get_class_snippets(exclude_test_dirs=True)
+
+        for snippet in snippets:
+            java_file = self.analysis.get_java_file(snippet.declaring_class_name)
+            assert "src/test/java" not in java_file, (
+                f"Test class {snippet.declaring_class_name} should be excluded"
+            )
+
+    def test_includes_all_application_classes_with_visible_methods(self) -> None:
+        """Verify that all application classes with visible methods are included."""
+        snippets = self.extractor.get_class_snippets(exclude_test_dirs=True)
+        extracted_classes = {s.declaring_class_name for s in snippets}
+
+        expected_app_classes = {
+            "org.springframework.samples.petclinic.PetClinicApplication",
+            "org.springframework.samples.petclinic.PetClinicRuntimeHints",
+            "org.springframework.samples.petclinic.model.BaseEntity",
+            "org.springframework.samples.petclinic.model.NamedEntity",
+            "org.springframework.samples.petclinic.model.Person",
+            "org.springframework.samples.petclinic.owner.Owner",
+            "org.springframework.samples.petclinic.owner.OwnerController",
+            "org.springframework.samples.petclinic.owner.Pet",
+            "org.springframework.samples.petclinic.owner.PetController",
+            "org.springframework.samples.petclinic.owner.PetType",
+            "org.springframework.samples.petclinic.owner.PetTypeFormatter",
+            "org.springframework.samples.petclinic.owner.PetValidator",
+            "org.springframework.samples.petclinic.owner.Visit",
+            "org.springframework.samples.petclinic.owner.VisitController",
+            "org.springframework.samples.petclinic.vet.Specialty",
+            "org.springframework.samples.petclinic.vet.Vet",
+            "org.springframework.samples.petclinic.vet.VetController",
+            "org.springframework.samples.petclinic.vet.Vets",
+            "org.springframework.samples.petclinic.system.CacheConfiguration",
+            "org.springframework.samples.petclinic.system.CrashController",
+            "org.springframework.samples.petclinic.system.WebConfiguration",
+            "org.springframework.samples.petclinic.system.WelcomeController",
+        }
+
+        for expected_class in expected_app_classes:
+            if self.analysis.get_class(expected_class) is not None:
+                from nltest.utils.analysis import Reachability
+
+                visible_methods = Reachability(self.analysis).get_visible_class_methods(
+                    expected_class
+                )
+                if visible_methods:
+                    assert expected_class in extracted_classes, (
+                        f"Expected class {expected_class} with visible methods not found"
+                    )
+
+    def test_no_duplicate_classes(self) -> None:
+        """Verify each class appears exactly once in the results."""
+        snippets = self.extractor.get_class_snippets(exclude_test_dirs=True)
+        class_names = [s.declaring_class_name for s in snippets]
+        assert len(class_names) == len(set(class_names)), (
+            "Duplicate classes found in extraction results"
+        )
+
+
+class TestMethodSnippetExtractor:
+    """Tests for MethodSnippetExtractor to verify all application methods are extracted."""
+
+    @pytest.fixture(autouse=True)
+    def _inject(self, petclinic_analysis: JavaAnalysis) -> None:
+        self.analysis = petclinic_analysis
+        self.extractor = MethodSnippetExtractor(petclinic_analysis)
+
+    def test_excludes_test_directory_methods(self) -> None:
+        """Verify that methods in src/test/java are excluded when exclude_test_dirs=True."""
+        snippets = self.extractor.get_project_snippets(exclude_test_dirs=True)
+
+        for snippet in snippets:
+            java_file = self.analysis.get_java_file(snippet.containing_class_name)
+            assert "src/test/java" not in java_file, (
+                f"Test method {snippet.method_signature} in {snippet.containing_class_name} "
+                "should be excluded"
+            )
+
+    def test_inherited_methods_counted_per_class(self) -> None:
+        """Verify that inherited methods are counted for each class they appear in.
+
+        For example, BaseEntity.getId() should appear for Owner, Pet, etc.
+        """
+        snippets = self.extractor.get_project_snippets(exclude_test_dirs=True)
+
+        method_class_pairs: set[tuple[str, str]] = set()
+        for snippet in snippets:
+            pair = (snippet.method_signature, snippet.containing_class_name)
+            method_class_pairs.add(pair)
+
+        inherited_method_sig = "getId()"
+        classes_with_getId = [
+            containing_class
+            for sig, containing_class in method_class_pairs
+            if sig == inherited_method_sig
+        ]
+
+        expected_classes_with_getId = {
+            "org.springframework.samples.petclinic.model.BaseEntity",
+            "org.springframework.samples.petclinic.model.NamedEntity",
+            "org.springframework.samples.petclinic.model.Person",
+            "org.springframework.samples.petclinic.owner.Owner",
+            "org.springframework.samples.petclinic.owner.Pet",
+            "org.springframework.samples.petclinic.owner.PetType",
+            "org.springframework.samples.petclinic.owner.Visit",
+            "org.springframework.samples.petclinic.vet.Specialty",
+            "org.springframework.samples.petclinic.vet.Vet",
+        }
+
+        for expected_class in expected_classes_with_getId:
+            if self.analysis.get_class(expected_class) is not None:
+                assert expected_class in classes_with_getId, (
+                    f"Inherited method getId() should be counted for {expected_class}"
+                )
+
+    def test_class_own_methods_included(self) -> None:
+        """Verify that each class's own methods are included in its snippets."""
+        owner_class = "org.springframework.samples.petclinic.owner.Owner"
+        snippets = self.extractor.get_class_snippets(
+            owner_class, exclude_test_dirs=True
+        )
+
+        method_sigs = {s.method_signature for s in snippets}
+
+        expected_own_methods = {
+            "getAddress()",
+            "setAddress(String)",
+            "getCity()",
+            "setCity(String)",
+            "getTelephone()",
+            "setTelephone(String)",
+            "getPets()",
+            "addPet(Pet)",
+            "getPet(String)",
+            "getPet(Integer)",
+            "getPet(String, boolean)",
+            "addVisit(Integer, Visit)",
+            "toString()",
+        }
+
+        for expected in expected_own_methods:
+            assert expected in method_sigs, (
+                f"Expected method {expected} not found for Owner class"
+            )
+
+    def test_inherited_methods_included_for_subclass(self) -> None:
+        """Verify that inherited methods from parent classes are included for subclasses."""
+        owner_class = "org.springframework.samples.petclinic.owner.Owner"
+        snippets = self.extractor.get_class_snippets(
+            owner_class, exclude_test_dirs=True
+        )
+
+        method_sigs = {s.method_signature for s in snippets}
+
+        expected_inherited_methods = {
+            "getId()",
+            "setId(Integer)",
+            "isNew()",
+            "getFirstName()",
+            "setFirstName(String)",
+            "getLastName()",
+            "setLastName(String)",
+        }
+
+        for expected in expected_inherited_methods:
+            assert expected in method_sigs, (
+                f"Expected inherited method {expected} not found for Owner class"
+            )
+
+    def test_no_duplicate_methods_per_class(self) -> None:
+        """Verify that each method appears at most once per containing class."""
+        snippets = self.extractor.get_project_snippets(exclude_test_dirs=True)
+
+        method_class_pairs = [
+            (s.method_signature, s.containing_class_name) for s in snippets
+        ]
+        assert len(method_class_pairs) == len(set(method_class_pairs)), (
+            "Duplicate method-class pairs found in extraction results"
+        )
+
+    def test_method_count_reflects_inheritance(self) -> None:
+        """Verify method counts correctly reflect inheritance accumulation.
+
+        Classes further down the hierarchy should have more methods due to
+        accumulated inheritance.
+        """
+        base_entity = "org.springframework.samples.petclinic.model.BaseEntity"
+        named_entity = "org.springframework.samples.petclinic.model.NamedEntity"
+        person = "org.springframework.samples.petclinic.model.Person"
+        owner = "org.springframework.samples.petclinic.owner.Owner"
+
+        base_snippets = self.extractor.get_class_snippets(
+            base_entity, exclude_test_dirs=True
+        )
+        named_snippets = self.extractor.get_class_snippets(
+            named_entity, exclude_test_dirs=True
+        )
+        person_snippets = self.extractor.get_class_snippets(
+            person, exclude_test_dirs=True
+        )
+        owner_snippets = self.extractor.get_class_snippets(
+            owner, exclude_test_dirs=True
+        )
+
+        assert len(base_snippets) > 0, "BaseEntity should have methods"
+        assert len(named_snippets) > len(base_snippets), (
+            "NamedEntity should have more methods than BaseEntity due to inheritance"
+        )
+        assert len(person_snippets) > len(base_snippets), (
+            "Person should have more methods than BaseEntity due to inheritance"
+        )
+        assert len(owner_snippets) > len(person_snippets), (
+            "Owner should have more methods than Person due to additional own methods"
+        )

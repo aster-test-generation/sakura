@@ -24,15 +24,14 @@ def eager_analysis(petclinic_paths):
 
 def _build_grader(analysis, project_root):
     common = CommonAnalysis(analysis)
-    _, application_classes, _ = (
-        common.categorize_classes()
-    )
+    _, application_classes, test_utility_classes = common.categorize_classes()
     erroneous_files = JavaCompilation.get_erroneous_files(project_root)
     return TestGrader(
         analysis=analysis,
         project_root=project_root,
         project_erroneous_files=erroneous_files,
         application_classes=application_classes,
+        test_utility_classes=test_utility_classes,
     )
 
 

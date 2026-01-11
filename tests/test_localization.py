@@ -427,7 +427,7 @@ class TestLocalizationGrader:
 
         project_root = Path(self.config.get("project", "base_project_dir"))
         common_analysis = CommonAnalysis(self.analysis)
-        _, application_classes, _ = (
+        _, application_classes, test_utility_classes = (
             common_analysis.categorize_classes()
         )
 
@@ -436,6 +436,7 @@ class TestLocalizationGrader:
             project_root=project_root,
             decomposition_mode=DecompositionMode.GHERKIN,
             application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
         )
 
         results = grader.grade(localized_scenario, nl2_input)

@@ -345,9 +345,7 @@ class TestCompositionAgent:
 
         # Get application classes for grading
         cmn = CommonAnalysis(new_analysis)
-        _, application_classes, _ = (
-            cmn.categorize_classes()
-        )
+        _, application_classes, test_utility_classes = cmn.categorize_classes()
 
         # Gather compilation errors
         compilation_errors = JavaMavenCompilation(project_root).get_compilation_errors()
@@ -359,6 +357,7 @@ class TestCompositionAgent:
             project_root=project_root,
             project_erroneous_files=erroneous_files,
             application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
         )
 
         nl2_metadata = NL2TestMetadata(

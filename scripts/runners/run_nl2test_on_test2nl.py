@@ -1,5 +1,5 @@
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 # === CONFIGURATION CONSTANTS ===
@@ -8,31 +8,35 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Directory paths relative to ROOT_DIR
 SRC_DIR = "src"
-BASE_PROJECT_DIR = "resources/test_dataset/"
+BASE_PROJECT_DIR = "resources/datasets/"
 BASE_ANALYSIS_DIR = "resources/analysis/"
 OUTPUT_DIR = "resources/output/"
 # Log file name to write under OUTPUT_DIR
 LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 # Test2NL CSV file path (must include the filename)
-CSV_FILE = "resources/test_dataset/selected_from_subsets.csv"
+CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 0
+MAX_ENTRIES = 10
 # Note: 0 = unlimited
-DEBUG = False
+DEBUG = True
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
-EXCLUDE_TEST_DIRS = False
+EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "gcp/gemini-2.5-flash"
+LLM_MODEL = "google/gemini-2.5-flash"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
-LLM_PROVIDER: str | None = "gcp"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
+LLM_PROVIDER: str | None = (
+    "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
+)
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
-EMB_MODEL = "Qwen/Qwen3-Embedding-8B"
+EMB_MODEL = "qwen/qwen3-embedding-8b"
 # Either EMB_PROVIDER or EMB_API_URL must be non-None
-EMB_PROVIDER: str | None = "vllm"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
-EMB_API_URL: str | None = 'https://wca4j-qwen-embedding-8b-vllm-wca-core-training.apps.dmf.dipc.res.ibm.com/v1'
+EMB_PROVIDER: str | None = (
+    "openrouter"  # Supported providers: "ollama", "openrouter", "vllm", "openai", "gcp"
+)
+EMB_API_URL: str | None = None
 
 # Decomposition mode
 DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
@@ -41,9 +45,9 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 CAN_PARALLEL_TOOL_CALL: bool = True
 
 # Iteration settings on agents (trajectory length ceiling)
-SUPERVISOR_MAX_ITERS: int = 10
-LOCALIZATION_MAX_ITERS: int = 20
-COMPOSITION_MAX_ITERS: int = 20
+SUPERVISOR_MAX_ITERS: int = 8
+LOCALIZATION_MAX_ITERS: int = 16
+COMPOSITION_MAX_ITERS: int = 16
 
 # Parallelization defaults (only between projects)
 NUM_PROJ_PARALLEL = 2

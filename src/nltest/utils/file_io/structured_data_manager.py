@@ -1,11 +1,11 @@
-import json
 import csv
+import json
 from pathlib import Path
-from typing import List, TypeVar, Type, Literal, Union, Sequence, Any
+from typing import Any, List, Literal, Sequence, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
-from nltest.utils.pretty.prints import pretty_print
+from nltest.utils.pretty.color_logger import RichLog
 
 SubModel = TypeVar("SubModel", bound=BaseModel)
 
@@ -138,6 +138,9 @@ class StructuredDataManager:
             path.unlink()
             return True
         except FileNotFoundError:
+            return False
+        except Exception as exc:
+            RichLog.error(f"Failed to delete {path}: {exc}")
             return False
 
     def delete_many(self, file_names: Sequence[str]) -> None:

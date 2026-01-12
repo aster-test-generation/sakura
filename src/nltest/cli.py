@@ -1,22 +1,23 @@
-import random
 import logging
-from pathlib import Path
+import random
 from collections import deque
-from dotenv import load_dotenv
+from pathlib import Path
 
-import typer
 import ray
+import typer
+from dotenv import load_dotenv
 from typing_extensions import Annotated
 
-from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
-from nltest.utils.llm.model import Provider
-from nltest.utils.pretty.color_logger import RichLog
-from nltest.nl2test.models import NL2TestInput, NL2TestEval
+from nltest.dataset_creation.model import NL2TestDataset
+from nltest.dataset_creation.model import Test as DatasetTest
+from nltest.nl2test.models import NL2TestEval, NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.dataset_creation.model import NL2TestDataset, Test as DatasetTest
 from nltest.ray_utils.nl2test_actor import NL2TestActor
 from nltest.ray_utils.test2nl_actor import Test2NLActor
+from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
+from nltest.utils.file_io.structured_data_manager import StructuredDataManager
+from nltest.utils.llm.model import Provider
+from nltest.utils.pretty.color_logger import RichLog
 
 app = typer.Typer(
     help="ASTER-NLTest: [A]utomated Te[s][t] Cas[e] Generato[r] from Natural Language",
@@ -42,7 +43,7 @@ def main() -> None:
 
 
 def _load_nl2_inputs_by_project_from_csv(
-        test2nl_file: str | Path, max_entries: int
+    test2nl_file: str | Path, max_entries: int
 ) -> dict[str, list[NL2TestInput]]:
     """Load Test2NL CSV (explicit file path) and convert to NL2TestInput grouped by project."""
     if test2nl_file is None:
@@ -67,8 +68,7 @@ def _load_nl2_inputs_by_project_from_csv(
 
     # Limit entries if specified (applied to individual entries, not class-method pairs)
     if max_entries > 0 and total_entries > max_entries:
-        # test2nl_entries = random.sample(test2nl_entries, k=max_entries)
-        test2nl_entries = test2nl_entries[:max_entries]
+        test2nl_entries = random.sample(test2nl_entries, k=max_entries)
         RichLog.info(
             f"Processing random subset of {len(test2nl_entries)} entries "
             f"(max_entries={max_entries}, total_entries={total_entries})"
@@ -112,97 +112,97 @@ def _load_nl2_inputs_by_project_from_csv(
 
 @app.command()
 def generate_descriptions(
-        analysis_dir: Annotated[
-            str,
-            typer.Option(
-                help="Path to the directory containing all project analysis directories (each with an analysis.json).",
-                show_default=False,
-            ),
-        ],
-        output_dir: Annotated[
-            str,
-            typer.Option(
-                help="Path to the output directory where test2nl.csv and descriptions.json are saved.",
-                show_default=False,
-            ),
-        ],
-        llm_model: Annotated[
-            str,
-            typer.Option(
-                help="LLM model ID to use for generating Test2NL descriptions.",
-                show_default=False,
-            ),
-        ],
-        organized_methods_dir: Annotated[
-            str,
-            typer.Option(
-                help="Path to the directory containing per-project folders of filtered methods (each holding the filtered JSON file).",
-                show_default=False,
-            ),
-        ],
-        organized_methods_file_name: Annotated[
-            str,
-            typer.Option(
-                help="Name of the JSON file containing filtered methods for each project within organized_methods_dir.",
-                show_default=False,
-            ),
-        ] = "nl2test.json",
-        clear_dataset: Annotated[
-            bool,
-            typer.Option(
-                help="Whether to clear existing Test2NL data at the output directory before appending.",
-                show_default=False,
-            ),
-        ] = True,
-        max_methods: Annotated[
-            int,
-            typer.Option(
-                help="Maximum number of test methods to process across all projects (0 for unlimited). Note: generates 3x entries due to three abstraction levels per method.",
-                show_default=False,
-            ),
-        ] = 0,
-        num_proj_parallel: Annotated[
-            int,
-            typer.Option(
-                help="Maximum number of projects to process concurrently.",
-                show_default=True,
-            ),
-        ] = 2,
-        per_proj_concurrency: Annotated[
-            int,
-            typer.Option(
-                help="Maximum concurrent generate_descriptions_one calls per project.",
-                show_default=True,
-            ),
-        ] = 2,
-        max_inflight: Annotated[
-            int,
-            typer.Option(
-                help="Global cap on in-flight tasks across all projects (0 uses 2 * num_proj_parallel * per_proj_concurrency).",
-                show_default=True,
-            ),
-        ] = 0,
-        exclude_groups: Annotated[
-            list[str],
-            typer.Option(
-                help="Dataset group names to exclude (repeat the option to exclude multiple).",
-                show_default=True,
-            ),
-        ] = [],
-        llm_provider: Annotated[
-            str | None,
-            typer.Option(
-                help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
-                show_default=False,
-            ),
-        ] = None,
-        llm_api_url: Annotated[
-            str | None,
-            typer.Option(
-                help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
-                show_default=False,
-            ),
-        ] = None,
+    analysis_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the directory containing all project analysis directories (each with an analysis.json).",
+            show_default=False,
+        ),
+    ],
+    output_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the output directory where test2nl.csv and descriptions.json are saved.",
+            show_default=False,
+        ),
+    ],
+    llm_model: Annotated[
+        str,
+        typer.Option(
+            help="LLM model ID to use for generating Test2NL descriptions.",
+            show_default=False,
+        ),
+    ],
+    organized_methods_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the directory containing per-project folders of filtered methods (each holding the filtered JSON file).",
+            show_default=False,
+        ),
+    ],
+    organized_methods_file_name: Annotated[
+        str,
+        typer.Option(
+            help="Name of the JSON file containing filtered methods for each project within organized_methods_dir.",
+            show_default=False,
+        ),
+    ] = "nl2test.json",
+    clear_dataset: Annotated[
+        bool,
+        typer.Option(
+            help="Whether to clear existing Test2NL data at the output directory before appending.",
+            show_default=False,
+        ),
+    ] = True,
+    max_methods: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of test methods to process across all projects (0 for unlimited). Note: generates 3x entries due to three abstraction levels per method.",
+            show_default=False,
+        ),
+    ] = 0,
+    num_proj_parallel: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of projects to process concurrently.",
+            show_default=True,
+        ),
+    ] = 2,
+    per_proj_concurrency: Annotated[
+        int,
+        typer.Option(
+            help="Maximum concurrent generate_descriptions_one calls per project.",
+            show_default=True,
+        ),
+    ] = 2,
+    max_inflight: Annotated[
+        int,
+        typer.Option(
+            help="Global cap on in-flight tasks across all projects (0 uses 2 * num_proj_parallel * per_proj_concurrency).",
+            show_default=True,
+        ),
+    ] = 0,
+    exclude_groups: Annotated[
+        list[str],
+        typer.Option(
+            help="Dataset group names to exclude (repeat the option to exclude multiple).",
+            show_default=True,
+        ),
+    ] = [],
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
 ):
     """
     Generate Test2NL descriptions for methods that passed the filtering pipeline.
@@ -253,9 +253,9 @@ def generate_descriptions(
         p
         for p in sorted(methods_root.iterdir())
         if p.is_dir()
-           and p.name not in IGNORED_DIRS
-           and not p.name.startswith(".")
-           and (p / organized_methods_file_name).exists()
+        and p.name not in IGNORED_DIRS
+        and not p.name.startswith(".")
+        and (p / organized_methods_file_name).exists()
     ]
 
     if not project_dirs:
@@ -266,7 +266,7 @@ def generate_descriptions(
 
     data_manager = StructuredDataManager(output_dir)
     if clear_dataset:
-        RichLog.info(f"Clearing the existing Test2NL dataset at the output directory.")
+        RichLog.info("Clearing the existing Test2NL dataset at the output directory.")
         targets = ["descriptions.json", "test2nl.csv"]
         data_manager.delete_many(targets)
 
@@ -388,7 +388,7 @@ def generate_descriptions(
 
     def launch_projects_up_to_limit() -> None:
         while (
-                len(active_projects) < max(1, int(num_proj_parallel)) and pending_projects
+            len(active_projects) < max(1, int(num_proj_parallel)) and pending_projects
         ):
             project_name = pending_projects.popleft()
             sep = "=" * 60
@@ -440,9 +440,9 @@ def generate_descriptions(
             if allowed <= 0:
                 break
             while (
-                    allowed > 0
-                    and len(state["inflight"]) < per_proj_cap
-                    and state["pending"]
+                allowed > 0
+                and len(state["inflight"]) < per_proj_cap
+                and state["pending"]
             ):
                 payload = state["pending"].popleft()
                 fut = state["actor"].generate_descriptions_one.remote(payload)
@@ -536,167 +536,167 @@ def generate_descriptions(
 
 @app.command()
 def run_nl2test(
-        base_project_dir: Annotated[
-            str,
-            typer.Option(
-                help="Path to the base directory containing all project directories.",
-                show_default=False,
-            ),
-        ],
-        base_analysis_dir: Annotated[
-            str,
-            typer.Option(
-                help="Path to the base directory containing per-project analysis.json directories.",
-                show_default=False,
-            ),
-        ],
-        output_dir: Annotated[
-            str,
-            typer.Option(
-                help="Path to the output directory for saving NL2Test generation results.",
-                show_default=False,
-            ),
-        ],
-        reset_evaluation_results: Annotated[
-            bool,
-            typer.Option(
-                help="Whether to remove existing NL2Test evaluation results before running.",
-                show_default=True,
-            ),
-        ] = True,
-        use_stored_index: Annotated[
-            bool,
-            typer.Option(
-                help="Reuse cached FAISS indexes when available instead of rebuilding them.",
-                show_default=True,
-            ),
-        ] = True,
-        test2nl_file: Annotated[
-            str,
-            typer.Option(
-                help="Path to the Test2NL CSV file to use as inputs (e.g., /path/to/test2nl.csv).",
-                show_default=False,
-            ),
-        ] = None,
-        llm_model: Annotated[
-            str,
-            typer.Option(
-                help="LLM model to use for NL2Test generation.",
-                show_default=False,
-            ),
-        ] = "mistralai/devstral-small",
-        can_parallel_tool: Annotated[
-            bool,
-            typer.Option(
-                help="Whether the LLM client may issue parallel tool calls.",
-                show_default=True,
-            ),
-        ] = True,
-        emb_model: Annotated[
-            str,
-            typer.Option(
-                help="Embedding model to use for vector search.",
-                show_default=False,
-            ),
-        ] = "nomic-embed-text:v1.5",
-        decomposition_mode: Annotated[
-            str,
-            typer.Option(
-                help="Decomposition mode (must be 'gherkin' for now).",
-                show_default=True,
-            ),
-        ] = "gherkin",
-        supervisor_max_iters: Annotated[
-            int,
-            typer.Option(
-                help="Maximum iterations for the supervisor agent.",
-                show_default=True,
-            ),
-        ] = 10,
-        localization_max_iters: Annotated[
-            int,
-            typer.Option(
-                help="Maximum iterations for the localization agent.",
-                show_default=True,
-            ),
-        ] = 40,
-        composition_max_iters: Annotated[
-            int,
-            typer.Option(
-                help="Maximum iterations for the composition agent.",
-                show_default=True,
-            ),
-        ] = 30,
-        num_proj_parallel: Annotated[
-            int,
-            typer.Option(
-                help="Maximum number of projects to process concurrently.",
-                show_default=True,
-            ),
-        ] = 2,
-        max_inflight: Annotated[
-            int,
-            typer.Option(
-                help="Global cap on in-flight project tasks (0 uses num_proj_parallel).",
-                show_default=True,
-            ),
-        ] = 0,
-        max_entries: Annotated[
-            int,
-            typer.Option(
-                help="Maximum number of Test2NL entries to process (0 for all).",
-                show_default=False,
-            ),
-        ] = 0,
-        llm_provider: Annotated[
-            str | None,
-            typer.Option(
-                help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
-                show_default=False,
-            ),
-        ] = None,
-        llm_api_url: Annotated[
-            str | None,
-            typer.Option(
-                help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
-                show_default=False,
-            ),
-        ] = None,
-        emb_provider: Annotated[
-            str | None,
-            typer.Option(
-                help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter, gcp. Either this or --emb-api-url must be provided.",
-                show_default=False,
-            ),
-        ] = None,
-        emb_api_url: Annotated[
-            str | None,
-            typer.Option(
-                help="Base URL for the Embedding API if using an HTTP endpoint.",
-                show_default=False,
-            ),
-        ] = None,
-        debug: Annotated[
-            bool,
-            typer.Option(
-                help="Enable debug logging for more verbose output.",
-                show_default=True,
-            ),
-        ] = False,
-        log_file: Annotated[
-            str | None,
-            typer.Option(
-                help="Optional log file name to write under --output-dir.",
-                show_default=False,
-            ),
-        ] = None,
-        exclude_test_dirs: Annotated[
-            bool,
-            typer.Option(
-                help="Skip files under Maven test directories when preparing indexes.",
-                show_default=True,
-            ),
-        ] = False,
+    base_project_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the base directory containing all project directories.",
+            show_default=False,
+        ),
+    ],
+    base_analysis_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the base directory containing per-project analysis.json directories.",
+            show_default=False,
+        ),
+    ],
+    output_dir: Annotated[
+        str,
+        typer.Option(
+            help="Path to the output directory for saving NL2Test generation results.",
+            show_default=False,
+        ),
+    ],
+    reset_evaluation_results: Annotated[
+        bool,
+        typer.Option(
+            help="Whether to remove existing NL2Test evaluation results before running.",
+            show_default=True,
+        ),
+    ] = True,
+    use_stored_index: Annotated[
+        bool,
+        typer.Option(
+            help="Reuse cached FAISS indexes when available instead of rebuilding them.",
+            show_default=True,
+        ),
+    ] = True,
+    test2nl_file: Annotated[
+        str,
+        typer.Option(
+            help="Path to the Test2NL CSV file to use as inputs (e.g., /path/to/test2nl.csv).",
+            show_default=False,
+        ),
+    ] = None,
+    llm_model: Annotated[
+        str,
+        typer.Option(
+            help="LLM model to use for NL2Test generation.",
+            show_default=False,
+        ),
+    ] = "mistralai/devstral-small",
+    can_parallel_tool: Annotated[
+        bool,
+        typer.Option(
+            help="Whether the LLM client may issue parallel tool calls.",
+            show_default=True,
+        ),
+    ] = True,
+    emb_model: Annotated[
+        str,
+        typer.Option(
+            help="Embedding model to use for vector search.",
+            show_default=False,
+        ),
+    ] = "nomic-embed-text:v1.5",
+    decomposition_mode: Annotated[
+        str,
+        typer.Option(
+            help="Decomposition mode (must be 'gherkin' for now).",
+            show_default=True,
+        ),
+    ] = "gherkin",
+    supervisor_max_iters: Annotated[
+        int,
+        typer.Option(
+            help="Maximum iterations for the supervisor agent.",
+            show_default=True,
+        ),
+    ] = 10,
+    localization_max_iters: Annotated[
+        int,
+        typer.Option(
+            help="Maximum iterations for the localization agent.",
+            show_default=True,
+        ),
+    ] = 40,
+    composition_max_iters: Annotated[
+        int,
+        typer.Option(
+            help="Maximum iterations for the composition agent.",
+            show_default=True,
+        ),
+    ] = 30,
+    num_proj_parallel: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of projects to process concurrently.",
+            show_default=True,
+        ),
+    ] = 2,
+    max_inflight: Annotated[
+        int,
+        typer.Option(
+            help="Global cap on in-flight project tasks (0 uses num_proj_parallel).",
+            show_default=True,
+        ),
+    ] = 0,
+    max_entries: Annotated[
+        int,
+        typer.Option(
+            help="Maximum number of Test2NL entries to process (0 for all).",
+            show_default=False,
+        ),
+    ] = 0,
+    llm_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="LLM provider (guides default API URL). One of: openrouter, vllm, ollama, openai, gcp. Either this or --llm-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    llm_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="OpenAI-compatible base URL for the LLM API (must support the OpenAI API format).",
+            show_default=False,
+        ),
+    ] = None,
+    emb_provider: Annotated[
+        str | None,
+        typer.Option(
+            help="Embedding provider (guides default API URL). One of: vllm, ollama, openai, openrouter, gcp. Either this or --emb-api-url must be provided.",
+            show_default=False,
+        ),
+    ] = None,
+    emb_api_url: Annotated[
+        str | None,
+        typer.Option(
+            help="Base URL for the Embedding API if using an HTTP endpoint.",
+            show_default=False,
+        ),
+    ] = None,
+    debug: Annotated[
+        bool,
+        typer.Option(
+            help="Enable debug logging for more verbose output.",
+            show_default=True,
+        ),
+    ] = False,
+    log_file: Annotated[
+        str | None,
+        typer.Option(
+            help="Optional log file name to write under --output-dir.",
+            show_default=False,
+        ),
+    ] = None,
+    exclude_test_dirs: Annotated[
+        bool,
+        typer.Option(
+            help="Skip files under Maven test directories when preparing indexes.",
+            show_default=True,
+        ),
+    ] = False,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())

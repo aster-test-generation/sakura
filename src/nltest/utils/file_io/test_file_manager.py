@@ -5,12 +5,12 @@ import re
 import tempfile
 import time
 from pathlib import Path
-from typing import List, Tuple, Annotated, Optional, Union
+from typing import TYPE_CHECKING, Annotated, List, Optional, Tuple, Union
 
 from pydantic import BaseModel
-from typing import TYPE_CHECKING
 
 from nltest.utils.exceptions.tool_exceptions import FileDeletionError
+from nltest.utils.pretty.color_logger import RichLog
 
 if TYPE_CHECKING:
     from nltest.nl2test.models import NL2TestInput
@@ -22,9 +22,7 @@ class TestFileInfo(BaseModel):
     Container for single generated test file.
     """
 
-    qualified_class_name: Annotated[
-        str, "The qualified class name of the test"
-    ]
+    qualified_class_name: Annotated[str, "The qualified class name of the test"]
     test_code: Annotated[str, "The test code of the test"] = ""
     id: Annotated[Optional[int], "The ID from NL2TestInput"] = -1
 
@@ -320,6 +318,7 @@ class TestFileManager:
         """
         file_path = self.target_path(test_info, encode_class_name=encode_class_name)
         if not file_path.exists():
+            RichLog.info(f"File does not exist, skipping delete: {file_path}")
             return True if strict else False
 
         attempts = 0
@@ -330,8 +329,9 @@ class TestFileManager:
                 file_path.unlink()
             except FileNotFoundError:
                 break
-            except Exception as exc:  
+            except Exception as exc:
                 last_error = exc
+                RichLog.error(f"Failed to delete {file_path}: {exc}")
                 if attempts >= max_attempts:
                     break
                 time.sleep(max(retry_delay, 0.0))

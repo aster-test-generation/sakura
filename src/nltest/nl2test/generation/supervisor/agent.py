@@ -8,7 +8,9 @@ from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.core.message_redactor import MessageRedactor
-from nltest.nl2test.generation.common.compilation_execution import CompilationExecutionMixin
+from nltest.nl2test.generation.common.compilation_execution import (
+    CompilationExecutionMixin,
+)
 from nltest.nl2test.generation.composition.orchestrators.base import (
     BaseCompositionOrchestrator,
 )
@@ -16,6 +18,7 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
     BaseLocalizationOrchestrator,
 )
 from nltest.nl2test.models import AgentState
+from nltest.utils.constants import TEST_DIR
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
@@ -36,19 +39,20 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
     _CODE_REDACTED = "(redacted since new code generated)"
 
     def __init__(
-            self,
-            *,
-            llm: LLMClient,
-            tools: List[BaseTool],
-            system_message: str,
-            nl_description: str,
-            project_root: Path | str | None = None,
-            allow_duplicate_tools: List[BaseTool] | None = None,
-            max_iters: int = 10,
-            localization_agent: BaseLocalizationOrchestrator | None = None,
-            composition_agent: BaseCompositionOrchestrator | None = None,
-            parallelizable: bool = True,
-            **kwargs,
+        self,
+        *,
+        llm: LLMClient,
+        tools: List[BaseTool],
+        system_message: str,
+        nl_description: str,
+        project_root: Path | str | None = None,
+        test_base_dir: str | Path | None = None,
+        allow_duplicate_tools: List[BaseTool] | None = None,
+        max_iters: int = 10,
+        localization_agent: BaseLocalizationOrchestrator | None = None,
+        composition_agent: BaseCompositionOrchestrator | None = None,
+        parallelizable: bool = True,
+        **kwargs,
     ) -> None:
         super().__init__(
             llm=llm,
@@ -61,6 +65,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         )
         self._nl_description = nl_description
         self.project_root = Path(project_root) if project_root is not None else None
+        self.test_base_dir = test_base_dir
         self.localization_agent = localization_agent
         self.composition_agent = composition_agent
         # Track last known states for reuse between calls
@@ -68,15 +73,15 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         self.composition_state: Optional[AgentState] = None
 
     def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         # No CLDK normalization needed - supervisor doesn't use static analysis tools
         return tool_name, raw_args
 
     def _clean_agent(
-            self,
-            state: Optional[AgentState],
-            orchestrator: BaseLocalizationOrchestrator | BaseCompositionOrchestrator,
+        self,
+        state: Optional[AgentState],
+        orchestrator: BaseLocalizationOrchestrator | BaseCompositionOrchestrator,
     ) -> Optional[AgentState]:
         """Reset sub-agent state for fresh invocation."""
         orchestrator.reset_agent()
@@ -87,8 +92,13 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         # TODO: Extend message cleaning to maybe use summaries of past history
         return cleaned
 
+    def _get_test_file_manager(self) -> TestFileManager:
+        test_base_dir = self.test_base_dir or TEST_DIR
+        project_root = self.project_root or Path(".")
+        return TestFileManager(project_root, test_base_dir=test_base_dir)
+
     def process_tool_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
         handler_map = {
@@ -149,7 +159,11 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_call_localization_agent_output(
-            self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
+        self,
+        tool_call: ToolCall,
+        result: Dict[str, Any],
+        state: AgentState,
+        outputs: List,
     ) -> None:
         tool_name = tool_call["name"]
         instructions = result.get("instructions")
@@ -230,9 +244,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
                 updated_state.localized_scenario.enforce_candidate_limits()
             state.localized_scenario = updated_state.localized_scenario
 
-        payload: Dict[str, Any] = {
-            "comments": str(updated_state.final_comments or "")
-        }
+        payload: Dict[str, Any] = {"comments": str(updated_state.final_comments or "")}
         if updated_state.atomic_blocks is not None:
             payload["blocks"] = updated_state.atomic_blocks.model_dump()
         elif updated_state.localized_scenario is not None:
@@ -248,7 +260,11 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_call_composition_agent_output(
-            self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
+        self,
+        tool_call: ToolCall,
+        result: Dict[str, Any],
+        state: AgentState,
+        outputs: List,
     ) -> None:
         tool_name = tool_call["name"]
         instructions = result.get("instructions")
@@ -353,7 +369,11 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_view_test_code_output(
-            self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
+        self,
+        tool_call: ToolCall,
+        result: Dict[str, Any],
+        state: AgentState,
+        outputs: List,
     ) -> None:
         tool_name = tool_call["name"]
         if not state.class_name:
@@ -376,11 +396,9 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         end_line = result.get("end_line")
 
         qcn = (
-            f"{state.package}.{state.class_name}"
-            if state.package
-            else state.class_name
+            f"{state.package}.{state.class_name}" if state.package else state.class_name
         )
-        fm = TestFileManager(self.project_root or Path("."))
+        fm = self._get_test_file_manager()
         info = TestFileInfo(qualified_class_name=qcn)
         try:
             raw_code = fm.load(info, encode_class_name=False)
@@ -422,9 +440,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
             return
 
         applied_end_line = min(end_line, total_lines)
-        sliced_source = "\n".join(
-            code_lines[start_line - 1:applied_end_line]
-        )
+        sliced_source = "\n".join(code_lines[start_line - 1 : applied_end_line])
         payload = {
             "qualified_class_name": qcn,
             "source": sliced_source,
@@ -441,13 +457,13 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_compile_and_execute_test_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         """Process compile_and_execute_test using shared mixin."""
         self.process_compile_and_execute(tool_call, state, outputs)
 
     def _process_finalize_tool_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         state.final_comments = (
             str(result) if result is not None else (state.final_comments or "")
@@ -465,7 +481,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         setattr(self, "_end_now", True)
 
     def process_generic_tool_output(
-            self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
     ) -> None:
         outputs.append(
             ToolMessage(

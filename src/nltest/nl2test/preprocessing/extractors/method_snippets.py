@@ -4,7 +4,7 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.models import MethodSnippet
 from nltest.utils.analysis import CommonAnalysis, Reachability
-from nltest.utils.constants import TEST_DIR
+from nltest.utils.constants import is_test_source_path
 
 
 class MethodSnippetExtractor:
@@ -96,8 +96,8 @@ class MethodSnippetExtractor:
         if not self.analysis.get_class(qualified_class_name):
             return []
 
-        if exclude_test_dirs and TEST_DIR in self.analysis.get_java_file(
-            qualified_class_name
+        if exclude_test_dirs and is_test_source_path(
+            self.analysis.get_java_file(qualified_class_name)
         ):
             return []
 

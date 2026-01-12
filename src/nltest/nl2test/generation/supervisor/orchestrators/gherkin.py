@@ -1,4 +1,5 @@
 from __future__ import annotations
+from pathlib import Path
 from typing import Tuple
 
 from cldk.analysis.java import JavaAnalysis
@@ -12,14 +13,15 @@ from .base import BaseSupervisorOrchestrator
 
 class GherkinSupervisorOrchestrator(BaseSupervisorOrchestrator):
     def __init__(
-            self,
-            *,
-            analysis: JavaAnalysis,
-            method_searcher: MethodSearcher,
-            class_searcher: ClassSearcher,
-            nl2_input: NL2TestInput,
-            base_project_dir: str,
-            usage_tracker: UsageTracker | None = None,
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+        base_project_dir: str,
+        test_base_dir: str | Path | None = None,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         super().__init__(
             analysis=analysis,
@@ -28,6 +30,7 @@ class GherkinSupervisorOrchestrator(BaseSupervisorOrchestrator):
             nl2_input=nl2_input,
             decomposition_mode=DecompositionMode.GHERKIN,
             base_project_dir=base_project_dir,
+            test_base_dir=test_base_dir,
             usage_tracker=usage_tracker,
         )
 

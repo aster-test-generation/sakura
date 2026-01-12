@@ -4,7 +4,7 @@ from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.models import MethodSnippet, ClassSnippet
 from nltest.utils.analysis.java_analyzer import CommonAnalysis, Reachability
-from nltest.utils.constants import TEST_DIR
+from nltest.utils.constants import is_test_source_path
 
 
 class ClassSnippetExtractor:
@@ -15,13 +15,21 @@ class ClassSnippetExtractor:
         """Get the non-test classes with visible methods."""
         class_snippets: List[ClassSnippet] = []
         for qualified_class_name in self.analysis.get_classes():
-            if exclude_test_dirs and TEST_DIR in self.analysis.get_java_file(qualified_class_name):
+            if exclude_test_dirs and is_test_source_path(
+                self.analysis.get_java_file(qualified_class_name)
+            ):
                 continue
 
-            testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
-            if CommonAnalysis(self.analysis).is_test_class(qualified_class_name, testing_frameworks):
+            testing_frameworks = CommonAnalysis(
+                self.analysis
+            ).get_testing_frameworks_for_class(qualified_class_name)
+            if CommonAnalysis(self.analysis).is_test_class(
+                qualified_class_name, testing_frameworks
+            ):
                 continue
-            if not Reachability(self.analysis).get_visible_class_methods(qualified_class_name):
+            if not Reachability(self.analysis).get_visible_class_methods(
+                qualified_class_name
+            ):
                 continue
             class_snippets.append(
                 ClassSnippet(
@@ -31,6 +39,8 @@ class ClassSnippetExtractor:
             )
         return class_snippets
 
-    def get_project_snippets(self, exclude_test_dirs: bool = False) -> List[ClassSnippet]:
+    def get_project_snippets(
+        self, exclude_test_dirs: bool = False
+    ) -> List[ClassSnippet]:
         class_snippets: List[ClassSnippet] = self.get_class_snippets(exclude_test_dirs)
         return class_snippets

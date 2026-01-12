@@ -4,6 +4,7 @@ Common Constants
 
 import sys
 from enum import Enum
+from pathlib import Path
 from typing import Dict
 
 MAVEN_CMD = "mvn.cmd" if sys.platform == "win32" else "mvn"
@@ -25,6 +26,18 @@ HAMSTER_MODEL_DIR = "resources/hamster_models"
 BUCKETED_TESTS_DIR = "resources/bucketed_tests"
 
 TEST_DIR = "src/test/java"
+
+
+def is_test_source_path(java_file: str | Path) -> bool:
+    if not java_file:
+        return False
+    normalized = str(java_file).replace("\\", "/")
+    parts = [part for part in normalized.split("/") if part]
+    for index in range(len(parts) - 2):
+        if parts[index : index + 3] == ["src", "test", "java"]:
+            return True
+    return False
+
 
 # directories for storing prompts and telemetry io
 DEBUG_DIR = "nl2test_log"

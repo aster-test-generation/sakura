@@ -29,6 +29,7 @@ class BaseCompositionOrchestrator:
         class_searcher: ClassSearcher,
         nl2_input: NL2TestInput,
         project_root: str,
+        test_base_dir: str | Path | None = None,
         decomposition_mode: DecompositionMode,
         usage_tracker: UsageTracker | None = None,
     ) -> None:
@@ -66,6 +67,7 @@ class BaseCompositionOrchestrator:
 
         self.nl2_input = nl2_input
         self.decomposition_mode = decomposition_mode
+        self.test_base_dir = test_base_dir
 
         chat_prompt, system_prompt = self._init_prompts()
         self.chat_prompt = chat_prompt
@@ -96,6 +98,7 @@ class BaseCompositionOrchestrator:
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
             project_root=Path(project_root or "."),
+            test_base_dir=test_base_dir,
             max_iters=max_iters,
             parallelizable=parallelizable,
         )
@@ -121,5 +124,7 @@ class BaseCompositionOrchestrator:
         self.agent.reset_agent()
 
     # Shared signature implemented by subclasses. Intentionally untyped for different decomposition modes
-    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None):
+    def assign_task(
+        self, blocks, *, instructions: str, agent_state: AgentState | None = None
+    ):
         raise NotImplementedError

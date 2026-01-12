@@ -36,6 +36,7 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
+from nltest.utils.constants import TEST_DIR
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
@@ -85,6 +86,28 @@ class Pipeline:
             application_classes=_application_classes,
             test_utility_classes=_test_utility_classes,
         )
+
+    @staticmethod
+    def _module_root_from_java_file(java_file: str | None) -> Path | None:
+        """Return the module root path if a source root is detected."""
+        if not java_file:
+            return None
+        normalized = str(java_file).replace("\\", "/")
+        for marker in ("/src/main/java", "/src/test/java"):
+            if marker in normalized:
+                prefix = normalized.split(marker, 1)[0]
+                if prefix.endswith("/"):
+                    prefix = prefix[:-1]
+                return Path(prefix) if prefix else Path(".")
+        return None
+
+    def _resolve_test_base_dir(self, nl2_input: NL2TestInput) -> Path:
+        """Resolve the per-input test root based on analyzed source paths."""
+        java_file = self.analysis.get_java_file(nl2_input.qualified_class_name)
+        module_root = self._module_root_from_java_file(java_file)
+        if module_root is None:
+            return Path(TEST_DIR)
+        return module_root / TEST_DIR
 
     def run_preprocessing(
         self,
@@ -319,6 +342,8 @@ class Pipeline:
             usage_tracker=run_usage_tracker,
         )
 
+        test_base_dir = self._resolve_test_base_dir(nl2_input)
+
         # Prepare blocks for supervisor orchestrator
         if self.decomposition_mode == DecompositionMode.GHERKIN:
             if isinstance(blocks, Scenario):
@@ -331,6 +356,7 @@ class Pipeline:
                 class_searcher=self.class_searcher,
                 nl2_input=nl2_input,
                 base_project_dir=str(self.project_root),
+                test_base_dir=test_base_dir,
                 usage_tracker=run_usage_tracker,
             )
         else:
@@ -349,6 +375,7 @@ class Pipeline:
                 class_searcher=self.class_searcher,
                 nl2_input=nl2_input,
                 base_project_dir=str(self.project_root),
+                test_base_dir=test_base_dir,
                 usage_tracker=run_usage_tracker,
             )
 
@@ -419,7 +446,7 @@ class Pipeline:
             )
 
             # Load and attach test code, then delete the file
-            fm = TestFileManager(self.project_root)
+            fm = TestFileManager(self.project_root, test_base_dir=test_base_dir)
             info = TestFileInfo(qualified_class_name=qualified_test_class_name)
             try:
                 code = fm.load(info, encode_class_name=False)

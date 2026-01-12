@@ -9,9 +9,12 @@ from langchain_core.tools import BaseTool
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.core.message_redactor import MessageRedactor
 from nltest.nl2test.generation.common.cldk_normalizer import CLDKArgNormalizer
-from nltest.nl2test.generation.common.compilation_execution import CompilationExecutionMixin
+from nltest.nl2test.generation.common.compilation_execution import (
+    CompilationExecutionMixin,
+)
 from nltest.nl2test.models import AgentState
 from nltest.utils.llm import LLMClient, FormatValidator
+from nltest.utils.constants import TEST_DIR
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.tool_messages import format_tool_error, format_tool_ok
@@ -29,15 +32,16 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
     _CODE_REDACTED = "(redacted since new code generated)"
 
     def __init__(
-            self,
-            *,
-            llm: LLMClient,
-            tools: List[BaseTool],
-            allow_duplicate_tools: List[BaseTool] | None = None,
-            system_message: str,
-            project_root: Path,
-            max_iters: int = 30,
-            parallelizable: bool = True,
+        self,
+        *,
+        llm: LLMClient,
+        tools: List[BaseTool],
+        allow_duplicate_tools: List[BaseTool] | None = None,
+        system_message: str,
+        project_root: Path,
+        test_base_dir: str | Path | None = None,
+        max_iters: int = 30,
+        parallelizable: bool = True,
     ):
         super().__init__(
             llm=llm,
@@ -48,6 +52,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
             max_iters=max_iters,
         )
         self.project_root = Path(project_root)
+        self.test_base_dir = test_base_dir
 
     @staticmethod
     def _cleanup_empty_dirs(base_dir: Path, start_dir: Path) -> None:
@@ -65,15 +70,19 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
                 break
             current = current.parent
 
+    def _get_test_file_manager(self) -> TestFileManager:
+        test_base_dir = self.test_base_dir or TEST_DIR
+        return TestFileManager(self.project_root, test_base_dir=test_base_dir)
+
     def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         """Normalize tool arguments for CLDK compatibility."""
         updated_args = CLDKArgNormalizer.normalize_args(tool_name, raw_args)
         return tool_name, updated_args
 
     def process_tool_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         """Process tool output and mutate state when appropriate."""
         tool_name = tool_call.get("name")
@@ -143,7 +152,11 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_generate_test_code_tool(
-            self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
+        self,
+        tool_call: ToolCall,
+        result: Dict[str, Any],
+        state: AgentState,
+        outputs: List,
     ) -> None:
         test_code = result.get("test_code")
         if isinstance(test_code, str):
@@ -151,16 +164,22 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         qualified_class_name = result.get("qualified_class_name")
         method_signature = result.get("method_signature")
 
-        fm = TestFileManager(self.project_root)
+        fm = self._get_test_file_manager()
 
         old_info: Optional[TestFileInfo] = None
         old_path: Optional[Path] = None
         if state.package and state.class_name:
-            old_qcn = f"{state.package}.{state.class_name}" if state.package else state.class_name
+            old_qcn = (
+                f"{state.package}.{state.class_name}"
+                if state.package
+                else state.class_name
+            )
             old_info = TestFileInfo(qualified_class_name=old_qcn)
             old_path = fm.target_path(old_info, encode_class_name=False)
 
-        new_info = TestFileInfo(qualified_class_name=qualified_class_name, test_code=test_code)
+        new_info = TestFileInfo(
+            qualified_class_name=qualified_class_name, test_code=test_code
+        )
         target_path = fm.target_path(new_info, encode_class_name=False)
 
         if old_path is not None and old_path == target_path:
@@ -203,10 +222,16 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         else:
             state.package = None
             state.class_name = saved_qcn
-        state.method_signature = method_signature.strip() if method_signature.strip() else None
+        state.method_signature = (
+            method_signature.strip() if method_signature.strip() else None
+        )
 
     def _process_view_test_code_output(
-            self, tool_call: ToolCall, result: Dict[str, Any], state: AgentState, outputs: List
+        self,
+        tool_call: ToolCall,
+        result: Dict[str, Any],
+        state: AgentState,
+        outputs: List,
     ) -> None:
         tool_name = tool_call["name"]
         if not state.class_name:
@@ -225,8 +250,10 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         start_line = result.get("start_line")
         end_line = result.get("end_line")
 
-        qcn = f"{state.package}.{state.class_name}" if state.package else state.class_name
-        fm = TestFileManager(self.project_root)
+        qcn = (
+            f"{state.package}.{state.class_name}" if state.package else state.class_name
+        )
+        fm = self._get_test_file_manager()
         info = TestFileInfo(qualified_class_name=qcn)
         try:
             raw_code = fm.load(info, encode_class_name=False)
@@ -268,9 +295,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
             return
 
         applied_end_line = min(end_line, total_lines)
-        sliced_source = "\n".join(
-            code_lines[start_line - 1:applied_end_line]
-        )
+        sliced_source = "\n".join(code_lines[start_line - 1 : applied_end_line])
         payload = {
             "qualified_class_name": qcn,
             "source": sliced_source,
@@ -287,13 +312,13 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_compile_and_execute_test_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         """Process compile_and_execute_test using shared mixin."""
         self.process_compile_and_execute(tool_call, state, outputs)
 
     def _process_finalize_tool_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         comments = result
         state.final_comments = str(comments)
@@ -308,7 +333,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         setattr(self, "_end_now", True)
 
     def _process_modify_scenario_comment_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         tool_name = tool_call["name"]
         step_id: Optional[int] = None
@@ -357,7 +382,10 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
                 outputs.append(
                     ToolMessage(
                         content=format_tool_ok(
-                            {"message": f"Updated note for block order {order}.", "order": order}
+                            {
+                                "message": f"Updated note for block order {order}.",
+                                "order": order,
+                            }
                         ),
                         tool_call_id=tool_call["id"],
                     )
@@ -432,7 +460,10 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
                 outputs.append(
                     ToolMessage(
                         content=format_tool_ok(
-                            {"message": f"Updated comment for step id {step_id}.", "step_id": step_id}
+                            {
+                                "message": f"Updated comment for step id {step_id}.",
+                                "step_id": step_id,
+                            }
                         ),
                         tool_call_id=tool_call["id"],
                     )
@@ -470,7 +501,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         )
 
     def _process_generic_tool_output(
-            self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
     ) -> None:
         outputs.append(
             ToolMessage(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from cldk.analysis.java import JavaAnalysis
@@ -40,6 +41,7 @@ class BaseSupervisorOrchestrator:
         nl2_input: NL2TestInput,
         decomposition_mode: DecompositionMode,
         base_project_dir: str,
+        test_base_dir: str | Path | None = None,
         usage_tracker: UsageTracker | None = None,
     ) -> None:
         # Only GHERKIN is supported for Supervisor orchestration right now.
@@ -54,6 +56,7 @@ class BaseSupervisorOrchestrator:
         self.nl2_input = nl2_input
         self.decomposition_mode = decomposition_mode
         self.base_project_dir = base_project_dir
+        self.test_base_dir = test_base_dir
 
         self.usage_tracker = usage_tracker or UsageTracker()
 
@@ -88,9 +91,10 @@ class BaseSupervisorOrchestrator:
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
                 project_root=base_project_dir or "",
+                test_base_dir=test_base_dir,
                 usage_tracker=self.usage_tracker,
             )
-        else:  
+        else:
             tool_builder = GrammaticalSupervisorTools(
                 llm=decision_llm,
                 project_root=base_project_dir,
@@ -109,6 +113,7 @@ class BaseSupervisorOrchestrator:
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
                 project_root=base_project_dir or "",
+                test_base_dir=test_base_dir,
                 usage_tracker=self.usage_tracker,
             )
 
@@ -139,6 +144,7 @@ class BaseSupervisorOrchestrator:
             system_message=system_message,
             nl_description=self.nl2_input.description if self.nl2_input else "",
             project_root=base_project_dir,
+            test_base_dir=test_base_dir,
             max_iters=max_iters,
             localization_agent=localization_agent,
             composition_agent=composition_agent,

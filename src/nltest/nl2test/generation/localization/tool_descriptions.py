@@ -98,5 +98,5 @@ Returns:
 """
 
 FINALIZE_LOCALIZED_SCENARIO_DESC = """
-End localization by returning the final localized scenario with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly.
+End localization by returning the final localized scenario with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly. Include the required comments field; if nothing notable, write "No issues.".
 """

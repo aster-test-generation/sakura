@@ -1,21 +1,80 @@
-[TASK]
-Given a natural-language test description for a Java repository, produce one Java test file implementing that test.
+You are an AI coding agent operating inside a **Java project repository**. Your job is to generate **exactly one new, compilable Java test source file** from the test description below. The full codebase is available in the working directory.
 
-[DESCRIPTION]
+You MUST do this **in one shot**:
+- Do NOT ask questions.
+- Do NOT request clarification or confirmation.
+- Make reasonable assumptions that maximize the chance of compilation and alignment with the repository's existing conventions.
+
+---
+
+## Test Description (the only requirements you should implement)
+
 {{ test_description }}
 
-[GUIDELINES]
-- Use the framework specified in the description; otherwise use JUnit 5.
-- Use mocking only if explicitly requested; default to Mockito if no mocking framework is specified.
-- If the description mentions an assertion library (e.g., AssertJ), use it; otherwise use the built-in assertions.
-- First identify the correct classes/methods involved, then implement the test accordingly.
-- Use only classes that actually exist in the repository.
-- Ensure that the test compiles without errors.
+---
 
-[OUTPUT]
-Produce exactly one Java source file that:
-- Defines exactly one public test class containing exactly one @Test method.
-- May include helper fields/methods (not annotated as tests).
-- Contains all required imports.
-- Adds no new production classes and no external dependencies beyond the test/mocking frameworks.
-- Does not modify any other repository files.
+## Non-Negotiable Constraints
+
+- The test must be generated inside a new file, within a new test class, with only one test method annotated.
+- Operate ONLY within the repository's existing directory structure.
+- The generated test MUST compile against the existing codebase.
+- Do NOT modify any existing files.
+- Do NOT add production code.
+- Do NOT add external dependencies beyond test/mocking frameworks already present in the repository.
+- Do NOT use the network or internet search.
+- Do NOT attempt to inspect existing tests. Assume other tests do not exist.
+- Avoid flaky behavior: no sleeps, no timing assumptions, no randomness unless explicitly required (and then make it deterministic).
+
+---
+
+## Repository-Aware Workflow (follow in order)
+
+1) Locate the code under test
+- Identify the class(es) and method(s) referenced by the description.
+- Find their source files and read signatures, visibility, overloads, and dependencies.
+- If the description is ambiguous, choose the most likely target based on naming and existing tests.
+
+2) Detect the project's test stack and available dependencies
+- Determine build tool and test framework by inspecting repository files:
+  - Maven: pom.xml
+  - Gradle: build.gradle / build.gradle.kts
+
+Framework rules:
+- If the description explicitly names a framework/library, use it (if it exists in the repo). Otherwise, default to whatever framework or libraries are available in the dependencies.
+- Only use mocking if it is explicitly requested OR required to construct the class under test / isolate external dependencies.
+
+3) Design a minimal, deterministic test that matches the description
+- Implement the described behavior as directly as possible.
+- Prefer real objects over mocks when feasible and simple.
+- If the description implies multiple scenarios, implement them inside the single test method (do not create additional @Test methods).
+
+4) Implement exactly one Java test file
+- Create exactly ONE public test class.
+- Create exactly ONE annotated test method (from the chosen framework).
+- You may add helper fields/methods/private inner helpers, but:
+  - Do NOT add additional annotated test methods.
+  - Avoid lifecycle annotations unless truly necessary (e.g., @BeforeEach), and ensure they do not introduce extra tests.
+- Ensure the package declaration matches the class under test's package (mirror structure).
+- Use explicit imports (no wildcard imports).
+
+5) Place the file correctly
+- The file MUST belong under src/test/java/... and mirror the package of the class under test.
+- The public class name MUST match the filename.
+
+6) Self-check before finalizing output
+- Verify:
+  - Correct package statement
+  - Correct imports
+  - All referenced symbols exist in the repository
+  - No missing constructors / wrong overloads
+  - Assertions compile and match the chosen assertion library
+  - No external dependencies introduced
+
+---
+
+## Output Rules (critical)
+
+- Output EXACTLY ONE Java source file's contents.
+- Output ONLY code (no explanations, no markdown fences, no multiple files).
+
+Your output must be a complete compilable Java source file.

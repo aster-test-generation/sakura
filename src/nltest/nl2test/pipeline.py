@@ -36,7 +36,6 @@ from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
-from nltest.utils.constants import TEST_DIR
 from nltest.utils.evaluation import TestGrader
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
@@ -66,9 +65,9 @@ class Pipeline:
         self.class_searcher: Optional[ClassSearcher] = None
 
         # Initialize TestGrader with current analysis and application classes
-        _common_analysis = CommonAnalysis(self.analysis)
+        self.common = CommonAnalysis(self.analysis)
         _, _application_classes, _test_utility_classes = (
-            _common_analysis.categorize_classes()
+            self.common.categorize_classes()
         )
         self.application_classes = _application_classes
         self.test_utility_classes = _test_utility_classes
@@ -86,31 +85,6 @@ class Pipeline:
             application_classes=_application_classes,
             test_utility_classes=_test_utility_classes,
         )
-
-    @staticmethod
-    def _module_root_from_java_file(java_file: str | None) -> Path | None:
-        """Return the module root path if a source root is detected."""
-        if not java_file:
-            return None
-        normalized = str(java_file).replace("\\", "/")
-        for marker in ("/src/main/java", "/src/test/java"):
-            if marker in normalized:
-                prefix = normalized.split(marker, 1)[0]
-                if prefix.endswith("/"):
-                    prefix = prefix[:-1]
-                return Path(prefix) if prefix else Path(".")
-        return None
-
-    def _resolve_module_root(self, nl2_input: NL2TestInput) -> Path | None:
-        """Resolve the module root based on analyzed source paths."""
-        java_file = self.analysis.get_java_file(nl2_input.qualified_class_name)
-        return self._module_root_from_java_file(java_file)
-
-    def _resolve_test_base_dir(self, module_root: Path | None) -> Path:
-        """Resolve the per-input test root based on the module root."""
-        if module_root is None:
-            return Path(TEST_DIR)
-        return module_root / TEST_DIR
 
     def run_preprocessing(
         self,
@@ -331,6 +305,7 @@ class Pipeline:
             analysis_json_path=self.analysis_dir,
             eager=eager,
         )
+        self.common = CommonAnalysis(self.analysis)
         return self.analysis
 
     def run_nl2test(self, nl2_input: NL2TestInput) -> NL2TestEval:
@@ -345,8 +320,8 @@ class Pipeline:
             usage_tracker=run_usage_tracker,
         )
 
-        module_root = self._resolve_module_root(nl2_input)
-        test_base_dir = self._resolve_test_base_dir(module_root)
+        module_root = self.common.resolve_module_root(nl2_input.qualified_class_name)
+        test_base_dir = self.common.resolve_test_base_dir(module_root)
         resolved_module_root = module_root or self.project_root
 
         # Prepare blocks for supervisor orchestrator

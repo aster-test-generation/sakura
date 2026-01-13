@@ -10,6 +10,7 @@ import ray
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
+from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.pretty.color_logger import RichLog
 
 from reaster.coverage.jacoco_test_watcher import TEST_CODE
@@ -29,7 +30,7 @@ JACOCO_TEST_FOLDER = "target/jacoco-tests"
 @ray.remote
 def _collect_coverage_task(project_root: Path, source_root: str, test: Tuple[str, str]):
     class_name = test[0].replace("$", "\$")
-    method_name = test[1].split('(')[0].strip()
+    method_name = test[1].split("(")[0].strip()
     jacococli_command = (
         f"java -jar {JACOCO_CLI_JAR} report "
         f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
@@ -57,13 +58,13 @@ def _collect_coverage_task(project_root: Path, source_root: str, test: Tuple[str
 
 class IndividualTestCoverage:
     def __init__(
-            self,
-            project_root: Path,
-            target_module: str = None,
-            build_type: str = "maven",
-            source_root: str = "src/main/java",
-            test_root: str = "src/test/java",
-            junit_version: int = 5,
+        self,
+        project_root: Path,
+        target_module: str = None,
+        build_type: str = "maven",
+        source_root: str = "src/main/java",
+        test_root: str = "src/test/java",
+        junit_version: int = 5,
     ):
         self.project_root = project_root
         self.target_module = (
@@ -79,6 +80,34 @@ class IndividualTestCoverage:
         self.junit_version = junit_version  # TODO: handle JUnit 4
         self.package_root = self.__get_root_package()
         self.source_root = source_root
+
+    @classmethod
+    def from_common_analysis(
+        cls,
+        common: CommonAnalysis,
+        *,
+        project_root: Path,
+        qualified_class_names: List[str],
+        module_root: Path | None = None,
+        build_type: str = "maven",
+        source_root: str = "src/main/java",
+        junit_version: int = 5,
+    ) -> "IndividualTestCoverage":
+        resolved_module_root = module_root
+        if resolved_module_root is None:
+            for class_name in qualified_class_names:
+                resolved_module_root = common.resolve_module_root(class_name)
+                if resolved_module_root is not None:
+                    break
+        resolved_project_root = resolved_module_root or project_root
+        test_base_dir = common.resolve_test_base_dir(resolved_module_root)
+        return cls(
+            project_root=resolved_project_root,
+            build_type=build_type,
+            source_root=source_root,
+            test_root=str(test_base_dir),
+            junit_version=junit_version,
+        )
 
     def __get_root_package(self) -> str:
         """
@@ -165,7 +194,7 @@ class IndividualTestCoverage:
         return coverage
 
     def __collect_coverage(
-            self, executed_tests: List[Tuple[str, str]]
+        self, executed_tests: List[Tuple[str, str]]
     ) -> Tuple[Dict, List]:
         coverage = {}
         failing_exec_files = []
@@ -199,11 +228,13 @@ class IndividualTestCoverage:
         #                 ]
         for test in executed_tests:
             class_name = test[0]
-            method_name = test[1].split('(')[0]
-            jacococli_command = (f"java -jar {JACOCO_CLI_JAR} report "
-                                 f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
-                                 f"--classfiles target/classes --sourcefiles {self.source_root} --html "
-                                 f"target{os.sep}{class_name}__{method_name}__report")
+            method_name = test[1].split("(")[0]
+            jacococli_command = (
+                f"java -jar {JACOCO_CLI_JAR} report "
+                f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
+                f"--classfiles target/classes --sourcefiles {self.source_root} --html "
+                f"target{os.sep}{class_name}__{method_name}__report"
+            )
             try:
                 RichLog.info(f"Running command: {jacococli_command}")
                 response = subprocess.run(
@@ -215,18 +246,26 @@ class IndividualTestCoverage:
                     stderr=subprocess.STDOUT,
                 )
                 coverage_details = self.extract_all_covered_lines(
-                    self.project_root.joinpath("target", f"{class_name}__{method_name}__report")
+                    self.project_root.joinpath(
+                        "target", f"{class_name}__{method_name}__report"
+                    )
                 )
                 if test[0] in coverage:
-                    coverage[test[0]].append({
-                        "test_class_name": test[0],
-                        "test_name": method_name,
-                        "coverage_details": coverage_details})
+                    coverage[test[0]].append(
+                        {
+                            "test_class_name": test[0],
+                            "test_name": method_name,
+                            "coverage_details": coverage_details,
+                        }
+                    )
                 else:
-                    coverage[test[0]] = [{
-                        "test_class_name": test[0],
-                        "test_name": method_name,
-                        "coverage_details": coverage_details}]
+                    coverage[test[0]] = [
+                        {
+                            "test_class_name": test[0],
+                            "test_name": method_name,
+                            "coverage_details": coverage_details,
+                        }
+                    ]
             except subprocess.CalledProcessError as e:
                 RichLog.error(f'Error running command "{e.cmd}"')
                 failing_exec_files.append(f"{class_name}__{method_name}.exec")
@@ -249,7 +288,6 @@ class IndividualTestCoverage:
 
     @staticmethod
     def __extract_branch_lines_from_html(soup):
-
         pre_block = soup.find("pre", class_="source")
         if not pre_block:
             return [], []
@@ -312,7 +350,7 @@ class IndividualTestCoverage:
             # Parse coverage summary table
             if Path(html_path.replace(".java.html", ".html")).exists():
                 with open(
-                        html_path.replace(".java.html", ".html"), "r", encoding="utf-8"
+                    html_path.replace(".java.html", ".html"), "r", encoding="utf-8"
                 ) as f:
                     soup = BeautifulSoup(f, "html.parser")
                 covered_methods, uncovered_methods = (
@@ -380,11 +418,11 @@ class IndividualTestCoverage:
         return covered_methods, missed_methods
 
     def __run_tests(
-            self,
-            tests_to_run: list,
-            modified_build_file: Path,
-            is_run_all_test: bool = True,
-            clean_jacoco_test_dir: bool = True,
+        self,
+        tests_to_run: list,
+        modified_build_file: Path,
+        is_run_all_test: bool = True,
+        clean_jacoco_test_dir: bool = True,
     ):
         if clean_jacoco_test_dir:
             shutil.rmtree(
@@ -402,12 +440,17 @@ class IndividualTestCoverage:
             for test_class in test_by_class:
                 if len(test_by_class[test_class]) == 1:
                     target_tests += (
-                            test_class + "#" + test_by_class[test_class][0].split('(')[0] + ","
+                        test_class
+                        + "#"
+                        + test_by_class[test_class][0].split("(")[0]
+                        + ","
                     )
                 else:
-                    target_tests += test_class + "#" + test_by_class[test_class][0].split('(')[0]
+                    target_tests += (
+                        test_class + "#" + test_by_class[test_class][0].split("(")[0]
+                    )
                     for i in range(1, len(test_by_class[test_class])):
-                        target_tests += "+" + test_by_class[test_class][i].split('(')[0]
+                        target_tests += "+" + test_by_class[test_class][i].split("(")[0]
                     target_tests += ","
             if target_tests.endswith(","):
                 target_tests = target_tests[:-1]
@@ -448,7 +491,7 @@ class IndividualTestCoverage:
         return executed_test_methods
 
     def __add_helper_class_modify_tests(
-            self, all_test_classes: List[Tuple[str, str]]
+        self, all_test_classes: List[Tuple[str, str]]
     ) -> tuple[dict[str, str], Path]:
         """
         Adds helper class and modified tests
@@ -466,12 +509,12 @@ class IndividualTestCoverage:
         )
         # Writing the helper class
         with open(
-                self.project_root.joinpath(
-                    self.test_root,
-                    self.package_root.replace(".", os.sep),
-                    f"{TEST_WATCHER_CLASS_NAME}.java",
-                ),
-                "w",
+            self.project_root.joinpath(
+                self.test_root,
+                self.package_root.replace(".", os.sep),
+                f"{TEST_WATCHER_CLASS_NAME}.java",
+            ),
+            "w",
         ) as f:
             content = TEST_CODE.replace("<package_name>", self.package_root)
             f.write(content)
@@ -479,6 +522,9 @@ class IndividualTestCoverage:
         # Modify each test class
         for test_classes in all_test_classes:
             test_class = test_classes[1]
+            if not test_class:
+                RichLog.warn(f"Skipping missing test class path for {test_classes[0]}")
+                continue
             with open(test_class, "r") as f:
                 test_class_content = f.read()
             original_test_file[test_class] = test_class_content
@@ -503,7 +549,7 @@ class IndividualTestCoverage:
                 test_class_content = self.__add_extends(
                     test_class_content, f"@RunWith({TEST_WATCHER_CLASS_NAME}.class)"
                 )
-            test_class_content = test_class_content.replace('@Disabled', '//@Disabled')
+            test_class_content = test_class_content.replace("@Disabled", "//@Disabled")
             with open(test_class, "w") as f:
                 f.write(test_class_content)
         return original_test_file, self.project_root.joinpath(
@@ -571,9 +617,9 @@ class IndividualTestCoverage:
                         else f"@ExtendWith({existing_classes[0]})"
                     )
                     code = (
-                            code[: extend_match.start()]
-                            + updated
-                            + code[extend_match.end():]
+                        code[: extend_match.start()]
+                        + updated
+                        + code[extend_match.end() :]
                     )
                 return code
             else:
@@ -589,7 +635,7 @@ class IndividualTestCoverage:
 
     @staticmethod
     def __insert_annotation(
-            code: str, annotation: str, indent: str, position: int
+        code: str, annotation: str, indent: str, position: int
     ) -> str:
         return code[:position] + f"{indent}{annotation}\n" + code[position:]
 
@@ -643,7 +689,7 @@ class IndividualTestCoverage:
 
     @staticmethod
     def __resolve_class_paths(
-            test_root: str, qualified_names: List[str]
+        test_root: str, qualified_names: List[str]
     ) -> List[Tuple[str, str]]:
         """
         Given a list of qualified names, return list of:
@@ -660,7 +706,7 @@ class IndividualTestCoverage:
 
     @staticmethod
     def __get_test_class_info(
-            test_root: str, qualified_names: Union[None, List[str]] = None
+        test_root: str, qualified_names: Union[None, List[str]] = None
     ) -> list[Tuple[str, str]]:
         """
         Given a list of qualified test class name and their path

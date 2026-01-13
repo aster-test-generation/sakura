@@ -28,6 +28,7 @@ from nltest.utils.models import (
 )
 from nltest.utils.analysis import CommonAnalysis
 from nltest.utils.coverage.individual_test_coverage import IndividualTestCoverage
+from nltest.utils.pretty.color_logger import RichLog
 
 
 class TestGrader:
@@ -311,9 +312,28 @@ class TestGrader:
             (pred_class_name, pred_method_sig.split("(")[0]),
             (gt_class_name, gt_method_sig.split("(")[0]),
         ]
-        all_coverage_details = IndividualTestCoverage(
-            project_root=self.project_root,
-        ).generate(tests_to_run=tests_to_run)
+        module_root = self.common.resolve_module_root(
+            gt_class_name
+        ) or self.common.resolve_module_root(pred_class_name)
+        try:
+            coverage_runner = IndividualTestCoverage.from_common_analysis(
+                self.common,
+                project_root=self.project_root,
+                qualified_class_names=[gt_class_name, pred_class_name],
+                module_root=module_root,
+            )
+            all_coverage_details = coverage_runner.generate(tests_to_run=tests_to_run)
+        except Exception as exc:
+            if module_root is None:
+                RichLog.warn(
+                    "Coverage evaluation failed because module root could not be resolved "
+                    f"for {gt_class_name} or {pred_class_name}: {exc}"
+                )
+            else:
+                RichLog.warn(
+                    f"Coverage evaluation failed for {pred_class_name}::{pred_method_sig}: {exc}"
+                )
+            return None
 
         gt_coverage_details: Dict[str, Dict[str, Any]] = {}
         pred_coverage_details: Dict[str, Dict[str, Any]] = {}

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
@@ -131,6 +133,7 @@ def test_test_grader_petclinic(petclinic_paths):
         assert metric == pytest.approx(1.0)
 
     cov = output.coverage_eval
+    assert cov is not None
     assert 0.0 <= cov.class_coverage <= 1.0
     assert 0.0 <= cov.method_coverage <= 1.0
     assert 0.0 <= cov.line_coverage <= 1.0
@@ -157,3 +160,56 @@ def test_test_grader_petclinic(petclinic_paths):
     ]
     for metric in mismatched_metrics:
         assert metric < 1.0
+
+
+class TestCoverageMultiModule:
+    def test_multimodule_coverage_eval(self):
+        tests_dir = Path(__file__).resolve().parent
+        repo_root = tests_dir.parent
+        datasets_dir = repo_root / "resources" / "datasets"
+        project_name = "commons-numbers"
+        project_root = datasets_dir / project_name
+        assert project_root.is_dir()
+
+        output_dir = tests_dir / "output" / project_name
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        analysis = CLDK(language="java").analysis(
+            project_path=project_root,
+            analysis_backend_path=None,
+            analysis_level=AnalysisLevel.symbol_table,
+            analysis_json_path=output_dir,
+            eager=False,
+        )
+
+        test_class = "org.apache.commons.numbers.core.AdditionTest"
+        test_method = "testIsZero()"
+
+        assert analysis.get_class(test_class) is not None
+        assert analysis.get_method(test_class, test_method) is not None
+
+        common = CommonAnalysis(analysis)
+        module_root = common.resolve_module_root(test_class)
+        assert module_root is not None
+        assert module_root.name == "commons-numbers-core"
+
+        _, application_classes, test_utility_classes = common.categorize_classes()
+        grader = TestGrader(
+            analysis=analysis,
+            project_root=project_root,
+            project_erroneous_files=[],
+            application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
+        )
+
+        coverage = grader.grade_coverage(
+            pred_method_sig=test_method,
+            pred_class_name=test_class,
+            gt_method_sig=test_method,
+            gt_class_name=test_class,
+        )
+        assert coverage is not None
+        assert coverage.class_coverage == pytest.approx(1.0)
+        assert coverage.method_coverage == pytest.approx(1.0)
+        assert coverage.line_coverage == pytest.approx(1.0)
+        assert coverage.branch_coverage == pytest.approx(1.0)

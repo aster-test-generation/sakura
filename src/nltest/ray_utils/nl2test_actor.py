@@ -15,6 +15,7 @@ from nltest.nl2test import Pipeline as NL2TestPipeline
 from nltest.nl2test.models import NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
 from nltest.utils.config import init_config
+from nltest.utils.formatting import ErrorFormatter
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
 
@@ -114,6 +115,35 @@ class NL2TestActor:
             analysis_dir=self.analysis_dir,
             decomposition_mode=self.decomposition_mode,
         )
+
+        self.compilation_failed = False
+        self.compilation_failure_payload: dict[str, Any] | None = None
+
+        compilation_errors = self.pipeline.run_project_compilation()
+        if compilation_errors:
+            files_with_errors = sorted({error.file for error in compilation_errors})
+            error_details = [
+                ErrorFormatter.format_compilation_error(error)
+                for error in compilation_errors
+            ]
+            self.compilation_failed = True
+            self.compilation_failure_payload = {
+                "success": False,
+                "project_compilation_failed": True,
+                "error_type": "ProjectCompilationError",
+                "error": (
+                    "Project failed to compile before NL2Test run; skipping project."
+                ),
+                "files_with_errors": files_with_errors,
+                "error_details": error_details,
+                "project_name": self.project_name,
+            }
+            RichLog.error(
+                f"[NL2TestActor:{self.project_name}] Project failed to compile before NL2Test run. "
+                f"Files with errors: {files_with_errors}"
+            )
+            return
+
         self.pipeline.run_preprocessing(exclude_test_dirs=exclude_test_dirs)
 
     def run_nl2test_one(self, input_payload: dict[str, Any]) -> dict[str, Any]:
@@ -122,6 +152,9 @@ class NL2TestActor:
         Returns a dict with either {success: True, result: NL2TestEval}
         or {success: False, error: str, error_type: str, traceback: str, input: dict}.
         """
+        if self.compilation_failed and self.compilation_failure_payload:
+            return self.compilation_failure_payload
+
         try:
             nl2_input = NL2TestInput(**input_payload)
             result = self.pipeline.run_nl2test(nl2_input)
@@ -150,8 +183,15 @@ class NL2TestActor:
         Ray handles parallelism across actors; this method keeps per-actor
         behavior simple and logs basic progress.
         """
+        if self.compilation_failed and self.compilation_failure_payload:
+            return [self.compilation_failure_payload]
+
         results: list[dict[str, Any]] = []
-        for payload in tqdm(input_payloads, desc=f"Running NL2TestActor:{self.project_name}", unit="task"):
+        for payload in tqdm(
+            input_payloads,
+            desc=f"Running NL2TestActor:{self.project_name}",
+            unit="task",
+        ):
             RichLog.debug(
                 f"[NL2TestActor:{self.project_name}] Running "
                 f"{payload.get('qualified_class_name')}::{payload.get('method_signature')} "

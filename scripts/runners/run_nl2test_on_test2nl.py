@@ -17,7 +17,7 @@ LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 10
+MAX_ENTRIES = 4
 # Note: 0 = unlimited
 DEBUG = True
 USE_STORED_INDEX = True

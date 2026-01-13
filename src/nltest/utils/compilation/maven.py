@@ -1,23 +1,23 @@
 import re
 from pathlib import Path
-from typing import List, Optional, Tuple, Set
-
-from pydantic import BaseModel, Field
+from typing import List, Optional, Set, Tuple
 
 from javabuild.maven_build import MavenBuild
+from pydantic import BaseModel, Field
 
 from nltest.utils.analysis import CommonAnalysis
 
 ErrorKey = Tuple[str, int, Optional[int], str]
 
 
-# TODO: Make a class that is simpler for streamlined LLM output
 class CompilationError(BaseModel):
     file: str
     line: int
     column: Optional[int] = None
     message: str
-    details: List[str] = Field(default_factory=list, description="Compiler diagnostic details")
+    details: List[str] = Field(
+        default_factory=list, description="Compiler diagnostic details"
+    )
 
 
 class JavaMavenCompilation(MavenBuild):
@@ -58,7 +58,9 @@ class JavaMavenCompilation(MavenBuild):
             if header:
                 self._flush_current(current, errors, seen_keys)
                 raw_path = header.group("path").strip()
-                normalized_file = CommonAnalysis.normalize_path_in_project(raw_path, self.project_root)
+                normalized_file = CommonAnalysis.normalize_path_in_project(
+                    raw_path, self.project_root
+                )
                 column = header.group("col")
                 current = CompilationError(
                     file=normalized_file,
@@ -106,7 +108,7 @@ class JavaMavenCompilation(MavenBuild):
     def _sanitize_detail(cls, line: str) -> str:
         """Remove prefixes that Maven adds before the actual diagnostic text."""
         if line.startswith("[ERROR]"):
-            line = line[len("[ERROR]"):].lstrip()
+            line = line[len("[ERROR]") :].lstrip()
         if line.strip() == "^":  # Keep leading spaces if line marks code
             return "^"
         return line.lstrip()
@@ -117,10 +119,10 @@ class JavaMavenCompilation(MavenBuild):
 
     @classmethod
     def _flush_current(
-            cls,
-            current: Optional[CompilationError],
-            errors: List[CompilationError],
-            seen_keys: Set[ErrorKey],
+        cls,
+        current: Optional[CompilationError],
+        errors: List[CompilationError],
+        seen_keys: Set[ErrorKey],
     ) -> None:
         if not current:
             return

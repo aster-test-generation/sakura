@@ -86,6 +86,10 @@ class Pipeline:
             test_utility_classes=_test_utility_classes,
         )
 
+    def run_project_compilation(self) -> List[CompilationError]:
+        """Compile the project before test generation."""
+        return JavaMavenCompilation(self.project_root).get_compilation_errors()
+
     def run_preprocessing(
         self,
         *,

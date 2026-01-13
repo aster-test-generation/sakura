@@ -905,6 +905,37 @@ def run_nl2test(
                 launch_projects_up_to_limit()
                 continue
 
+            if results and isinstance(results, list):
+                compilation_failure = next(
+                    (
+                        item
+                        for item in results
+                        if isinstance(item, dict)
+                        and item.get("project_compilation_failed")
+                    ),
+                    None,
+                )
+                if compilation_failure:
+                    error_message = compilation_failure.get("error")
+                    RichLog.error(
+                        f"[{project_name}] {error_message or 'Project failed baseline compilation; skipping project.'}"
+                    )
+                    files_with_errors = (
+                        compilation_failure.get("files_with_errors") or []
+                    )
+                    if files_with_errors:
+                        RichLog.error(
+                            f"[{project_name}] Files with compilation errors: {files_with_errors}"
+                        )
+                    error_details = compilation_failure.get("error_details") or []
+                    if error_details:
+                        RichLog.error(
+                            f"[{project_name}] Compilation error details:\n"
+                            + "\n".join(error_details)
+                        )
+                    launch_projects_up_to_limit()
+                    continue
+
             # Persist and aggregate results
             project_success = 0
             project_failed = 0

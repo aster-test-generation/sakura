@@ -42,6 +42,7 @@ class BaseSupervisorOrchestrator:
         decomposition_mode: DecompositionMode,
         base_project_dir: str,
         test_base_dir: str | Path | None = None,
+        module_root: str | Path | None = None,
         usage_tracker: UsageTracker | None = None,
     ) -> None:
         # Only GHERKIN is supported for Supervisor orchestration right now.
@@ -57,6 +58,7 @@ class BaseSupervisorOrchestrator:
         self.decomposition_mode = decomposition_mode
         self.base_project_dir = base_project_dir
         self.test_base_dir = test_base_dir
+        self.module_root = module_root
 
         self.usage_tracker = usage_tracker or UsageTracker()
 
@@ -92,6 +94,7 @@ class BaseSupervisorOrchestrator:
                 nl2_input=nl2_input,
                 project_root=base_project_dir or "",
                 test_base_dir=test_base_dir,
+                module_root=module_root,
                 usage_tracker=self.usage_tracker,
             )
         else:
@@ -114,6 +117,7 @@ class BaseSupervisorOrchestrator:
                 nl2_input=nl2_input,
                 project_root=base_project_dir or "",
                 test_base_dir=test_base_dir,
+                module_root=module_root,
                 usage_tracker=self.usage_tracker,
             )
 

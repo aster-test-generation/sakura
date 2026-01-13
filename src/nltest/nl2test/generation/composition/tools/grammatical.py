@@ -33,6 +33,7 @@ class GrammaticalCompositionTools(BaseCompositionTools):
         class_searcher: ClassSearcher,
         structured_llm: LLMClient,
         project_root: Union[str, Path],
+        module_root: Union[str, Path] | None = None,
         nl2_input: NL2TestInput,
     ):
         super().__init__(
@@ -41,6 +42,7 @@ class GrammaticalCompositionTools(BaseCompositionTools):
             class_searcher=class_searcher,
             structured_llm=structured_llm,
             project_root=str(project_root),
+            module_root=module_root,
             nl2_input=nl2_input,
         )
         self.tools.append(self._make_modify_scenario_comment_tool())
@@ -58,5 +60,5 @@ class GrammaticalCompositionTools(BaseCompositionTools):
             args_schema=ModifyAtomicBlockNoteArgs,
             returns_input_keys=["order", "note"],
             processing_note="Agent locates block by order in state.atomic_blocks "
-                           "and updates its notes field",
+            "and updates its notes field",
         )

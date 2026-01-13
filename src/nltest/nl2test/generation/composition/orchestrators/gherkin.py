@@ -22,6 +22,7 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
         nl2_input: NL2TestInput,
         project_root: str,
         test_base_dir: str | Path | None = None,
+        module_root: str | Path | None = None,
         usage_tracker: UsageTracker | None = None,
     ) -> None:
         super().__init__(
@@ -31,6 +32,7 @@ class GherkinCompositionOrchestrator(BaseCompositionOrchestrator):
             nl2_input=nl2_input,
             project_root=project_root,
             test_base_dir=test_base_dir,
+            module_root=module_root,
             decomposition_mode=DecompositionMode.GHERKIN,
             usage_tracker=usage_tracker,
         )

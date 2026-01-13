@@ -101,10 +101,13 @@ class Pipeline:
                 return Path(prefix) if prefix else Path(".")
         return None
 
-    def _resolve_test_base_dir(self, nl2_input: NL2TestInput) -> Path:
-        """Resolve the per-input test root based on analyzed source paths."""
+    def _resolve_module_root(self, nl2_input: NL2TestInput) -> Path | None:
+        """Resolve the module root based on analyzed source paths."""
         java_file = self.analysis.get_java_file(nl2_input.qualified_class_name)
-        module_root = self._module_root_from_java_file(java_file)
+        return self._module_root_from_java_file(java_file)
+
+    def _resolve_test_base_dir(self, module_root: Path | None) -> Path:
+        """Resolve the per-input test root based on the module root."""
         if module_root is None:
             return Path(TEST_DIR)
         return module_root / TEST_DIR
@@ -342,7 +345,9 @@ class Pipeline:
             usage_tracker=run_usage_tracker,
         )
 
-        test_base_dir = self._resolve_test_base_dir(nl2_input)
+        module_root = self._resolve_module_root(nl2_input)
+        test_base_dir = self._resolve_test_base_dir(module_root)
+        resolved_module_root = module_root or self.project_root
 
         # Prepare blocks for supervisor orchestrator
         if self.decomposition_mode == DecompositionMode.GHERKIN:
@@ -357,6 +362,7 @@ class Pipeline:
                 nl2_input=nl2_input,
                 base_project_dir=str(self.project_root),
                 test_base_dir=test_base_dir,
+                module_root=resolved_module_root,
                 usage_tracker=run_usage_tracker,
             )
         else:
@@ -376,6 +382,7 @@ class Pipeline:
                 nl2_input=nl2_input,
                 base_project_dir=str(self.project_root),
                 test_base_dir=test_base_dir,
+                module_root=resolved_module_root,
                 usage_tracker=run_usage_tracker,
             )
 

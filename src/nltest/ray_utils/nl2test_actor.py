@@ -18,6 +18,7 @@ from nltest.utils.config import init_config
 from nltest.utils.formatting import ErrorFormatter
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
+from nltest.utils.vcs.git_utils import GitUtilities
 
 
 @ray.remote
@@ -146,6 +147,17 @@ class NL2TestActor:
 
         self.pipeline.run_preprocessing(exclude_test_dirs=exclude_test_dirs)
 
+    def _ensure_clean_submodule(self) -> None:
+        if GitUtilities.has_working_tree_changes(self.project_root):
+            RichLog.warn(
+                f"[NL2TestActor:{self.project_name}] Local changes detected in {self.project_root}; resetting."
+            )
+            GitUtilities.reset_submodule(self.project_root)
+        if GitUtilities.has_working_tree_changes(self.project_root):
+            raise RuntimeError(
+                f"[NL2TestActor:{self.project_name}] Submodule {self.project_root} still has local changes after reset."
+            )
+
     def run_nl2test_one(self, input_payload: dict[str, Any]) -> dict[str, Any]:
         """Run NL2Test for a single input payload.
 
@@ -154,6 +166,8 @@ class NL2TestActor:
         """
         if self.compilation_failed and self.compilation_failure_payload:
             return self.compilation_failure_payload
+
+        self._ensure_clean_submodule()
 
         try:
             nl2_input = NL2TestInput(**input_payload)

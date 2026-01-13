@@ -68,7 +68,7 @@ Returns:
 """
 
 INHERITED_LIBRARY_CLASSES_DESC = """
-Identify all inherited types for a class by traversing its inheritance chain in order.
+Identify inherited non-application types ("library" types) for a class by traversing its inheritance chain in order.
 """
 
 FINALIZE_ATOMIC_BLOCKS_DESC_OLD = """

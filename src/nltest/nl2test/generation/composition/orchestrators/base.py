@@ -30,6 +30,7 @@ class BaseCompositionOrchestrator:
         nl2_input: NL2TestInput,
         project_root: str,
         test_base_dir: str | Path | None = None,
+        module_root: str | Path | None = None,
         decomposition_mode: DecompositionMode,
         usage_tracker: UsageTracker | None = None,
     ) -> None:
@@ -43,6 +44,10 @@ class BaseCompositionOrchestrator:
             usage_tracker=self.usage_tracker,
         )
 
+        resolved_module_root = (
+            Path(module_root) if module_root is not None else Path(project_root)
+        )
+
         tool_builder = (
             GherkinCompositionTools(
                 analysis=analysis,
@@ -50,6 +55,7 @@ class BaseCompositionOrchestrator:
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
                 project_root=project_root,
+                module_root=resolved_module_root,
                 nl2_input=nl2_input,
             )
             if decomposition_mode == DecompositionMode.GHERKIN
@@ -59,6 +65,7 @@ class BaseCompositionOrchestrator:
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
                 project_root=project_root,
+                module_root=resolved_module_root,
                 nl2_input=nl2_input,
             )
         )

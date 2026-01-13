@@ -40,22 +40,23 @@ Get the fully qualified import names for a class's compilation unit.
 """
 
 GET_MAVEN_DEPENDENCIES_DESC_OLD = """
-List direct Maven dependencies declared in the project's root pom.xml.
+List Maven dependencies declared in the module pom.xml and inherited parent pom.xml files.
 Use when:
   Detecting external libraries to align imports, mocks, or test utilities.
 Notes:
-  - Reads only the top-level <dependencies> section of the root POM.
-  - Raises an error if the root pom.xml is missing.
-  - Returns an empty list if the POM exists but cannot be parsed.
+  - Reads only the top-level <dependencies> section of each POM.
+  - Follows parent pom.xml references when available.
+  - Raises an error if the module pom.xml is missing.
+  - Returns an empty list if the module POM exists but cannot be parsed.
 Limitations:
-  Does not include transitive dependencies, managed versions, profiles, or parent inheritance.
+  Does not include transitive dependencies, dependencyManagement-only entries, profiles, or remote parents.
 Returns:
   List of dicts with: { group_id, artifact_id }.
   Or a structured error dict on failure.
 """
 
 GET_MAVEN_DEPENDENCIES_DESC = """
-List direct group and artifact ID of Maven dependencies declared in the project's root pom.xml.
+List direct group and artifact ID of Maven dependencies declared in the module pom.xml and inherited parent pom.xml files.
 """
 
 GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC_OLD = """

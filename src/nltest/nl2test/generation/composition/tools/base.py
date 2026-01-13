@@ -62,6 +62,7 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         class_searcher: ClassSearcher,
         structured_llm: LLMClient,
         project_root: str,
+        module_root: str | Path | None = None,
         nl2_input: NL2TestInput,
     ) -> None:
         CommonJavaAnalysisTools.__init__(self, analysis=analysis)
@@ -71,6 +72,9 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         self.method_searcher = method_searcher
 
         self.project_root: Path = Path(project_root)
+        self.module_root: Path = (
+            Path(module_root) if module_root is not None else self.project_root
+        )
         self.nl2_input: NL2TestInput = nl2_input
 
         self.tools: List[BaseTool] = [
@@ -242,7 +246,10 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         """Get Maven dependencies from pom.xml."""
 
         def _get_maven_dependencies() -> List[Dict[str, str]]:
-            deps = PomProcessor.identify_dependencies(self.project_root)
+            deps = PomProcessor.identify_dependencies(
+                module_root=self.module_root,
+                parent_roots=[self.project_root],
+            )
             return [
                 {"group_id": d.group_id, "artifact_id": d.artifact_id} for d in deps
             ]

@@ -18,6 +18,7 @@ from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.utils.llm.model import Provider
 from nltest.utils.pretty.color_logger import RichLog
+from nltest.utils.vcs.git_utils import GitUtilities
 
 app = typer.Typer(
     help="ASTER-NLTest: [A]utomated Te[s][t] Cas[e] Generato[r] from Natural Language",
@@ -746,6 +747,9 @@ def run_nl2test(
     if not output_dir.exists():
         # Ensure output directory exists so results can be written.
         output_dir.mkdir(parents=True, exist_ok=True)
+
+    RichLog.info(f"Resetting submodules under {base_project_dir}")
+    GitUtilities.reset_submodules_in_dir(base_project_dir)
 
     # Load and prepare NL2Test inputs grouped by project
     nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(

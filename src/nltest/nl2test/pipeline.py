@@ -50,12 +50,16 @@ class Pipeline:
         *,
         project_root: Path,
         analysis_dir: Path,
+        grading_analysis_dir: Path | None = None,
         decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
     ):
         self.analysis = analysis
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
         self.analysis_dir = Path(analysis_dir)
+        self.grading_analysis_dir = (
+            Path(grading_analysis_dir) if grading_analysis_dir else self.analysis_dir
+        )
 
         self.method_indexer = MethodIndexer(analysis)
         self.class_indexer = ClassIndexer(analysis)
@@ -301,22 +305,25 @@ class Pipeline:
         )
 
     def regenerate_analysis(self, *, eager: bool = True) -> JavaAnalysis:
-        """Regenerate the Java analysis to include newly created test classes."""
-        self.analysis = CLDK(language="java").analysis(
+        """Regenerate analysis for grading newly created test classes."""
+        self.grading_analysis_dir.mkdir(parents=True, exist_ok=True)
+        analysis = CLDK(language="java").analysis(
             project_path=self.project_root,
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=self.analysis_dir,
+            analysis_json_path=self.grading_analysis_dir,
             eager=eager,
         )
-        self.common = CommonAnalysis(self.analysis)
-        return self.analysis
+        return analysis
 
     def run_nl2test(self, nl2_input: NL2TestInput) -> NL2TestEval:
         if not self.method_searcher or not self.class_searcher:
             raise Exception("Preprocessing not completed...")
 
         run_usage_tracker = UsageTracker()
+
+        self.test_grader.set_analysis(self.analysis)
+        self.localization_grader.set_analysis(self.analysis)
 
         # Decompose into initial blocks
         blocks = self.decompose_natural_language(

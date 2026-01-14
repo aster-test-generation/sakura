@@ -54,6 +54,7 @@ class NL2TestActor:
         self.project_root = Path(base_project_dir) / project_name
         self.analysis_dir = Path(base_analysis_dir) / project_name
         self.project_output_dir = Path(output_dir) / project_name
+        self.grading_analysis_dir = self.project_output_dir / "temp_analysis"
 
         self.llm_model = llm_model
         self.emb_model = emb_model
@@ -65,6 +66,7 @@ class NL2TestActor:
 
         # Ensure output dir exists (per-project)
         self.project_output_dir.mkdir(parents=True, exist_ok=True)
+        self.grading_analysis_dir.mkdir(parents=True, exist_ok=True)
 
         if debug:
             RichLog.set_level(logging.DEBUG)
@@ -114,6 +116,7 @@ class NL2TestActor:
             self.analysis,
             project_root=self.project_root,
             analysis_dir=self.analysis_dir,
+            grading_analysis_dir=self.grading_analysis_dir,
             decomposition_mode=self.decomposition_mode,
         )
 

@@ -100,6 +100,9 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
     def process_tool_output(
         self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
+        if self._append_tool_error_if_needed(tool_call, result, outputs):
+            return
+
         tool_name = tool_call["name"]
         handler_map = {
             "call_localization_agent": self._process_call_localization_agent_output,
@@ -483,9 +486,4 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
     def process_generic_tool_output(
         self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
     ) -> None:
-        outputs.append(
-            ToolMessage(
-                content=format_tool_ok(result),
-                tool_call_id=tool_call["id"],
-            )
-        )
+        self._append_tool_output(tool_call, result, outputs)

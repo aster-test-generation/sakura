@@ -84,11 +84,6 @@ class LLMClient:
 
         api_key = config.get("llm", "api_key")
 
-        if api_key is None:
-            raise ConfigurationException(
-                "API key for LLM provider is not set in the configuration."
-            )
-
         # Assign default values if not set in config
         try:
             max_tokens = config.get("llm", "max_tokens")

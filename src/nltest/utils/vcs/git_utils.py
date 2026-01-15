@@ -21,11 +21,15 @@ class GitUtilities:
 
     @staticmethod
     def reset_submodule(repo_path: Path) -> None:
-        """Reset tracked and untracked files to the pinned commit."""
+        """Reset a submodule to the pinned commit.
+
+        This discards tracked changes and removes any untracked (and ignored)
+        files so each run starts from a clean checkout.
+        """
         repo_path = Path(repo_path)
         GitUtilities._ensure_git_repo(repo_path)
         GitUtilities._run_git_command(["git", "reset", "--hard"], repo_path)
-        GitUtilities._run_git_command(["git", "clean", "-fd"], repo_path)
+        GitUtilities._run_git_command(["git", "clean", "-fdx"], repo_path)
 
     @staticmethod
     def reset_submodules_in_dir(submodule_dir: Path) -> None:

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple, Optional
+import re
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.messages import AIMessage, ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
@@ -30,6 +31,46 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
 
     # Redaction placeholder for token reduction
     _CODE_REDACTED = "(redacted since new code generated)"
+
+    _JAVA_PACKAGE_DECL_RE = re.compile(
+        r"(?m)^\s*package\s+(?P<package>[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*;"
+    )
+    _JAVA_TOP_LEVEL_TYPE_RE = re.compile(
+        r"(?m)^(?:\s*@\w+(?:\([^)]*\))?\s*)*(?:public\s+)?"
+        r"(?:abstract\s+|final\s+)?(?:class|interface|enum|record)\s+"
+        r"(?P<name>[A-Za-z_]\w*)"
+    )
+
+    @staticmethod
+    def _extract_package_from_code(code: str) -> str | None:
+        match = CompositionReActAgent._JAVA_PACKAGE_DECL_RE.search(code)
+        return match.group("package") if match else None
+
+    @staticmethod
+    def _extract_top_level_type_name(code: str) -> str | None:
+        match = CompositionReActAgent._JAVA_TOP_LEVEL_TYPE_RE.search(code)
+        return match.group("name") if match else None
+
+    @staticmethod
+    def _normalize_test_qualified_class_name(test_code: str, qcn: str) -> str:
+        declared_package = (
+            CompositionReActAgent._extract_package_from_code(test_code) or ""
+        )
+
+        provided_package, sep, provided_class_name = qcn.rpartition(".")
+        if not sep:
+            provided_package = ""
+            provided_class_name = qcn
+
+        if not provided_class_name:
+            provided_class_name = (
+                CompositionReActAgent._extract_top_level_type_name(test_code) or qcn
+            )
+
+        final_package = provided_package or declared_package
+        if final_package:
+            return f"{final_package}.{provided_class_name}"
+        return provided_class_name
 
     def __init__(
         self,
@@ -71,13 +112,16 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
             current = current.parent
 
     def _get_test_file_manager(self) -> TestFileManager:
+        if self.project_root is None:
+            raise ValueError("project_root is not configured")
         test_base_dir = self.test_base_dir or TEST_DIR
         return TestFileManager(self.project_root, test_base_dir=test_base_dir)
 
     def prepare_tool_args(
-        self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         """Normalize tool arguments for CLDK compatibility."""
+        _ = state
         updated_args = CLDKArgNormalizer.normalize_args(tool_name, raw_args)
         return tool_name, updated_args
 
@@ -167,6 +211,68 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         qualified_class_name = result.get("qualified_class_name")
         method_signature = result.get("method_signature")
 
+        if not isinstance(test_code, str) or not test_code.strip():
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="invalid_test_code",
+                        message="generate_test_code must provide non-empty Java source in test_code.",
+                        details={
+                            "tool": "generate_test_code",
+                            "tool_call_id": tool_call["id"],
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+            return
+
+        if (
+            not isinstance(qualified_class_name, str)
+            or not qualified_class_name.strip()
+        ):
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="invalid_qualified_class_name",
+                        message=(
+                            "generate_test_code must provide a fully qualified test class name in qualified_class_name."
+                        ),
+                        details={
+                            "tool": "generate_test_code",
+                            "tool_call_id": tool_call["id"],
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+            return
+
+        if not isinstance(method_signature, str) or not method_signature.strip():
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="invalid_method_signature",
+                        message=(
+                            "generate_test_code must provide the generated @Test method signature in method_signature."
+                        ),
+                        details={
+                            "tool": "generate_test_code",
+                            "tool_call_id": tool_call["id"],
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+            return
+
+        requested_qcn = qualified_class_name.strip()
+        normalized_qcn = self._normalize_test_qualified_class_name(
+            test_code, requested_qcn
+        )
+        qualified_class_name = normalized_qcn
+        method_signature = method_signature.strip()
+
         fm = self._get_test_file_manager()
 
         old_info: Optional[TestFileInfo] = None
@@ -187,7 +293,10 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
 
         if old_path is not None and old_path == target_path:
             saved_qcn, saved_path = fm.save_single(
-                new_info, encode_class_name=False, allow_overwrite=True
+                new_info,
+                encode_class_name=False,
+                allow_overwrite=True,
+                sync_names=True,
             )
         else:
             if old_info is not None and old_path is not None:
@@ -200,20 +309,27 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
                 )
                 self._cleanup_empty_dirs(fm.test_base_dir, old_path.parent)
 
-            saved_qcn, saved_path = fm.save_single(new_info, encode_class_name=False)
+            saved_qcn, saved_path = fm.save_single(
+                new_info,
+                encode_class_name=False,
+                sync_names=True,
+            )
 
         self._redact_previous_test_code_results(state)
         self._redact_previous_test_code_inputs(state)
 
+        payload: Dict[str, Any] = {
+            "message": "Saved test code.",
+            "qualified_class_name": saved_qcn,
+            "path": str(saved_path),
+        }
+        if requested_qcn != normalized_qcn:
+            payload["input_qualified_class_name"] = requested_qcn
+            payload["normalized_qualified_class_name"] = normalized_qcn
+
         outputs.append(
             ToolMessage(
-                content=format_tool_ok(
-                    {
-                        "message": "Saved test code.",
-                        "qualified_class_name": saved_qcn,
-                        "path": str(saved_path),
-                    }
-                ),
+                content=format_tool_ok(payload),
                 tool_call_id=tool_call["id"],
             )
         )
@@ -225,9 +341,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         else:
             state.package = None
             state.class_name = saved_qcn
-        state.method_signature = (
-            method_signature.strip() if method_signature.strip() else None
-        )
+        state.method_signature = method_signature
 
     def _process_view_test_code_output(
         self,
@@ -250,8 +364,28 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
             )
             return
 
-        start_line = result.get("start_line")
-        end_line = result.get("end_line")
+        start_line_raw = result.get("start_line")
+        end_line_raw = result.get("end_line")
+        if not isinstance(start_line_raw, int) or not isinstance(end_line_raw, int):
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="invalid_line_range",
+                        message="start_line and end_line must be integers.",
+                        details={
+                            "tool": tool_name,
+                            "tool_call_id": tool_call["id"],
+                            "start_line": start_line_raw,
+                            "end_line": end_line_raw,
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+            return
+
+        start_line = start_line_raw
+        end_line = end_line_raw
 
         qcn = (
             f"{state.package}.{state.class_name}" if state.package else state.class_name

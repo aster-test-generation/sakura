@@ -127,8 +127,7 @@ Returns:
 """
 
 GENERATE_TEST_CODE_DESC = """
-Create or overwrite the test file with newly generated code.
-Strictly follow the field description for test code generation requirements.
+Write the complete Java test file (package, imports, one public test class, exactly one @Test method).
 """
 
 FINALIZE_DESC_OLD = """

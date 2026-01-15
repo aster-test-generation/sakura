@@ -17,7 +17,8 @@ Returns:
 """
 
 EXTRACT_CODE_DESC = """
-Get the spliced source code for a specific method. Prefer other light-weight metadata tools for quick checks; only use this tool when behavior or parameter meaning is unclear.
+More costly: return the spliced source for a specific application method.
+Use only when get_method_details is insufficient to determine behavior, side effects, or parameter meaning.
 """
 
 METHOD_DETAILS_DESC_OLD = """
@@ -45,7 +46,9 @@ Returns:
 """
 
 METHOD_DETAILS_DESC = """
-Fetch the method signature, modifiers, return type, parameter types, comments, and visibility (e.g., public, same package) for a specific method.
+Fetch method metadata for a specific method.
+Returns: signature, modifiers/visibility, return type, parameter names/types, and doc/comments (if present).
+Use to confirm method semantics and arguments for binding.
 """
 
 CALL_SITE_DETAILS_DESC_OLD = """
@@ -71,6 +74,7 @@ Returns:
 
 CALL_SITE_DETAILS_DESC = """
 List the qualified class name, method signature, return type, parameter types, modifiers, and number of times called for each callee invoked inside a specific method.
+Use to locate application helper methods, confirm wrapper delegation, and validate behavior.
 """
 
 QUERY_CLASS_DESC_OLD = """
@@ -88,8 +92,8 @@ Returns:
 """
 
 QUERY_CLASS_DESC = """
-Semantic search over application classes (vector index).
-Prioritize a maximum window of three results for any query unless a justified exception is needed.
+Semantic search over application classes (application source only).
+Prefer <= 3 results unless you justify more.
 """
 
 VIEW_TEST_CODE_DESC_OLD = """
@@ -107,6 +111,7 @@ Returns:
 
 VIEW_TEST_CODE_DESC = """
 View the spliced source code for the active test file.
+Use sparingly (expensive) to verify generated code and to reconcile compilation or execution feedback.
 """
 
 COMPILE_AND_EXECUTE_TEST_DESC_OLD = """
@@ -153,5 +158,6 @@ Returns:
 """
 
 COMPILE_AND_EXECUTE_TEST_DESC = """
-Compile the Maven project and execute the currently active test class. Returns compiler results and, if compilation succeeds, the test execution results.
+Compile the Maven project and execute the currently active test class. 
+Returns compiler results and, if compilation succeeds, the test execution results.
 """

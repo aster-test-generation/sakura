@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from enum import Enum
 import textwrap
-from typing import List, Optional, Literal, Dict, Any, Annotated, Union, Tuple, Set
+from enum import Enum
+from typing import Annotated, List, Literal, Optional, Set, Tuple, Union
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from nltest.utils.models import NL2TestInput
 
@@ -25,7 +25,6 @@ class Step(BaseModel):
 
 
 class GherkinStep(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
     given: List[Step]
     when: List[Step]
     then: List[Step]
@@ -34,14 +33,11 @@ class GherkinStep(BaseModel):
 _GHERKIN_STEPS_DESC = textwrap.dedent(
     """
     Ordered Gherkin-style step groups (given, when, then) that capture distinct behaviors or paths.
-    Ids must be unique and increase across setup, each Gherkin group in order, and teardown. Each group has at least one When and one Then.
     """
 ).strip()
 
 
 class Scenario(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
-    testing_framework: str
     setup: List[Step]
     gherkin_groups: Annotated[
         List[GherkinStep],
@@ -67,7 +63,11 @@ def _is_valid_candidate(candidate: CandidateMethod | None) -> bool:
         return False
     return any(
         getattr(candidate, attr, "").strip()
-        for attr in ("declaring_class_name", "containing_class_name", "method_signature")
+        for attr in (
+            "declaring_class_name",
+            "containing_class_name",
+            "method_signature",
+        )
     )
 
 
@@ -123,22 +123,17 @@ class LocalizedStep(Step):
     external: bool
 
     def enforce_candidate_limit(self, limit: int = 3) -> None:
-        truncated, _ = _normalize_candidates(
-            self.candidate_methods, limit=limit
-        )
+        truncated, _ = _normalize_candidates(self.candidate_methods, limit=limit)
         self.candidate_methods = truncated
 
 
 class LocalizedGherkinStep(BaseModel):
-    model_config = ConfigDict(populate_by_name=True)
     given: List[LocalizedStep]
     when: List[LocalizedStep]
     then: List[LocalizedStep]
 
 
-class LocalizedScenario(Scenario):
-    model_config = ConfigDict(populate_by_name=True)
-    testing_framework: str
+class LocalizedScenario(BaseModel):
     setup: List[LocalizedStep]
     gherkin_groups: Annotated[
         List[LocalizedGherkinStep],
@@ -178,7 +173,6 @@ class LocalizedScenario(Scenario):
             )
 
         return cls(
-            testing_framework=scenario.testing_framework,
             setup=[_to_localized_step(s) for s in scenario.setup],
             gherkin_groups=localized_steps,
             teardown=[_to_localized_step(s) for s in scenario.teardown],
@@ -248,12 +242,12 @@ class AtomicBlock(GrammaticalBlock):
 
     @classmethod
     def from_grammatical_block(
-            cls,
-            gb: GrammaticalBlock,
-            *,
-            candidate_methods: List[CandidateMethod] | None = None,
-            best_candidate: CandidateMethod | None = None,
-            notes: str = "",
+        cls,
+        gb: GrammaticalBlock,
+        *,
+        candidate_methods: List[CandidateMethod] | None = None,
+        best_candidate: CandidateMethod | None = None,
+        notes: str = "",
     ) -> "AtomicBlock":
         cm = list(candidate_methods) if candidate_methods is not None else []
         bc = (

@@ -34,15 +34,15 @@ class GherkinLocalizationTools(BaseLocalizationTools):
     # Finalize the scenario and end the agent (Gherkin mode)
     def _make_finalize_tool(self) -> StructuredTool:
         def _finalize(
-            scenario: LocalizedScenario, comments: str
+            localized_scenario: LocalizedScenario, comments: str
         ) -> Tuple[LocalizedScenario, str]:
-            if scenario is None:
+            if localized_scenario is None:
                 raise BlockNotFoundError(
                     "Current scenario not found",
-                    extra_info={"scenario": scenario},
+                    extra_info={"localized_scenario": localized_scenario},
                 )
 
-            return scenario, comments
+            return localized_scenario, comments
 
         return StructuredTool.from_function(
             func=_finalize,

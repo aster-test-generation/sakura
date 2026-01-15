@@ -17,7 +17,8 @@ Returns:
 """
 
 GET_CLASS_FIELDS_DESC = """
-List the variable name, type, and modifiers of declared fields for a class.
+Return declared fields for a class: name, type, modifiers. 
+Use to understand state you can read/write.
 """
 
 GET_CLASS_IMPORTS_DESC_OLD = """
@@ -56,7 +57,8 @@ Returns:
 """
 
 GET_MAVEN_DEPENDENCIES_DESC = """
-List direct group and artifact ID of Maven dependencies declared in the module pom.xml and inherited parent pom.xml files.
+Return direct Maven dependencies (groupId and artifactId) from module + parents. 
+Use to confirm testing and mocking framework availability.
 """
 
 GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC_OLD = """
@@ -78,7 +80,8 @@ Returns:
 """
 
 GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC = """
-List the method signatures of constructors and obvious factory methods for a class.
+Return constructor signatures and obvious static factory methods for a class. 
+Use to instantiate required inputs.
 """
 
 GET_GETTERS_AND_SETTERS_DESC_OLD = """
@@ -96,7 +99,8 @@ Returns:
 """
 
 GET_GETTERS_AND_SETTERS_DESC = """
-Find the method signatures of simple getters and setters within a class.
+Return simple getter/setter signatures found in a class. 
+Use for state setup and for reading or updating simple properties.
 """
 
 GENERATE_TEST_CODE_DESC_OLD = """
@@ -138,7 +142,7 @@ Returns:
 """
 
 FINALIZE_DESC = """
-End composition with a concise 1–4 sentence status note summarizing key fixes, excluded steps, and unresolved issues, stated directly and bluntly. 
+End composition with a concise 1-4 sentence status note of fixes, exclusions, and unresolved issues.
 """
 
 MODIFY_SCENARIO_COMMENT_DESC_OLD = """

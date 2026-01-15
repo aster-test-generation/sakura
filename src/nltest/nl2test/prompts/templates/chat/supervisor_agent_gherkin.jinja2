@@ -1,13 +1,8 @@
-# DESCRIPTION
+
+TEST DESCRIPTION
 {{ nl_description }}
 
-# BLOCKS
+INITIAL SCENARIO
 {{ blocks }}
 
-# INSTRUCTIONS
-1. Call localization agent first to decompose description into informed steps and map them to code elements.
-2. Call composition agent to generate test code.
-3. Compile and iterate on errors by delegating fixes to appropriate agent.
-4. Call `finalize` when test compiles and matches description.
-
-One tool call per message. Reference step IDs in delegate instructions.
+Next: call call_localization_agent with concise, step-id-based instructions.

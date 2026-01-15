@@ -1,38 +1,32 @@
 import textwrap
-from typing import List, Dict, Any, Union, Tuple
+from typing import Any, Dict, List, Tuple, Union
 
 from cldk.analysis.java import JavaAnalysis
-from cldk.models.java.models import JMethodDetail, JCallable
-from langchain_core.tools import StructuredTool, BaseTool
+from langchain_core.tools import BaseTool, StructuredTool
 
-from nltest.nl2test.models import (
-    QueryClassArgs,
-    QueryVectorDataArgs,
-    ReachableMethodsArgs,
-)
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
-from nltest.utils.analysis import CommonAnalysis, Reachability
-from nltest.utils.exceptions import (
-    InvalidArgumentError,
-    ToolExceptionHandler,
-    ClassNotFoundError,
-    MethodNotFoundError,
-    CallSiteNotFoundError,
-)
-from nltest.utils.exceptions.tool_exceptions import BlockNotFoundError
-from nltest.utils.llm import LLMClient
-from nltest.nl2test.generation.localization.tool_descriptions import (
-    QUERY_METHOD_DESC,
-    REACHABLE_METHODS_DESC,
-    CLASS_DETAILS_DESC,
-    INHERITED_LIBRARY_CLASSES_DESC,
-)
 from nltest.nl2test.generation.common.tools.common_java_analysis import (
     CommonJavaAnalysisTools,
 )
 from nltest.nl2test.generation.common.tools.common_search import (
     CommonSearchTools,
+)
+from nltest.nl2test.generation.localization.tool_descriptions import (
+    CLASS_DETAILS_DESC,
+    INHERITED_LIBRARY_CLASSES_DESC,
+    QUERY_METHOD_DESC,
+    REACHABLE_METHODS_DESC,
+)
+from nltest.nl2test.models import (
+    QueryClassArgs,
+    QueryVectorDataArgs,
+    ReachableMethodsArgs,
+)
+from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
+from nltest.utils.analysis import Reachability
+from nltest.utils.exceptions import (
+    ClassNotFoundError,
+    InvalidArgumentError,
+    ToolExceptionHandler,
 )
 
 
@@ -40,11 +34,11 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
     """Shared localization tools; subclasses implement finalize step."""
 
     def __init__(
-            self,
-            *,
-            analysis: JavaAnalysis,
-            method_searcher: MethodSearcher,
-            class_searcher: ClassSearcher,
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
     ) -> None:
         CommonJavaAnalysisTools.__init__(self, analysis=analysis)
         CommonSearchTools.__init__(self, class_searcher=class_searcher)
@@ -58,7 +52,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
             self._make_reachable_methods_tool(),
             self._make_extract_code_tool(),
             self._make_get_method_details_tool(),
-            self._make_get_class_details_tool(),
+            # self._make_get_class_details_tool(),
             self._make_get_inherited_library_classes_tool(),
             self._make_call_site_details_tool(),
         ]
@@ -93,12 +87,12 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
     # Get all the methods that can be called from the class, looking at its inheritance graph
     def _make_reachable_methods_tool(self) -> StructuredTool:
         def _get_reachable_methods_in_class(
-                qualified_class_name: str, visibility_mode: str
+            qualified_class_name: str, visibility_mode: str
         ) -> Dict[str, List[Dict[str, Any]]]:
             if visibility_mode not in (
-                    "public",
-                    "same_package",
-                    "same_package_or_subclass",
+                "public",
+                "same_package",
+                "same_package_or_subclass",
             ):
                 raise InvalidArgumentError(
                     "Invalid visibility mode",
@@ -122,8 +116,8 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
     # Get basic class details like what it extends, implements, modifiers, and annotations.
     def _make_get_class_details_tool(self) -> StructuredTool:
         def _get_class_details(
-                qualified_class_name: str,
-        ) -> Dict[str, Union[str, List[str]]]:
+            qualified_class_name: str,
+        ) -> Dict[str, Union[str, List[str], None]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(

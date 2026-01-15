@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 import textwrap
-from typing import Annotated, List, Literal, Dict, Optional, Union, Tuple
+from typing import Annotated, Dict, List, Literal, Optional, Union
 
+from langchain_core.messages import BaseMessage
 from pydantic import BaseModel, Field
 
 from .decomposition import (
-    AtomicBlock,
-    Scenario,
     AtomicBlockList,
-    GrammaticalBlockList,
     LocalizedScenario,
 )
-from langchain_core.messages import BaseMessage
 
 
 class AgentState(BaseModel):
@@ -127,14 +124,7 @@ class InstructionArgs(BaseModel):
 
 
 _TEST_CODE_DESC = """
-The full Java test file contents as raw Java source code. 
-Requirements:
-- It must be plain Java only. Do NOT include Markdown fences, JSON, XML, comments-as-markup, or any other wrapper/annotations.
-- Newlines must be literal (no escaped newline sequences). The string must be valid JSON.
-- The code must contain exactly one test method annotated with a test annotation.
-- Package declarations must mirror the SUT's package to access package-private members.
-- Use explicit imports (no wildcards).
-- Helper, setup, or teardown methods are allowed, but must not be annotated as additional tests.
+Raw Java test file source only, with no wrappers (Markdown/JSON/XML) or commentary. Use literal newlines so the string is valid JSON. Include exactly one test method annotated as a test. Align the package with the SUT when needed for package-private access. Use explicit imports only. Helper/setup/teardown methods are allowed but must not be annotated as tests.
 """
 
 _TEST_QUALIFIED_CLASS_DESC = """
@@ -193,14 +183,12 @@ class ModifyAtomicBlockNotesArgs(BaseModel):
 
 
 _FINALIZE_LOCALIZED_SCENARIO_DESC = """
-The completed localized scenario, with each step either mapped to a relevant method or justified as non-localizable (e.g., variable initialization). 
-List candidate methods in best-first order from left to right. A maximum of three candidates per step is allowed.
-For every selected method, provide argument bindings by inspecting its parameters and supplying plausible values, using ${...} to reference prior returns.
+The completed localized scenario (type LocalizedScenario), with each step either mapped to a relevant method or justified as non-localizable (e.g., variable initialization).
 """
 
 
 class FinalizeScenarioArgs(BaseModel):
-    scenario: Annotated[
+    localized_scenario: Annotated[
         LocalizedScenario,
         Field(description=textwrap.dedent(_FINALIZE_LOCALIZED_SCENARIO_DESC).strip()),
     ]
@@ -273,9 +261,7 @@ class NoArgs(BaseModel):
 
 
 _CALL_LOCALIZATION_AGENT_INSTRUCTIONS_DESC = """
-Actionable instructions for the localization agent, with concrete and explicit guidance on what to adjust and inspect for the scenario. 
-If changes apply only to specific steps in the scenario, list their IDs and state that no other steps should be modified. 
-You may be higher-level only when requesting localization for all steps.
+Instructions for the localization agent (reference step ids; include errors if relevant).
 """
 
 
@@ -294,7 +280,7 @@ class CallLocalizationAgentGherkinArgs(BaseModel):
 
 
 _CALL_COMPOSITION_AGENT_INSTRUCTIONS_DESC = """
-Actionable instructions for the composition agent, with concrete and explicit guidance on what to be aware of for test code generation. 
+Instructions for the composition agent (reference step ids; include errors if relevant).
 """
 
 

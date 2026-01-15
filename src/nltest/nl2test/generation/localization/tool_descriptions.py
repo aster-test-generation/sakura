@@ -13,9 +13,9 @@ Returns:
 """
 
 QUERY_METHOD_DESC = """
-Semantic search over application methods (vector index). 
-Returns the method signature, declaring class name (class that directly implement the method), and containing class name (the relevant class that inherits/contains the method) for each method matching the query.
-Prioritize a maximum window of three results for any query unless a justified exception is needed.
+Semantic search over application methods (application source only).
+Returns: method_signature, declaring_class_name (where implemented), containing_class_name (type under analysis), and return_type (if available).
+Use for candidate discovery. Prefer <= 3 results unless you justify more.
 """
 
 REACHABLE_METHODS_DESC_OLD = """
@@ -33,8 +33,9 @@ Returns:
 """
 
 REACHABLE_METHODS_DESC = """
-List all application methods visible from a class, honoring Java access rules and going through the inheritance chain. 
-Returns the method signature, declaring class name, modifiers, and visibility details for each method.
+List application methods visible/callable from a given class context (Java access + inheritance).
+Returns: signatures plus declaring class, modifiers, and visibility details.
+Use after selecting a class (often from query_class_db) to find viable methods when query_method_db misses.
 """
 
 CLASS_DETAILS_DESC_OLD = """
@@ -68,7 +69,8 @@ Returns:
 """
 
 INHERITED_LIBRARY_CLASSES_DESC = """
-Identify inherited non-application types ("library" types) for a class by traversing its inheritance chain in order.
+Return the inheritance chain (including library/framework supertypes) for a class, in order.
+Use to detect when a missing method may be defined in a library/framework base type (treat as external/unverifiable).
 """
 
 FINALIZE_ATOMIC_BLOCKS_DESC_OLD = """
@@ -98,5 +100,5 @@ Returns:
 """
 
 FINALIZE_LOCALIZED_SCENARIO_DESC = """
-End localization by returning the final localized scenario with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly. Include the required comments field; if nothing notable, write "No issues.".
+End localization by returning the final localized scenario (localized_scenario) with a concise 1–4 sentence status note (comments) summarizing key finds and unresolved issues, stated directly and bluntly.
 """

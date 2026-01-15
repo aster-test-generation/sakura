@@ -57,7 +57,6 @@ def test_nl_gherkin_decomposition_basic():
     scenario = nl_decomposer.decompose(nl_description)
     pretty_print("Gherkin scenario", scenario)
     assert isinstance(scenario, Scenario)
-    assert isinstance(scenario.testing_framework, str)
     assert isinstance(scenario.setup, list)
     assert isinstance(scenario.gherkin_groups, list)
     assert isinstance(scenario.teardown, list)

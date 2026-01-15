@@ -63,24 +63,26 @@ class LLMClient:
     ):
         config = Config()
 
-        provider = config.get("llm", "provider")
-        try:
-            provider = Provider(provider)
-        except ValueError:
+        base_url = config.get("llm", "api_url")
+        provider_raw = config.get("llm", "provider")
+        if provider_raw in (None, ""):
+            provider = None
+        else:
+            try:
+                provider = Provider(provider_raw)
+            except ValueError as exc:
+                raise ConfigurationException(
+                    f"Invalid LLM provider: {provider_raw}. Must be one of {list(Provider)}"
+                ) from exc
+        if provider is None and not base_url:
             raise ConfigurationException(
-                f"Invalid LLM provider: {provider}. Must be one of {list(Provider)}"
+                "LLM provider is not configured and no API URL was supplied."
             )
 
         model = config.get("llm", "model")
         temp = config.get("llm", f"{client_type.value}_temp")
 
-        base_url = config.get("llm", "api_url")
         api_key = config.get("llm", "api_key")
-
-        if api_key is None:
-            raise ConfigurationException(
-                "API key for LLM provider is not set in the configuration."
-            )
 
         # Assign default values if not set in config
         try:

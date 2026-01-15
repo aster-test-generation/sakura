@@ -24,10 +24,10 @@ class CompilationExecutionMixin:
     project_root: Path | None
 
     def process_compile_and_execute(
-            self,
-            tool_call: ToolCall,
-            state: AgentState,
-            outputs: List[ToolMessage],
+        self,
+        tool_call: ToolCall,
+        state: AgentState,
+        outputs: List[ToolMessage],
     ) -> None:
         """
         Process compile_and_execute_test tool output.
@@ -63,20 +63,34 @@ class CompilationExecutionMixin:
         ).get_compilation_errors()
 
         file_key = f"{state.class_name}.java"
+        file_rel_path = (
+            f"{state.package.replace('.', '/')}/{file_key}"
+            if state.package
+            else file_key
+        )
+
+        def _matches_error_path(err: str) -> bool:
+            normalized = err.replace("\\", "/")
+            if "/" in normalized:
+                return normalized.endswith(file_rel_path)
+            return normalized.endswith(file_key)
+
         has_error_for_project = len(compilation_errors) > 0
         has_error_for_target = any(
-            ef.file.endswith(file_key) for ef in compilation_errors
+            _matches_error_path(ef.file) for ef in compilation_errors
         )
 
         target_errors: List[str] = [
             ErrorFormatter.format_compilation_error(ce)
             for ce in compilation_errors
-            if ce.file.endswith(file_key)
+            if _matches_error_path(ce.file)
         ]
 
         result_payload: Dict[str, Any] = {
             "compilation": {
-                "status": "success" if not has_error_for_project else "compilation_error",
+                "status": "success"
+                if not has_error_for_project
+                else "compilation_error",
                 "target_class_file": file_key,
                 "has_errors_for_project": has_error_for_project,
                 "has_errors_for_target": has_error_for_target,
@@ -122,7 +136,8 @@ class CompilationExecutionMixin:
                 "num_failures": len(execution_failures),
                 "num_errors": len(execution_errors),
                 "execution_failures": [
-                    ErrorFormatter.format_execution_issue(ei) for ei in execution_failures
+                    ErrorFormatter.format_execution_issue(ei)
+                    for ei in execution_failures
                 ],
                 "execution_errors": [
                     ErrorFormatter.format_execution_issue(ei) for ei in execution_errors

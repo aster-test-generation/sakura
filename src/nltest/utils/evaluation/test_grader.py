@@ -427,7 +427,19 @@ class TestGrader:
         pred_simple_file = (
             nl2_metadata.qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
         )
-        compiles = pred_simple_file not in self.project_erroneous_files
+        pred_rel_path = (
+            nl2_metadata.qualified_test_class_name.replace(".", "/") + ".java"
+        )
+
+        def _matches_error_path(err: str) -> bool:
+            normalized = err.replace("\\", "/")
+            if "/" in normalized:
+                return normalized.endswith(pred_rel_path)
+            return normalized.endswith(pred_simple_file)
+
+        compiles = not any(
+            _matches_error_path(err) for err in self.project_erroneous_files
+        )
 
         pred_class_name = nl2_metadata.qualified_test_class_name
         # Prefer method signature from metadata when available. If that method

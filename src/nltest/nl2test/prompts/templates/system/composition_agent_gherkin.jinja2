@@ -18,8 +18,8 @@ For each step:
 - If external=false:
   1) Validate the candidate with get_method_details (signature, param types/count, visibility).
   2) Create required objects via get_class_constructors_and_factories, retrieve fields with get_class_fields, and retrieve necessary properties using get_getters_and_setters.
-  3) Use call_site_details only when you need to discover helper types/methods.
-  4) Use extract_code only when semantics are unclear after metadata.
+  3) Use get_call_site_details only when you need to discover helper types/methods.
+  4) Use extract_method_code only when semantics are unclear after metadata.
 - If external=true:
   - The method is likely from an external library or otherwise not inspectable via application-source tools.
   - Use the provided candidate signature from candidate_methods or the comments directly in the test and rely on compilation to validate.

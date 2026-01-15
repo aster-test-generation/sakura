@@ -162,7 +162,6 @@ class TestCompositionAgent:
         )
 
         localized_scenario_data = {
-            "testing_framework": "junit",
             "setup": [
                 {
                     "id": 0,

@@ -290,7 +290,6 @@ class TestLocalizationGrader:
         entity operations plus repository calls.
         """
         return {
-            "testing_framework": "junit",
             "setup": [
                 {
                     "id": 0,
@@ -479,7 +478,6 @@ class TestLocalizationGrader:
         without parameter types to verify the grader's heuristic matching.
         """
         return {
-            "testing_framework": "junit",
             "setup": [],
             "gherkin_groups": [
                 {
@@ -771,7 +769,6 @@ class TestLocalizationToolInjection:
         finalize_tool = next(t for t in tools if t.name == "finalize")
 
         scenario = LocalizedScenario(
-            testing_framework="junit",
             setup=[],
             gherkin_groups=[],
             teardown=[],

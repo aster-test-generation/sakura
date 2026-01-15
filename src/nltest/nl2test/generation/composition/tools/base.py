@@ -1,36 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
 import textwrap
-from typing import List, Any, Dict, Union, Tuple
+from pathlib import Path
+from typing import Dict, List, Tuple, Union
 
 from cldk.analysis.java import JavaAnalysis
-from langchain_core.tools import StructuredTool, BaseTool
+from langchain_core.tools import BaseTool, StructuredTool
 
 from nltest.nl2test.core.deferred_tool import DeferredTool
-from nltest.nl2test.models import (
-    NL2TestInput,
-    QueryClassArgs,
-    GenerateTestCodeArgs,
-    FinalizeCommentsArgs,
-    NoArgs,
-)
-from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
-from nltest.utils.analysis.java_analyzer import CommonAnalysis
-from nltest.utils.exceptions import (
-    ClassNotFoundError,
-    ToolExceptionHandler,
-)
-from nltest.utils.llm import LLMClient
-from nltest.nl2test.generation.composition.tool_descriptions import (
-    GET_CLASS_FIELDS_DESC,
-    GET_CLASS_IMPORTS_DESC,
-    GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
-    GET_GETTERS_AND_SETTERS_DESC,
-    GET_MAVEN_DEPENDENCIES_DESC,
-    GENERATE_TEST_CODE_DESC,
-    FINALIZE_DESC,
-)
 from nltest.nl2test.generation.common.tools.common_java_analysis import (
     CommonJavaAnalysisTools,
 )
@@ -40,7 +17,30 @@ from nltest.nl2test.generation.common.tools.common_search import (
 from nltest.nl2test.generation.common.tools.common_test_tools import (
     CommonTestTools,
 )
+from nltest.nl2test.generation.composition.tool_descriptions import (
+    FINALIZE_DESC,
+    GENERATE_TEST_CODE_DESC,
+    GET_CLASS_CONSTRUCTORS_AND_FACTORIES_DESC,
+    GET_CLASS_FIELDS_DESC,
+    GET_CLASS_IMPORTS_DESC,
+    GET_GETTERS_AND_SETTERS_DESC,
+    GET_MAVEN_DEPENDENCIES_DESC,
+)
+from nltest.nl2test.models import (
+    FinalizeCommentsArgs,
+    GenerateTestCodeArgs,
+    NL2TestInput,
+    NoArgs,
+    QueryClassArgs,
+)
+from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
+from nltest.utils.analysis.java_analyzer import CommonAnalysis
+from nltest.utils.exceptions import (
+    ClassNotFoundError,
+    ToolExceptionHandler,
+)
 from nltest.utils.file_io.pom_processor import PomProcessor
+from nltest.utils.llm import LLMClient
 
 
 class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
@@ -78,11 +78,11 @@ class BaseCompositionTools(CommonJavaAnalysisTools, CommonSearchTools):
         self.nl2_input: NL2TestInput = nl2_input
 
         self.tools: List[BaseTool] = [
-            self._make_query_class_tool(),
+            # self._make_query_class_tool(), TODO: should be able to remove CommonSearchTools
             self._make_extract_code_tool(),
             self._make_get_method_details_tool(),
             self._make_get_class_fields_tool(),
-            self._make_get_class_imports_tool(),
+            # self._make_get_class_imports_tool(),
             self._make_get_class_constructors_and_factories_tool(),
             self._make_get_getters_and_setters_tool(),
             self._make_get_maven_dependencies_tool(),

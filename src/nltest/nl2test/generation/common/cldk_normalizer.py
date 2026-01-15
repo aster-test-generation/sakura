@@ -19,7 +19,7 @@ class CLDKArgNormalizer:
         "get_getters_and_setters",
         "extract_method_code",
         "get_call_site_details",
-        "get_reachable_methods_in_class",
+        "search_reachable_methods_in_class",
         "get_class_details",
         "get_inherited_library_classes",
     }
@@ -51,7 +51,9 @@ class CLDKArgNormalizer:
         if tool_name in CLDKArgNormalizer.NORMALIZE_CLASS_TOOLS:
             qualified_class_name = raw_args.get("qualified_class_name")
             if isinstance(qualified_class_name, str):
-                normalized_class = CommonAnalysis.get_cldk_class_name(qualified_class_name)
+                normalized_class = CommonAnalysis.get_cldk_class_name(
+                    qualified_class_name
+                )
                 if normalized_class != qualified_class_name:
                     if updated_args is raw_args:
                         updated_args = dict(updated_args)

@@ -7,7 +7,6 @@ from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
 from nltest.nl2test.generation.localization import (
     GherkinLocalizationOrchestrator,
     GrammaticalLocalizationOrchestrator,
-    LocalizationTools,
 )
 from nltest.nl2test.generation.localization.tools.base import BaseLocalizationTools
 from nltest.nl2test.generation.localization.tools.gherkin import (
@@ -638,8 +637,9 @@ class TestLocalizationGrader:
 
 class TestLocalizationTools:
     @pytest.fixture(autouse=True)
-    def _inject(self, petclinic_analysis):
+    def _inject(self, petclinic_analysis, petclinic_config):
         self.analysis = petclinic_analysis
+        self.config = petclinic_config
 
     def test_localization_call_site_tool(self):
         qualified_class_name = (
@@ -649,19 +649,43 @@ class TestLocalizationTools:
 
         fake_method_searcher = MagicMock()
         fake_class_searcher = MagicMock()
-        fake_llm = MagicMock()
 
-        localization_tools = LocalizationTools(
+        localization_tools = BaseLocalizationTools(
             analysis=self.analysis,
             method_searcher=fake_method_searcher,
             class_searcher=fake_class_searcher,
-            structured_llm=fake_llm,
         )
 
         call_site_tool = localization_tools._make_call_site_details_tool()
 
         cleaned_call_sites = call_site_tool.func(qualified_class_name, method_signature)
         pretty_print("Cleaned call site details", cleaned_call_sites)
+
+    def test_search_reachable_methods_tool(self):
+        qualified_class_name = "org.springframework.samples.petclinic.owner.Owner"
+        query = "add pet to owner"
+
+        method_searcher = MethodIndexer(self.analysis).build_index()
+        class_searcher = ClassIndexer(self.analysis).build_index()
+
+        localization_tools = BaseLocalizationTools(
+            analysis=self.analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+        )
+
+        search_tool = localization_tools._make_search_reachable_methods_tool()
+        results = search_tool.func(
+            qualified_class_name, query, "same_package_or_subclass"
+        )
+
+        pretty_print("Reachable method search results", results)
+
+        assert isinstance(results, list)
+        assert results, "Expected reachable method search to return results"
+        assert any(
+            "addPet" in entry.get("method_signature", "") for entry in results
+        ), "Expected addPet to appear in reachable search results"
 
 
 class TestLocalizationToolInjection:
@@ -692,7 +716,7 @@ class TestLocalizationToolInjection:
         expected_base_tools = {
             "query_method_db",
             "query_class_db",
-            "get_reachable_methods_in_class",
+            "search_reachable_methods_in_class",
             "extract_method_code",
             "get_method_details",
             "get_class_details",
@@ -714,7 +738,7 @@ class TestLocalizationToolInjection:
         expected_tools = {
             "query_method_db",
             "query_class_db",
-            "get_reachable_methods_in_class",
+            "search_reachable_methods_in_class",
             "extract_method_code",
             "get_method_details",
             "get_class_details",
@@ -737,7 +761,7 @@ class TestLocalizationToolInjection:
         expected_tools = {
             "query_method_db",
             "query_class_db",
-            "get_reachable_methods_in_class",
+            "search_reachable_methods_in_class",
             "extract_method_code",
             "get_method_details",
             "get_class_details",
@@ -807,7 +831,7 @@ class TestLocalizationToolInjection:
         base_tools = {
             "query_method_db",
             "query_class_db",
-            "get_reachable_methods_in_class",
+            "search_reachable_methods_in_class",
             "extract_method_code",
             "get_method_details",
             "get_class_details",
@@ -827,14 +851,14 @@ class TestLocalizationToolInjection:
         query_tool = next(t for t in tools if t.name == "query_method_db")
         assert query_tool is not None
 
-    def test_get_reachable_methods_tool_exists(self):
-        """Verify get_reachable_methods_in_class tool exists."""
+    def test_search_reachable_methods_tool_exists(self):
+        """Verify search_reachable_methods_in_class tool exists."""
         deps = self._create_mock_dependencies()
         tool_builder = BaseLocalizationTools(**deps)
         tools, _ = tool_builder.all()
 
         reachable_tool = next(
-            t for t in tools if t.name == "get_reachable_methods_in_class"
+            t for t in tools if t.name == "search_reachable_methods_in_class"
         )
         assert reachable_tool is not None
 

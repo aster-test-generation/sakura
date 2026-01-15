@@ -14,12 +14,12 @@ from nltest.nl2test.generation.localization.tool_descriptions import (
     CLASS_DETAILS_DESC,
     INHERITED_LIBRARY_CLASSES_DESC,
     QUERY_METHOD_DESC,
-    REACHABLE_METHODS_DESC,
+    SEARCH_REACHABLE_METHODS_DESC,
 )
 from nltest.nl2test.models import (
     QueryClassArgs,
     QueryVectorDataArgs,
-    ReachableMethodsArgs,
+    SearchReachableMethodsArgs,
 )
 from nltest.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from nltest.utils.analysis import Reachability
@@ -49,7 +49,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
         self.tools: List[BaseTool] = [
             self._make_query_method_tool(),
             self._make_query_class_tool(),
-            self._make_reachable_methods_tool(),
+            self._make_search_reachable_methods_tool(),
             self._make_extract_code_tool(),
             self._make_get_method_details_tool(),
             # self._make_get_class_details_tool(),
@@ -84,11 +84,14 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 
-    # Get all the methods that can be called from the class, looking at its inheritance graph
-    def _make_reachable_methods_tool(self) -> StructuredTool:
-        def _get_reachable_methods_in_class(
-            qualified_class_name: str, visibility_mode: str
-        ) -> Dict[str, List[Dict[str, Any]]]:
+    # Search reachable methods from the class using semantic similarity.
+    def _make_search_reachable_methods_tool(self) -> StructuredTool:
+        def _search_reachable_methods_in_class(
+            qualified_class_name: str,
+            query: str,
+            visibility_mode: str,
+            k: int = 5,
+        ) -> List[Dict[str, Any]]:
             if visibility_mode not in (
                 "public",
                 "same_package",
@@ -98,18 +101,66 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
                     "Invalid visibility mode",
                     extra_info={"visibility_mode": visibility_mode},
                 )
+            if k <= 0:
+                raise InvalidArgumentError("k must be positive", extra_info={"k": k})
 
-            return Reachability(self.analysis).get_visible_class_methods(
+            oversample_factor = 10
+            fetch_k = max(k * oversample_factor, k)
+            search_hits = self.method_searcher.find_similar(query, k=fetch_k)
+
+            reachable = Reachability(self.analysis).get_visible_class_methods(
                 qualified_class_name,
                 visibility_mode=visibility_mode,
                 include_metadata=True,
             )
 
+            reachable_lookup: Dict[Tuple[str, str], Dict[str, Any]] = {}
+            for owner, methods in reachable.items():
+                for meta in methods:
+                    if not isinstance(meta, dict):
+                        continue
+                    method_sig = meta.get("method_signature")
+                    if not method_sig:
+                        continue
+                    reachable_lookup[(owner, method_sig)] = meta
+
+            results: List[Dict[str, Any]] = []
+            seen: set[Tuple[str, str]] = set()
+
+            for hit in search_hits:
+                if hit.get("containing_class_name") != qualified_class_name:
+                    continue
+                declaring_class = hit.get("declaring_class_name")
+                method_sig = hit.get("method_signature")
+                if not declaring_class or not method_sig:
+                    continue
+                key = (declaring_class, method_sig)
+                if key in seen:
+                    continue
+                meta = reachable_lookup.get(key)
+                if not meta:
+                    continue
+                seen.add(key)
+                results.append(
+                    {
+                        "method_signature": method_sig,
+                        "declaring_class_name": declaring_class,
+                        "containing_class_name": qualified_class_name,
+                        "modifiers": meta.get("modifiers", []),
+                        "visibility": meta.get("visibility"),
+                        "requires_subclass": meta.get("requires_subclass", False),
+                    }
+                )
+                if len(results) >= k:
+                    break
+
+            return results
+
         return StructuredTool.from_function(
-            func=_get_reachable_methods_in_class,
-            name="get_reachable_methods_in_class",
-            description=textwrap.dedent(REACHABLE_METHODS_DESC).strip(),
-            args_schema=ReachableMethodsArgs,
+            func=_search_reachable_methods_in_class,
+            name="search_reachable_methods_in_class",
+            description=textwrap.dedent(SEARCH_REACHABLE_METHODS_DESC).strip(),
+            args_schema=SearchReachableMethodsArgs,
             handle_tool_error=ToolExceptionHandler.handle_error,
         )
 

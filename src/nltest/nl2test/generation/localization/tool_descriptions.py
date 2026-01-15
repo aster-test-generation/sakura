@@ -18,24 +18,25 @@ Returns: method_signature, declaring_class_name (where implemented), containing_
 Use for candidate discovery. Prefer <= 3 results unless you justify more.
 """
 
-REACHABLE_METHODS_DESC_OLD = """
-List methods visible from a class with metadata, honoring Java access rules and going through the inheritance chain.
+SEARCH_REACHABLE_METHODS_DESC_OLD = """
+Search reachable methods visible from a class using semantic similarity.
 Args:
   qualified_class_name: Fully qualified class to inspect.
+  query: Natural language or code-like phrase describing the method intent.
   visibility_mode: One of public, same_package, same_package_or_subclass. It must be one of these three string values.
+  k: Maximum number of results to return.
 Use when:
-  Filtering candidate methods to what the class under test can actually call; understanding inheritance and visibility.
+  You need a short, ranked list of reachable methods for a class instead of a full dump.
 Limitations:
-  Includes inherited methods from application classes only; external library parents are excluded.
+  Uses the application method index only; external library parents are excluded.
 Returns:
-  Dict mapping declaring_class_name (class that directly implements the method) -> list of method metadata dicts (e.g., signature, modifiers, and other details) that are reachable from the qualified_class_name used in the query.
+  List of reachable method metadata dicts (signature, declaring class, modifiers, visibility, requires_subclass).
   On failure, a structured error dict is returned.
 """
 
-REACHABLE_METHODS_DESC = """
-List application methods visible/callable from a given class context (Java access + inheritance).
-Returns: signatures plus declaring class, modifiers, and visibility details.
-Use after selecting a class (often from query_class_db) to find viable methods when query_method_db misses.
+SEARCH_REACHABLE_METHODS_DESC = """
+Search reachable application methods from a class using semantic similarity (returns top k).
+Prefer k <= 5 unless you justify more.
 """
 
 CLASS_DETAILS_DESC_OLD = """

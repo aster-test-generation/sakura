@@ -14,20 +14,20 @@ class BaseDecomposer(ABC):
         raise NotImplementedError
 
     def invoke_with_retries(
-            self,
-            *,
-            client: LLMClient,
-            system_prompt: str,
-            base_chat_prompt: str,
-            schema: Type[SchemaT],
-            strict: bool = True,
-            total_attempts: int = 3,
+        self,
+        *,
+        client: LLMClient,
+        system_prompt: str,
+        base_chat_prompt: str,
+        schema: Type[SchemaT],
+        strict: bool = True,
+        total_attempts: int = 3,
     ) -> SchemaT:
         """Call structured LLM output with retries and feedback about prior failures."""
         failures: list[str] = []
         last_error: Exception | None = None
 
-        for attempt in range(1, total_attempts + 2):
+        for attempt in range(1, total_attempts + 1):
             augmented_chat = base_chat_prompt
 
             if failures:
@@ -55,4 +55,6 @@ class BaseDecomposer(ABC):
 
         if last_error is not None:
             raise last_error
-        raise RuntimeError("Structured prompt invocation failed without raising an error.")
+        raise RuntimeError(
+            "Structured prompt invocation failed without raising an error."
+        )

@@ -21,7 +21,9 @@ class AgentState(BaseModel):
     # Tool logging
     curr_tool_calls: Dict[str, Dict[str, int]] = Field(
         default_factory=dict,
-        description="Mapping: tool name -> encoded argument -> count of calls for current invocation",
+        description=(
+            "Mapping: tool name -> encoded argument -> count of calls for current agent invocation (multiple turns)"
+        ),
     )
     total_tool_calls: Dict[str, Dict[str, int]] = Field(
         default_factory=dict,
@@ -100,16 +102,30 @@ class QueryVectorDataArgs(BaseModel):
     ]
 
 
-class ReachableMethodsArgs(BaseModel):
+class SearchReachableMethodsArgs(BaseModel):
     qualified_class_name: Annotated[
         str,
         Field(
-            description="The fully qualified class name to list reachable methods from."
+            description="The fully qualified class name to search reachable methods from."
+        ),
+    ]
+    query: Annotated[
+        str,
+        Field(
+            description="Natural language or code-like query to match method intent."
         ),
     ]
     visibility_mode: Annotated[
         Literal["public", "same_package", "same_package_or_subclass"],
-        Field(description="The visibility mode of the reachable methods."),
+        Field(description="The visibility mode of reachable methods."),
+    ]
+    k: Annotated[
+        int,
+        Field(
+            default=5,
+            ge=1,
+            description="Maximum number of reachable method matches to return.",
+        ),
     ]
 
 

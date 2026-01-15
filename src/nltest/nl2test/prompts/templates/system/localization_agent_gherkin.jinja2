@@ -31,7 +31,7 @@ Each step must include:
 Tool calls are cheap; model iterations/messages are expensive. Try to localize many steps in parallel and minimize back-and-forth.
 Default workflow:
 1) query_method_db per step, then get_method_details for top candidates.
-2) If no match: query_class_db -> get_reachable_methods_in_class -> get_inherited_library_classes.
+2) If no match: query_class_db -> search_reachable_methods_in_class -> get_inherited_library_classes.
 3) Only if still unclear: get_call_site_details or extract_method_code.
 
 ## Selection Preferences (Ties)

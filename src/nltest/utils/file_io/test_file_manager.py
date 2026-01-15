@@ -24,7 +24,7 @@ class TestFileInfo(BaseModel):
 
     qualified_class_name: Annotated[str, "The qualified class name of the test"]
     test_code: Annotated[str, "The test code of the test"] = ""
-    id: Annotated[Optional[int], "The ID from NL2TestInput"] = -1
+    id: Annotated[int, "The ID from NL2TestInput"] = -1
 
     @classmethod
     def from_nl2test_input(
@@ -115,9 +115,20 @@ class TestFileManager:
         return s
 
     @staticmethod
-    def _package_dir_from_qualified(qualified_class_name: str) -> Path:
-        package = qualified_class_name.rsplit(".", 1)[0]
+    def _split_qualified_class_name(qualified_class_name: str) -> Tuple[str, str]:
+        package, sep, class_name = qualified_class_name.rpartition(".")
+        if not sep:
+            return "", qualified_class_name
+        return package, class_name
+
+    @staticmethod
+    def _package_dir_from_package(package: str) -> Path:
         return Path(*package.split(".")) if package else Path()
+
+    @staticmethod
+    def _package_dir_from_qualified(qualified_class_name: str) -> Path:
+        package, _ = TestFileManager._split_qualified_class_name(qualified_class_name)
+        return TestFileManager._package_dir_from_package(package)
 
     @staticmethod
     def encode_class_name(id: int = -1) -> str:
@@ -234,17 +245,16 @@ class TestFileManager:
         # Determine package and base class name
         if encode_class_name:
             base_class_name = self.encode_class_name(test_info.id)
-            package = test_info.qualified_class_name.rsplit(".", 1)[0]
+            package, _ = self._split_qualified_class_name(
+                test_info.qualified_class_name
+            )
         else:
-            if "." in test_info.qualified_class_name:
-                package, base_class_name = test_info.qualified_class_name.rsplit(".", 1)
-            else:
-                package, base_class_name = "", test_info.qualified_class_name
+            package, base_class_name = self._split_qualified_class_name(
+                test_info.qualified_class_name
+            )
 
         # Compute parent directory and initial file path
-        parent_dir = self.test_base_dir / (
-            self._package_dir_from_qualified(package + ".Dummy" if package else "")
-        )
+        parent_dir = self.test_base_dir / self._package_dir_from_package(package)
         parent_dir.mkdir(parents=True, exist_ok=True)
 
         # Add number to the end until a nonconflict unless overwriting in place
@@ -293,7 +303,7 @@ class TestFileManager:
 
     def make_test_fqn(self, test_info: TestFileInfo) -> str:
         class_name = self.encode_class_name(test_info.id)
-        package = test_info.qualified_class_name.rsplit(".", 1)[0]
+        package, _ = self._split_qualified_class_name(test_info.qualified_class_name)
         return f"{package}.{class_name}" if package else class_name
 
     def delete_single(

@@ -14,24 +14,24 @@ from nltest.utils.llm.model import Provider
 
 
 def init_config(
-        project_name: str,
-        *,
-        base_project_dir: str,
-        project_output_dir: str,
-        use_stored_index: bool = True,
-        llm_model: str,
-        llm_provider: Provider = None,
-        emb_provider: Provider = None,
-        emb_model: str = None,
-        llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint
-        emb_api_url: str = None,
-        llm_api_key: str = None,
-        emb_api_key: str = None,
-        localization_max_iters: int = 40,
-        composition_max_iters: int = 40,
-        supervisor_max_iters: int = 5,
-        can_parallel_tool: bool = True,
-        reuse_config: bool = False,
+    project_name: str,
+    *,
+    base_project_dir: str,
+    project_output_dir: str,
+    use_stored_index: bool = True,
+    llm_model: str,
+    llm_provider: Provider = None,
+    emb_provider: Provider = None,
+    emb_model: str = None,
+    llm_api_url: str = None,  # Base URL, assuming OpenAI-API compatible endpoint
+    emb_api_url: str = None,
+    llm_api_key: str = None,
+    emb_api_key: str = None,
+    localization_max_iters: int = 40,
+    composition_max_iters: int = 40,
+    supervisor_max_iters: int = 5,
+    can_parallel_tool: bool = True,
+    reuse_config: bool = False,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -65,8 +65,12 @@ def init_config(
     # Configure API URLs based on the provider
     if llm_api_url is not None:
         config.set("llm", "api_url", val=llm_api_url)
+    elif llm_provider == Provider.OPENAI:
+        config.set("llm", "api_url", val="https://api.openai.com/v1")
     elif llm_provider == Provider.OPENROUTER:
         config.set("llm", "api_url", val="https://openrouter.ai/api/v1")
+    elif llm_provider == Provider.OLLAMA:
+        config.set("llm", "api_url", val="http://localhost:11434/v1")
     elif llm_provider == Provider.VLLM:
         config.set("llm", "api_url", val="http://localhost:8000/v1")
     elif llm_provider == Provider.GCP:
@@ -179,9 +183,9 @@ class Config:
             try:
                 current_modified = os.path.getmtime(self._conf_file)
                 if (
-                        self._last_modified is None
-                        or current_modified != self._last_modified
-                        or reuse is False
+                    self._last_modified is None
+                    or current_modified != self._last_modified
+                    or reuse is False
                 ):
                     self.config = toml.load(self._conf_file)
                     self.last_modified = current_modified

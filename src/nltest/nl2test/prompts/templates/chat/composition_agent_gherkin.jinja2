@@ -1,24 +1,14 @@
-# TEST DESCRIPTION
-{{ nl_description }}
+TASK
+Compose one compilable Java test that follows the localized scenario steps in order and satisfies supervisor constraints.
 
-# INSTRUCTIONS
+SUPERVISOR INSTRUCTIONS
 {{ instructions }}
 
-# LOCALIZED SCENARIO
+TEST DESCRIPTION
+{{ nl_description }}
+
+LOCALIZED SCENARIO
 {{ localized_scenario }}
 
-# PROCEED
-Compose a compilable Java test following the steps below.
-
-## Steps
-1. Plan test skeleton: setup, scenario steps (ascending id order), teardown.
-2. Map ${vars} to Java variables.
-3. Use tools to inspect signatures, constructors, and class metadata.
-4. Generate test code, compile, run, and iterate on errors.
-5. Call `finalize` when complete or at iteration limit.
-
-## Output
-Place the test in a package mirroring the primary SUT package when practical. In `finalize`, include:
-- Test structure summary
-- Composition difficulties encountered
-- Recommendations for localization or composition improvements
+OUTPUT
+After retrieving application data, generating the test, and ensuring it compiles and runs as expected, finalize with a short status note.

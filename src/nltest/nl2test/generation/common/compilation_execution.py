@@ -8,7 +8,6 @@ from langchain_core.messages import ToolMessage, ToolCall
 from nltest.nl2test.models import AgentState
 from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
 from nltest.utils.execution.maven import ExecutionIssue, JavaMavenExecution
-from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.formatting import ErrorFormatter
 from nltest.utils.tool_messages import format_tool_error, format_tool_ok
 
@@ -40,8 +39,9 @@ class CompilationExecutionMixin:
             state: Current agent state with class_name, package, method_signature
             outputs: List to append ToolMessage results to
 
-        Raises:
-            ProjectCompilationError: If unrelated project files fail to compile
+        Notes:
+            If unrelated project files fail to compile, this tool reports a structured
+            error payload rather than raising an exception.
         """
         tool_name = tool_call["name"]
 
@@ -58,8 +58,24 @@ class CompilationExecutionMixin:
             )
             return
 
+        if self.project_root is None:
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="no_project_root",
+                        message=(
+                            "Project root is not configured; cannot compile or execute tests."
+                        ),
+                        details={"tool": tool_name, "tool_call_id": tool_call["id"]},
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+            return
+
+        project_root = self.project_root
         compilation_errors: List[CompilationError] = JavaMavenCompilation(
-            self.project_root
+            project_root
         ).get_compilation_errors()
 
         file_key = f"{state.class_name}.java"
@@ -103,13 +119,25 @@ class CompilationExecutionMixin:
             error_details = [
                 ErrorFormatter.format_compilation_error(ce) for ce in compilation_errors
             ]
-            raise ProjectCompilationError(
-                "Unrelated project files failed to compile.",
-                extra_info={
-                    "files_with_errors": sorted(files_with_errors),
-                    "error_details": error_details,
-                },
+
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="project_compilation_error",
+                        message=(
+                            "Project compilation failed outside the generated test class."
+                        ),
+                        details={
+                            "tool": tool_name,
+                            "tool_call_id": tool_call["id"],
+                            "files_with_errors": sorted(files_with_errors),
+                            "error_details": error_details,
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
             )
+            return
 
         if not has_error_for_target:
             qualified_class_name = (
@@ -120,7 +148,7 @@ class CompilationExecutionMixin:
             method_signature = state.method_signature
 
             execution_issues: List[ExecutionIssue] = JavaMavenExecution(
-                self.project_root
+                project_root
             ).get_execution_errors(qualified_class_name, method_signature)
 
             has_exec_error = len(execution_issues) > 0

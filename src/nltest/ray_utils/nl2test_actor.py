@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 import logging
 import traceback
 
@@ -87,14 +87,14 @@ class NL2TestActor:
             project_name=self.project_name,
             base_project_dir=str(self.project_root),
             project_output_dir=str(self.project_output_dir),
-            llm_provider=llm_provider,
+            llm_provider=cast(Provider, llm_provider),
             llm_model=self.llm_model,
-            emb_provider=emb_provider,
-            emb_model=self.emb_model,
-            llm_api_url=llm_api_url,
-            emb_api_url=emb_api_url,
-            llm_api_key=os.getenv("LLM_API_KEY"),
-            emb_api_key=os.getenv("EMB_API_KEY"),
+            emb_provider=cast(Provider, emb_provider),
+            emb_model=cast(str, self.emb_model),
+            llm_api_url=cast(str, llm_api_url),
+            emb_api_url=cast(str, emb_api_url),
+            llm_api_key=cast(str, os.getenv("LLM_API_KEY")),
+            emb_api_key=cast(str, os.getenv("EMB_API_KEY")),
             localization_max_iters=(localization_max_iters or 40),
             composition_max_iters=(composition_max_iters or 30),
             supervisor_max_iters=(supervisor_max_iters or 10),
@@ -122,6 +122,8 @@ class NL2TestActor:
 
         self.compilation_failed = False
         self.compilation_failure_payload: dict[str, Any] | None = None
+
+        self._ensure_clean_submodule()
 
         compilation_errors = self.pipeline.run_project_compilation()
         if compilation_errors:

@@ -144,7 +144,8 @@ Raw Java test file source only, with no wrappers (Markdown/JSON/XML) or commenta
 """
 
 _TEST_QUALIFIED_CLASS_DESC = """
-The fully qualified name (package + class) of the generated test class.
+Fully qualified test class name (package + simple class name, e.g., org.example.myapp.FooServiceTest).
+MUST exactly match the package and top-level class name declared in `test_code`.
 """
 
 _TEST_METHOD_SIG_DESC = """

@@ -1,18 +1,32 @@
 from __future__ import annotations
 
+import json
 import textwrap
+from typing import cast
 
 import pytest
+from langchain_core.messages import ToolCall
 
-from nltest.utils.compilation.maven import JavaMavenCompilation
+from nltest.nl2test.generation.common.compilation_execution import (
+    CompilationExecutionMixin,
+)
+from nltest.nl2test.models import AgentState
+from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
 from nltest.utils.execution.maven import JavaMavenExecution
 from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from nltest.utils.pretty.prints import pretty_print
 
 
+class DummyCompilationExecutor(CompilationExecutionMixin):
+    def __init__(self, project_root):
+        self.project_root = project_root
+
+
 def test_get_compilation_errors_with_transient_test_file(petclinic_paths):
     compiler = JavaMavenCompilation(petclinic_paths.project_root)
-    compiler.is_spring_project = True  # Skip spring-javaformat validation for generated files
+    compiler.is_spring_project = (
+        True  # Skip spring-javaformat validation for generated files
+    )
     manager = TestFileManager(petclinic_paths.project_root)
 
     initial_errors = compiler.get_compilation_errors()
@@ -60,6 +74,60 @@ def test_get_compilation_errors_with_transient_test_file(petclinic_paths):
     assert cleared_errors == []
 
 
+def test_compile_and_execute_matches_target_paths(monkeypatch, petclinic_paths):
+    executor = DummyCompilationExecutor(petclinic_paths.project_root)
+    state = AgentState(
+        package="org.springframework.samples.petclinic",
+        class_name="BrokenCompilationTest",
+        method_signature="failsToCompile()",
+    )
+    tool_call = cast(
+        ToolCall,
+        {"name": "compile_and_execute_test", "id": "call-1", "args": {}},
+    )
+
+    relative_error = CompilationError(
+        file=(
+            "src/test/java/org/springframework/samples/petclinic/"
+            "BrokenCompilationTest.java"
+        ),
+        line=1,
+        column=None,
+        message="boom",
+    )
+    monkeypatch.setattr(
+        JavaMavenCompilation,
+        "get_compilation_errors",
+        lambda self: [relative_error],
+    )
+
+    outputs = []
+    executor.process_compile_and_execute(tool_call, state, outputs)
+    payload = json.loads(outputs[0].content)
+    assert payload["status"] == "ok"
+    compilation = payload["data"]["compilation"]
+    assert compilation["has_errors_for_target"] is True
+    assert compilation["target_class_file"] == "BrokenCompilationTest.java"
+    assert payload["data"]["execution"]["status"] == "compilation_errors"
+
+    basename_error = CompilationError(
+        file="BrokenCompilationTest.java",
+        line=1,
+        column=None,
+        message="boom",
+    )
+    monkeypatch.setattr(
+        JavaMavenCompilation,
+        "get_compilation_errors",
+        lambda self: [basename_error],
+    )
+
+    outputs = []
+    executor.process_compile_and_execute(tool_call, state, outputs)
+    payload = json.loads(outputs[0].content)
+    assert payload["data"]["compilation"]["has_errors_for_target"] is True
+
+
 def test_get_execution_errors_with_transient_test_file(petclinic_paths):
     executor = JavaMavenExecution(petclinic_paths.project_root)
     executor.is_spring_project = True
@@ -94,10 +162,14 @@ def test_get_execution_errors_with_transient_test_file(petclinic_paths):
         sync_names=True,
         allow_overwrite=True,
     )
-    passing_saved = TestFileInfo(qualified_class_name=passing_name, test_code=passing_code)
+    passing_saved = TestFileInfo(
+        qualified_class_name=passing_name, test_code=passing_code
+    )
 
     try:
-        execution_issues = executor.get_execution_errors(qualified_class_name=passing_name)
+        execution_issues = executor.get_execution_errors(
+            qualified_class_name=passing_name
+        )
         assert execution_issues == []
     finally:
         manager.delete_single(passing_saved, encode_class_name=False, strict=False)
@@ -128,24 +200,33 @@ def test_get_execution_errors_with_transient_test_file(petclinic_paths):
         sync_names=True,
         allow_overwrite=True,
     )
-    failing_saved = TestFileInfo(qualified_class_name=failing_name, test_code=failing_code)
+    failing_saved = TestFileInfo(
+        qualified_class_name=failing_name, test_code=failing_code
+    )
 
     try:
-        issues_with_failure = executor.get_execution_errors(qualified_class_name=failing_name)
+        issues_with_failure = executor.get_execution_errors(
+            qualified_class_name=failing_name
+        )
         pretty_print("java execution errors", issues_with_failure)
         assert issues_with_failure
     finally:
         manager.delete_single(failing_saved, encode_class_name=False, strict=False)
 
+
 def test_compilation_of_specific(petclinic_paths, petclinic_analysis):
     compiler = JavaMavenCompilation(petclinic_paths.project_root)
-    compiler.is_spring_project = True  # Skip spring-javaformat validation for generated files
+    compiler.is_spring_project = (
+        True  # Skip spring-javaformat validation for generated files
+    )
 
     initial_errors = compiler.get_compilation_errors()
     assert initial_errors == []
 
     analysis = petclinic_analysis
-    class_under_test = "org.springframework.samples.petclinic.owner.PetControllerUpdateTest"
+    class_under_test = (
+        "org.springframework.samples.petclinic.owner.PetControllerUpdateTest"
+    )
     method_under_test = "testUpdatePetForm()"
 
     print(analysis.get_class(class_under_test))

@@ -80,6 +80,8 @@ def init_config(
 
     if emb_api_url is not None:
         config.set("emb", "api_url", val=emb_api_url)
+    elif emb_provider == Provider.OPENAI:
+        config.set("emb", "api_url", val="https://api.openai.com/v1")
     elif emb_provider == Provider.OPENROUTER:
         config.set("emb", "api_url", val="https://openrouter.ai/api/v1")
     elif emb_provider == Provider.VLLM:

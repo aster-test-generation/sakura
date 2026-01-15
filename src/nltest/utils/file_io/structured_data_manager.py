@@ -5,6 +5,8 @@ from typing import Any, List, Literal, Sequence, Type, TypeVar, Union
 
 from pydantic import BaseModel
 
+from nltest.utils.pretty.color_logger import RichLog
+
 SubModel = TypeVar("SubModel", bound=BaseModel)
 
 

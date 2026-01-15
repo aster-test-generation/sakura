@@ -46,8 +46,8 @@ CAN_PARALLEL_TOOL_CALL: bool = True
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8
-LOCALIZATION_MAX_ITERS: int = 16
-COMPOSITION_MAX_ITERS: int = 16
+LOCALIZATION_MAX_ITERS: int = 12
+COMPOSITION_MAX_ITERS: int = 14
 
 # Parallelization defaults (only between projects)
 NUM_PROJ_PARALLEL = 2

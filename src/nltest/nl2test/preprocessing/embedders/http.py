@@ -1,3 +1,4 @@
+import os
 from typing import List, Optional
 
 from langchain_openai import OpenAIEmbeddings
@@ -14,6 +15,7 @@ from .base import BaseEmbedder
 from nltest.utils.pretty.color_logger import RichLog
 
 EMBED_CHUNK_SIZE = 100
+DUMMY_API_KEY = "EMPTY"
 
 
 def _is_retriable_error(exc: BaseException) -> bool:
@@ -47,10 +49,21 @@ class HttpEmbedder(BaseEmbedder):
         # Note: max_retries is omitted to let tenacity handle all retry logic
         # with proper exponential backoff. Add max_retries here if you want
         # LangChain's built-in HTTP-level retries to stack with tenacity.
+        api_key_value = api_key.strip() if api_key else None
+        api_key_param: SecretStr | None
+        if api_key_value:
+            api_key_param = SecretStr(api_key_value)
+        elif os.getenv("OPENAI_API_KEY"):
+            api_key_param = None
+        else:
+            api_key_param = SecretStr(DUMMY_API_KEY)
+            RichLog.warn(
+                "[HttpEmbedder] No embedding API key set; using placeholder value."
+            )
         self._client = OpenAIEmbeddings(
             model=model_id,
             base_url=api_url.rstrip("/"),
-            api_key=SecretStr(api_key) if api_key else None,
+            api_key=api_key_param,
             check_embedding_ctx_length=False,
         )
         probe_embedding = self._embed_query_with_retry("probe")

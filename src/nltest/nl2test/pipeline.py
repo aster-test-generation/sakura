@@ -41,6 +41,7 @@ from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from nltest.utils.llm import UsageTracker
 from nltest.utils.models import AgentToolLog, NL2TestEval, ToolLog
+from nltest.utils.pretty.color_logger import RichLog
 
 
 class Pipeline:
@@ -261,7 +262,12 @@ class Pipeline:
 
         try:
             return self.localization_grader.grade(localization_target, nl2_input)
-        except Exception:
+        except Exception as exc:
+            RichLog.warn(
+                "Localization evaluation failed for "
+                f"{nl2_input.qualified_class_name}::{nl2_input.method_signature} "
+                f"(id={nl2_input.id}): {exc}"
+            )
             return localization_eval
 
     def _build_tool_log(

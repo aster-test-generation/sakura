@@ -26,16 +26,16 @@ from nltest.utils.exceptions import ConfigurationException
 
 class ReActAgent:
     def __init__(
-            self,
-            *,
-            llm: LLMClient,
-            tools: List[BaseTool],
-            allow_duplicate_tools: Optional[List[BaseTool]] = None,
-            system_message: Optional[str] = None,
-            allow_parallelize: bool = True,
-            max_iters: int = 20,
-            strict_finalize: bool = True,
-            use_checkpointer: bool = True,
+        self,
+        *,
+        llm: LLMClient,
+        tools: List[BaseTool],
+        allow_duplicate_tools: Optional[List[BaseTool]] = None,
+        system_message: Optional[str] = None,
+        allow_parallelize: bool = True,
+        max_iters: int = 20,
+        strict_finalize: bool = True,
+        use_checkpointer: bool = True,
     ) -> None:
         self.llm = llm
         self.tools = tools
@@ -71,27 +71,61 @@ class ReActAgent:
 
     # Subclass hook
     def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         """Hook for subclasses to inject or transform tool arguments before execution."""
         return tool_name, raw_args
 
-    # Subclass hook
-    def process_tool_output(
-            self,
-            tool_call: ToolCall,
-            result: Any,
-            state: AgentState,
-            outputs: List[ToolMessage],
-    ) -> None:
-        """Allow subclasses to interpret tool results and update state."""
-        try:
+    def _append_tool_error_if_needed(
+        self,
+        tool_call: ToolCall,
+        result: Any,
+        outputs: List[ToolMessage],
+    ) -> bool:
+        if isinstance(result, dict) and result.get("status") == "error":
+            error_info = result.get("error") or {}
+            details = dict(error_info.get("details") or {})
+            details.setdefault("tool", tool_call.get("name"))
+            details.setdefault("tool_call_id", tool_call.get("id"))
             outputs.append(
                 ToolMessage(
-                    content=format_tool_ok(result),
+                    content=format_tool_error(
+                        code=error_info.get("code") or "tool_error",
+                        message=error_info.get("message") or "Tool error",
+                        details=details,
+                    ),
                     tool_call_id=tool_call["id"],
                 )
             )
+            return True
+        return False
+
+    def _append_tool_output(
+        self,
+        tool_call: ToolCall,
+        result: Any,
+        outputs: List[ToolMessage],
+    ) -> None:
+        if self._append_tool_error_if_needed(tool_call, result, outputs):
+            return
+        outputs.append(
+            ToolMessage(
+                content=format_tool_ok(result),
+                tool_call_id=tool_call["id"],
+            )
+        )
+
+    # Subclass hook
+    def process_tool_output(
+        self,
+        tool_call: ToolCall,
+        result: Any,
+        state: AgentState,
+        outputs: List[ToolMessage],
+    ) -> None:
+        """Allow subclasses to interpret tool results and update state."""
+        try:
+            self._append_tool_output(tool_call, result, outputs)
         except Exception as exc:
             outputs.append(
                 ToolMessage(
@@ -146,7 +180,9 @@ class ReActAgent:
         error_info = payload.get("error") or {}
         details = error_info.get("details") or {}
         tool_name = details.get("tool") or "unknown_tool"
-        tool_call_id = details.get("tool_call_id") or getattr(tool_msg, "tool_call_id", "unknown_call")
+        tool_call_id = details.get("tool_call_id") or getattr(
+            tool_msg, "tool_call_id", "unknown_call"
+        )
         error_code = error_info.get("code") or "unknown_error"
         error_msg = error_info.get("message") or ""
 
@@ -180,7 +216,9 @@ class ReActAgent:
                 segments = []
                 for chunk in llm_content:
                     if isinstance(chunk, dict):
-                        segments.append(str(chunk.get("text") or chunk.get("content") or chunk))
+                        segments.append(
+                            str(chunk.get("text") or chunk.get("content") or chunk)
+                        )
                     else:
                         segments.append(str(chunk))
                 llm_text = "\n".join(segments)
@@ -207,21 +245,17 @@ class ReActAgent:
         # Call model
         def call_model(state: AgentState) -> AgentState:
             # Ensure a system message starts the conversation; rely on invoke() to set it correctly
-            assert state.messages and isinstance(
-                state.messages[0], SystemMessage
-            ), "First message must be a SystemMessage"
+            assert state.messages and isinstance(state.messages[0], SystemMessage), (
+                "First message must be a SystemMessage"
+            )
 
             # Check if we're approaching the iteration limit and add a warning
             remaining_iterations = self.max_iters - state.iterations
             if remaining_iterations == 1:
-                warning_message = (
-                    "SYSTEM NOTICE: Final iteration. Call the finalize tool now using the best available context."
-                )
+                warning_message = "SYSTEM NOTICE: Final iteration. Call the finalize tool now using the best available context."
                 state.messages.append(HumanMessage(content=warning_message))
             elif remaining_iterations == 2:
-                warning_message = (
-                    "SYSTEM NOTICE: Second-to-last iteration. Finish any remaining tool work now; plan to call finalize next turn."
-                )
+                warning_message = "SYSTEM NOTICE: Second-to-last iteration. Finish any remaining tool work now; plan to call finalize next turn."
                 state.messages.append(HumanMessage(content=warning_message))
 
             out: AIMessage = self.llm.invoke_messages(
@@ -425,16 +459,18 @@ class ReActAgent:
             if last_ai and last_ai.tool_calls:
                 return "use_tools"
             if (
-                    not state.finalize_called
-                    and not self.strict_finalize
-                    and state.force_end_attempts < 2
+                not state.finalize_called
+                and not self.strict_finalize
+                and state.force_end_attempts < 2
             ):
                 return "force_end"
             return "end"
 
         # Decide whether to end after tools or continue/force end
         def should_continue_after_tools(state: AgentState) -> str:
-            if self._should_end_after_tools(state):  # If the end_now is called from finalize tool
+            if self._should_end_after_tools(
+                state
+            ):  # If the end_now is called from finalize tool
                 return "end"
             # If we've consumed the final allowed model step already, switch to force_end
             if state.iterations >= self.max_iters:
@@ -502,10 +538,10 @@ class ReActAgent:
         return workflow.compile(checkpointer=checkpointer)
 
     def invoke(
-            self,
-            input_msg: str,
-            state: Optional[AgentState] = None,
-            config: Optional[Dict[str, Any]] = None,
+        self,
+        input_msg: str,
+        state: Optional[AgentState] = None,
+        config: Optional[Dict[str, Any]] = None,
     ) -> AgentState:
         self._end_now = False
 
@@ -524,7 +560,7 @@ class ReActAgent:
             )
             # Ensure the first message is a SystemMessage; inject if missing
             if not effective.messages or not isinstance(
-                    effective.messages[0], SystemMessage
+                effective.messages[0], SystemMessage
             ):
                 effective.messages.insert(0, SystemMessage(content=self.system_message))
 

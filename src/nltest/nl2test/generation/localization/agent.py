@@ -22,15 +22,15 @@ class LocalizationReActAgent(ReActAgent):
     """
 
     def __init__(
-            self,
-            *,
-            llm: LLMClient,
-            tools: List[BaseTool],
-            allow_duplicate_tools: List[BaseTool] | None = None,
-            system_message: str,
-            max_iters: int = 30,
-            decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
-            parallelizable: bool = True,
+        self,
+        *,
+        llm: LLMClient,
+        tools: List[BaseTool],
+        allow_duplicate_tools: List[BaseTool] | None = None,
+        system_message: str,
+        max_iters: int = 30,
+        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
+        parallelizable: bool = True,
     ):
         super().__init__(
             llm=llm,
@@ -43,15 +43,18 @@ class LocalizationReActAgent(ReActAgent):
         self.decomposition_mode = decomposition_mode
 
     def prepare_tool_args(
-            self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         """Normalize tool arguments for CLDK compatibility."""
         updated_args = CLDKArgNormalizer.normalize_args(tool_name, raw_args)
         return tool_name, updated_args
 
     def process_tool_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
+        if self._append_tool_error_if_needed(tool_call, result, outputs):
+            return
+
         tool_name = tool_call["name"]
         handler = {
             "finalize": self._process_finalize_tool_output,
@@ -75,7 +78,7 @@ class LocalizationReActAgent(ReActAgent):
             )
 
     def _process_finalize_tool_output(
-            self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
         blocks, comments = result
         state.final_comments = str(comments)
@@ -98,11 +101,6 @@ class LocalizationReActAgent(ReActAgent):
         setattr(self, "_end_now", True)
 
     def _process_generic_tool_output(
-            self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
+        self, tool_call: ToolCall, result: Any, _: AgentState, outputs: List
     ) -> None:
-        outputs.append(
-            ToolMessage(
-                content=format_tool_ok(result),
-                tool_call_id=tool_call["id"],
-            )
-        )
+        self._append_tool_output(tool_call, result, outputs)

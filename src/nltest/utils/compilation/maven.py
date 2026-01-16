@@ -20,6 +20,12 @@ class CompilationError(BaseModel):
     )
 
 
+class CompilationScopeResult(BaseModel):
+    success: bool
+    output: str
+    errors: List[CompilationError]
+
+
 class JavaMavenCompilation(MavenBuild):
     """
     Wrapper over javabuild's MavenBuild that adds structured compiler diagnostics.
@@ -36,15 +42,44 @@ class JavaMavenCompilation(MavenBuild):
     )
     ERROR_INDENT_RE = re.compile(r"^\[ERROR\]\s{2,}\S")
 
-    def __init__(self, project_root: Path):
-        super().__init__(str(project_root))
+    def __init__(self, project_root: Path, module_root: Path | None = None):
+        # Expects absolute project_root and module_root
+        # MavenBuild expects target_module to be relative to project_root
+        project_abs = project_root.resolve()
+        module_abs = module_root.resolve() if module_root is not None else None
+
+        target_module = None
+        if module_abs and project_abs != module_abs:
+            try:
+                rel_str = module_abs.relative_to(project_abs).as_posix()
+                if rel_str not in ("", "."):
+                    target_module = rel_str
+            except ValueError:
+                target_module = None
+
+        if target_module:
+            super().__init__(str(project_abs), target_module=target_module)
+        else:
+            super().__init__(str(project_abs))
+
+        self.module_root = module_abs or project_abs
+
+    def compile_scope(self) -> CompilationScopeResult:
+        # Prepare deps only when we are in a multi-module scoped build.
+        if self.target_module:
+            _ = self.install_selected_projects_skip_tests_proc()
+
+        proc = self.compile_tests_proc(pre_compile_build=True, also_make=False)
+        errors = self.parse_compilation_errors(proc.stdout)
+        return CompilationScopeResult(
+            success=(proc.returncode == 0), output=proc.stdout, errors=errors
+        )
 
     def get_compilation_errors(self) -> List[CompilationError]:
         """
         Run `mvn test-compile` via MavenBuild and parse every compiler diagnostic.
         """
-        compiler_output = self.compile_tests()
-        return self.parse_compilation_errors(compiler_output)
+        return self.compile_scope().errors
 
     def parse_compilation_errors(self, compiler_output: str) -> List[CompilationError]:
         lines = self._filter_lines(compiler_output)

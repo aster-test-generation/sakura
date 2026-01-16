@@ -18,9 +18,11 @@ class CompilationExecutionMixin:
 
     Requirements:
     - The using class must have a `project_root` attribute (Path or None)
+    - Optional `module_root` attribute for multi-module builds
     """
 
     project_root: Path | None
+    module_root: Path | None = None
 
     def process_compile_and_execute(
         self,
@@ -74,8 +76,9 @@ class CompilationExecutionMixin:
             return
 
         project_root = self.project_root
+        module_root = self.module_root
         compilation_errors: List[CompilationError] = JavaMavenCompilation(
-            project_root
+            project_root, module_root=module_root
         ).get_compilation_errors()
 
         file_key = f"{state.class_name}.java"
@@ -148,7 +151,7 @@ class CompilationExecutionMixin:
             method_signature = state.method_signature
 
             execution_issues: List[ExecutionIssue] = JavaMavenExecution(
-                project_root
+                project_root, module_root=module_root
             ).get_execution_errors(qualified_class_name, method_signature)
 
             has_exec_error = len(execution_issues) > 0

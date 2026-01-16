@@ -44,9 +44,13 @@ class BaseCompositionOrchestrator:
             usage_tracker=self.usage_tracker,
         )
 
-        resolved_module_root = (
-            Path(module_root) if module_root is not None else Path(project_root)
-        )
+        resolved_project_root = Path(project_root).expanduser().resolve()
+        resolved_module_root = resolved_project_root
+        if module_root is not None:
+            resolved_module_root = Path(module_root).expanduser()
+            if not resolved_module_root.is_absolute():
+                resolved_module_root = resolved_project_root / resolved_module_root
+            resolved_module_root = resolved_module_root.resolve()
 
         tool_builder = (
             GherkinCompositionTools(
@@ -54,7 +58,7 @@ class BaseCompositionOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
-                project_root=project_root,
+                project_root=str(resolved_project_root),
                 module_root=resolved_module_root,
                 nl2_input=nl2_input,
             )
@@ -64,7 +68,7 @@ class BaseCompositionOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 structured_llm=structured_llm,
-                project_root=project_root,
+                project_root=str(resolved_project_root),
                 module_root=resolved_module_root,
                 nl2_input=nl2_input,
             )
@@ -104,8 +108,9 @@ class BaseCompositionOrchestrator:
             tools=tools,
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
-            project_root=Path(project_root or "."),
+            project_root=resolved_project_root,
             test_base_dir=test_base_dir,
+            module_root=resolved_module_root,
             max_iters=max_iters,
             parallelizable=parallelizable,
         )

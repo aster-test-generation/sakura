@@ -47,6 +47,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         nl_description: str,
         project_root: Path | str | None = None,
         test_base_dir: str | Path | None = None,
+        module_root: Path | None = None,
         allow_duplicate_tools: List[BaseTool] | None = None,
         max_iters: int = 10,
         localization_agent: BaseLocalizationOrchestrator | None = None,
@@ -66,6 +67,18 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         self._nl_description = nl_description
         self.project_root = Path(project_root) if project_root is not None else None
         self.test_base_dir = test_base_dir
+        resolved_module_root = (
+            Path(module_root).expanduser() if module_root is not None else None
+        )
+        if (
+            resolved_module_root is not None
+            and not resolved_module_root.is_absolute()
+            and self.project_root is not None
+        ):
+            resolved_module_root = self.project_root / resolved_module_root
+        self.module_root = (
+            resolved_module_root.resolve() if resolved_module_root is not None else None
+        )
         self.localization_agent = localization_agent
         self.composition_agent = composition_agent
         # Track last known states for reuse between calls
@@ -73,7 +86,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         self.composition_state: Optional[AgentState] = None
 
     def prepare_tool_args(
-        self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         # No CLDK normalization needed - supervisor doesn't use static analysis tools
         return tool_name, raw_args
@@ -169,7 +182,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         outputs: List,
     ) -> None:
         tool_name = tool_call["name"]
-        instructions = result.get("instructions")
+        instructions = result.get("instructions") or ""
 
         orchestrator = self.localization_agent
         if orchestrator is None:
@@ -270,7 +283,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         outputs: List,
     ) -> None:
         tool_name = tool_call["name"]
-        instructions = result.get("instructions")
+        instructions = result.get("instructions") or ""
 
         orchestrator = self.composition_agent
         if orchestrator is None:
@@ -397,6 +410,24 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
 
         start_line = result.get("start_line")
         end_line = result.get("end_line")
+
+        if not isinstance(start_line, int) or not isinstance(end_line, int):
+            outputs.append(
+                ToolMessage(
+                    content=format_tool_error(
+                        code="invalid_line_range",
+                        message="start_line and end_line must be integers.",
+                        details={
+                            "tool": tool_name,
+                            "tool_call_id": tool_call["id"],
+                            "start_line": start_line,
+                            "end_line": end_line,
+                        },
+                    ),
+                    tool_call_id=tool_call["id"],
+                )
+            )
+            return
 
         qcn = (
             f"{state.package}.{state.class_name}" if state.package else state.class_name

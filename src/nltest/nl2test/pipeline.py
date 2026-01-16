@@ -38,7 +38,13 @@ from nltest.utils.evaluation import TestGrader
 from nltest.utils.exceptions import ProjectCompilationError
 from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from nltest.utils.llm import UsageTracker
-from nltest.utils.models import AgentToolLog, NL2TestEval, ToolLog
+from nltest.utils.models import (
+    AgentToolLog,
+    NL2TestCoverageEval,
+    NL2TestEval,
+    NL2TestStructuralEval,
+    ToolLog,
+)
 from nltest.utils.pretty.color_logger import RichLog
 
 
@@ -53,6 +59,7 @@ class Pipeline:
         decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
     ):
         self.analysis = analysis
+        # Expect absolute paths for project and analysis directories.
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
         self.analysis_dir = Path(analysis_dir)
@@ -294,6 +301,28 @@ class Pipeline:
             llm_calls=0,
         )
 
+    @staticmethod
+    def _zero_structural_eval() -> NL2TestStructuralEval:
+        return NL2TestStructuralEval(
+            obj_creation_recall=0.0,
+            obj_creation_precision=0.0,
+            assertion_recall=0.0,
+            assertion_precision=0.0,
+            callable_recall=0.0,
+            callable_precision=0.0,
+            focal_recall=0.0,
+            focal_precision=0.0,
+        )
+
+    @staticmethod
+    def _zero_coverage_eval() -> NL2TestCoverageEval:
+        return NL2TestCoverageEval(
+            class_coverage=0.0,
+            method_coverage=0.0,
+            line_coverage=0.0,
+            branch_coverage=0.0,
+        )
+
     def regenerate_analysis(self, *, eager: bool = True) -> JavaAnalysis:
         """Regenerate analysis for grading newly created test classes."""
         self.grading_analysis_dir.mkdir(parents=True, exist_ok=True)
@@ -321,13 +350,14 @@ class Pipeline:
             usage_tracker=run_usage_tracker,
         )
 
+        # module_root is absolute (or None) from CommonAnalysis.
+        # test_base_dir is absolute, anchored to module_root or project_root.
+        # resolved_module_root is absolute (module_root when present, else project_root).
         module_root = self.common.resolve_module_root(nl2_input.qualified_class_name)
-        test_base_dir = self.common.resolve_test_base_dir(module_root)
-        resolved_module_root = (
-            self.project_root / module_root
-            if module_root is not None
-            else self.project_root
+        test_base_dir = self.common.resolve_test_base_dir(
+            module_root, project_root=self.project_root
         )
+        resolved_module_root = module_root or self.project_root
 
         # Prepare blocks for supervisor orchestrator
         if self.decomposition_mode == DecompositionMode.GHERKIN:
@@ -392,6 +422,8 @@ class Pipeline:
             final_result.localization_eval = self._localization_eval_from_state(
                 supervisor_state, nl2_input
             )
+            final_result.structured_eval = self._zero_structural_eval()
+            final_result.coverage_eval = self._zero_coverage_eval()
         else:
             class_name = supervisor_state.class_name
             simple_class_name = class_name.strip() if class_name else ""
@@ -423,7 +455,7 @@ class Pipeline:
                 return normalized.endswith(pred_simple_file)
 
             compilation_errors: List[CompilationError] = JavaMavenCompilation(
-                self.project_root
+                self.project_root, module_root=resolved_module_root
             ).get_compilation_errors()
             erroneous_files = [
                 compilation_error.file for compilation_error in compilation_errors
@@ -446,7 +478,7 @@ class Pipeline:
                 self.localization_grader.set_analysis(new_analysis)
 
                 structured_eval, coverage_eval = self.test_grader.grade(
-                    nl2_input, nl2_metadata
+                    nl2_input, nl2_metadata, compiles=final_result.compiles
                 )
                 final_result.structured_eval = structured_eval
                 final_result.coverage_eval = coverage_eval

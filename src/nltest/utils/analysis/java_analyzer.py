@@ -182,14 +182,12 @@ class CommonAnalysis:
         return sorted(imports, key=len, reverse=True)
 
     def module_root_from_java_file(self, java_file: str | None) -> Path | None:
-        """
-        Return the module root inferred from a Java file path.
-        If the prefix is the project root, returns None.
-        """
+        """Return the absolute module root inferred from a Java file path."""
         if not java_file:
             return None
 
-        normalized = str(java_file).replace("\\", "/")
+        resolved_java_file = Path(java_file).expanduser().resolve()
+        normalized = resolved_java_file.as_posix()
         for marker in ("/src/main/java", "/src/test/java"):
             if marker in normalized:
                 prefix = normalized.split(marker, 1)[0].rstrip("/")
@@ -202,16 +200,23 @@ class CommonAnalysis:
         return None
 
     def resolve_module_root(self, qualified_class_name: str) -> Path | None:
-        """Resolve the module root using the class's source path."""
+        """Resolve the absolute module root using the class's source path."""
         cldk_name = self.get_cldk_class_name(qualified_class_name)
         java_file = self.analysis.get_java_file(qualified_class_name=cldk_name)
         return self.module_root_from_java_file(java_file)
 
-    def resolve_test_base_dir(self, module_root: Path | None) -> Path:
-        """Resolve the test root directory for a module."""
+    def resolve_test_base_dir(
+        self, module_root: Path | None, *, project_root: Path | None = None
+    ) -> Path:
+        """Resolve the absolute test root directory for a module."""
         if module_root is None:
-            return Path(TEST_DIR)
-        return module_root / TEST_DIR
+            base_root = (
+                Path(project_root).expanduser().resolve()
+                if project_root is not None
+                else Path.cwd().resolve()
+            )
+            return base_root / TEST_DIR
+        return Path(module_root).expanduser().resolve() / TEST_DIR
 
     def get_referenced_app_classes(self, method_details: JCallable):
         referenced_classes = set()

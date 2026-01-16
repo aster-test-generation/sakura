@@ -1,4 +1,5 @@
 import logging
+import shutil
 from collections import deque
 from pathlib import Path
 
@@ -109,6 +110,33 @@ def _load_nl2_inputs_by_project_from_csv(
     )
 
     return nl2test_inputs_by_project
+
+
+def _clear_nl2test_output_artifacts(
+    output_dir: Path, reset_evaluation_results: bool
+) -> None:
+    if not output_dir.exists():
+        return
+
+    root_log = output_dir / "nl2test.log"
+    if root_log.exists():
+        root_log.unlink()
+
+    for project_dir in output_dir.iterdir():
+        if not project_dir.is_dir():
+            continue
+
+        if reset_evaluation_results:
+            results_path = project_dir / "nl2test_evaluation_results.json"
+            if results_path.exists():
+                results_path.unlink()
+
+        temp_analysis = project_dir / "temp_analysis"
+        if temp_analysis.exists():
+            shutil.rmtree(temp_analysis)
+
+        for log_file in project_dir.glob("*.log"):
+            log_file.unlink()
 
 
 @app.command()
@@ -733,15 +761,15 @@ def run_nl2test(
                 f"Invalid --emb-provider: {emb_provider}. Must be one of {[p.value for p in Provider]}"
             )
 
-    base_project_dir = Path(base_project_dir)
+    base_project_dir = Path(base_project_dir).expanduser().resolve()
     if not (base_project_dir.exists() and base_project_dir.is_dir()):
         raise Exception(f"Base project directory {base_project_dir} does not exist.")
 
-    base_analysis_dir = Path(base_analysis_dir)
+    base_analysis_dir = Path(base_analysis_dir).expanduser().resolve()
     if not (base_analysis_dir.exists() and base_analysis_dir.is_dir()):
         raise Exception(f"Base analysis directory {base_analysis_dir} does not exist.")
 
-    output_dir = Path(output_dir)
+    output_dir = Path(output_dir).expanduser().resolve()
     if output_dir.exists() and not output_dir.is_dir():
         raise Exception(f"Output path {output_dir} is not a directory.")
     if not output_dir.exists():
@@ -755,6 +783,8 @@ def run_nl2test(
     nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(
         test2nl_file, max_entries
     )
+
+    _clear_nl2test_output_artifacts(output_dir, reset_evaluation_results)
 
     # Configure logging
     actor_log_file_name: str | None = None
@@ -813,7 +843,6 @@ def run_nl2test(
     # Project-level scheduling, only between-project parallelism
     results_filename = "nl2test_evaluation_results.json"
     project_data_managers: dict[str, StructuredDataManager] = {}
-    cleared_projects: set[str] = set()
 
     def get_project_data_manager(project_name: str) -> StructuredDataManager:
         manager = project_data_managers.get(project_name)
@@ -842,16 +871,6 @@ def run_nl2test(
             RichLog.info(f"\n{sep}")
             RichLog.info(f"Starting NL2Test actor for project: {project_name}")
             RichLog.info(str(sep))
-
-            project_manager = get_project_data_manager(project_name)
-            if reset_evaluation_results and project_name not in cleared_projects:
-                cleared = project_manager.delete(results_filename)
-                if cleared:
-                    RichLog.info(
-                        f"[{project_name}] Removed existing evaluation results at "
-                        f"{project_manager.base_dir / results_filename}"
-                    )
-                cleared_projects.add(project_name)
 
             actor = NL2TestActor.options(max_concurrency=1).remote(
                 project_name=project_name,

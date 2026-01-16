@@ -1,5 +1,4 @@
 import logging
-import random
 from collections import deque
 from pathlib import Path
 
@@ -69,7 +68,8 @@ def _load_nl2_inputs_by_project_from_csv(
 
     # Limit entries if specified (applied to individual entries, not class-method pairs)
     if max_entries > 0 and total_entries > max_entries:
-        test2nl_entries = random.sample(test2nl_entries, k=max_entries)
+        test2nl_entries = test2nl_entries[:max_entries]
+        # test2nl_entries = random.sample(test2nl_entries, k=max_entries)
         RichLog.info(
             f"Processing random subset of {len(test2nl_entries)} entries "
             f"(max_entries={max_entries}, total_entries={total_entries})"

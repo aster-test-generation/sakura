@@ -24,10 +24,8 @@ from nltest.nl2test.models import (
     LocalizationEval,
     LocalizedScenario,
     NL2LocalizationOutput,
-    NL2TestCoverageEval,
     NL2TestInput,
     NL2TestMetadata,
-    NL2TestStructuralEval,
     Scenario,
 )
 from nltest.nl2test.models.decomposition import DecompositionMode
@@ -79,7 +77,6 @@ class Pipeline:
         self.test_grader = TestGrader(
             analysis=self.analysis,
             project_root=self.project_root,
-            project_erroneous_files=[],
             application_classes=_application_classes,
             test_utility_classes=_test_utility_classes,
         )
@@ -283,31 +280,18 @@ class Pipeline:
         )
 
     def _empty_nl2test_eval(self, nl2_input: NL2TestInput) -> NL2TestEval:
-        """Create an empty NL2TestOutput object with zeroed metrics."""
+        """Create a default NL2TestEval with empty grading results."""
         return NL2TestEval(
             compiles=False,
             nl2test_input=nl2_input,
             nl2test_metadata=NL2TestMetadata(qualified_test_class_name="", code=""),
-            structured_eval=NL2TestStructuralEval(
-                obj_creation_recall=0.0,
-                obj_creation_precision=0.0,
-                assertion_recall=0.0,
-                assertion_precision=0.0,
-                callable_recall=0.0,
-                callable_precision=0.0,
-                focal_recall=0.0,
-                focal_precision=0.0,
-            ),
-            coverage_eval=NL2TestCoverageEval(
-                class_coverage=0.0,
-                method_coverage=0.0,
-                line_coverage=0.0,
-                branch_coverage=0.0,
-            ),
-            localization_eval=self._empty_localization_eval(nl2_input),
-            tool_log=self._build_tool_log(None, None, None),
+            structured_eval=None,
+            coverage_eval=None,
+            localization_eval=None,
+            tool_log=None,
             input_tokens=0,
             output_tokens=0,
+            llm_calls=0,
         )
 
     def regenerate_analysis(self, *, eager: bool = True) -> JavaAnalysis:
@@ -339,7 +323,11 @@ class Pipeline:
 
         module_root = self.common.resolve_module_root(nl2_input.qualified_class_name)
         test_base_dir = self.common.resolve_test_base_dir(module_root)
-        resolved_module_root = module_root or self.project_root
+        resolved_module_root = (
+            self.project_root / module_root
+            if module_root is not None
+            else self.project_root
+        )
 
         # Prepare blocks for supervisor orchestrator
         if self.decomposition_mode == DecompositionMode.GHERKIN:
@@ -396,17 +384,17 @@ class Pipeline:
             supervisor_state and (supervisor_state.class_name or "").strip()
         )
 
-        final_result: NL2TestEval
+        final_result: NL2TestEval = self._empty_nl2test_eval(nl2_input)
+        final_result.tool_log = tool_log
 
         if not has_class_name:
-            localization_eval = self._localization_eval_from_state(
+            # If no class name from composition agent, use localization agent to determine localization effectiveness and return
+            final_result.localization_eval = self._localization_eval_from_state(
                 supervisor_state, nl2_input
             )
-            final_result = self._empty_nl2test_eval(nl2_input)
-            final_result.localization_eval = localization_eval
-            final_result.tool_log = tool_log
         else:
-            simple_class_name = supervisor_state.class_name.strip()
+            class_name = supervisor_state.class_name
+            simple_class_name = class_name.strip() if class_name else ""
             package = (supervisor_state.package or "").strip()
             method_signature = (
                 (supervisor_state.method_signature or "").strip()
@@ -417,40 +405,60 @@ class Pipeline:
                 f"{package}.{simple_class_name}" if package else simple_class_name
             )
 
-            # Regenerate analysis to pick up new test class and update grader
-            new_analysis = self.regenerate_analysis(eager=True)
-            self.test_grader.set_analysis(new_analysis)
-            self.localization_grader.set_analysis(new_analysis)
-
-            # Gather erroneous files and pass to grader
-            compilation_errors: List[CompilationError] = JavaMavenCompilation(
-                self.project_root
-            ).get_compilation_errors()
-            erroneous_files = [
-                compilation_error.file for compilation_error in compilation_errors
-            ]
-            self.test_grader.set_project_erroneous_files(erroneous_files)
-
             # Build NL2TestMetadata for the predicted class; code filled after grading
             nl2_metadata = NL2TestMetadata(
                 qualified_test_class_name=qualified_test_class_name,
                 code="",
                 method_signature=method_signature or None,
             )
+            final_result.nl2test_metadata = nl2_metadata
 
-            eval_result: NL2TestEval = self.test_grader.grade(nl2_input, nl2_metadata)
+            pred_simple_file = qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
+            pred_rel_path = qualified_test_class_name.replace(".", "/") + ".java"
 
-            localization_eval: LocalizationEval = self._localization_eval_from_state(
-                supervisor_state, nl2_input
+            def _matches_error_path(err: str) -> bool:
+                normalized = err.replace("\\", "/")
+                if "/" in normalized:
+                    return normalized.endswith(pred_rel_path)
+                return normalized.endswith(pred_simple_file)
+
+            compilation_errors: List[CompilationError] = JavaMavenCompilation(
+                self.project_root
+            ).get_compilation_errors()
+            erroneous_files = [
+                compilation_error.file for compilation_error in compilation_errors
+            ]
+            final_result.compiles = not any(
+                _matches_error_path(err) for err in erroneous_files
             )
 
-            # Load and attach test code, then delete the file
+            try:
+                # Regenerate analysis to pick up new test class and update grader
+                new_analysis = self.regenerate_analysis(eager=True)
+            except Exception as exc:
+                RichLog.warn(
+                    "Regenerating analysis failed for "
+                    f"{qualified_test_class_name}::{method_signature} "
+                    f"(id={nl2_input.id}); skipping grading: {exc}"
+                )
+            else:
+                self.test_grader.set_analysis(new_analysis)
+                self.localization_grader.set_analysis(new_analysis)
+
+                structured_eval, coverage_eval = self.test_grader.grade(
+                    nl2_input, nl2_metadata
+                )
+                final_result.structured_eval = structured_eval
+                final_result.coverage_eval = coverage_eval
+                final_result.localization_eval = self._localization_eval_from_state(
+                    supervisor_state, nl2_input
+                )
+
             fm = TestFileManager(self.project_root, test_base_dir=test_base_dir)
             info = TestFileInfo(qualified_class_name=qualified_test_class_name)
             try:
                 code = fm.load(info, encode_class_name=False)
-                # Attach code to metadata
-                eval_result.nl2test_metadata.code = code
+                final_result.nl2test_metadata.code = code
             except FileNotFoundError:
                 pass
             finally:
@@ -458,10 +466,6 @@ class Pipeline:
                     fm.delete_single(info, encode_class_name=False)
                 except Exception:
                     pass
-
-            eval_result.localization_eval = localization_eval
-            eval_result.tool_log = tool_log
-            final_result = eval_result
 
         totals = run_usage_tracker.totals()
         final_result.input_tokens = totals["input_tokens"]

@@ -23,7 +23,6 @@ from nltest.utils.models import (
     NL2TestCoverageEval,
     NL2TestInput,
     NL2TestMetadata,
-    NL2TestEval,
     NL2TestStructuralEval,
 )
 from nltest.utils.analysis import CommonAnalysis
@@ -40,21 +39,14 @@ class TestGrader:
         self,
         analysis: JavaAnalysis,
         project_root: Path,
-        project_erroneous_files: Optional[List[str]] = None,
         application_classes: Optional[List[str]] = None,
         test_utility_classes: Optional[List[str]] = None,
     ) -> None:
         self.analysis = analysis
         self.project_root = project_root
-        # Track erroneous Java filenames for the project (e.g., MyTest.java)
-        self.project_erroneous_files: Set[str] = set(project_erroneous_files or [])
         self.application_classes: List[str] = list(application_classes or [])
         self.test_utility_classes: List[str] = list(test_utility_classes or [])
         self.common = CommonAnalysis(analysis)
-
-    def set_project_erroneous_files(self, files: List[str]) -> None:
-        """Replace the set of erroneous Java filenames used for compiles flag."""
-        self.project_erroneous_files = set(files)
 
     def set_analysis(self, analysis: JavaAnalysis) -> None:
         self.analysis = analysis
@@ -258,17 +250,17 @@ class TestGrader:
 
         # Assertions and callables recall
         gt_assertion_types = self._get_assertion_types(
-            gt_analysis.call_assertion_sequences
+            gt_analysis.call_assertion_sequences or []
         )
         pred_assertion_types = self._get_assertion_types(
-            pred_analysis.call_assertion_sequences
+            pred_analysis.call_assertion_sequences or []
         )
         assertion_recall, assertion_precision = self._assertion_scores(
             gt_assertion_types, pred_assertion_types
         )
         callable_recall, callable_precision = self._callable_scores(
-            gt_analysis.call_assertion_sequences,
-            pred_analysis.call_assertion_sequences,
+            gt_analysis.call_assertion_sequences or [],
+            pred_analysis.call_assertion_sequences or [],
         )
 
         # Focal recall: number of GT focal methods also in pred focal set
@@ -423,24 +415,7 @@ class TestGrader:
 
     def grade(
         self, nl2_input: NL2TestInput, nl2_metadata: NL2TestMetadata
-    ) -> NL2TestEval:
-        pred_simple_file = (
-            nl2_metadata.qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
-        )
-        pred_rel_path = (
-            nl2_metadata.qualified_test_class_name.replace(".", "/") + ".java"
-        )
-
-        def _matches_error_path(err: str) -> bool:
-            normalized = err.replace("\\", "/")
-            if "/" in normalized:
-                return normalized.endswith(pred_rel_path)
-            return normalized.endswith(pred_simple_file)
-
-        compiles = not any(
-            _matches_error_path(err) for err in self.project_erroneous_files
-        )
-
+    ) -> Tuple[Optional[NL2TestStructuralEval], Optional[NL2TestCoverageEval]]:
         pred_class_name = nl2_metadata.qualified_test_class_name
         # Prefer method signature from metadata when available. If that method
         # cannot be found in the analysis, fall back to the first discovered test
@@ -497,10 +472,4 @@ class TestGrader:
             gt_class_name=gt_class_name,
         )
 
-        return NL2TestEval(
-            compiles=compiles,
-            nl2test_input=nl2_input,
-            nl2test_metadata=nl2_metadata,
-            structured_eval=structural_eval,
-            coverage_eval=coverage_eval,
-        )
+        return structural_eval, coverage_eval

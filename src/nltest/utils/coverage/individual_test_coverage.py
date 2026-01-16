@@ -107,7 +107,9 @@ class IndividualTestCoverage:
         resolved_project_root = (
             resolved_module_root if resolved_module_root is not None else project_root
         )
-        test_base_dir = common.resolve_test_base_dir(resolved_module_root)
+        test_base_dir = common.resolve_test_base_dir(
+            resolved_module_root, project_root=project_root
+        )
         return cls(
             project_root=resolved_project_root,
             build_type=build_type,

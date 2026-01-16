@@ -160,6 +160,28 @@ class TestGrader:
         precision = total_matched / total_pred if total_pred else 1.0
         return recall, precision
 
+    @staticmethod
+    def _zero_structural_eval() -> NL2TestStructuralEval:
+        return NL2TestStructuralEval(
+            obj_creation_recall=0.0,
+            obj_creation_precision=0.0,
+            assertion_recall=0.0,
+            assertion_precision=0.0,
+            callable_recall=0.0,
+            callable_precision=0.0,
+            focal_recall=0.0,
+            focal_precision=0.0,
+        )
+
+    @staticmethod
+    def _zero_coverage_eval() -> NL2TestCoverageEval:
+        return NL2TestCoverageEval(
+            class_coverage=0.0,
+            method_coverage=0.0,
+            line_coverage=0.0,
+            branch_coverage=0.0,
+        )
+
     def _get_constructor_types(self, class_name: str, method_sig: str) -> Set[str]:
         types: Set[str] = set()
         try:
@@ -414,8 +436,15 @@ class TestGrader:
         )
 
     def grade(
-        self, nl2_input: NL2TestInput, nl2_metadata: NL2TestMetadata
+        self,
+        nl2_input: NL2TestInput,
+        nl2_metadata: NL2TestMetadata,
+        *,
+        compiles: bool = True,
     ) -> Tuple[Optional[NL2TestStructuralEval], Optional[NL2TestCoverageEval]]:
+        if not compiles:
+            return self._zero_structural_eval(), self._zero_coverage_eval()
+
         pred_class_name = nl2_metadata.qualified_test_class_name
         # Prefer method signature from metadata when available. If that method
         # cannot be found in the analysis, fall back to the first discovered test

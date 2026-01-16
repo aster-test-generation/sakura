@@ -74,11 +74,19 @@ class BaseSupervisorOrchestrator:
             usage_tracker=self.usage_tracker,
         )
 
+        resolved_project_root = Path(base_project_dir).expanduser().resolve()
+        resolved_module_root = None
+        if module_root is not None:
+            resolved_module_root = Path(module_root).expanduser()
+            if not resolved_module_root.is_absolute():
+                resolved_module_root = resolved_project_root / resolved_module_root
+            resolved_module_root = resolved_module_root.resolve()
+
         # Choose tool builder by decomposition mode (guarded above, but keep structure)
         if self.decomposition_mode == DecompositionMode.GHERKIN:
             tool_builder = GherkinSupervisorTools(
                 llm=decision_llm,
-                project_root=base_project_dir,
+                project_root=str(resolved_project_root),
             )
             localization_agent = GherkinLocalizationOrchestrator(
                 analysis=analysis,
@@ -92,16 +100,15 @@ class BaseSupervisorOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
-                project_root=base_project_dir or "",
+                project_root=str(resolved_project_root),
                 test_base_dir=test_base_dir,
-                module_root=module_root,
+                module_root=resolved_module_root,
                 usage_tracker=self.usage_tracker,
             )
         else:
             tool_builder = GrammaticalSupervisorTools(
                 llm=decision_llm,
-                project_root=base_project_dir,
-                nl2_input=nl2_input,
+                project_root=str(resolved_project_root),
             )
             localization_agent = GrammaticalLocalizationOrchestrator(
                 analysis=analysis,
@@ -115,9 +122,9 @@ class BaseSupervisorOrchestrator:
                 method_searcher=method_searcher,
                 class_searcher=class_searcher,
                 nl2_input=nl2_input,
-                project_root=base_project_dir or "",
+                project_root=str(resolved_project_root),
                 test_base_dir=test_base_dir,
-                module_root=module_root,
+                module_root=resolved_module_root,
                 usage_tracker=self.usage_tracker,
             )
 
@@ -147,8 +154,9 @@ class BaseSupervisorOrchestrator:
             allow_duplicate_tools=allow_duplicate_tools,
             system_message=system_message,
             nl_description=self.nl2_input.description if self.nl2_input else "",
-            project_root=base_project_dir,
+            project_root=str(resolved_project_root),
             test_base_dir=test_base_dir,
+            module_root=resolved_module_root,
             max_iters=max_iters,
             localization_agent=localization_agent,
             composition_agent=composition_agent,

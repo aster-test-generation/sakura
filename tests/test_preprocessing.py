@@ -1,5 +1,4 @@
 import pytest
-
 from cldk.analysis.java import JavaAnalysis
 
 from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder

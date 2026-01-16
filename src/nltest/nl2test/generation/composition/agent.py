@@ -81,6 +81,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         system_message: str,
         project_root: Path,
         test_base_dir: str | Path | None = None,
+        module_root: Path | None = None,
         max_iters: int = 30,
         parallelizable: bool = True,
     ):
@@ -94,6 +95,14 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         )
         self.project_root = Path(project_root)
         self.test_base_dir = test_base_dir
+        resolved_module_root = (
+            Path(module_root).expanduser() if module_root is not None else None
+        )
+        if resolved_module_root is not None and not resolved_module_root.is_absolute():
+            resolved_module_root = self.project_root / resolved_module_root
+        self.module_root = (
+            resolved_module_root.resolve() if resolved_module_root is not None else None
+        )
 
     @staticmethod
     def _cleanup_empty_dirs(base_dir: Path, start_dir: Path) -> None:

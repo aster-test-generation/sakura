@@ -182,15 +182,23 @@ class CommonAnalysis:
         return sorted(imports, key=len, reverse=True)
 
     def module_root_from_java_file(self, java_file: str | None) -> Path | None:
-        """Return the module root for a Java file path if detected."""
+        """
+        Return the module root inferred from a Java file path.
+        If the prefix is the project root, returns None.
+        """
         if not java_file:
             return None
+
         normalized = str(java_file).replace("\\", "/")
         for marker in ("/src/main/java", "/src/test/java"):
             if marker in normalized:
-                prefix = normalized.split(marker, 1)[0]
-                prefix = prefix[:-1] if prefix.endswith("/") else prefix
-                return Path(prefix) if prefix else Path(".")
+                prefix = normalized.split(marker, 1)[0].rstrip("/")
+                if not prefix:
+                    return None
+                candidate = Path(prefix)
+                if candidate == Path("."):
+                    return None
+                return candidate
         return None
 
     def resolve_module_root(self, qualified_class_name: str) -> Path | None:

@@ -93,13 +93,20 @@ class IndividualTestCoverage:
         source_root: str = "src/main/java",
         junit_version: int = 5,
     ) -> "IndividualTestCoverage":
-        resolved_module_root = module_root
+        resolved_module_root = Path(module_root) if module_root is not None else None
         if resolved_module_root is None:
             for class_name in qualified_class_names:
-                resolved_module_root = common.resolve_module_root(class_name)
-                if resolved_module_root is not None:
+                candidate = common.resolve_module_root(class_name)
+                if candidate is not None:
+                    resolved_module_root = candidate
                     break
-        resolved_project_root = resolved_module_root or project_root
+
+        if resolved_module_root is not None and not resolved_module_root.is_absolute():
+            resolved_module_root = project_root / resolved_module_root
+
+        resolved_project_root = (
+            resolved_module_root if resolved_module_root is not None else project_root
+        )
         test_base_dir = common.resolve_test_base_dir(resolved_module_root)
         return cls(
             project_root=resolved_project_root,

@@ -37,7 +37,7 @@ IGNORED_DIRS = {
     ".vscode",
 }
 
-NL2TEST_DEBUG = True
+NL2TEST_DEBUG = False
 
 
 @app.callback()

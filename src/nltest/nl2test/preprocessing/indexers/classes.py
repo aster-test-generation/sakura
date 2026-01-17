@@ -19,19 +19,26 @@ class ClassIndexer(BaseIndexer):
     def _get_classes_with_visible_methods(self):
         classes = []
         for qualified_class_name in self.analysis.get_classes():
-            testing_frameworks = CommonAnalysis(self.analysis).get_testing_frameworks_for_class(qualified_class_name)
-            if CommonAnalysis(self.analysis).is_test_class(qualified_class_name, testing_frameworks):
+            testing_frameworks = CommonAnalysis(
+                self.analysis
+            ).get_testing_frameworks_for_class(qualified_class_name)
+            if CommonAnalysis(self.analysis).is_test_class(
+                qualified_class_name, testing_frameworks
+            ):
                 continue
-            if not Reachability(self.analysis).get_visible_class_methods(qualified_class_name):
+            if not Reachability(self.analysis).get_visible_class_methods(
+                qualified_class_name
+            ):
                 continue
             classes.append(qualified_class_name)
         return classes
 
     def build_index(self, *, exclude_test_dirs: bool = False) -> ClassSearcher:
         """Extract snippets, embed them, add to vector store, and return searchers."""
-        snippets: List[ClassSnippet] = self.extractor.get_project_snippets(
-            exclude_test_dirs=exclude_test_dirs
-        )
         vector_store = ClassVectorStore(self.embedder)
-        vector_store.add_snippets(snippets)
+        if not vector_store.loaded_from_cache:
+            snippets: List[ClassSnippet] = self.extractor.get_project_snippets(
+                exclude_test_dirs=exclude_test_dirs
+            )
+            vector_store.add_snippets(snippets)
         return ClassSearcher(vector_store)

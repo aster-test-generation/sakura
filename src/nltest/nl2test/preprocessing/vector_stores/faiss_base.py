@@ -19,8 +19,7 @@ T = TypeVar("T")
 class SnippetConverter(Protocol[T]):
     """Generic callable that converts a snippet model into a LangChain Document."""
 
-    def __call__(self, snippet: T) -> Document:
-        ...
+    def __call__(self, snippet: T) -> Document: ...
 
 
 class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
@@ -43,6 +42,10 @@ class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
 
         super().__init__(store, embedder)
 
+    @property
+    def loaded_from_cache(self) -> bool:
+        return self._loaded_from_cache
+
     def _build_store(self, embedder: BaseEmbedder) -> FAISS:
         index = faiss.IndexFlatL2(embedder.dim)
         return FAISS(
@@ -57,13 +60,17 @@ class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
             return None
 
         if self._index_dir is None:
-            RichLog.warn("use_stored_index was requested but index directory is not set.")
+            RichLog.warn(
+                "use_stored_index was requested but index directory is not set."
+            )
             return None
 
         if not self._index_dir.exists():
             return None
         if not self._index_dir.is_dir():
-            RichLog.warn(f"Expected directory for FAISS index, got file: {self._index_dir}")
+            RichLog.warn(
+                f"Expected directory for FAISS index, got file: {self._index_dir}"
+            )
             return None
 
         try:
@@ -83,7 +90,9 @@ class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
             AttributeError,
             faiss.FaissError,
         ) as exc:
-            RichLog.warn(f"Failed to load cached FAISS index at {self._index_dir}: {exc}")
+            RichLog.warn(
+                f"Failed to load cached FAISS index at {self._index_dir}: {exc}"
+            )
             self._loaded_from_cache = False
             return None
 

@@ -10,8 +10,9 @@ from nltest.utils.analysis.java_analyzer import CommonAnalysis
 from nltest.utils.exceptions import (
     ToolExceptionHandler,
     MethodNotFoundError,
-    CallSiteNotFoundError, ClassNotFoundError,
+    ClassNotFoundError,
 )
+
 from nltest.nl2test.generation.common.tool_descriptions import (
     EXTRACT_CODE_DESC,
     METHOD_DETAILS_DESC,
@@ -34,16 +35,16 @@ class CommonJavaAnalysisTools:
     # Understand conditional branches and code structure
     def _make_extract_code_tool(self) -> StructuredTool:
         def _extract_method_code(
-                qualified_class_name: str,
-                method_signature: str,
-                start_line: int,
-                end_line: int,
+            qualified_class_name: str,
+            method_signature: str,
+            start_line: int,
+            end_line: int,
         ) -> Dict[str, Any]:
             # Look up method; fail clearly if not found
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found.",
+                    f"Class {qualified_class_name} not found in application (may be externally defined).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -52,7 +53,7 @@ class CommonJavaAnalysisTools:
             )
             if not method_details:
                 raise MethodNotFoundError(
-                    f"Method {method_signature} not found in class {qualified_class_name}.",
+                    f"Method {method_signature} not found in application class {qualified_class_name} (may be externally defined).",
                     extra_info={
                         "qualified_class_name": qualified_class_name,
                         "method_signature": method_signature,
@@ -77,8 +78,12 @@ class CommonJavaAnalysisTools:
                 end = min(end, total)
 
             empty_slice = start > end
-            slice_lines: List[str] = [] if empty_slice else lines[start - 1:end]
-            note = "" if not empty_slice else "start_line greater than end_line; returning empty slice."
+            slice_lines: List[str] = [] if empty_slice else lines[start - 1 : end]
+            note = (
+                ""
+                if not empty_slice
+                else "start_line greater than end_line; returning empty slice."
+            )
 
             return {
                 "source": "\n".join(slice_lines),
@@ -99,12 +104,12 @@ class CommonJavaAnalysisTools:
     # Get basic method details like what it returns, parameters, modifiers, and comments.
     def _make_get_method_details_tool(self) -> StructuredTool:
         def _get_method_details(
-                qualified_class_name: str, method_signature: str
+            qualified_class_name: str, method_signature: str
         ) -> Dict[str, any]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found.",
+                    f"Class {qualified_class_name} not found in application (may be externally defined).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -113,7 +118,7 @@ class CommonJavaAnalysisTools:
             )
             if not method_details:
                 raise MethodNotFoundError(
-                    f"Method {method_signature} not found in class {qualified_class_name}.",
+                    f"Method {method_signature} not found in application class {qualified_class_name} (may be externally defined).",
                     extra_info={
                         "qualified_class_name": qualified_class_name,
                         "method_signature": method_signature,
@@ -130,7 +135,9 @@ class CommonJavaAnalysisTools:
                 "modifiers": method_details.modifiers,
                 "return_type": method_details.return_type,
                 "parameter_types": [p.type for p in method_details.parameters],
-                "comments": [c.content[:25] for c in method_details.comments if c.content],
+                "comments": [
+                    c.content[:25] for c in method_details.comments if c.content
+                ],
                 "visibility": visibility,
             }
 
@@ -144,12 +151,12 @@ class CommonJavaAnalysisTools:
 
     def _make_call_site_details_tool(self) -> StructuredTool:
         def _get_call_site_details(
-                qualified_class_name: str, method_signature: str
+            qualified_class_name: str, method_signature: str
         ) -> List[Dict[str, Union[str, List[str]]]]:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found.",
+                    f"Class {qualified_class_name} not found in application (may be externally defined).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -158,7 +165,7 @@ class CommonJavaAnalysisTools:
             )
             if not method_details:
                 raise MethodNotFoundError(
-                    f"Call sites could not be found because method {method_signature} not found in class {qualified_class_name}.",
+                    f"Call sites could not be found because method {method_signature} not found in application class {qualified_class_name} (may be externally defined).",
                     extra_info={
                         "qualified_class_name": qualified_class_name,
                         "method_signature": method_signature,

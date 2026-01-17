@@ -88,7 +88,7 @@ class LLMClient:
         try:
             max_tokens = config.get("llm", "max_tokens")
         except ConfigurationException:
-            max_tokens = 24000
+            max_tokens = 12288
 
         try:
             timeout = config.get("llm", "timeout")

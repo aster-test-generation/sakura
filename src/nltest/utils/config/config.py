@@ -35,6 +35,7 @@ def init_config(
     max_tokens: int = 40000,
     reasoning_enabled: bool = True,
     reasoning_effort: str = "medium",
+    exclude_reasoning: bool = True,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -64,6 +65,7 @@ def init_config(
 
     config.set("reasoning", "enabled", reasoning_enabled)
     config.set("reasoning", "effort", reasoning_effort)
+    config.set("reasoning", "exclude", exclude_reasoning)
 
     # Assign embedding settings
     config.set("emb", "model", emb_model)

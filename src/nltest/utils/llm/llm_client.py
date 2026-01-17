@@ -105,6 +105,9 @@ class LLMClient:
         except ConfigurationException:
             model_kwargs = {}
 
+        # Extract extra_body from model_kwargs if present (should be a direct kwarg)
+        extra_body: dict[str, Any] = model_kwargs.pop("extra_body", {})
+
         try:
             reasoning_enabled = config.get("reasoning", "enabled")
         except ConfigurationException:
@@ -115,10 +118,14 @@ class LLMClient:
                 reasoning_effort = config.get("reasoning", "effort")
             except ConfigurationException:
                 reasoning_effort = "low"
-            reasoning_obj = {"effort": reasoning_effort, "exclude": True}
-            if "extra_body" not in model_kwargs:
-                model_kwargs["extra_body"] = {}
-            model_kwargs["extra_body"]["reasoning"] = reasoning_obj
+            try:
+                reasoning_exclude = config.get("reasoning", "exclude")
+            except ConfigurationException:
+                reasoning_exclude = False
+            extra_body["reasoning"] = {
+                "effort": reasoning_effort,
+                "exclude": reasoning_exclude,
+            }
 
         if provider == Provider.OPENROUTER:
             default_headers = {} if default_headers is None else default_headers
@@ -147,6 +154,7 @@ class LLMClient:
             timeout=timeout,
             default_headers=default_headers,
             model_kwargs=model_kwargs,
+            extra_body=extra_body if extra_body else None,
         )
 
         # Store model id for capability queries

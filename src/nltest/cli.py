@@ -44,7 +44,7 @@ def main() -> None:
 
 
 def _load_nl2_inputs_by_project_from_csv(
-    test2nl_file: str | Path, max_entries: int
+    test2nl_file: str | Path, max_entries: int, num_proj_parallel: int
 ) -> dict[str, list[NL2TestInput]]:
     """Load Test2NL CSV (explicit file path) and convert to NL2TestInput grouped by project."""
     if test2nl_file is None:
@@ -68,11 +68,26 @@ def _load_nl2_inputs_by_project_from_csv(
     total_entries = len(test2nl_entries)
 
     # Limit entries if specified (applied to individual entries, not class-method pairs)
-    if max_entries > 0 and total_entries > max_entries:
-        test2nl_entries = test2nl_entries[:max_entries]
-        # test2nl_entries = random.sample(test2nl_entries, k=max_entries)
+    if max_entries > 0 and max_entries <= num_proj_parallel:
+        # Select first max_entries entries with unique projects
+        selected_entries: list[Test2NLEntry] = []
+        seen_projects: set[str] = set()
+        for entry in test2nl_entries:
+            if entry.project_name not in seen_projects:
+                selected_entries.append(entry)
+                seen_projects.add(entry.project_name)
+                if len(selected_entries) >= max_entries:
+                    break
+        test2nl_entries = selected_entries
         RichLog.info(
-            f"Processing random subset of {len(test2nl_entries)} entries "
+            f"max_entries ({max_entries}) <= num_proj_parallel ({num_proj_parallel}): "
+            f"selected first {len(test2nl_entries)} entries with unique projects "
+            f"(total_entries={total_entries})"
+        )
+    elif max_entries > 0 and total_entries > max_entries:
+        test2nl_entries = test2nl_entries[:max_entries]
+        RichLog.info(
+            f"Processing subset of {len(test2nl_entries)} entries "
             f"(max_entries={max_entries}, total_entries={total_entries})"
         )
     elif max_entries > 0:
@@ -740,6 +755,13 @@ def run_nl2test(
             show_default=True,
         ),
     ] = "medium",
+    exclude_reasoning: Annotated[
+        bool,
+        typer.Option(
+            help="Exclude reasoning content from LLM responses (set to False for MiniMax models to see thinking between tool calls).",
+            show_default=True,
+        ),
+    ] = True,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -802,7 +824,7 @@ def run_nl2test(
 
     # Load and prepare NL2Test inputs grouped by project
     nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(
-        test2nl_file, max_entries
+        test2nl_file, max_entries, num_proj_parallel
     )
 
     _clear_nl2test_output_artifacts(output_dir, reset_evaluation_results)
@@ -915,6 +937,7 @@ def run_nl2test(
                 exclude_test_dirs=exclude_test_dirs,
                 reasoning_enabled=enable_reasoning,
                 reasoning_effort=reasoning_effort,
+                exclude_reasoning=exclude_reasoning,
             )
 
             payloads = [

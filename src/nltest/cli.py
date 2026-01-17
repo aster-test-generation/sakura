@@ -726,6 +726,20 @@ def run_nl2test(
             show_default=True,
         ),
     ] = False,
+    enable_reasoning: Annotated[
+        bool,
+        typer.Option(
+            help="Enable extended reasoning for LLM calls (for reasoning models like MiniMax M2.1).",
+            show_default=True,
+        ),
+    ] = True,
+    reasoning_effort: Annotated[
+        str,
+        typer.Option(
+            help="Reasoning effort level. One of: none, minimal, low, medium, high, xhigh.",
+            show_default=True,
+        ),
+    ] = "low",
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -736,6 +750,13 @@ def run_nl2test(
     if decomposition_mode != DecompositionMode.GHERKIN:
         raise Exception(
             "Only 'gherkin' decomposition is supported for run_nl2test at the moment."
+        )
+
+    valid_reasoning_efforts = {"none", "minimal", "low", "medium", "high", "xhigh"}
+    reasoning_effort = reasoning_effort.strip().lower()
+    if reasoning_effort not in valid_reasoning_efforts:
+        raise Exception(
+            f"Invalid --reasoning-effort: {reasoning_effort}. Must be one of {sorted(valid_reasoning_efforts)}"
         )
 
     if llm_provider is None and llm_api_url is None:
@@ -892,6 +913,8 @@ def run_nl2test(
                 debug=bool(debug),
                 log_file_name=actor_log_file_name,
                 exclude_test_dirs=exclude_test_dirs,
+                reasoning_enabled=enable_reasoning,
+                reasoning_effort=reasoning_effort,
             )
 
             payloads = [

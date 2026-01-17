@@ -32,6 +32,9 @@ def init_config(
     supervisor_max_iters: int = 5,
     can_parallel_tool: bool = True,
     reuse_config: bool = False,
+    max_tokens: int = 20000,
+    reasoning_enabled: bool = True,
+    reasoning_effort: str = "low",
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -57,7 +60,10 @@ def init_config(
     config.set("llm", "code_gen_temp", code_gen_temp)
     config.set("llm", "decision_temp", decision_temp)
     config.set("llm", "structured_temp", structured_temp)
-    # TODO: Decide of output tokens need to be set as config
+    config.set("llm", "max_tokens", max_tokens)
+
+    config.set("reasoning", "enabled", reasoning_enabled)
+    config.set("reasoning", "effort", reasoning_effort)
 
     # Assign embedding settings
     config.set("emb", "model", emb_model)

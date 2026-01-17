@@ -88,7 +88,7 @@ class LLMClient:
         try:
             max_tokens = config.get("llm", "max_tokens")
         except ConfigurationException:
-            max_tokens = 20000
+            max_tokens = 24000
 
         try:
             timeout = config.get("llm", "timeout")
@@ -104,6 +104,21 @@ class LLMClient:
             model_kwargs = config.get("llm", "model_kwargs")
         except ConfigurationException:
             model_kwargs = {}
+
+        try:
+            reasoning_enabled = config.get("reasoning", "enabled")
+        except ConfigurationException:
+            reasoning_enabled = False
+
+        if reasoning_enabled:
+            try:
+                reasoning_effort = config.get("reasoning", "effort")
+            except ConfigurationException:
+                reasoning_effort = "low"
+            reasoning_obj = {"effort": reasoning_effort, "exclude": True}
+            if "extra_body" not in model_kwargs:
+                model_kwargs["extra_body"] = {}
+            model_kwargs["extra_body"]["reasoning"] = reasoning_obj
 
         if provider == Provider.OPENROUTER:
             default_headers = {} if default_headers is None else default_headers

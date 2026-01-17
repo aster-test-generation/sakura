@@ -17,7 +17,7 @@ LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 10
+MAX_ENTRIES = 4
 # Note: 0 = unlimited
 DEBUG = True
 USE_STORED_INDEX = True
@@ -44,8 +44,9 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 # Parallel tool call behavior for the LLM
 CAN_PARALLEL_TOOL_CALL: bool = True
 
+# Config reasoning abilities
 REASONING_ENABLED: bool = True
-REASONING_EFFORT: str = "low"
+REASONING_EFFORT: str = "medium"
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8

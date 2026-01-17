@@ -51,7 +51,7 @@ def _map_class_exception(qualified_class_name: str, e: Exception) -> Exception:
     """Map Hamster ClassNotFoundException to nltest ClassNotFoundError"""
     if isinstance(e, HamsterClassNotFound):
         return ClassNotFoundError(
-            f"Class {qualified_class_name} not found.",
+            f"Class {qualified_class_name} not found (may be externally defined or misspelled).",
             extra_info={"qualified_class_name": qualified_class_name},
         )
     return e
@@ -78,7 +78,7 @@ def _map_method_exception(
     """Map Hamster MethodNotFoundException to nltest MethodNotFoundError"""
     if isinstance(e, HamsterMethodNotFound):
         return MethodNotFoundError(
-            f"Method {method_signature} not found in class {qualified_class_name}.",
+            f"Method {method_signature} not found in class {qualified_class_name} (may be externally defined or misspelled).",
             extra_info={
                 "qualified_class_name": qualified_class_name,
                 "method_signature": method_signature,
@@ -691,7 +691,7 @@ class Reachability:
         root_details = self.analysis.get_class(qualified_class_name)
         if not root_details:
             raise ClassNotFoundError(
-                f"Class {qualified_class_name} not found.",
+                f"Class {qualified_class_name} not found (may be externally defined or misspelled).",
                 extra_info={"qualified_class_name": qualified_class_name},
             )
 
@@ -798,7 +798,7 @@ class Reachability:
         root_details = self.analysis.get_class(qualified_class_name)
         if not root_details:
             raise ClassNotFoundError(
-                f"Class {qualified_class_name} not found.",
+                f"Class {qualified_class_name} not found (may be externally defined or misspelled).",
                 extra_info={"qualified_class_name": qualified_class_name},
             )
 
@@ -872,7 +872,7 @@ class Reachability:
         root_details = self.analysis.get_class(qualified_class_name)
         if not root_details:
             raise ClassNotFoundError(
-                f"Class {qualified_class_name} not found.",
+                f"Class {qualified_class_name} not found (may be externally defined or misspelled).",
                 extra_info={"qualified_class_name": qualified_class_name},
             )
 

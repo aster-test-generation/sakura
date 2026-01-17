@@ -44,7 +44,7 @@ class CommonJavaAnalysisTools:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found in application (may be externally defined).",
+                    f"Class {qualified_class_name} not found in application (may be externally defined or misspelled).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -53,7 +53,7 @@ class CommonJavaAnalysisTools:
             )
             if not method_details:
                 raise MethodNotFoundError(
-                    f"Method {method_signature} not found in application class {qualified_class_name} (may be externally defined).",
+                    f"Method {method_signature} not found in application class {qualified_class_name} (may be externally defined or misspelled).",
                     extra_info={
                         "qualified_class_name": qualified_class_name,
                         "method_signature": method_signature,
@@ -109,7 +109,7 @@ class CommonJavaAnalysisTools:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found in application (may be externally defined).",
+                    f"Class {qualified_class_name} not found in application (may be externally defined or misspelled).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -118,7 +118,7 @@ class CommonJavaAnalysisTools:
             )
             if not method_details:
                 raise MethodNotFoundError(
-                    f"Method {method_signature} not found in application class {qualified_class_name} (may be externally defined).",
+                    f"Method {method_signature} not found in application class {qualified_class_name} (may be externally defined or misspelled).",
                     extra_info={
                         "qualified_class_name": qualified_class_name,
                         "method_signature": method_signature,
@@ -156,7 +156,7 @@ class CommonJavaAnalysisTools:
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found in application (may be externally defined).",
+                    f"Class {qualified_class_name} not found in application (may be externally defined or misspelled).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -165,7 +165,7 @@ class CommonJavaAnalysisTools:
             )
             if not method_details:
                 raise MethodNotFoundError(
-                    f"Call sites could not be found because method {method_signature} not found in application class {qualified_class_name} (may be externally defined).",
+                    f"Call sites could not be found because method {method_signature} not found in application class {qualified_class_name} (may be externally defined or misspelled).",
                     extra_info={
                         "qualified_class_name": qualified_class_name,
                         "method_signature": method_signature,

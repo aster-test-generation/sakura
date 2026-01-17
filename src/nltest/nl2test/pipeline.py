@@ -21,7 +21,6 @@ from nltest.nl2test.models import (
     AtomicBlock,
     AtomicBlockList,
     GrammaticalBlockList,
-    LocalizationEval,
     LocalizedScenario,
     NL2LocalizationOutput,
     NL2TestInput,
@@ -221,18 +220,6 @@ class Pipeline:
             evaluation_results=evaluation_results,
         )
 
-    def _empty_localization_eval(self, nl2_input: NL2TestInput) -> LocalizationEval:
-        return LocalizationEval(
-            qualified_class_name=nl2_input.qualified_class_name,
-            method_signature=nl2_input.method_signature,
-            all_focal_methods=[],
-            covered_focal_methods=[],
-            uncovered_focal_methods=[],
-            tp=0,
-            fn=0,
-            localization_recall=0.0,
-        )
-
     def _agent_tool_log_from_state(self, state: AgentState | None) -> AgentToolLog:
         if not state:
             return AgentToolLog(tool_counts={}, tool_trajectories=[])
@@ -248,31 +235,6 @@ class Pipeline:
             tool_counts=tool_counts,
             tool_trajectories=tool_trajectories,
         )
-
-    def _localization_eval_from_state(
-        self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
-    ) -> LocalizationEval:
-        localization_eval = self._empty_localization_eval(nl2_input)
-        if not supervisor_state:
-            return localization_eval
-
-        localization_target = (
-            supervisor_state.localized_scenario
-            if self.decomposition_mode == DecompositionMode.GHERKIN
-            else supervisor_state.atomic_blocks
-        )
-        if localization_target is None:
-            return localization_eval
-
-        try:
-            return self.localization_grader.grade(localization_target, nl2_input)
-        except Exception as exc:
-            RichLog.warn(
-                "Localization evaluation failed for "
-                f"{nl2_input.qualified_class_name}::{nl2_input.method_signature} "
-                f"(id={nl2_input.id}): {exc}"
-            )
-            return localization_eval
 
     def _build_tool_log(
         self,
@@ -419,7 +381,7 @@ class Pipeline:
 
         if not has_class_name:
             # If no class name from composition agent, use localization agent to determine localization effectiveness and return
-            final_result.localization_eval = self._localization_eval_from_state(
+            final_result.localization_eval = self.localization_grader.grade_from_state(
                 supervisor_state, nl2_input
             )
             final_result.structured_eval = self._zero_structural_eval()
@@ -482,8 +444,10 @@ class Pipeline:
                 )
                 final_result.structured_eval = structured_eval
                 final_result.coverage_eval = coverage_eval
-                final_result.localization_eval = self._localization_eval_from_state(
-                    supervisor_state, nl2_input
+                final_result.localization_eval = (
+                    self.localization_grader.grade_from_state(
+                        supervisor_state, nl2_input
+                    )
                 )
 
             fm = TestFileManager(self.project_root, test_base_dir=test_base_dir)

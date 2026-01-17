@@ -11,14 +11,66 @@ from typing import Any, Dict, Iterable, List, Mapping, Tuple
 
 from pydantic import ValidationError
 
+from nltest.dataset_creation.model import NL2TestDataset, Test
 from nltest.nl2test.models.decomposition import LocalizationEval
 from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-OUTPUT_DIR = ROOT_DIR / "resources" / "agent_outputs" / "evaluation"
+# EVAL_DIR = ROOT_DIR / "resources" / "agent_outputs" / "evaluation"
+EVAL_DIR = ROOT_DIR / "resources" / "output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
+OUTPUT_DIR = ROOT_DIR / "resources" / "cleaned_evaluation"
+BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
+BUCKETED_DATASET_FILE = "nl2test.json"
+
+PRICING_MODEL = "gemini-2.5-pro"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
+
+# Ablation settings
+IGNORE_IF_NOT_COMPILE = False
+NUM_ENTRIES = 200
+# DIRS_TO_INCLUDE: List[Path] = [
+#     ROOT_DIR / "resources" / "agent_outputs" / "evaluation",
+#     ROOT_DIR / "resources" / "nl2test_gemini_200_output",
+# ]
+
+# Pricing per million tokens (USD)
+MODEL_PRICING = {
+    "gemini-2.5-flash": {
+        "input_per_million": 0.30,
+        "output_per_million": 2.50,
+    },
+    "gemini-2.5-pro": {
+        "input_per_million_under_200k": 1.25,
+        "input_per_million_over_200k": 2.50,
+        "output_per_million_under_200k": 10.00,
+        "output_per_million_over_200k": 15.00,
+        "context_threshold": 200_000,
+    },
+    "minimax/minimax-m2.1": {
+        "input_per_million": 0.27,
+        "output_per_million": 1.12,
+    },
+    "xiaomi/mimo-v2-flash": {
+        "input_per_million": 0.10,
+        "output_per_million": 0.30,
+    },
+}
+FOCAL_BUCKET_ORDER = (
+    "one_focal",
+    "two_focal",
+    "three_to_five_focal",
+    "six_to_ten_focal",
+    "more_than_ten_focal",
+)
+FOCAL_BUCKET_NAMES = {
+    "one_focal": "1 Focal Method",
+    "two_focal": "2 Focal Methods",
+    "three_to_five_focal": "3-5 Focal Methods",
+    "six_to_ten_focal": "6-10 Focal Methods",
+    "more_than_ten_focal": ">10 Focal Methods",
+}
 
 STRUCTURAL_METRICS = (
     "obj_creation_recall",
@@ -37,7 +89,8 @@ COVERAGE_METRICS = (
     "branch_coverage",
 )
 LOCALIZATION_METRICS = ("localization_recall",)
-USAGE_METRICS = ("input_tokens", "output_tokens", "llm_calls")
+ENTRY_USAGE_METRICS = ("input_tokens", "output_tokens", "llm_calls")
+USAGE_METRICS = (*ENTRY_USAGE_METRICS, "cost")
 ALL_METRICS = (
     *STRUCTURAL_METRICS,
     *COVERAGE_METRICS,
@@ -70,7 +123,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=OUTPUT_DIR,
+        default=EVAL_DIR,
         help="Directory containing project outputs.",
     )
     parser.add_argument(
@@ -79,7 +132,43 @@ def parse_args() -> argparse.Namespace:
         default=EVAL_FILE_NAME,
         help="Evaluation file name inside each project directory.",
     )
+    parser.add_argument(
+        "--pricing-model",
+        type=str,
+        choices=list(MODEL_PRICING.keys()),
+        default=PRICING_MODEL,
+        help="Pricing model for cost calculation.",
+    )
     return parser.parse_args()
+
+
+def calculate_entry_cost(
+    input_tokens: float, output_tokens: float, pricing_model: str
+) -> float:
+    """Calculate cost for a single entry based on token counts and pricing model."""
+    pricing = MODEL_PRICING[pricing_model]
+
+    if "input_per_million" in pricing and "output_per_million" in pricing:
+        input_cost = (input_tokens / 1_000_000) * pricing["input_per_million"]
+        output_cost = (output_tokens / 1_000_000) * pricing["output_per_million"]
+    else:
+        threshold = pricing["context_threshold"]
+        if input_tokens <= threshold:
+            input_cost = (input_tokens / 1_000_000) * pricing[
+                "input_per_million_under_200k"
+            ]
+            output_cost = (output_tokens / 1_000_000) * pricing[
+                "output_per_million_under_200k"
+            ]
+        else:
+            input_cost = (input_tokens / 1_000_000) * pricing[
+                "input_per_million_over_200k"
+            ]
+            output_cost = (output_tokens / 1_000_000) * pricing[
+                "output_per_million_over_200k"
+            ]
+
+    return input_cost + output_cost
 
 
 def normalize_output_dir(output_dir: Path) -> Path:
@@ -95,6 +184,17 @@ def sort_abstraction_levels(levels: Iterable[str]) -> List[str]:
             ABSTRACTION_ORDER.index(level)
             if level in ABSTRACTION_ORDER
             else len(ABSTRACTION_ORDER)
+        ),
+    )
+
+
+def sort_focal_buckets(buckets: Iterable[str]) -> List[str]:
+    return sorted(
+        buckets,
+        key=lambda bucket: (
+            FOCAL_BUCKET_ORDER.index(bucket)
+            if bucket in FOCAL_BUCKET_ORDER
+            else len(FOCAL_BUCKET_ORDER)
         ),
     )
 
@@ -125,6 +225,76 @@ def build_problem_entry(nl2test_input: NL2TestInput) -> ProblemEntry:
     )
 
 
+def load_bucketed_dataset(project_name: str) -> NL2TestDataset | None:
+    dataset_file = BUCKETED_FILTERED_DATASET_DIR / project_name / BUCKETED_DATASET_FILE
+    if not dataset_file.exists():
+        return None
+    try:
+        with dataset_file.open("r", encoding="utf-8") as handle:
+            data = json.load(handle)
+        return NL2TestDataset.model_validate(data)
+    except (json.JSONDecodeError, ValidationError):
+        return None
+
+
+BucketTestMap = Dict[str, Tuple[Test, str]]
+
+
+def build_bucket_test_map(dataset: NL2TestDataset) -> BucketTestMap:
+    """Build a map of (qualified_class_name, method_signature) -> (Test, bucket_name)."""
+    bucket_mapping: BucketTestMap = {}
+    buckets = [
+        (dataset.tests_with_one_focal_methods, "one_focal"),
+        (dataset.tests_with_two_focal_methods, "two_focal"),
+        (dataset.tests_with_more_than_two_to_five_focal_methods, "three_to_five_focal"),
+        (dataset.tests_with_more_than_five_to_ten_focal_methods, "six_to_ten_focal"),
+        (dataset.tests_with_more_than_ten_focal_methods, "more_than_ten_focal"),
+    ]
+    for tests, bucket_name in buckets:
+        for test in tests:
+            key = f"{test.qualified_class_name}::{test.method_signature}"
+            bucket_mapping[key] = (test, bucket_name)
+    return bucket_mapping
+
+
+def get_focal_class_count(test: Test) -> int:
+    if test.focal_details is None:
+        return 0
+    return len(test.focal_details)
+
+
+def normalize_focal_class_count(count: int) -> str:
+    if count == 0:
+        return "0_focal_classes"
+    if count == 1:
+        return "1_focal_class"
+    if count == 2:
+        return "2_focal_classes"
+    if count <= 5:
+        return "3_to_5_focal_classes"
+    return "more_than_5_focal_classes"
+
+
+FOCAL_CLASS_COUNT_ORDER = (
+    "0_focal_classes",
+    "1_focal_class",
+    "2_focal_classes",
+    "3_to_5_focal_classes",
+    "more_than_5_focal_classes",
+)
+
+
+def sort_focal_class_counts(counts: Iterable[str]) -> List[str]:
+    return sorted(
+        counts,
+        key=lambda count: (
+            FOCAL_CLASS_COUNT_ORDER.index(count)
+            if count in FOCAL_CLASS_COUNT_ORDER
+            else len(FOCAL_CLASS_COUNT_ORDER)
+        ),
+    )
+
+
 def load_eval_file(eval_file: Path) -> List[NL2TestEval]:
     try:
         with eval_file.open("r", encoding="utf-8") as handle:
@@ -144,6 +314,77 @@ def load_eval_file(eval_file: Path) -> List[NL2TestEval]:
         except ValidationError:
             print(f"Skipping entry {index} in {eval_file} due to validation error.")
     return results
+
+
+def build_ignore_ids_from_dirs(
+    dirs: List[Path], eval_file_name: str, num_entries: int
+) -> set[int]:
+    """Build a set of IDs to ignore based on compilation status and presence across directories.
+
+    An ID is ignored if it fails to compile OR is missing in ANY of the directories.
+    """
+    all_expected_ids = set(range(num_entries))
+
+    # Track which IDs compile and which IDs exist in each directory
+    ids_that_compile: Dict[Path, set[int]] = {}
+    ids_present: Dict[Path, set[int]] = {}
+
+    for eval_dir in dirs:
+        if not eval_dir.exists():
+            print(f"Warning: Directory not found: {eval_dir}")
+            ids_that_compile[eval_dir] = set()
+            ids_present[eval_dir] = set()
+            continue
+
+        project_dirs = [path for path in eval_dir.iterdir() if path.is_dir()]
+        compiling_ids: set[int] = set()
+        present_ids: set[int] = set()
+
+        for project_dir in project_dirs:
+            eval_file = project_dir / eval_file_name
+            if not eval_file.is_file():
+                continue
+            entries = load_eval_file(eval_file)
+            for entry in entries:
+                entry_id = entry.nl2test_input.id
+                present_ids.add(entry_id)
+                if entry.compiles:
+                    compiling_ids.add(entry_id)
+
+        ids_that_compile[eval_dir] = compiling_ids
+        ids_present[eval_dir] = present_ids
+
+    # IDs that compile in ALL directories
+    if ids_that_compile:
+        ids_compiling_in_all = set.intersection(*ids_that_compile.values())
+    else:
+        ids_compiling_in_all = set()
+
+    # IDs that are present in ALL directories
+    if ids_present:
+        ids_present_in_all = set.intersection(*ids_present.values())
+    else:
+        ids_present_in_all = set()
+
+    # Valid IDs: present in all AND compile in all
+    valid_ids = ids_compiling_in_all & ids_present_in_all
+
+    # Ignore IDs: all expected IDs minus valid ones
+    ignore_ids = all_expected_ids - valid_ids
+
+    print("\nIgnore IDs calculation:")
+    print(f"  Expected IDs (0-{num_entries - 1}): {num_entries}")
+    for eval_dir in dirs:
+        dir_name = eval_dir.name
+        present_count = len(ids_present.get(eval_dir, set()))
+        compile_count = len(ids_that_compile.get(eval_dir, set()))
+        print(f"  {dir_name}: {present_count} present, {compile_count} compile")
+    print(f"  IDs compiling in all: {len(ids_compiling_in_all)}")
+    print(f"  IDs present in all: {len(ids_present_in_all)}")
+    print(f"  Valid IDs (present AND compile in all): {len(valid_ids)}")
+    print(f"  Ignored IDs: {len(ignore_ids)}")
+
+    return ignore_ids
 
 
 def parse_localization_eval(value: Any) -> LocalizationEval | None:
@@ -213,6 +454,24 @@ def summarize_distribution(values: List[float]) -> DistributionSummary:
 
 def build_distributions(metrics: Mapping[str, List[float]]) -> MetricDistributions:
     return {name: summarize_distribution(values) for name, values in metrics.items()}
+
+
+def distribution_to_dict(summary: DistributionSummary) -> Dict[str, Any]:
+    return {
+        "mean": summary.mean,
+        "p25": summary.p25,
+        "p50": summary.p50,
+        "p75": summary.p75,
+        "p90": summary.p90,
+        "max": summary.max,
+        "count": summary.count,
+    }
+
+
+def distributions_to_dict(distributions: MetricDistributions) -> Dict[str, Any]:
+    return {
+        name: distribution_to_dict(summary) for name, summary in distributions.items()
+    }
 
 
 def print_main_header(title: str) -> None:
@@ -290,6 +549,7 @@ def main() -> None:
     args = parse_args()
     output_dir = normalize_output_dir(args.output_dir)
     eval_file_name = args.eval_file_name
+    pricing_model = args.pricing_model
 
     if not output_dir.exists():
         print(f"Output directory not found: {output_dir}")
@@ -312,10 +572,26 @@ def main() -> None:
         print(f"No {eval_file_name} files found under {output_dir}")
         return
 
+    # Build ignore_ids from multiple directories when comparing compiling entries only
+    ignore_ids: set[int] = set()
+    if IGNORE_IF_NOT_COMPILE:
+        ignore_ids = build_ignore_ids_from_dirs(
+            DIRS_TO_INCLUDE, eval_file_name, NUM_ENTRIES
+        )
+
     metrics = build_empty_metrics()
     metrics_by_level: Dict[str, MetricValues] = {}
+    metrics_by_focal_bucket: Dict[str, MetricValues] = {}
+    metrics_by_focal_class_count: Dict[str, MetricValues] = {}
     count_by_level: Dict[str, int] = {}
+    count_by_focal_bucket: Dict[str, int] = {}
+    count_by_focal_class_count: Dict[str, int] = {}
+    compiles_by_level: Dict[str, int] = {}
+    compiles_by_focal_bucket: Dict[str, int] = {}
+    compiles_by_focal_class_count: Dict[str, int] = {}
     problematic_entries: List[ProblemEntry] = []
+    non_compiling_ids: List[int] = []
+    skipped_ids: List[int] = []
     total_evals = 0
     compiles_count = 0
     valid_entries = 0
@@ -323,12 +599,24 @@ def main() -> None:
     missing_coverage = 0
     missing_localization = 0
 
+    bucketed_datasets: Dict[str, NL2TestDataset | None] = {}
+    bucket_test_maps: Dict[str, BucketTestMap] = {}
+
     for eval_file in eval_files:
         eval_entries = load_eval_file(eval_file)
         for entry in eval_entries:
+            entry_id = entry.nl2test_input.id
+
+            # Completely skip entries in ignore_ids when IGNORE_IF_NOT_COMPILE is True
+            if entry_id in ignore_ids:
+                skipped_ids.append(entry_id)
+                continue
+
             total_evals += 1
             if entry.compiles:
                 compiles_count += 1
+            else:
+                non_compiling_ids.append(entry_id)
 
             localization_eval = parse_localization_eval(entry.localization_eval)
             has_structured = entry.structured_eval is not None
@@ -350,6 +638,54 @@ def main() -> None:
             count_by_level[abstraction_level] = (
                 count_by_level.get(abstraction_level, 0) + 1
             )
+            if entry.compiles:
+                compiles_by_level[abstraction_level] = (
+                    compiles_by_level.get(abstraction_level, 0) + 1
+                )
+
+            # Load bucketed dataset for the project (cached)
+            project_name = entry.nl2test_input.project_name
+            if project_name not in bucketed_datasets:
+                bucketed_datasets[project_name] = load_bucketed_dataset(project_name)
+                dataset = bucketed_datasets[project_name]
+                if dataset is not None:
+                    bucket_test_maps[project_name] = build_bucket_test_map(dataset)
+
+            # Determine focal bucket and focal class count
+            focal_bucket: str | None = None
+            focal_class_count_key: str | None = None
+            test_key = f"{entry.nl2test_input.qualified_class_name}::{entry.nl2test_input.method_signature}"
+            if project_name in bucket_test_maps:
+                bucket_map = bucket_test_maps[project_name]
+                if test_key in bucket_map:
+                    test_entry, focal_bucket = bucket_map[test_key]
+                    focal_class_count_key = normalize_focal_class_count(
+                        get_focal_class_count(test_entry)
+                    )
+
+            if focal_bucket is not None:
+                if focal_bucket not in metrics_by_focal_bucket:
+                    metrics_by_focal_bucket[focal_bucket] = build_empty_metrics()
+                count_by_focal_bucket[focal_bucket] = (
+                    count_by_focal_bucket.get(focal_bucket, 0) + 1
+                )
+                if entry.compiles:
+                    compiles_by_focal_bucket[focal_bucket] = (
+                        compiles_by_focal_bucket.get(focal_bucket, 0) + 1
+                    )
+
+            if focal_class_count_key is not None:
+                if focal_class_count_key not in metrics_by_focal_class_count:
+                    metrics_by_focal_class_count[focal_class_count_key] = (
+                        build_empty_metrics()
+                    )
+                count_by_focal_class_count[focal_class_count_key] = (
+                    count_by_focal_class_count.get(focal_class_count_key, 0) + 1
+                )
+                if entry.compiles:
+                    compiles_by_focal_class_count[focal_class_count_key] = (
+                        compiles_by_focal_class_count.get(focal_class_count_key, 0) + 1
+                    )
 
             if has_structured and has_coverage and has_localization:
                 valid_entries += 1
@@ -361,6 +697,18 @@ def main() -> None:
                     entry.structured_eval,
                     STRUCTURAL_METRICS,
                 )
+                if focal_bucket is not None:
+                    append_metrics(
+                        metrics_by_focal_bucket[focal_bucket],
+                        entry.structured_eval,
+                        STRUCTURAL_METRICS,
+                    )
+                if focal_class_count_key is not None:
+                    append_metrics(
+                        metrics_by_focal_class_count[focal_class_count_key],
+                        entry.structured_eval,
+                        STRUCTURAL_METRICS,
+                    )
             if has_coverage:
                 append_metrics_pair(
                     metrics,
@@ -368,6 +716,18 @@ def main() -> None:
                     entry.coverage_eval,
                     COVERAGE_METRICS,
                 )
+                if focal_bucket is not None:
+                    append_metrics(
+                        metrics_by_focal_bucket[focal_bucket],
+                        entry.coverage_eval,
+                        COVERAGE_METRICS,
+                    )
+                if focal_class_count_key is not None:
+                    append_metrics(
+                        metrics_by_focal_class_count[focal_class_count_key],
+                        entry.coverage_eval,
+                        COVERAGE_METRICS,
+                    )
             if has_localization:
                 append_metrics_pair(
                     metrics,
@@ -375,13 +735,50 @@ def main() -> None:
                     localization_eval,
                     LOCALIZATION_METRICS,
                 )
+                if focal_bucket is not None:
+                    append_metrics(
+                        metrics_by_focal_bucket[focal_bucket],
+                        localization_eval,
+                        LOCALIZATION_METRICS,
+                    )
+                if focal_class_count_key is not None:
+                    append_metrics(
+                        metrics_by_focal_class_count[focal_class_count_key],
+                        localization_eval,
+                        LOCALIZATION_METRICS,
+                    )
 
             append_metrics_pair(
                 metrics,
                 metrics_by_level[abstraction_level],
                 entry,
-                USAGE_METRICS,
+                ENTRY_USAGE_METRICS,
             )
+            if focal_bucket is not None:
+                append_metrics(
+                    metrics_by_focal_bucket[focal_bucket],
+                    entry,
+                    ENTRY_USAGE_METRICS,
+                )
+            if focal_class_count_key is not None:
+                append_metrics(
+                    metrics_by_focal_class_count[focal_class_count_key],
+                    entry,
+                    ENTRY_USAGE_METRICS,
+                )
+
+            # Calculate and append cost
+            entry_cost = calculate_entry_cost(
+                entry.input_tokens, entry.output_tokens, pricing_model
+            )
+            metrics["cost"].append(entry_cost)
+            metrics_by_level[abstraction_level]["cost"].append(entry_cost)
+            if focal_bucket is not None:
+                metrics_by_focal_bucket[focal_bucket]["cost"].append(entry_cost)
+            if focal_class_count_key is not None:
+                metrics_by_focal_class_count[focal_class_count_key]["cost"].append(
+                    entry_cost
+                )
 
             if not (has_structured and has_coverage and has_localization):
                 problematic_entries.append(build_problem_entry(entry.nl2test_input))
@@ -393,6 +790,8 @@ def main() -> None:
     print(f"Eval file:           {eval_file_name}")
     print(f"Projects scanned:    {len(project_dirs)}")
     print(f"Projects with evals: {len(eval_files)}")
+    if IGNORE_IF_NOT_COMPILE:
+        print(f"Skipped entries:     {len(skipped_ids)} (ignored IDs)")
     print(f"Total evaluations:   {total_evals}")
     print(f"Compiles:            {compiles_count} ({compile_rate:.1%})")
     print(f"Valid entries:       {valid_entries}")
@@ -400,6 +799,9 @@ def main() -> None:
     print(f"Missing structured:  {missing_structured}")
     print(f"Missing coverage:    {missing_coverage}")
     print(f"Missing localization: {missing_localization}")
+    print(f"Non-compiling IDs:   {len(non_compiling_ids)}")
+    if non_compiling_ids:
+        print(f"  IDs: {non_compiling_ids}")
 
     print("\nProjects with evaluation results:")
     for project_name in projects_with_evals:
@@ -407,8 +809,34 @@ def main() -> None:
 
     if count_by_level:
         print("\nEntries by abstraction level:")
+        print(f"  {'Level':<10} {'Count':>8} {'Compiles':>10} {'Rate':>8}")
+        print(f"  {'-' * 10} {'-' * 8} {'-' * 10} {'-' * 8}")
         for level in sort_abstraction_levels(count_by_level.keys()):
-            print(f"  {level:<8} {count_by_level[level]}")
+            count = count_by_level[level]
+            compiles = compiles_by_level.get(level, 0)
+            rate = compiles / count if count > 0 else 0.0
+            print(f"  {level:<10} {count:>8} {compiles:>10} {rate:>7.1%}")
+
+    if count_by_focal_bucket:
+        print("\nEntries by focal method bucket:")
+        print(f"  {'Bucket':<20} {'Count':>8} {'Compiles':>10} {'Rate':>8}")
+        print(f"  {'-' * 20} {'-' * 8} {'-' * 10} {'-' * 8}")
+        for bucket in sort_focal_buckets(count_by_focal_bucket.keys()):
+            label = FOCAL_BUCKET_NAMES.get(bucket, bucket)
+            count = count_by_focal_bucket[bucket]
+            compiles = compiles_by_focal_bucket.get(bucket, 0)
+            rate = compiles / count if count > 0 else 0.0
+            print(f"  {label:<20} {count:>8} {compiles:>10} {rate:>7.1%}")
+
+    if count_by_focal_class_count:
+        print("\nEntries by focal class count:")
+        print(f"  {'Focal Classes':<24} {'Count':>8} {'Compiles':>10} {'Rate':>8}")
+        print(f"  {'-' * 24} {'-' * 8} {'-' * 10} {'-' * 8}")
+        for count_key in sort_focal_class_counts(count_by_focal_class_count.keys()):
+            count = count_by_focal_class_count[count_key]
+            compiles = compiles_by_focal_class_count.get(count_key, 0)
+            rate = compiles / count if count > 0 else 0.0
+            print(f"  {count_key:<24} {count:>8} {compiles:>10} {rate:>7.1%}")
 
     if valid_entries == 0:
         print(
@@ -456,6 +884,167 @@ def main() -> None:
         per_level_distributions,
         levels,
     )
+
+    if metrics_by_focal_bucket:
+        focal_buckets = sort_focal_buckets(metrics_by_focal_bucket.keys())
+        per_focal_bucket_distributions = {
+            bucket: build_distributions(bucket_metrics)
+            for bucket, bucket_metrics in metrics_by_focal_bucket.items()
+        }
+
+        print_main_header("Distributions By Focal Method Bucket")
+        print_category_by_level(
+            "Structured Metrics",
+            STRUCTURAL_METRICS,
+            per_focal_bucket_distributions,
+            focal_buckets,
+        )
+        print_category_by_level(
+            "Coverage Metrics",
+            COVERAGE_METRICS,
+            per_focal_bucket_distributions,
+            focal_buckets,
+        )
+        print_category_by_level(
+            "Localization Metrics",
+            LOCALIZATION_METRICS,
+            per_focal_bucket_distributions,
+            focal_buckets,
+        )
+        print_category_by_level(
+            "Usage Metrics",
+            USAGE_METRICS,
+            per_focal_bucket_distributions,
+            focal_buckets,
+        )
+
+    if metrics_by_focal_class_count:
+        focal_class_counts = sort_focal_class_counts(
+            metrics_by_focal_class_count.keys()
+        )
+        per_focal_class_distributions = {
+            count_key: build_distributions(count_metrics)
+            for count_key, count_metrics in metrics_by_focal_class_count.items()
+        }
+
+        print_main_header("Distributions By Focal Class Count")
+        print_category_by_level(
+            "Structured Metrics",
+            STRUCTURAL_METRICS,
+            per_focal_class_distributions,
+            focal_class_counts,
+        )
+        print_category_by_level(
+            "Coverage Metrics",
+            COVERAGE_METRICS,
+            per_focal_class_distributions,
+            focal_class_counts,
+        )
+        print_category_by_level(
+            "Localization Metrics",
+            LOCALIZATION_METRICS,
+            per_focal_class_distributions,
+            focal_class_counts,
+        )
+        print_category_by_level(
+            "Usage Metrics",
+            USAGE_METRICS,
+            per_focal_class_distributions,
+            focal_class_counts,
+        )
+
+    # Build JSON output
+    json_output: Dict[str, Any] = {
+        "summary": {
+            "output_directory": str(output_dir),
+            "eval_file": eval_file_name,
+            "pricing_model": pricing_model,
+            "projects_scanned": len(project_dirs),
+            "projects_with_evals": len(eval_files),
+            "valid_entries": valid_entries,
+            "problematic_entries": len(problematic_entries),
+            "missing_structured": missing_structured,
+            "missing_coverage": missing_coverage,
+            "missing_localization": missing_localization,
+            "non_compiling_ids": non_compiling_ids,
+            "ignore_if_not_compile": IGNORE_IF_NOT_COMPILE,
+            "ignore_ids": sorted(ignore_ids),
+            "skipped_count": len(skipped_ids),
+        },
+        "holistic": {
+            "count": total_evals,
+            "compiles": compiles_count,
+            "compile_rate": compile_rate,
+            "distributions": distributions_to_dict(overall_distributions),
+        },
+    }
+
+    if metrics_by_level:
+        json_output["abstraction_levels"] = {
+            level: {
+                "count": count_by_level[level],
+                "compiles": compiles_by_level.get(level, 0),
+                "compile_rate": (
+                    compiles_by_level.get(level, 0) / count_by_level[level]
+                    if count_by_level[level] > 0
+                    else 0.0
+                ),
+                "distributions": distributions_to_dict(per_level_distributions[level]),
+            }
+            for level in levels
+        }
+
+    if metrics_by_focal_bucket:
+        sorted_buckets = sort_focal_buckets(metrics_by_focal_bucket.keys())
+        bucket_distributions = {
+            bucket: build_distributions(bucket_metrics)
+            for bucket, bucket_metrics in metrics_by_focal_bucket.items()
+        }
+        json_output["focal_method_buckets"] = {
+            bucket: {
+                "count": count_by_focal_bucket[bucket],
+                "compiles": compiles_by_focal_bucket.get(bucket, 0),
+                "compile_rate": (
+                    compiles_by_focal_bucket.get(bucket, 0)
+                    / count_by_focal_bucket[bucket]
+                    if count_by_focal_bucket[bucket] > 0
+                    else 0.0
+                ),
+                "distributions": distributions_to_dict(bucket_distributions[bucket]),
+            }
+            for bucket in sorted_buckets
+        }
+
+    if metrics_by_focal_class_count:
+        sorted_class_counts = sort_focal_class_counts(
+            metrics_by_focal_class_count.keys()
+        )
+        class_count_distributions = {
+            count_key: build_distributions(count_metrics)
+            for count_key, count_metrics in metrics_by_focal_class_count.items()
+        }
+        json_output["focal_class_counts"] = {
+            count_key: {
+                "count": count_by_focal_class_count[count_key],
+                "compiles": compiles_by_focal_class_count.get(count_key, 0),
+                "compile_rate": (
+                    compiles_by_focal_class_count.get(count_key, 0)
+                    / count_by_focal_class_count[count_key]
+                    if count_by_focal_class_count[count_key] > 0
+                    else 0.0
+                ),
+                "distributions": distributions_to_dict(
+                    class_count_distributions[count_key]
+                ),
+            }
+            for count_key in sorted_class_counts
+        }
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_file = OUTPUT_DIR / "compiled_results.json"
+    with output_file.open("w", encoding="utf-8") as handle:
+        json.dump(json_output, handle, indent=2)
+    print(f"\nJSON results written to: {output_file}")
 
 
 if __name__ == "__main__":

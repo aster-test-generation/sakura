@@ -32,9 +32,9 @@ def init_config(
     supervisor_max_iters: int = 5,
     can_parallel_tool: bool = True,
     reuse_config: bool = False,
-    max_tokens: int = 20000,
+    max_tokens: int = 40000,
     reasoning_enabled: bool = True,
-    reasoning_effort: str = "low",
+    reasoning_effort: str = "medium",
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 

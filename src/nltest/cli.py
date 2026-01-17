@@ -739,7 +739,7 @@ def run_nl2test(
             help="Reasoning effort level. One of: none, minimal, low, medium, high, xhigh.",
             show_default=True,
         ),
-    ] = "low",
+    ] = "medium",
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())

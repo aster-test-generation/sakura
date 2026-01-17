@@ -172,7 +172,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found in application (may be externally defined).",
+                    f"Class {qualified_class_name} not found in application (may be externally defined or misspelled).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 
@@ -200,7 +200,7 @@ class BaseLocalizationTools(CommonJavaAnalysisTools, CommonSearchTools):
             class_details = self.analysis.get_class(qualified_class_name)
             if not class_details:
                 raise ClassNotFoundError(
-                    f"Class {qualified_class_name} not found in application (may be externally defined).",
+                    f"Class {qualified_class_name} not found in application (may be externally defined or misspelled).",
                     extra_info={"qualified_class_name": qualified_class_name},
                 )
 

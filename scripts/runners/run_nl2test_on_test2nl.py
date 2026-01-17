@@ -17,7 +17,7 @@ LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 6
+MAX_ENTRIES = 1
 # Note: 0 = unlimited
 DEBUG = True
 USE_STORED_INDEX = True
@@ -46,8 +46,8 @@ CAN_PARALLEL_TOOL_CALL: bool = True
 
 # Config reasoning abilities
 REASONING_ENABLED: bool = True
-REASONING_EFFORT: str = "medium"
-EXCLUDE_REASONING: bool = True
+REASONING_EFFORT: str = "low"
+EXCLUDE_REASONING: bool = False
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8
@@ -55,7 +55,7 @@ LOCALIZATION_MAX_ITERS: int = 12
 COMPOSITION_MAX_ITERS: int = 14
 
 # Parallelization defaults (only between projects)
-NUM_PROJ_PARALLEL = 6
+NUM_PROJ_PARALLEL = 20
 MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
 

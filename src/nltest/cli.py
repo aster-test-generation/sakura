@@ -37,6 +37,8 @@ IGNORED_DIRS = {
     ".vscode",
 }
 
+NL2TEST_DEBUG = False
+
 
 @app.callback()
 def main() -> None:
@@ -67,32 +69,26 @@ def _load_nl2_inputs_by_project_from_csv(
     test2nl_entries = data_manager.load(csv_path.name, Test2NLEntry, format="csv")
     total_entries = len(test2nl_entries)
 
-    # Limit entries if specified (applied to individual entries, not class-method pairs)
-    if max_entries > 0 and max_entries <= num_proj_parallel:
-        # Select first max_entries entries with unique projects
-        selected_entries: list[Test2NLEntry] = []
-        seen_projects: set[str] = set()
-        for entry in test2nl_entries:
-            if entry.project_name not in seen_projects:
-                selected_entries.append(entry)
-                seen_projects.add(entry.project_name)
-                if len(selected_entries) >= max_entries:
-                    break
-        test2nl_entries = selected_entries
-        RichLog.info(
-            f"max_entries ({max_entries}) <= num_proj_parallel ({num_proj_parallel}): "
-            f"selected first {len(test2nl_entries)} entries with unique projects "
-            f"(total_entries={total_entries})"
+    # Debug mode: load from spanning_subset.csv
+    if NL2TEST_DEBUG:
+        debug_csv_path = (
+            Path(__file__).parent.parent.parent
+            / "resources/test2nl/filtered_dataset/spanning_subset.csv"
         )
-    elif max_entries > 0 and total_entries > max_entries:
+        if not debug_csv_path.exists():
+            raise Exception(f"Debug CSV file not found: {debug_csv_path}")
+        debug_data_manager = StructuredDataManager(debug_csv_path.parent)
+        test2nl_entries = debug_data_manager.load(
+            debug_csv_path.name, Test2NLEntry, format="csv"
+        )
+        RichLog.info(
+            f"NL2TEST_DEBUG enabled: loaded {len(test2nl_entries)} entries from {debug_csv_path}"
+        )
+    elif max_entries > 0:
         test2nl_entries = test2nl_entries[:max_entries]
         RichLog.info(
             f"Processing subset of {len(test2nl_entries)} entries "
             f"(max_entries={max_entries}, total_entries={total_entries})"
-        )
-    elif max_entries > 0:
-        RichLog.info(
-            f"Requested {max_entries} entries but only {total_entries} available. Processing all entries."
         )
 
     # Sort entries by qualified_class_name and method_signature to group related entries together
@@ -876,10 +872,7 @@ def run_nl2test(
     # Initialize Ray
     try:
         if not ray.is_initialized():
-            if debug:
-                ray.init(local_mode=True)
-            else:
-                ray.init()
+            ray.init()
     except Exception as exc:
         raise RuntimeError(f"Failed to initialize Ray: {exc}") from exc
 

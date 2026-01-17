@@ -17,13 +17,14 @@ from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 # EVAL_DIR = ROOT_DIR / "resources" / "agent_outputs" / "evaluation"
-EVAL_DIR = ROOT_DIR / "resources" / "output"
+EVAL_DIR = ROOT_DIR / "resources" / "nl2test_gemini_200_output"
+# EVAL_DIR = ROOT_DIR / "resources" / "output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 OUTPUT_DIR = ROOT_DIR / "resources" / "cleaned_evaluation"
 BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
 BUCKETED_DATASET_FILE = "nl2test.json"
 
-PRICING_MODEL = "gemini-2.5-pro"
+PRICING_MODEL = "minimax/minimax-m2.1"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
 

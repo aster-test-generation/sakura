@@ -17,7 +17,7 @@ LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 4
+MAX_ENTRIES = 6
 # Note: 0 = unlimited
 DEBUG = True
 USE_STORED_INDEX = True
@@ -47,6 +47,7 @@ CAN_PARALLEL_TOOL_CALL: bool = True
 # Config reasoning abilities
 REASONING_ENABLED: bool = True
 REASONING_EFFORT: str = "medium"
+EXCLUDE_REASONING: bool = True
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8
@@ -54,7 +55,7 @@ LOCALIZATION_MAX_ITERS: int = 12
 COMPOSITION_MAX_ITERS: int = 14
 
 # Parallelization defaults (only between projects)
-NUM_PROJ_PARALLEL = 4
+NUM_PROJ_PARALLEL = 6
 MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
 
@@ -171,6 +172,10 @@ def main() -> None:
     else:
         cmd.append("--no-enable-reasoning")
     cmd.extend(["--reasoning-effort", REASONING_EFFORT])
+    if EXCLUDE_REASONING:
+        cmd.append("--exclude-reasoning")
+    else:
+        cmd.append("--no-exclude-reasoning")
 
     print("Running NL2Test on Test2NL inputs...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)

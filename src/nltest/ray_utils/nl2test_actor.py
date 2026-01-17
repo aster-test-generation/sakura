@@ -51,6 +51,7 @@ class NL2TestActor:
         exclude_test_dirs: bool = False,
         reasoning_enabled: bool = True,
         reasoning_effort: str = "low",
+        exclude_reasoning: bool = True,
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -103,6 +104,7 @@ class NL2TestActor:
             use_stored_index=use_stored_index,
             reasoning_enabled=reasoning_enabled,
             reasoning_effort=reasoning_effort,
+            exclude_reasoning=exclude_reasoning,
         )
 
         # Load analysis from precomputed JSON for this project

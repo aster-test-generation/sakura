@@ -23,7 +23,6 @@ from nltest.nl2test.models import (
     NL2TestInput,
 )
 from nltest.nl2test.models.decomposition import (
-    AtomicBlockList,
     DecompositionMode,
     GrammaticalBlockList,
     Scenario,
@@ -105,9 +104,8 @@ class TestLocalizationAgent:
             mode=DecompositionMode.GRAMMATICAL,
             usage_tracker=tracker,
         )
-        grammatical_blocks: GrammaticalBlockList = nl_decomposer.decompose(
-            nl_description
-        )
+        grammatical_blocks = nl_decomposer.decompose(nl_description)
+        assert isinstance(grammatical_blocks, GrammaticalBlockList)
 
         method_searcher = MethodIndexer(self.analysis).build_index()
         class_searcher = ClassIndexer(self.analysis).build_index()
@@ -163,8 +161,9 @@ class TestLocalizationAgent:
             usage_tracker=tracker,
         )
 
-        scenario: Scenario = nl_decomposer.decompose(nl_description)
+        scenario = nl_decomposer.decompose(nl_description)
         pretty_print("Initial scenario", scenario)
+        assert isinstance(scenario, Scenario)
 
         # Build searchers
         method_searcher = MethodIndexer(self.analysis).build_index()
@@ -212,20 +211,15 @@ class TestLocalizationAgent:
         pretty_print("Token usage", prices)
 
     def test_localization_agent_complex_gherkin(self):
-        qualified_class_name = (
-            "org.springframework.samples.petclinic.owner.OwnerControllerTests"
-        )
-        method_signature = "testProcessCreationFormSuccess()"
-
         nl_description = 'Create a test case that validates the successful processing of a new owner creation form by the `OwnerController`. The test leverages Spring\'s `@WebMvcTest` with `MockMvc` to simulate HTTP requests and responses. The `OwnerRepository` dependency is mocked using `@MockitoBean`, and its behavior is pre-configured in the `setup` method: a predefined `Owner` (obtained via the `george()` helper method, which constructs and populates an `Owner` instance with associated `Pet` and `PetType` data) is returned when `owners.findByLastNameStartingWith()` is called with any `Pageable` and the last name "Franklin", and the same `Owner` is returned when `owners.findById()` is called with `TEST_OWNER_ID`. The test then performs a POST request to "/owners/new" using `mockMvc.perform()`, simulating form submission with parameters for firstName, lastName, address, city, and telephone. Finally, the test asserts that the HTTP response status is a 3xx redirection using `andExpect(status().is3xxRedirection())`, indicating successful form processing and redirection, using Spring\'s `MockMvcResultMatchers`. JUnit and Mockito are used for the test structure and mocking, respectively.'
-
         tracker = UsageTracker()
         nl_decomposer = NLDecomposer(
             mode=DecompositionMode.GHERKIN,
             usage_tracker=tracker,
         )
-        scenario: Scenario = nl_decomposer.decompose(nl_description)
+        scenario = nl_decomposer.decompose(nl_description)
         pretty_print("Initial scenario", scenario)
+        assert isinstance(scenario, Scenario)
 
         # Build searchers
         method_searcher = MethodIndexer(self.analysis).build_index()
@@ -634,6 +628,80 @@ class TestLocalizationGrader:
 
         assert 0.0 <= results.localization_recall <= 1.0
 
+    def test_localization_grader_state_missing_output_penalizes(self, monkeypatch):
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.service.ClinicServiceTests",
+            method_signature="shouldInsertPetIntoDatabaseAndGenerateId()",
+            description="Insert a new pet into the database and verify that an ID is generated.",
+            project_name="spring-petclinic",
+        )
+
+        project_root = Path(self.config.get("project", "base_project_dir"))
+        common_analysis = CommonAnalysis(self.analysis)
+        _, application_classes, test_utility_classes = (
+            common_analysis.categorize_classes()
+        )
+
+        grader = LocalizationGrader(
+            analysis=self.analysis,
+            project_root=project_root,
+            decomposition_mode=DecompositionMode.GHERKIN,
+            application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
+        )
+
+        focal_methods = {
+            ("org.example.Foo", "alpha()"),
+            ("org.example.Bar", "beta(java.lang.String)"),
+        }
+
+        monkeypatch.setattr(grader, "_get_focal_methods", lambda _: focal_methods)
+
+        results = grader.grade_from_state(None, nl2_input)
+        expected_methods = grader._format_methods(focal_methods)
+
+        assert results.localization_recall == 0.0
+        assert results.tp == 0
+        assert results.fn == len(focal_methods)
+        assert results.all_focal_methods == expected_methods
+        assert results.covered_focal_methods == []
+        assert results.uncovered_focal_methods == expected_methods
+
+    def test_localization_grader_state_empty_focal_methods_returns_one(
+        self, monkeypatch
+    ):
+        nl2_input = NL2TestInput(
+            qualified_class_name="org.springframework.samples.petclinic.service.ClinicServiceTests",
+            method_signature="shouldInsertPetIntoDatabaseAndGenerateId()",
+            description="Insert a new pet into the database and verify that an ID is generated.",
+            project_name="spring-petclinic",
+        )
+
+        project_root = Path(self.config.get("project", "base_project_dir"))
+        common_analysis = CommonAnalysis(self.analysis)
+        _, application_classes, test_utility_classes = (
+            common_analysis.categorize_classes()
+        )
+
+        grader = LocalizationGrader(
+            analysis=self.analysis,
+            project_root=project_root,
+            decomposition_mode=DecompositionMode.GHERKIN,
+            application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
+        )
+
+        monkeypatch.setattr(grader, "_get_focal_methods", lambda _: set())
+
+        results = grader.grade_from_state(None, nl2_input)
+
+        assert results.localization_recall == 1.0
+        assert results.tp == 0
+        assert results.fn == 0
+        assert results.all_focal_methods == []
+        assert results.covered_focal_methods == []
+        assert results.uncovered_focal_methods == []
+
 
 class TestLocalizationTools:
     @pytest.fixture(autouse=True)
@@ -642,11 +710,6 @@ class TestLocalizationTools:
         self.config = petclinic_config
 
     def test_localization_call_site_tool(self):
-        qualified_class_name = (
-            "org.springframework.samples.petclinic.service.ClinicServiceTests"
-        )
-        method_signature = "shouldInsertPetIntoDatabaseAndGenerateId()"
-
         fake_method_searcher = MagicMock()
         fake_class_searcher = MagicMock()
 
@@ -658,7 +721,12 @@ class TestLocalizationTools:
 
         call_site_tool = localization_tools._make_call_site_details_tool()
 
-        cleaned_call_sites = call_site_tool.func(qualified_class_name, method_signature)
+        cleaned_call_sites = call_site_tool.invoke(
+            {
+                "qualified_class_name": "org.springframework.samples.petclinic.service.ClinicServiceTests",
+                "method_signature": "shouldInsertPetIntoDatabaseAndGenerateId()",
+            }
+        )
         pretty_print("Cleaned call site details", cleaned_call_sites)
 
     def test_search_reachable_methods_tool(self):
@@ -675,8 +743,12 @@ class TestLocalizationTools:
         )
 
         search_tool = localization_tools._make_search_reachable_methods_tool()
-        results = search_tool.func(
-            qualified_class_name, query, "same_package_or_subclass"
+        results = search_tool.invoke(
+            {
+                "qualified_class_name": qualified_class_name,
+                "query": query,
+                "visibility_mode": "same_package_or_subclass",
+            }
         )
 
         pretty_print("Reachable method search results", results)
@@ -797,7 +869,9 @@ class TestLocalizationToolInjection:
             gherkin_groups=[],
             teardown=[],
         )
-        result = finalize_tool.func(scenario=scenario, comments="Final comments")
+        result = finalize_tool.invoke(
+            {"scenario": scenario, "comments": "Final comments"}
+        )
 
         assert result == (scenario, "Final comments")
 
@@ -810,7 +884,9 @@ class TestLocalizationToolInjection:
         finalize_tool = next(t for t in tools if t.name == "finalize")
 
         blocks = AtomicBlockList(atomic_blocks=[])
-        result = finalize_tool.func(current_blocks=blocks, comments="Final comments")
+        result = finalize_tool.invoke(
+            {"current_blocks": blocks, "comments": "Final comments"}
+        )
 
         assert result == (blocks, "Final comments")
 

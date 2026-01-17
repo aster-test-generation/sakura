@@ -12,13 +12,19 @@ from hamster.code_analysis.test_statistics import (
     SetupAnalysisInfo,
 )
 
-from nltest.nl2test.models import AtomicBlockList, LocalizedScenario, NL2TestInput
+from nltest.nl2test.models import (
+    AgentState,
+    AtomicBlockList,
+    LocalizedScenario,
+    NL2TestInput,
+)
 from nltest.nl2test.models.decomposition import (
     DecompositionMode,
     LocalizationEval,
     LocalizedStep,
 )
 from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.pretty.prints import pretty_print
 
 # Tuple[qualified_class_name, method_sig]
@@ -89,6 +95,33 @@ class LocalizationGrader:
             localization_recall=recall,
         )
 
+    def grade_from_state(
+        self, supervisor_state: AgentState | None, nl2_input: NL2TestInput
+    ) -> LocalizationEval:
+        focal_methods = self._get_focal_methods(nl2_input)
+        if not focal_methods:
+            return self._empty_results(nl2_input)
+
+        localization_target = None
+        if supervisor_state is not None:
+            if self.decomposition_mode == DecompositionMode.GHERKIN:
+                localization_target = supervisor_state.localized_scenario
+            else:
+                localization_target = supervisor_state.atomic_blocks
+
+        if localization_target is None:
+            return self._missing_output_results(nl2_input, focal_methods)
+
+        try:
+            return self.grade(localization_target, nl2_input)
+        except Exception as exc:
+            RichLog.warn(
+                "Localization evaluation failed for "
+                f"{nl2_input.qualified_class_name}::{nl2_input.method_signature} "
+                f"(id={nl2_input.id}): {exc}"
+            )
+            return self._missing_output_results(nl2_input, focal_methods)
+
     def _empty_results(self, nl2_input: NL2TestInput) -> LocalizationEval:
         return LocalizationEval(
             qualified_class_name=nl2_input.qualified_class_name,
@@ -99,6 +132,20 @@ class LocalizationGrader:
             tp=0,
             fn=0,
             localization_recall=round(1.0, 4),
+        )
+
+    def _missing_output_results(
+        self, nl2_input: NL2TestInput, focal_methods: Set[FocalMethod]
+    ) -> LocalizationEval:
+        return LocalizationEval(
+            qualified_class_name=nl2_input.qualified_class_name,
+            method_signature=nl2_input.method_signature,
+            all_focal_methods=self._format_methods(focal_methods),
+            covered_focal_methods=[],
+            uncovered_focal_methods=self._format_methods(focal_methods),
+            tp=0,
+            fn=len(focal_methods),
+            localization_recall=0.0,
         )
 
     def _get_focal_methods(self, nl2_input: NL2TestInput) -> Set[FocalMethod]:

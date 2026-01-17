@@ -49,6 +49,8 @@ class NL2TestActor:
         debug: bool = False,
         log_file_name: str | None = None,
         exclude_test_dirs: bool = False,
+        reasoning_enabled: bool = True,
+        reasoning_effort: str = "low",
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -82,7 +84,6 @@ class NL2TestActor:
                     f"[NL2TestActor:{self.project_name}] Failed to add log file handler at {actor_log_path}: {exc}"
                 )
 
-        # Initialize shared config for this project
         init_config(
             project_name=self.project_name,
             base_project_dir=str(self.project_root),
@@ -100,6 +101,8 @@ class NL2TestActor:
             supervisor_max_iters=(supervisor_max_iters or 10),
             can_parallel_tool=can_parallel_tool,
             use_stored_index=use_stored_index,
+            reasoning_enabled=reasoning_enabled,
+            reasoning_effort=reasoning_effort,
         )
 
         # Load analysis from precomputed JSON for this project

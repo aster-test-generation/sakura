@@ -17,14 +17,14 @@ LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 4
+MAX_ENTRIES = 10
 # Note: 0 = unlimited
 DEBUG = True
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "google/gemini-2.5-flash"
+LLM_MODEL = "minimax/minimax-m2.1"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
     "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
@@ -44,13 +44,16 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 # Parallel tool call behavior for the LLM
 CAN_PARALLEL_TOOL_CALL: bool = True
 
+REASONING_ENABLED: bool = True
+REASONING_EFFORT: str = "low"
+
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8
 LOCALIZATION_MAX_ITERS: int = 12
 COMPOSITION_MAX_ITERS: int = 14
 
 # Parallelization defaults (only between projects)
-NUM_PROJ_PARALLEL = 2
+NUM_PROJ_PARALLEL = 4
 MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
 
@@ -161,6 +164,12 @@ def main() -> None:
         cmd.extend(["--localization-max-iters", str(LOCALIZATION_MAX_ITERS)])
     if COMPOSITION_MAX_ITERS is not None:
         cmd.extend(["--composition-max-iters", str(COMPOSITION_MAX_ITERS)])
+
+    if REASONING_ENABLED:
+        cmd.append("--enable-reasoning")
+    else:
+        cmd.append("--no-enable-reasoning")
+    cmd.extend(["--reasoning-effort", REASONING_EFFORT])
 
     print("Running NL2Test on Test2NL inputs...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)

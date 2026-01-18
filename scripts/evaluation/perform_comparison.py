@@ -17,8 +17,26 @@ ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
 CLEANED_RESULTS_DIR = ROOT_DIR / "resources" / "cleaned_evaluation"
 OUTPUT_DIR = ROOT_DIR / "resources" / "diagrams"
 
-FILE_A = "compiled_results_out_of_box_excluded.json"
-FILE_B = "compiled_results_gemini_flash_excluded.json"
+INPUT_FILES: dict[str, str] = {
+    "gemini_cli_200_eval.json": "Gemini CLI (Pro 2.5)",
+    "nl2test_200_gemini_flash_eval.json": "NL2Test (Gemini Flash 2.5)",
+    # "nl2test_subset_minimax_eval.json": "NL2Test (Minimax M2.1)",
+    # "nl2test_subset_qwen3_coder_eval.json": "NL2Test (Qwen3-Coder)",
+    "nl2test_200_gemini_pro_incomplete_eval.json": "NL2Test (Gemini Pro 2.5)",
+    # "nl2test_subset_gemini_flash_eval.json": "NL2Test (Gemini Flash 2.5)"
+}
+
+# Color palette for multiple datasets
+COLORS = [
+    "#2E86AB",
+    "#A23B72",
+    "#F18F01",
+    "#C73E1D",
+    "#3B1F2B",
+    "#95C623",
+    "#5C4D7D",
+    "#2A9D8F",
+]
 
 # Metrics to ignore in comparisons
 IGNORED_METRICS = {"localization_recall", "llm_calls"}
@@ -73,10 +91,8 @@ def format_bucket_name(bucket: str) -> str:
 
 def create_grouped_bar_chart(
     categories: list[str],
-    values_a: list[float],
-    values_b: list[float],
-    label_a: str,
-    label_b: str,
+    all_values: list[list[float]],
+    labels: list[str],
     title: str,
     ylabel: str,
     output_path: Path,
@@ -84,13 +100,20 @@ def create_grouped_bar_chart(
     ylim: tuple[float, float] | None = None,
     show_percentage: bool = False,
 ) -> None:
-    """Create a grouped bar chart comparing two datasets."""
+    """Create a grouped bar chart comparing multiple datasets."""
+    n_datasets = len(all_values)
     x = np.arange(len(categories))
-    width = 0.35
+    width = 0.8 / n_datasets
 
     fig, ax = plt.subplots(figsize=figsize)
-    bars_a = ax.bar(x - width / 2, values_a, width, label=label_a, color="#2E86AB")
-    bars_b = ax.bar(x + width / 2, values_b, width, label=label_b, color="#A23B72")
+
+    all_bars = []
+    for i, (values, label) in enumerate(zip(all_values, labels)):
+        offset = (i - (n_datasets - 1) / 2) * width
+        bars = ax.bar(
+            x + offset, values, width, label=label, color=COLORS[i % len(COLORS)]
+        )
+        all_bars.append(bars)
 
     ax.set_ylabel(ylabel, fontsize=11)
     ax.set_title(title, fontsize=13, fontweight="bold")
@@ -121,8 +144,8 @@ def create_grouped_bar_chart(
                 fontsize=8,
             )
 
-    add_labels(bars_a, values_a)
-    add_labels(bars_b, values_b)
+    for bars, values in zip(all_bars, all_values):
+        add_labels(bars, values)
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
@@ -131,23 +154,18 @@ def create_grouped_bar_chart(
 
 
 def create_holistic_comparison(
-    data_a: dict[str, Any],
-    data_b: dict[str, Any],
-    label_a: str,
-    label_b: str,
+    all_data: list[dict[str, Any]],
+    labels: list[str],
     output_dir: Path,
 ) -> None:
     """Create comparison charts for holistic metrics."""
-    holistic_a = data_a["holistic"]["distributions"]
-    holistic_b = data_b["holistic"]["distributions"]
+    all_holistic = [d["holistic"]["distributions"] for d in all_data]
 
     # Compile rate comparison
     create_grouped_bar_chart(
         categories=["Overall"],
-        values_a=[data_a["holistic"]["compile_rate"]],
-        values_b=[data_b["holistic"]["compile_rate"]],
-        label_a=label_a,
-        label_b=label_b,
+        all_values=[[d["holistic"]["compile_rate"]] for d in all_data],
+        labels=labels,
         title="Overall Compilation Rate Comparison",
         ylabel="Compilation Rate",
         output_path=output_dir / "holistic_compile_rate.png",
@@ -157,17 +175,14 @@ def create_holistic_comparison(
     )
 
     # Core metrics comparison (means)
-    metrics = [m for m in CORE_METRICS if m in holistic_a]
-    values_a = [holistic_a[m]["mean"] for m in metrics]
-    values_b = [holistic_b[m]["mean"] for m in metrics]
-    labels = [format_metric_name(m) for m in metrics]
+    metrics = [m for m in CORE_METRICS if m in all_holistic[0]]
+    metric_labels = [format_metric_name(m) for m in metrics]
+    all_values = [[h[m]["mean"] for m in metrics] for h in all_holistic]
 
     create_grouped_bar_chart(
-        categories=labels,
-        values_a=values_a,
-        values_b=values_b,
-        label_a=label_a,
-        label_b=label_b,
+        categories=metric_labels,
+        all_values=all_values,
+        labels=labels,
         title="Holistic Metrics Comparison (Mean Values)",
         ylabel="Mean Value",
         output_path=output_dir / "holistic_metrics_mean.png",
@@ -176,37 +191,38 @@ def create_holistic_comparison(
     )
 
     # Token usage comparison
-    token_values_a = [holistic_a[m]["mean"] for m in TOKEN_METRICS]
-    token_values_b = [holistic_b[m]["mean"] for m in TOKEN_METRICS]
     token_labels = [format_metric_name(m) for m in TOKEN_METRICS]
+    all_token_values = [[h[m]["mean"] for m in TOKEN_METRICS] for h in all_holistic]
 
     create_grouped_bar_chart(
         categories=token_labels,
-        values_a=token_values_a,
-        values_b=token_values_b,
-        label_a=label_a,
-        label_b=label_b,
+        all_values=all_token_values,
+        labels=labels,
         title="Token Usage Comparison (Mean Values)",
         ylabel="Tokens",
         output_path=output_dir / "holistic_token_usage.png",
         figsize=(8, 5),
     )
 
-    # Average cost per sample comparison (read from distributions)
-    cost_a = holistic_a.get("cost", {}).get("mean", 0.0)
-    cost_b = holistic_b.get("cost", {}).get("mean", 0.0)
-
-    # Get pricing models from summary
-    pricing_a = data_a.get("summary", {}).get("pricing_model", "unknown")
-    pricing_b = data_b.get("summary", {}).get("pricing_model", "unknown")
+    # Average cost per sample comparison
+    all_costs = [h.get("cost", {}).get("mean", 0.0) for h in all_holistic]
+    all_pricing = [
+        d.get("summary", {}).get("pricing_model", "unknown") for d in all_data
+    ]
 
     # Create cost comparison chart
+    n_datasets = len(all_data)
     fig, ax = plt.subplots(figsize=(8, 5))
     x = np.arange(1)
-    width = 0.35
+    width = 0.8 / n_datasets
 
-    bars_a = ax.bar(x - width / 2, [cost_a], width, label=label_a, color="#2E86AB")
-    bars_b = ax.bar(x + width / 2, [cost_b], width, label=label_b, color="#A23B72")
+    all_bars = []
+    for i, (cost, label) in enumerate(zip(all_costs, labels)):
+        offset = (i - (n_datasets - 1) / 2) * width
+        bars = ax.bar(
+            x + offset, [cost], width, label=label, color=COLORS[i % len(COLORS)]
+        )
+        all_bars.append(bars)
 
     ax.set_ylabel("Cost (USD)", fontsize=11)
     ax.set_title("Average Cost per Sample", fontsize=13, fontweight="bold")
@@ -215,32 +231,24 @@ def create_holistic_comparison(
     ax.legend(loc="upper right", fontsize=10)
 
     # Add value labels
-    for bar, val in zip(bars_a, [cost_a]):
-        ax.annotate(
-            f"${val:.4f}",
-            xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
-            xytext=(0, 3),
-            textcoords="offset points",
-            ha="center",
-            va="bottom",
-            fontsize=10,
-        )
-    for bar, val in zip(bars_b, [cost_b]):
-        ax.annotate(
-            f"${val:.4f}",
-            xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
-            xytext=(0, 3),
-            textcoords="offset points",
-            ha="center",
-            va="bottom",
-            fontsize=10,
-        )
+    for bars, cost in zip(all_bars, all_costs):
+        for bar in bars:
+            ax.annotate(
+                f"${cost:.4f}",
+                xy=(bar.get_x() + bar.get_width() / 2, bar.get_height()),
+                xytext=(0, 3),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=10,
+            )
 
     # Add pricing model info as subtitle
+    pricing_info = "\n".join(f"{lbl}: {p}" for lbl, p in zip(labels, all_pricing))
     ax.text(
         0.5,
         -0.15,
-        f"{label_a}: {pricing_a}\n{label_b}: {pricing_b}",
+        pricing_info,
         transform=ax.transAxes,
         ha="center",
         va="top",
@@ -256,29 +264,25 @@ def create_holistic_comparison(
 
 
 def create_abstraction_level_comparison(
-    data_a: dict[str, Any],
-    data_b: dict[str, Any],
-    label_a: str,
-    label_b: str,
+    all_data: list[dict[str, Any]],
+    labels: list[str],
     output_dir: Path,
 ) -> None:
     """Create comparison charts for abstraction levels."""
-    levels_a = data_a["abstraction_levels"]
-    levels_b = data_b["abstraction_levels"]
+    all_levels = [d["abstraction_levels"] for d in all_data]
 
     level_order = ["high", "medium", "low"]
-    level_labels = [format_bucket_name(l) for l in level_order]
+    level_labels = [format_bucket_name(lvl) for lvl in level_order]
 
     # Compile rate comparison
-    compile_a = [levels_a[l]["compile_rate"] for l in level_order]
-    compile_b = [levels_b[l]["compile_rate"] for l in level_order]
+    all_compile = [
+        [lvls[lvl]["compile_rate"] for lvl in level_order] for lvls in all_levels
+    ]
 
     create_grouped_bar_chart(
         categories=level_labels,
-        values_a=compile_a,
-        values_b=compile_b,
-        label_a=label_a,
-        label_b=label_b,
+        all_values=all_compile,
+        labels=labels,
         title="Compilation Rate by Abstraction Level",
         ylabel="Compilation Rate",
         output_path=output_dir / "abstraction_compile_rate.png",
@@ -295,15 +299,15 @@ def create_abstraction_level_comparison(
         "branch_coverage",
     ]
     for metric in key_metrics:
-        values_a = [levels_a[l]["distributions"][metric]["mean"] for l in level_order]
-        values_b = [levels_b[l]["distributions"][metric]["mean"] for l in level_order]
+        all_values = [
+            [lvls[lvl]["distributions"][metric]["mean"] for lvl in level_order]
+            for lvls in all_levels
+        ]
 
         create_grouped_bar_chart(
             categories=level_labels,
-            values_a=values_a,
-            values_b=values_b,
-            label_a=label_a,
-            label_b=label_b,
+            all_values=all_values,
+            labels=labels,
             title=f"{format_metric_name(metric)} by Abstraction Level",
             ylabel="Mean Value",
             output_path=output_dir / f"abstraction_{metric}.png",
@@ -313,35 +317,37 @@ def create_abstraction_level_comparison(
 
 
 def create_focal_bucket_comparison(
-    data_a: dict[str, Any],
-    data_b: dict[str, Any],
-    label_a: str,
-    label_b: str,
+    all_data: list[dict[str, Any]],
+    labels: list[str],
     output_dir: Path,
 ) -> None:
     """Create comparison charts for focal method buckets."""
-    buckets_a = data_a["focal_method_buckets"]
-    buckets_b = data_b["focal_method_buckets"]
+    all_buckets = [d["focal_method_buckets"] for d in all_data]
 
-    bucket_order = [
+    # Only include buckets present in ALL datasets
+    preferred_order = [
         "one_focal",
         "two_focal",
         "three_to_five_focal",
         "six_to_ten_focal",
         "more_than_ten_focal",
     ]
+    common_buckets = set.intersection(*[set(bkts.keys()) for bkts in all_buckets])
+    bucket_order = [b for b in preferred_order if b in common_buckets]
+    if not bucket_order:
+        print("Warning: No common focal method buckets found, skipping comparison.")
+        return
     bucket_labels = [format_bucket_name(b) for b in bucket_order]
 
     # Compile rate comparison
-    compile_a = [buckets_a[b]["compile_rate"] for b in bucket_order]
-    compile_b = [buckets_b[b]["compile_rate"] for b in bucket_order]
+    all_compile = [
+        [bkts[b]["compile_rate"] for b in bucket_order] for bkts in all_buckets
+    ]
 
     create_grouped_bar_chart(
         categories=bucket_labels,
-        values_a=compile_a,
-        values_b=compile_b,
-        label_a=label_a,
-        label_b=label_b,
+        all_values=all_compile,
+        labels=labels,
         title="Compilation Rate by Focal Method Count",
         ylabel="Compilation Rate",
         output_path=output_dir / "focal_bucket_compile_rate.png",
@@ -360,15 +366,15 @@ def create_focal_bucket_comparison(
         "focal_precision",
     ]
     for metric in key_metrics:
-        values_a = [buckets_a[b]["distributions"][metric]["mean"] for b in bucket_order]
-        values_b = [buckets_b[b]["distributions"][metric]["mean"] for b in bucket_order]
+        all_values = [
+            [bkts[b]["distributions"][metric]["mean"] for b in bucket_order]
+            for bkts in all_buckets
+        ]
 
         create_grouped_bar_chart(
             categories=bucket_labels,
-            values_a=values_a,
-            values_b=values_b,
-            label_a=label_a,
-            label_b=label_b,
+            all_values=all_values,
+            labels=labels,
             title=f"{format_metric_name(metric)} by Focal Method Count",
             ylabel="Mean Value",
             output_path=output_dir / f"focal_bucket_{metric}.png",
@@ -378,29 +384,29 @@ def create_focal_bucket_comparison(
 
 
 def create_focal_class_comparison(
-    data_a: dict[str, Any],
-    data_b: dict[str, Any],
-    label_a: str,
-    label_b: str,
+    all_data: list[dict[str, Any]],
+    labels: list[str],
     output_dir: Path,
 ) -> None:
     """Create comparison charts for focal class counts."""
-    classes_a = data_a["focal_class_counts"]
-    classes_b = data_b["focal_class_counts"]
+    all_classes = [d["focal_class_counts"] for d in all_data]
 
-    class_order = ["1_focal_class", "2_focal_classes", "3_to_5_focal_classes"]
+    # Only include class counts present in ALL datasets
+    preferred_order = ["1_focal_class", "2_focal_classes", "3_to_5_focal_classes"]
+    common_classes = set.intersection(*[set(cls.keys()) for cls in all_classes])
+    class_order = [c for c in preferred_order if c in common_classes]
+    if not class_order:
+        print("Warning: No common focal class counts found, skipping comparison.")
+        return
     class_labels = [format_bucket_name(c) for c in class_order]
 
     # Compile rate comparison
-    compile_a = [classes_a[c]["compile_rate"] for c in class_order]
-    compile_b = [classes_b[c]["compile_rate"] for c in class_order]
+    all_compile = [[cls[c]["compile_rate"] for c in class_order] for cls in all_classes]
 
     create_grouped_bar_chart(
         categories=class_labels,
-        values_a=compile_a,
-        values_b=compile_b,
-        label_a=label_a,
-        label_b=label_b,
+        all_values=all_compile,
+        labels=labels,
         title="Compilation Rate by Focal Class Count",
         ylabel="Compilation Rate",
         output_path=output_dir / "focal_class_compile_rate.png",
@@ -419,15 +425,15 @@ def create_focal_class_comparison(
         "focal_precision",
     ]
     for metric in key_metrics:
-        values_a = [classes_a[c]["distributions"][metric]["mean"] for c in class_order]
-        values_b = [classes_b[c]["distributions"][metric]["mean"] for c in class_order]
+        all_values = [
+            [cls[c]["distributions"][metric]["mean"] for c in class_order]
+            for cls in all_classes
+        ]
 
         create_grouped_bar_chart(
             categories=class_labels,
-            values_a=values_a,
-            values_b=values_b,
-            label_a=label_a,
-            label_b=label_b,
+            all_values=all_values,
+            labels=labels,
             title=f"{format_metric_name(metric)} by Focal Class Count",
             ylabel="Mean Value",
             output_path=output_dir / f"focal_class_{metric}.png",
@@ -437,46 +443,54 @@ def create_focal_class_comparison(
 
 
 def create_combined_compile_rate_chart(
-    data_a: dict[str, Any],
-    data_b: dict[str, Any],
-    label_a: str,
-    label_b: str,
+    all_data: list[dict[str, Any]],
+    labels: list[str],
     output_dir: Path,
 ) -> None:
     """Create a combined chart showing compile rates across all distribution types."""
-    categories = []
-    values_a = []
-    values_b = []
+    # Determine common keys across all datasets
+    all_levels = [d["abstraction_levels"] for d in all_data]
+    all_buckets = [d["focal_method_buckets"] for d in all_data]
+    all_classes = [d["focal_class_counts"] for d in all_data]
 
-    # Overall
-    categories.append("Overall")
-    values_a.append(data_a["holistic"]["compile_rate"])
-    values_b.append(data_b["holistic"]["compile_rate"])
+    common_levels = set.intersection(*[set(lvl.keys()) for lvl in all_levels])
+    common_buckets = set.intersection(*[set(bkt.keys()) for bkt in all_buckets])
+    common_classes = set.intersection(*[set(cls.keys()) for cls in all_classes])
 
-    # Abstraction levels
-    for level in ["high", "medium", "low"]:
+    level_order = [lvl for lvl in ["high", "medium", "low"] if lvl in common_levels]
+    bucket_order = [
+        b
+        for b in ["one_focal", "two_focal", "three_to_five_focal"]
+        if b in common_buckets
+    ]
+    class_order = [
+        c for c in ["1_focal_class", "2_focal_classes"] if c in common_classes
+    ]
+
+    categories = ["Overall"]
+    for level in level_order:
         categories.append(f"Abstr: {format_bucket_name(level)}")
-        values_a.append(data_a["abstraction_levels"][level]["compile_rate"])
-        values_b.append(data_b["abstraction_levels"][level]["compile_rate"])
-
-    # Focal method buckets
-    for bucket in ["one_focal", "two_focal", "three_to_five_focal"]:
+    for bucket in bucket_order:
         categories.append(f"FM: {format_bucket_name(bucket)}")
-        values_a.append(data_a["focal_method_buckets"][bucket]["compile_rate"])
-        values_b.append(data_b["focal_method_buckets"][bucket]["compile_rate"])
-
-    # Focal class counts
-    for cls in ["1_focal_class", "2_focal_classes"]:
+    for cls in class_order:
         categories.append(f"FC: {format_bucket_name(cls)}")
-        values_a.append(data_a["focal_class_counts"][cls]["compile_rate"])
-        values_b.append(data_b["focal_class_counts"][cls]["compile_rate"])
+
+    # Build values for each dataset
+    all_values = []
+    for data in all_data:
+        values = [data["holistic"]["compile_rate"]]
+        for level in level_order:
+            values.append(data["abstraction_levels"][level]["compile_rate"])
+        for bucket in bucket_order:
+            values.append(data["focal_method_buckets"][bucket]["compile_rate"])
+        for cls in class_order:
+            values.append(data["focal_class_counts"][cls]["compile_rate"])
+        all_values.append(values)
 
     create_grouped_bar_chart(
         categories=categories,
-        values_a=values_a,
-        values_b=values_b,
-        label_a=label_a,
-        label_b=label_b,
+        all_values=all_values,
+        labels=labels,
         title="Compilation Rate Comparison Across All Distributions",
         ylabel="Compilation Rate",
         output_path=output_dir / "combined_compile_rates.png",
@@ -487,41 +501,48 @@ def create_combined_compile_rate_chart(
 
 
 def create_summary_dashboard(
-    data_a: dict[str, Any],
-    data_b: dict[str, Any],
-    label_a: str,
-    label_b: str,
+    all_data: list[dict[str, Any]],
+    labels: list[str],
     output_dir: Path,
 ) -> None:
     """Create a summary dashboard with key metrics."""
+    n_datasets = len(all_data)
     fig, axes = plt.subplots(2, 2, figsize=(14, 10))
     fig.suptitle("Evaluation Results Summary Dashboard", fontsize=14, fontweight="bold")
+
+    width = 0.8 / n_datasets
+
+    # Determine common keys across all datasets
+    all_levels_data = [d["abstraction_levels"] for d in all_data]
+    all_buckets_data = [d["focal_method_buckets"] for d in all_data]
+
+    common_levels = set.intersection(*[set(lvl.keys()) for lvl in all_levels_data])
+    common_buckets = set.intersection(*[set(bkt.keys()) for bkt in all_buckets_data])
+
+    levels = [lvl for lvl in ["high", "medium", "low"] if lvl in common_levels]
+    buckets = [
+        b
+        for b in ["one_focal", "two_focal", "three_to_five_focal"]
+        if b in common_buckets
+    ]
 
     # Panel 1: Overall metrics
     ax1 = axes[0, 0]
     metrics = ["compile_rate", "class_coverage", "method_coverage", "line_coverage"]
     metric_labels = ["Compile Rate", "Class Cov.", "Method Cov.", "Line Cov."]
     x = np.arange(len(metrics))
-    width = 0.35
 
-    holistic_a = data_a["holistic"]
-    holistic_b = data_b["holistic"]
+    for i, (data, label) in enumerate(zip(all_data, labels)):
+        holistic = data["holistic"]
+        vals = [
+            holistic["compile_rate"],
+            holistic["distributions"]["class_coverage"]["mean"],
+            holistic["distributions"]["method_coverage"]["mean"],
+            holistic["distributions"]["line_coverage"]["mean"],
+        ]
+        offset = (i - (n_datasets - 1) / 2) * width
+        ax1.bar(x + offset, vals, width, label=label, color=COLORS[i % len(COLORS)])
 
-    vals_a = [
-        holistic_a["compile_rate"],
-        holistic_a["distributions"]["class_coverage"]["mean"],
-        holistic_a["distributions"]["method_coverage"]["mean"],
-        holistic_a["distributions"]["line_coverage"]["mean"],
-    ]
-    vals_b = [
-        holistic_b["compile_rate"],
-        holistic_b["distributions"]["class_coverage"]["mean"],
-        holistic_b["distributions"]["method_coverage"]["mean"],
-        holistic_b["distributions"]["line_coverage"]["mean"],
-    ]
-
-    ax1.bar(x - width / 2, vals_a, width, label=label_a, color="#2E86AB")
-    ax1.bar(x + width / 2, vals_b, width, label=label_b, color="#A23B72")
     ax1.set_ylabel("Value")
     ax1.set_title("Overall Metrics")
     ax1.set_xticks(x)
@@ -531,15 +552,14 @@ def create_summary_dashboard(
 
     # Panel 2: Abstraction level compile rates
     ax2 = axes[0, 1]
-    levels = ["high", "medium", "low"]
-    level_labels = [format_bucket_name(l) for l in levels]
+    level_labels = [format_bucket_name(lvl) for lvl in levels]
     x = np.arange(len(levels))
 
-    vals_a = [data_a["abstraction_levels"][l]["compile_rate"] for l in levels]
-    vals_b = [data_b["abstraction_levels"][l]["compile_rate"] for l in levels]
+    for i, (data, label) in enumerate(zip(all_data, labels)):
+        vals = [data["abstraction_levels"][lvl]["compile_rate"] for lvl in levels]
+        offset = (i - (n_datasets - 1) / 2) * width
+        ax2.bar(x + offset, vals, width, label=label, color=COLORS[i % len(COLORS)])
 
-    ax2.bar(x - width / 2, vals_a, width, label=label_a, color="#2E86AB")
-    ax2.bar(x + width / 2, vals_b, width, label=label_b, color="#A23B72")
     ax2.set_ylabel("Compile Rate")
     ax2.set_title("Compile Rate by Abstraction Level")
     ax2.set_xticks(x)
@@ -549,15 +569,14 @@ def create_summary_dashboard(
 
     # Panel 3: Focal method bucket compile rates
     ax3 = axes[1, 0]
-    buckets = ["one_focal", "two_focal", "three_to_five_focal"]
     bucket_labels = [format_bucket_name(b) for b in buckets]
     x = np.arange(len(buckets))
 
-    vals_a = [data_a["focal_method_buckets"][b]["compile_rate"] for b in buckets]
-    vals_b = [data_b["focal_method_buckets"][b]["compile_rate"] for b in buckets]
+    for i, (data, label) in enumerate(zip(all_data, labels)):
+        vals = [data["focal_method_buckets"][b]["compile_rate"] for b in buckets]
+        offset = (i - (n_datasets - 1) / 2) * width
+        ax3.bar(x + offset, vals, width, label=label, color=COLORS[i % len(COLORS)])
 
-    ax3.bar(x - width / 2, vals_a, width, label=label_a, color="#2E86AB")
-    ax3.bar(x + width / 2, vals_b, width, label=label_b, color="#A23B72")
     ax3.set_ylabel("Compile Rate")
     ax3.set_title("Compile Rate by Focal Method Count")
     ax3.set_xticks(x)
@@ -567,21 +586,17 @@ def create_summary_dashboard(
 
     # Panel 4: Coverage metrics by abstraction level (line coverage)
     ax4 = axes[1, 1]
-    levels = ["high", "medium", "low"]
-    level_labels = [format_bucket_name(l) for l in levels]
+    level_labels = [format_bucket_name(lvl) for lvl in levels]
     x = np.arange(len(levels))
 
-    vals_a = [
-        data_a["abstraction_levels"][l]["distributions"]["line_coverage"]["mean"]
-        for l in levels
-    ]
-    vals_b = [
-        data_b["abstraction_levels"][l]["distributions"]["line_coverage"]["mean"]
-        for l in levels
-    ]
+    for i, (data, label) in enumerate(zip(all_data, labels)):
+        vals = [
+            data["abstraction_levels"][lvl]["distributions"]["line_coverage"]["mean"]
+            for lvl in levels
+        ]
+        offset = (i - (n_datasets - 1) / 2) * width
+        ax4.bar(x + offset, vals, width, label=label, color=COLORS[i % len(COLORS)])
 
-    ax4.bar(x - width / 2, vals_a, width, label=label_a, color="#2E86AB")
-    ax4.bar(x + width / 2, vals_b, width, label=label_b, color="#A23B72")
     ax4.set_ylabel("Line Coverage")
     ax4.set_title("Line Coverage by Abstraction Level")
     ax4.set_xticks(x)
@@ -595,60 +610,41 @@ def create_summary_dashboard(
     print(f"Saved: {output_dir / 'summary_dashboard.png'}")
 
 
-LABEL_MAPPINGS = {
-    "compiled_results_out_of_box.json": "Gemini CLI",
-    "compiled_results_gemini_flash.json": "NL2Test (Flash)",
-}
-
-
-def derive_label_from_filename(filename: str) -> str:
-    """Derive a human-readable label from the filename."""
-    if filename in LABEL_MAPPINGS:
-        return LABEL_MAPPINGS[filename]
-    name = filename.replace("compiled_results_", "").replace(".json", "")
-    return name.replace("_", " ").title()
-
-
 def main(
-    file_a: str = FILE_A,
-    file_b: str = FILE_B,
+    input_files: dict[str, str] = INPUT_FILES,
     results_dir: Path = CLEANED_RESULTS_DIR,
     output_dir: Path = OUTPUT_DIR,
 ) -> None:
-    """Generate comparison diagrams between two evaluation result files."""
+    """Generate comparison diagrams for multiple evaluation result files."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    path_a = results_dir / file_a
-    path_b = results_dir / file_b
+    # Validate and load all input files
+    all_data = []
+    labels = []
+    for filename, label in input_files.items():
+        path = results_dir / filename
+        if not path.exists():
+            print(f"Error: File not found: {path}")
+            continue
+        all_data.append(load_results(path))
+        labels.append(label)
 
-    if not path_a.exists():
-        print(f"Error: File A not found: {path_a}")
+    if len(all_data) < 2:
+        print(
+            "Error: Need at least 2 valid input files to generate comparison diagrams."
+        )
         return
 
-    if not path_b.exists():
-        print(f"Error: File B not found: {path_b}")
-        print("Generating diagrams for File A only...")
-        data_a = load_results(path_a)
-        label_a = derive_label_from_filename(file_a)
-        # Could add single-file visualization here if needed
-        return
-
-    data_a = load_results(path_a)
-    data_b = load_results(path_b)
-
-    label_a = derive_label_from_filename(file_a)
-    label_b = derive_label_from_filename(file_b)
-
-    print(f"Comparing: {label_a} vs {label_b}")
+    print(f"Comparing: {', '.join(labels)}")
     print(f"Output directory: {output_dir}")
     print("-" * 50)
 
-    create_holistic_comparison(data_a, data_b, label_a, label_b, output_dir)
-    create_abstraction_level_comparison(data_a, data_b, label_a, label_b, output_dir)
-    create_focal_bucket_comparison(data_a, data_b, label_a, label_b, output_dir)
-    create_focal_class_comparison(data_a, data_b, label_a, label_b, output_dir)
-    create_combined_compile_rate_chart(data_a, data_b, label_a, label_b, output_dir)
-    create_summary_dashboard(data_a, data_b, label_a, label_b, output_dir)
+    create_holistic_comparison(all_data, labels, output_dir)
+    create_abstraction_level_comparison(all_data, labels, output_dir)
+    create_focal_bucket_comparison(all_data, labels, output_dir)
+    create_focal_class_comparison(all_data, labels, output_dir)
+    create_combined_compile_rate_chart(all_data, labels, output_dir)
+    create_summary_dashboard(all_data, labels, output_dir)
 
     print("-" * 50)
     print(f"All diagrams saved to: {output_dir}")

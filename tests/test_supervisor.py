@@ -315,3 +315,100 @@ class TestSupervisorToolInjection:
         result = compile_tool.func()
 
         assert result == {}
+
+
+class TestSupervisorForceEnd:
+    """Tests for supervisor agent force_end behavior (NoArgs optimization)."""
+
+    def test_execute_force_end_sets_finalize_called(self):
+        """Verify _execute_force_end sets finalize_called=True without LLM call."""
+        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tools, _ = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test").all()
+        agent = SupervisorReActAgent(
+            llm=mock_llm,
+            tools=tools,
+            system_message="Test system message",
+            nl_description="Test description",
+            project_root="/tmp/test",
+        )
+
+        state = AgentState()
+        assert state.finalize_called is False
+        assert state.force_end_attempts == 0
+
+        result_state = agent._execute_force_end(state)
+
+        assert result_state.finalize_called is True
+        assert result_state.final_comments == ""
+        assert result_state.force_end_attempts == 1
+
+    def test_execute_force_end_increments_attempts(self):
+        """Verify _execute_force_end increments force_end_attempts each call."""
+        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tools, _ = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test").all()
+        agent = SupervisorReActAgent(
+            llm=mock_llm,
+            tools=tools,
+            system_message="Test system message",
+            nl_description="Test description",
+            project_root="/tmp/test",
+        )
+
+        state = AgentState()
+        state.force_end_attempts = 2
+
+        result_state = agent._execute_force_end(state)
+
+        assert result_state.force_end_attempts == 3
+
+    def test_force_finalize_prompt_methods_raise_not_implemented(self):
+        """Verify prompt methods raise NotImplementedError since they're unused."""
+        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tools, _ = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test").all()
+        agent = SupervisorReActAgent(
+            llm=mock_llm,
+            tools=tools,
+            system_message="Test system message",
+            nl_description="Test description",
+            project_root="/tmp/test",
+        )
+
+        with pytest.raises(NotImplementedError):
+            agent._get_force_finalize_system_prompt()
+
+        with pytest.raises(NotImplementedError):
+            agent._get_force_finalize_chat_prompt()
+
+        with pytest.raises(NotImplementedError):
+            agent._process_force_finalize_result(MagicMock(), AgentState())
+
+    def test_get_finalize_schema_returns_no_args(self):
+        """Verify _get_finalize_schema returns NoArgs."""
+        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+        from nltest.nl2test.models.agents import NoArgs
+
+        mock_llm = MagicMock()
+        mock_llm.parse_tool_args = lambda x: x
+
+        tools, _ = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test").all()
+        agent = SupervisorReActAgent(
+            llm=mock_llm,
+            tools=tools,
+            system_message="Test system message",
+            nl_description="Test description",
+            project_root="/tmp/test",
+        )
+
+        assert agent._get_finalize_schema() is NoArgs

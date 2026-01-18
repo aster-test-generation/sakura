@@ -26,10 +26,10 @@ class BaseSupervisorTools:
     """
 
     def __init__(
-            self,
-            *,
-            llm: LLMClient,
-            project_root: Union[str, Path],
+        self,
+        *,
+        llm: LLMClient,
+        project_root: Union[str, Path],
     ) -> None:
         self.llm = llm
         self.project_root = Path(project_root)

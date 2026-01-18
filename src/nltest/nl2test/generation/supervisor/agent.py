@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import List, Any, Dict, Tuple, Optional
+from typing import List, Any, Dict, Tuple, Optional, Type
 from pathlib import Path
 
 from langchain_core.messages import ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
+from pydantic import BaseModel
 
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.core.message_redactor import MessageRedactor
@@ -18,6 +19,7 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
     BaseLocalizationOrchestrator,
 )
 from nltest.nl2test.models import AgentState
+from nltest.nl2test.models.agents import NoArgs
 from nltest.utils.constants import TEST_DIR
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
@@ -84,6 +86,33 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         # Track last known states for reuse between calls
         self.localization_state: Optional[AgentState] = None
         self.composition_state: Optional[AgentState] = None
+
+    def _get_finalize_schema(self) -> Type[BaseModel]:
+        return NoArgs
+
+    def _execute_force_end(self, state: AgentState) -> AgentState:
+        """Skip LLM call for supervisor since NoArgs schema provides no value."""
+        state.force_end_attempts += 1
+        state.finalize_called = True
+        state.final_comments = ""
+        return state
+
+    def _get_force_finalize_system_prompt(self) -> str:
+        raise NotImplementedError(
+            "Supervisor uses _execute_force_end override; prompt methods are unused."
+        )
+
+    def _get_force_finalize_chat_prompt(self) -> str:
+        raise NotImplementedError(
+            "Supervisor uses _execute_force_end override; prompt methods are unused."
+        )
+
+    def _process_force_finalize_result(
+        self, result: BaseModel, state: AgentState
+    ) -> None:
+        raise NotImplementedError(
+            "Supervisor uses _execute_force_end override; this method is unused."
+        )
 
     def prepare_tool_args(
         self, tool_name: str, raw_args: Dict[str, Any], state: AgentState

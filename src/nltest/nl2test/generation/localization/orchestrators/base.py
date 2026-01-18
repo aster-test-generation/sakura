@@ -21,14 +21,14 @@ from nltest.utils.llm import ClientType, LLMClient, UsageTracker
 
 class BaseLocalizationOrchestrator:
     def __init__(
-            self,
-            *,
-            analysis: JavaAnalysis,
-            method_searcher: MethodSearcher,
-            class_searcher: ClassSearcher,
-            nl2_input: NL2TestInput,
-            decomposition_mode: DecompositionMode,
-            usage_tracker: UsageTracker | None = None,
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        nl2_input: NL2TestInput,
+        decomposition_mode: DecompositionMode,
+        usage_tracker: UsageTracker | None = None,
     ) -> None:
         self.usage_tracker = usage_tracker or UsageTracker()
         decision_llm = LLMClient(
@@ -95,5 +95,7 @@ class BaseLocalizationOrchestrator:
         self.agent.reset_agent()
 
     # Shared signature implemented by subclasses. Intentionally untyped for blocks/output.
-    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None):
+    def assign_task(
+        self, blocks, *, instructions: str, agent_state: AgentState | None = None
+    ):
         raise NotImplementedError

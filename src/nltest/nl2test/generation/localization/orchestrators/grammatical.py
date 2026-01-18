@@ -33,7 +33,9 @@ class GrammaticalLocalizationOrchestrator(BaseLocalizationOrchestrator):
             usage_tracker=usage_tracker,
         )
 
-    def assign_task(self, blocks, *, instructions: str, agent_state: AgentState | None = None) -> AgentState:
+    def assign_task(
+        self, blocks, *, instructions: str, agent_state: AgentState | None = None
+    ) -> AgentState:
         if self.decomposition_mode != DecompositionMode.GRAMMATICAL:
             raise TypeError(
                 "GrammaticalLocalizationOrchestrator is not in GRAMMATICAL mode."

@@ -29,6 +29,7 @@ class CommonTestTools:
         This is a deferred tool - it validates inputs and returns them.
         Actual file loading is done in the agent's process_tool_output hook.
         """
+
         def _view_test_code(start_line: int, end_line: int) -> dict:
             if start_line < 1 or end_line < 1:
                 raise ValueError("start_line and end_line must be >= 1.")

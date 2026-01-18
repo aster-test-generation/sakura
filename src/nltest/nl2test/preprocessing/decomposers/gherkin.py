@@ -17,10 +17,14 @@ class GherkinDecomposer(BaseDecomposer):
 
     def decompose(self, nl_description: str) -> Scenario:
         system_prompt = LoadPrompt.load_prompt(
-            "gherkin_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="system"
+            "gherkin_decomposition.jinja2",
+            prompt_format=PromptFormat.JINJA2,
+            prompt_type="system",
         ).format()
         chat_prompt = LoadPrompt.load_prompt(
-            "gherkin_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="chat"
+            "gherkin_decomposition.jinja2",
+            prompt_format=PromptFormat.JINJA2,
+            prompt_type="chat",
         ).format(input=nl_description)
 
         scenario: Scenario = self.invoke_with_retries(

@@ -6,12 +6,45 @@ class FormatValidator:
     """Utility helpers for massaging formatter-related LLM responses."""
 
     _FENCE_LANGUAGE_HINTS = {
-        "java", "javascript", "js", "typescript", "ts", "python", "py",
-        "c", "c++", "cpp", "csharp", "c#", "cs",
-        "go", "golang", "kotlin", "swift", "scala", "groovy",
-        "ruby", "php", "bash", "sh", "shell", "powershell", "ps", "ps1",
-        "sql", "json", "yaml", "yml", "xml", "html", "css",
-        "text", "plain", "plaintext", "markdown", "md",
+        "java",
+        "javascript",
+        "js",
+        "typescript",
+        "ts",
+        "python",
+        "py",
+        "c",
+        "c++",
+        "cpp",
+        "csharp",
+        "c#",
+        "cs",
+        "go",
+        "golang",
+        "kotlin",
+        "swift",
+        "scala",
+        "groovy",
+        "ruby",
+        "php",
+        "bash",
+        "sh",
+        "shell",
+        "powershell",
+        "ps",
+        "ps1",
+        "sql",
+        "json",
+        "yaml",
+        "yml",
+        "xml",
+        "html",
+        "css",
+        "text",
+        "plain",
+        "plaintext",
+        "markdown",
+        "md",
     }
 
     @staticmethod
@@ -49,7 +82,7 @@ class FormatValidator:
         if last <= len(fence):
             return None
 
-        inner = text[len(fence):last]
+        inner = text[len(fence) : last]
         inner = FormatValidator._strip_language_hint(inner)
         return inner.strip()
 
@@ -71,7 +104,7 @@ class FormatValidator:
         match = re.match(r"([A-Za-z0-9_+\-#.]+)([\t ]+|\r?\n)", candidate)
         if match and FormatValidator._looks_like_language_hint(match.group(1)):
             # Strip the language token + following whitespace/newline
-            return candidate[match.end():]
+            return candidate[match.end() :]
 
         # No language tag detected; keep original (with leading spaces)
         return trimmed
@@ -87,7 +120,7 @@ class FormatValidator:
     @staticmethod
     def _strip_simple_wrapper(text: str, wrapper: str) -> Optional[str]:
         if text.startswith(wrapper) and text.endswith(wrapper):
-            inner = text[len(wrapper):-len(wrapper)]
+            inner = text[len(wrapper) : -len(wrapper)]
             inner = FormatValidator._strip_language_hint(inner)
             return inner.strip()
         return None

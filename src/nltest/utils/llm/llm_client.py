@@ -5,9 +5,14 @@ import re
 import textwrap
 import traceback
 import uuid
-from typing import Any, Dict, Literal, Optional, Sequence, Union
+from typing import Any, Dict, Literal, Optional, Sequence, Type, TypeVar, Union
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from pydantic import BaseModel
+
+from .general_prompts.structured_retry import STRUCTURED_OUTPUT_RETRY_PROMPT
+
+SchemaT = TypeVar("SchemaT", bound=BaseModel)
 from langchain_core.runnables import RunnableSerializable
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
@@ -148,7 +153,7 @@ class LLMClient:
         self._chat = ChatOpenAI(
             model=model,
             temperature=temp,
-            max_tokens=max_tokens,
+            max_completion_tokens=max_tokens,
             base_url=base_url.rstrip("/") if base_url else None,
             api_key=SecretStr(api_key),
             timeout=timeout,
@@ -312,6 +317,107 @@ class LLMClient:
             strict=strict,
             method=method,
             temperature=temperature,
+        )
+
+    def invoke_structured_with_retries(
+        self,
+        *,
+        messages: Sequence[BaseMessage] | None = None,
+        system: str | None = None,
+        chat: str | None = None,
+        schema: Type[SchemaT],
+        strict: bool = True,
+        max_attempts: int = 3,
+        retry_prompt_template: str | None = None,
+        on_failure: Literal["raise", "return_none"] = "raise",
+    ) -> SchemaT | None:
+        """
+        Invoke LLM with structured output binding, retrying on validation failures.
+
+        Accepts EITHER:
+        - messages: A pre-built message list (must end with HumanMessage)
+        - system + chat: Simple prompt pair (for decomposer use cases)
+
+        On failure, modifies the last HumanMessage to include retry context.
+        """
+        if messages is not None and (system is not None or chat is not None):
+            raise ValueError("Provide either 'messages' OR 'system'+'chat', not both.")
+        if messages is None and (system is None or chat is None):
+            raise ValueError(
+                "Must provide either 'messages' or both 'system' and 'chat'."
+            )
+
+        template = retry_prompt_template or STRUCTURED_OUTPUT_RETRY_PROMPT
+        use_message_mode = messages is not None
+
+        base_messages: list[BaseMessage]
+        original_human_content: str
+        if use_message_mode:
+            base_messages = list(messages)
+            if not base_messages or not isinstance(base_messages[-1], HumanMessage):
+                raise ValueError(
+                    "When using messages mode, the last message must be a HumanMessage."
+                )
+            last_human = base_messages[-1]
+            original_human_content = (
+                last_human.content
+                if isinstance(last_human.content, str)
+                else str(last_human.content)
+            )
+        else:
+            assert system is not None and chat is not None
+            base_messages = [SystemMessage(content=system)]
+            original_human_content = chat
+
+        failures: list[str] = []
+        last_error: Exception | None = None
+
+        for attempt in range(1, max_attempts + 1):
+            working_messages = list(base_messages)
+
+            if failures:
+                failure_block = "\n\n".join(failures)
+                augmented_content = f"{original_human_content}\n\n{failure_block}"
+            else:
+                augmented_content = original_human_content
+
+            if use_message_mode:
+                working_messages[-1] = HumanMessage(content=augmented_content)
+            else:
+                working_messages.append(HumanMessage(content=augmented_content))
+
+            try:
+                result = self.invoke_messages(
+                    working_messages,
+                    schema=schema,
+                    strict=strict,
+                )
+                return result
+            except Exception as exc:
+                last_error = exc
+                error_excerpt = (str(exc) or repr(exc)).strip()[:800]
+
+                raw_output = getattr(exc, "raw_output", None)
+                if raw_output is None:
+                    response = getattr(exc, "response", None)
+                    if response is not None:
+                        raw_output = getattr(response, "text", None)
+                output_excerpt = str(raw_output or "")[:800]
+
+                retry_prompt = template.format(
+                    attempt=attempt,
+                    error_excerpt=error_excerpt,
+                    output_excerpt=output_excerpt,
+                )
+                failures.append(retry_prompt)
+
+        if on_failure == "return_none":
+            return None
+
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError(
+            "Structured prompt invocation failed without raising an error."
         )
 
     @staticmethod

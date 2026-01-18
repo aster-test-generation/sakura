@@ -40,11 +40,13 @@ class GrammaticalSupervisorTools(BaseSupervisorTools):
         """
         return DeferredTool.create(
             name="call_localization_agent",
-            description=textwrap.dedent(CALL_LOCALIZATION_AGENT_GRAMMATICAL_DESC).strip(),
+            description=textwrap.dedent(
+                CALL_LOCALIZATION_AGENT_GRAMMATICAL_DESC
+            ).strip(),
             args_schema=CallAgentGrammaticalArgs,
             returns_input_keys=["instructions"],
             processing_note="Agent invokes localization orchestrator with instructions, "
-                           "injecting current AtomicBlockList from state",
+            "injecting current AtomicBlockList from state",
         )
 
     def _make_call_composition_agent_tool(self) -> BaseTool:
@@ -56,9 +58,11 @@ class GrammaticalSupervisorTools(BaseSupervisorTools):
         """
         return DeferredTool.create(
             name="call_composition_agent",
-            description=textwrap.dedent(CALL_COMPOSITION_AGENT_GRAMMATICAL_DESC).strip(),
+            description=textwrap.dedent(
+                CALL_COMPOSITION_AGENT_GRAMMATICAL_DESC
+            ).strip(),
             args_schema=CallAgentGrammaticalArgs,
             returns_input_keys=["instructions"],
             processing_note="Agent invokes composition orchestrator with instructions, "
-                           "injecting current AtomicBlockList from state",
+            "injecting current AtomicBlockList from state",
         )

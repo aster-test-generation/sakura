@@ -27,10 +27,14 @@ class MessageRedactor:
         return None, "other"
 
     @staticmethod
-    def _store_payload(message: ToolMessage, payload: Dict[str, Any], payload_type: str) -> None:
+    def _store_payload(
+        message: ToolMessage, payload: Dict[str, Any], payload_type: str
+    ) -> None:
         """Store payload back into message content with appropriate format."""
         if payload_type == "str":
-            message.content = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+            message.content = json.dumps(
+                payload, separators=(",", ":"), ensure_ascii=False
+            )
         else:
             message.content = payload
 
@@ -50,10 +54,10 @@ class MessageRedactor:
 
     @staticmethod
     def redact_tool_outputs(
-            state: AgentState,
-            tool_names: Set[str],
-            keys_to_redact: Dict[str, str],
-            status_filter: str = "ok",
+        state: AgentState,
+        tool_names: Set[str],
+        keys_to_redact: Dict[str, str],
+        status_filter: str = "ok",
     ) -> None:
         """
         Redact specific keys in tool output messages for given tool names.
@@ -100,9 +104,9 @@ class MessageRedactor:
 
     @staticmethod
     def redact_tool_outputs_by_tool(
-            state: AgentState,
-            tool_redactions: Dict[str, Dict[str, str]],
-            status_filter: str = "ok",
+        state: AgentState,
+        tool_redactions: Dict[str, Dict[str, str]],
+        status_filter: str = "ok",
     ) -> None:
         """
         Redact tool outputs with tool-specific key mappings.
@@ -149,11 +153,11 @@ class MessageRedactor:
 
     @staticmethod
     def redact_tool_inputs(
-            state: AgentState,
-            tool_name: str,
-            keys_to_redact: Dict[str, str],
-            llm_client: Any,
-            exclude_latest: bool = True,
+        state: AgentState,
+        tool_name: str,
+        keys_to_redact: Dict[str, str],
+        llm_client: Any,
+        exclude_latest: bool = True,
     ) -> None:
         """
         Redact specific keys in tool call arguments for a given tool name.
@@ -211,7 +215,9 @@ class MessageRedactor:
 
                 try:
                     if isinstance(raw_args, str):
-                        call["args"] = json.dumps(sanitized_args, ensure_ascii=True, sort_keys=True)
+                        call["args"] = json.dumps(
+                            sanitized_args, ensure_ascii=True, sort_keys=True
+                        )
                     else:
                         call["args"] = sanitized_args
                 except Exception:

@@ -146,7 +146,7 @@ def required_coverage() -> set[tuple[str, AbstractionLevel]]:
 
 
 def select_spanning_subset(
-    candidates: list[Candidate], target_per_project: int, tests_per_pair: int
+    candidates: list[Candidate], total_tests: int, max_projects: int
 ) -> list[Candidate]:
     required = required_coverage()
     available = {c.coverage_key() for c in candidates}
@@ -157,6 +157,12 @@ def select_spanning_subset(
             sorted(f"{bucket}:{level.value}" for bucket, level in missing)
         )
         raise SystemExit(f"[ERROR] Missing coverage in source data: {missing_text}")
+
+    num_combinations = len(required)
+    if total_tests < num_combinations:
+        raise SystemExit(
+            f"[ERROR] total_tests ({total_tests}) must be >= combinations ({num_combinations})"
+        )
 
     # Group candidates by their coverage key (bucket, level)
     candidates_by_coverage: dict[tuple[str, AbstractionLevel], list[Candidate]] = (
@@ -170,52 +176,89 @@ def select_spanning_subset(
         candidates_by_coverage[key].sort(key=lambda c: c.key.as_tuple())
 
     selected: list[Candidate] = []
+    used_test_keys: set[TestKey] = set()
+    locked_projects: set[str] = set()
     project_counts: dict[str, int] = defaultdict(int)
+    coverage_counts: dict[tuple[str, AbstractionLevel], int] = defaultdict(int)
 
-    # Process each (bucket, level) pair, selecting tests_per_pair candidates
-    # while maximizing project distribution
+    target_per_project = total_tests // max_projects
+
     ordered_pairs = sorted(required, key=lambda p: (p[0], LEVEL_ORDER[p[1]]))
 
-    for coverage_key in ordered_pairs:
+    def find_best_candidate(
+        coverage_key: tuple[str, AbstractionLevel],
+    ) -> Candidate | None:
         candidates_for_pair = candidates_by_coverage[coverage_key]
-        if not candidates_for_pair:
-            continue
+        best: Candidate | None = None
+        best_score: tuple[int, int, str, str, str] | None = None
 
-        selected_for_pair: list[Candidate] = []
-        used_projects_for_pair: set[str] = set()
+        projects_at_cap = len(locked_projects) >= max_projects
 
-        for _ in range(tests_per_pair):
-            best: Candidate | None = None
-            best_score: tuple[int, int, int, str, str, str] | None = None
+        for candidate in candidates_for_pair:
+            if candidate.key in used_test_keys:
+                continue
+            project = candidate.key.project_name
+            project_count = project_counts[project]
+            # If we've hit the project cap, only consider locked projects
+            if projects_at_cap and project not in locked_projects:
+                continue
+            # Skip projects that have already reached their quota
+            if project_count >= target_per_project:
+                continue
+            is_new_project = 1 if project not in locked_projects else 0
+            score = (
+                -is_new_project,  # Prefer new projects (lower score = better)
+                project_count,
+                project,
+                candidate.key.qualified_class_name,
+                candidate.key.method_signature,
+            )
+            if best_score is None or score < best_score:
+                best = candidate
+                best_score = score
 
-            for candidate in candidates_for_pair:
-                if candidate in selected_for_pair:
-                    continue
-                project = candidate.key.project_name
-                project_count = project_counts[project]
-                over_target = 1 if project_count >= target_per_project else 0
-                # Penalize reusing a project within this (bucket, level) pair
-                reused_in_pair = 1 if project in used_projects_for_pair else 0
-                score = (
-                    reused_in_pair,
-                    over_target,
-                    project_count,
-                    project,
-                    candidate.key.qualified_class_name,
-                    candidate.key.method_signature,
-                )
-                if best_score is None or score < best_score:
-                    best = candidate
-                    best_score = score
+        return best
 
-            if best is None:
-                break
+    def select_candidate(candidate: Candidate) -> None:
+        selected.append(candidate)
+        used_test_keys.add(candidate.key)
+        locked_projects.add(candidate.key.project_name)
+        project_counts[candidate.key.project_name] += 1
+        coverage_counts[candidate.coverage_key()] += 1
 
-            selected_for_pair.append(best)
-            used_projects_for_pair.add(best.key.project_name)
-            project_counts[best.key.project_name] += 1
+    # First pass: ensure all 15 combinations are covered with 1 test each
+    for coverage_key in ordered_pairs:
+        best = find_best_candidate(coverage_key)
+        if best is None:
+            raise SystemExit(
+                f"[ERROR] Cannot find unique test for {coverage_key[0]}:{coverage_key[1].value} "
+                f"within {max_projects} projects"
+            )
+        select_candidate(best)
 
-        selected.extend(selected_for_pair)
+    # Second pass: fill remaining slots distributed across combinations
+    remaining = total_tests - len(selected)
+    for _ in range(remaining):
+        # Find the combination with the fewest selections that has available candidates
+        best_candidate: Candidate | None = None
+        best_coverage_count = float("inf")
+
+        for coverage_key in ordered_pairs:
+            count = coverage_counts[coverage_key]
+            if count >= best_coverage_count:
+                continue
+            candidate = find_best_candidate(coverage_key)
+            if candidate is not None:
+                best_candidate = candidate
+                best_coverage_count = count
+
+        if best_candidate is None:
+            print(
+                f"[WARN] Could only select {len(selected)} unique tests (target: {total_tests})"
+            )
+            break
+
+        select_candidate(best_candidate)
 
     return selected
 
@@ -267,16 +310,16 @@ def main() -> None:
         help="Output CSV file name.",
     )
     parser.add_argument(
-        "--target-per-project",
+        "--total-tests",
         type=int,
-        default=2,
-        help="Soft target for tests per project (used as tie-breaker).",
+        default=20,
+        help="Total number of unique tests to select.",
     )
     parser.add_argument(
-        "--tests-per-pair",
+        "--max-projects",
         type=int,
-        default=2,
-        help="Number of tests to select per (bucket, level) pair.",
+        default=10,
+        help="Maximum number of projects to select tests from (hard cap).",
     )
     args = parser.parse_args()
 
@@ -284,8 +327,8 @@ def main() -> None:
     test2nl_file = Path(args.test2nl_file).expanduser().resolve()
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_file_name = args.output_file_name.strip()
-    target_per_project = int(args.target_per_project)
-    tests_per_pair = int(args.tests_per_pair)
+    total_tests = int(args.total_tests)
+    max_projects = int(args.max_projects)
 
     if not bucketed_dir.is_dir():
         raise SystemExit(f"[ERROR] Bucketed dataset dir not found: {bucketed_dir}")
@@ -293,10 +336,12 @@ def main() -> None:
         raise SystemExit(f"[ERROR] Test2NL CSV file not found: {test2nl_file}")
     if not output_file_name:
         raise SystemExit("[ERROR] Output file name must be non-empty")
-    if target_per_project < 0:
-        raise SystemExit("[ERROR] target-per-project must be >= 0")
-    if tests_per_pair < 1:
-        raise SystemExit("[ERROR] tests-per-pair must be >= 1")
+    if total_tests < 15:
+        raise SystemExit(
+            "[ERROR] total-tests must be >= 15 (number of bucket/level combinations)"
+        )
+    if max_projects < 1:
+        raise SystemExit("[ERROR] max-projects must be >= 1")
 
     test2nl_entries = load_test2nl_entries(test2nl_file)
     print(f"[INFO] Loaded {len(test2nl_entries)} Test2NL entries")
@@ -309,27 +354,33 @@ def main() -> None:
         raise SystemExit("[ERROR] No candidates found to span buckets/levels")
 
     selected_candidates = select_spanning_subset(
-        candidates, target_per_project, tests_per_pair
+        candidates, total_tests, max_projects
     )
     selected_entries = collect_entries(selected_candidates)
     selected_entries.sort(key=entry_sort_key)
 
     project_counts: dict[str, int] = defaultdict(int)
-    unique_tests: set[TestKey] = set()
+    coverage_counts: dict[tuple[str, AbstractionLevel], int] = defaultdict(int)
     for candidate in selected_candidates:
         project_counts[candidate.key.project_name] += 1
-        unique_tests.add(candidate.key)
+        coverage_counts[candidate.coverage_key()] += 1
 
     output_dir.mkdir(parents=True, exist_ok=True)
     manager = StructuredDataManager(output_dir)
     manager.save(output_file_name, selected_entries, format="csv", mode="write")
 
     print(
-        f"[OK] Selected {len(selected_entries)} entries "
-        f"({len(unique_tests)} unique tests) from {len(project_counts)} projects"
+        f"[OK] Selected {len(selected_entries)} unique tests "
+        f"from {len(project_counts)} projects"
     )
     print(f"[OK] Wrote to {output_dir / output_file_name}")
     print(f"[INFO] Project distribution: {dict(sorted(project_counts.items()))}")
+    coverage_summary = {
+        f"{bucket}:{level.value}": coverage_counts[(bucket, level)]
+        for bucket in BUCKET_KEYS
+        for level in AbstractionLevel
+    }
+    print(f"[INFO] Coverage distribution: {coverage_summary}")
 
 
 if __name__ == "__main__":

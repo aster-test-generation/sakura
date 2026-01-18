@@ -16,25 +16,38 @@ from nltest.nl2test.models.decomposition import LocalizationEval
 from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-# EVAL_DIR = ROOT_DIR / "resources" / "agent_outputs" / "evaluation"
-EVAL_DIR = ROOT_DIR / "resources" / "nl2test_gemini_200_output"
+# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_flash_output"
+# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_200_output" / "evaluation"
+EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_subset_minimax_output"
+# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_pro_incomplete_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 OUTPUT_DIR = ROOT_DIR / "resources" / "cleaned_evaluation"
 BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
 BUCKETED_DATASET_FILE = "nl2test.json"
 
-PRICING_MODEL = "minimax/minimax-m2.1"
+# PRICING_MODEL = "minimax/minimax-m2.1"
+PRICING_MODEL = "gemini-2.5-pro"
+# PRICING_MODEL = "gemini-2.5-flash"
+# PRICING_MODEL = "qwen/qwen3-coder"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
 
 # Ablation settings
-IGNORE_IF_NOT_COMPILE = False
-NUM_ENTRIES = 200
-# DIRS_TO_INCLUDE: List[Path] = [
-#     ROOT_DIR / "resources" / "agent_outputs" / "evaluation",
-#     ROOT_DIR / "resources" / "nl2test_gemini_200_output",
-# ]
+IGNORE_IF_NOT_COMPILE = (
+    False  # Only include entries that compile in all DIRS_TO_INCLUDE
+)
+ONLY_SHARED_ENTRIES = (
+    True  # Only include entries present in all DIRS_TO_INCLUDE (allows non-compiling)
+)
+DIRS_TO_INCLUDE: List[Path] = [
+    # ROOT_DIR / "resources" / "outputs" / "gemini_cli_200_output" / "evaluation",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_flash_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_minimax_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_qwen3_coder_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_pro_incomplete_output",
+    # ROOT_DIR / "resources" / "output"
+]
 
 # Pricing per million tokens (USD)
 MODEL_PRICING = {
@@ -56,6 +69,10 @@ MODEL_PRICING = {
     "xiaomi/mimo-v2-flash": {
         "input_per_million": 0.10,
         "output_per_million": 0.30,
+    },
+    "qwen/qwen3-coder": {
+        "input_per_million": 0.22,
+        "output_per_million": 0.95,
     },
 }
 FOCAL_BUCKET_ORDER = (
@@ -318,15 +335,14 @@ def load_eval_file(eval_file: Path) -> List[NL2TestEval]:
 
 
 def build_ignore_ids_from_dirs(
-    dirs: List[Path], eval_file_name: str, num_entries: int
+    dirs: List[Path], eval_file_name: str, require_compile: bool = True
 ) -> set[int]:
-    """Build a set of IDs to ignore based on compilation status and presence across directories.
+    """Build a set of IDs to ignore based on presence (and optionally compilation) across directories.
 
-    An ID is ignored if it fails to compile OR is missing in ANY of the directories.
+    Returns IDs that are not in the minimal spanning set across all directories.
+    If require_compile is True, an ID is ignored if it fails to compile OR is missing in ANY directory.
+    If require_compile is False, an ID is ignored only if it is missing in ANY directory.
     """
-    all_expected_ids = set(range(num_entries))
-
-    # Track which IDs compile and which IDs exist in each directory
     ids_that_compile: Dict[Path, set[int]] = {}
     ids_present: Dict[Path, set[int]] = {}
 
@@ -355,34 +371,44 @@ def build_ignore_ids_from_dirs(
         ids_that_compile[eval_dir] = compiling_ids
         ids_present[eval_dir] = present_ids
 
+    # All IDs that exist in any directory
+    all_ids = set.union(*ids_present.values()) if ids_present else set()
+
     # IDs that compile in ALL directories
     if ids_that_compile:
         ids_compiling_in_all = set.intersection(*ids_that_compile.values())
     else:
         ids_compiling_in_all = set()
 
-    # IDs that are present in ALL directories
+    # IDs that are present in ALL directories (minimal spanning set)
     if ids_present:
         ids_present_in_all = set.intersection(*ids_present.values())
     else:
         ids_present_in_all = set()
 
-    # Valid IDs: present in all AND compile in all
-    valid_ids = ids_compiling_in_all & ids_present_in_all
+    # Valid IDs: present in all, and optionally compile in all
+    if require_compile:
+        valid_ids = ids_compiling_in_all & ids_present_in_all
+    else:
+        valid_ids = ids_present_in_all
 
-    # Ignore IDs: all expected IDs minus valid ones
-    ignore_ids = all_expected_ids - valid_ids
+    # Ignore IDs: all IDs across directories minus valid ones
+    ignore_ids = all_ids - valid_ids
 
     print("\nIgnore IDs calculation:")
-    print(f"  Expected IDs (0-{num_entries - 1}): {num_entries}")
+    print(f"  Total unique IDs across directories: {len(all_ids)}")
+    print(f"  Require compile: {require_compile}")
     for eval_dir in dirs:
         dir_name = eval_dir.name
         present_count = len(ids_present.get(eval_dir, set()))
         compile_count = len(ids_that_compile.get(eval_dir, set()))
         print(f"  {dir_name}: {present_count} present, {compile_count} compile")
     print(f"  IDs compiling in all: {len(ids_compiling_in_all)}")
-    print(f"  IDs present in all: {len(ids_present_in_all)}")
-    print(f"  Valid IDs (present AND compile in all): {len(valid_ids)}")
+    print(f"  IDs present in all (minimal spanning set): {len(ids_present_in_all)}")
+    if require_compile:
+        print(f"  Valid IDs (present AND compile in all): {len(valid_ids)}")
+    else:
+        print(f"  Valid IDs (present in all): {len(valid_ids)}")
     print(f"  Ignored IDs: {len(ignore_ids)}")
 
     return ignore_ids
@@ -573,12 +599,17 @@ def main() -> None:
         print(f"No {eval_file_name} files found under {output_dir}")
         return
 
-    # Build ignore_ids from multiple directories when comparing compiling entries only
+    # Build ignore_ids from multiple directories based on ablation settings
     ignore_ids: set[int] = set()
-    if IGNORE_IF_NOT_COMPILE:
-        ignore_ids = build_ignore_ids_from_dirs(
-            DIRS_TO_INCLUDE, eval_file_name, NUM_ENTRIES
-        )
+    if DIRS_TO_INCLUDE:
+        if IGNORE_IF_NOT_COMPILE:
+            ignore_ids = build_ignore_ids_from_dirs(
+                DIRS_TO_INCLUDE, eval_file_name, require_compile=True
+            )
+        elif ONLY_SHARED_ENTRIES:
+            ignore_ids = build_ignore_ids_from_dirs(
+                DIRS_TO_INCLUDE, eval_file_name, require_compile=False
+            )
 
     metrics = build_empty_metrics()
     metrics_by_level: Dict[str, MetricValues] = {}
@@ -791,7 +822,7 @@ def main() -> None:
     print(f"Eval file:           {eval_file_name}")
     print(f"Projects scanned:    {len(project_dirs)}")
     print(f"Projects with evals: {len(eval_files)}")
-    if IGNORE_IF_NOT_COMPILE:
+    if IGNORE_IF_NOT_COMPILE or ONLY_SHARED_ENTRIES:
         print(f"Skipped entries:     {len(skipped_ids)} (ignored IDs)")
     print(f"Total evaluations:   {total_evals}")
     print(f"Compiles:            {compiles_count} ({compile_rate:.1%})")
@@ -969,6 +1000,7 @@ def main() -> None:
             "missing_localization": missing_localization,
             "non_compiling_ids": non_compiling_ids,
             "ignore_if_not_compile": IGNORE_IF_NOT_COMPILE,
+            "only_shared_entries": ONLY_SHARED_ENTRIES,
             "ignore_ids": sorted(ignore_ids),
             "skipped_count": len(skipped_ids),
         },

@@ -64,22 +64,26 @@ class JavaMavenCompilation(MavenBuild):
 
         self.module_root = module_abs or project_abs
 
-    def compile_scope(self) -> CompilationScopeResult:
+    def compile_scope(self, timeout: int | None = 600) -> CompilationScopeResult:
         # Prepare deps only when we are in a multi-module scoped build.
         if self.target_module:
-            _ = self.install_selected_projects_skip_tests_proc()
+            _ = self.install_selected_projects_skip_tests_proc(timeout=timeout)
 
-        proc = self.compile_tests_proc(pre_compile_build=True, also_make=False)
+        proc = self.compile_tests_proc(
+            pre_compile_build=True, also_make=False, timeout=timeout
+        )
         errors = self.parse_compilation_errors(proc.stdout)
         return CompilationScopeResult(
             success=(proc.returncode == 0), output=proc.stdout, errors=errors
         )
 
-    def get_compilation_errors(self) -> List[CompilationError]:
+    def get_compilation_errors(
+        self, timeout: int | None = 600
+    ) -> List[CompilationError]:
         """
         Run `mvn test-compile` via MavenBuild and parse every compiler diagnostic.
         """
-        return self.compile_scope().errors
+        return self.compile_scope(timeout=timeout).errors
 
     def parse_compilation_errors(self, compiler_output: str) -> List[CompilationError]:
         lines = self._filter_lines(compiler_output)

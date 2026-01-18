@@ -190,7 +190,7 @@ def select_spanning_subset(
     ) -> Candidate | None:
         candidates_for_pair = candidates_by_coverage[coverage_key]
         best: Candidate | None = None
-        best_score: tuple[int, int, int, str, str, str] | None = None
+        best_score: tuple[int, int, str, str, str] | None = None
 
         projects_at_cap = len(locked_projects) >= max_projects
 
@@ -198,14 +198,15 @@ def select_spanning_subset(
             if candidate.key in used_test_keys:
                 continue
             project = candidate.key.project_name
+            project_count = project_counts[project]
             # If we've hit the project cap, only consider locked projects
             if projects_at_cap and project not in locked_projects:
                 continue
-            project_count = project_counts[project]
+            # Skip projects that have already reached their quota
+            if project_count >= target_per_project:
+                continue
             is_new_project = 1 if project not in locked_projects else 0
-            over_target = 1 if project_count >= target_per_project else 0
             score = (
-                over_target,
                 -is_new_project,  # Prefer new projects (lower score = better)
                 project_count,
                 project,

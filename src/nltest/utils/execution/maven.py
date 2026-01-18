@@ -68,10 +68,11 @@ class JavaMavenExecution(MavenBuild):
         self,
         qualified_class_name: Optional[str] = None,
         method_signature: Optional[str] = None,
-        prepare_dependencies: bool = False
+        prepare_dependencies: bool = False,
+        timeout: int | None = 600,
     ) -> List[ExecutionIssue]:
         if prepare_dependencies and self.target_module:
-            self.install_selected_projects_skip_tests_proc() 
+            self.install_selected_projects_skip_tests_proc(timeout=timeout)
 
         target_tests: Optional[str] = None
         expected_class: Optional[str] = qualified_class_name
@@ -80,13 +81,17 @@ class JavaMavenExecution(MavenBuild):
         if qualified_class_name:
             simple_class = CommonAnalysis.get_simple_class_name(qualified_class_name)
             if method_signature:
-                expected_method = CommonAnalysis.get_simple_method_name(method_signature)
+                expected_method = CommonAnalysis.get_simple_method_name(
+                    method_signature
+                )
                 target_tests = f"{simple_class}#{expected_method}"
             else:
                 target_tests = simple_class
 
         run_started_at = time.time() - 2.0
-        proc = self.run_tests_proc(target_tests=target_tests, also_make=False)
+        proc = self.run_tests_proc(
+            target_tests=target_tests, also_make=False, timeout=timeout
+        )
         runtime_output = proc.stdout
 
         report_dirs = self.find_surefire_reports()
@@ -136,7 +141,7 @@ class JavaMavenExecution(MavenBuild):
                 found.append(os.path.join(dirpath, "surefire-reports"))
 
         return found
-    
+
     def parse_surefire_reports_for_target(
         self,
         reports_dirs: List[str],
@@ -149,7 +154,11 @@ class JavaMavenExecution(MavenBuild):
 
         for rdir in reports_dirs:
             try:
-                files = [f for f in os.listdir(rdir) if f.startswith("TEST-") and f.endswith(".xml")]
+                files = [
+                    f
+                    for f in os.listdir(rdir)
+                    if f.startswith("TEST-") and f.endswith(".xml")
+                ]
             except FileNotFoundError:
                 continue
 
@@ -175,32 +184,55 @@ class JavaMavenExecution(MavenBuild):
                 if root_name == "testsuite":
                     suites = [root]
                 elif root_name == "testsuites":
-                    suites = [child for child in root if self._local_name(child.tag) == "testsuite"]
+                    suites = [
+                        child
+                        for child in root
+                        if self._local_name(child.tag) == "testsuite"
+                    ]
                 else:
-                    suites = [child for child in root.iter() if self._local_name(child.tag) == "testsuite"]
+                    suites = [
+                        child
+                        for child in root.iter()
+                        if self._local_name(child.tag) == "testsuite"
+                    ]
 
                 for suite in suites:
-                    for tc in (child for child in suite if self._local_name(child.tag) == "testcase"):
+                    for tc in (
+                        child
+                        for child in suite
+                        if self._local_name(child.tag) == "testcase"
+                    ):
                         class_name = tc.get("classname") or ""
                         test_name = tc.get("name") or ""
 
                         if expected_class and class_name != expected_class:
                             continue
                         if expected_method:
-                            if not (test_name == expected_method or test_name.startswith(expected_method)):
+                            if not (
+                                test_name == expected_method
+                                or test_name.startswith(expected_method)
+                            ):
                                 continue
 
                         matched_any = True
 
                         for kind_tag in ("failure", "error"):
-                            for element in (child for child in tc if self._local_name(child.tag) == kind_tag):
+                            for element in (
+                                child
+                                for child in tc
+                                if self._local_name(child.tag) == kind_tag
+                            ):
                                 issue = ExecutionIssue(
                                     class_name=class_name,
                                     test_name=test_name,
-                                    kind="failure" if kind_tag == "failure" else "error",
+                                    kind="failure"
+                                    if kind_tag == "failure"
+                                    else "error",
                                     message=element.get("message"),
                                     error_type=element.get("type"),
-                                    stack_trace=self._truncate_stack_trace((element.text or "").strip() or None),
+                                    stack_trace=self._truncate_stack_trace(
+                                        (element.text or "").strip() or None
+                                    ),
                                 )
                                 self._maybe_fill_file_line(issue)
                                 issues.append(issue)
@@ -208,7 +240,9 @@ class JavaMavenExecution(MavenBuild):
         return issues, matched_any
 
     def parse_surefire_reports(
-        self, reports_dirs: List[str], min_mtime: Optional[float] = None,
+        self,
+        reports_dirs: List[str],
+        min_mtime: Optional[float] = None,
     ) -> List[ExecutionIssue]:
         """Read Surefire XML reports and convert every failure/error into ExecutionIssue objects."""
 

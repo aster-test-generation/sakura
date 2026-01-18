@@ -8,7 +8,10 @@ from langchain_core.tools import BaseTool
 
 from .base import BaseSupervisorTools
 from nltest.nl2test.core.deferred_tool import DeferredTool
-from nltest.nl2test.models import CallLocalizationAgentGherkinArgs, CallCompositionAgentGherkinArgs
+from nltest.nl2test.models import (
+    CallLocalizationAgentGherkinArgs,
+    CallCompositionAgentGherkinArgs,
+)
 from nltest.nl2test.generation.supervisor.tool_descriptions import (
     CALL_LOCALIZATION_AGENT_GHERKIN_DESC,
     CALL_COMPOSITION_AGENT_GHERKIN_DESC,
@@ -44,7 +47,7 @@ class GherkinSupervisorTools(BaseSupervisorTools):
             args_schema=CallLocalizationAgentGherkinArgs,
             returns_input_keys=["instructions"],
             processing_note="Agent invokes localization orchestrator with instructions, "
-                           "injecting current LocalizedScenario from state",
+            "injecting current LocalizedScenario from state",
         )
 
     def _make_call_composition_agent_tool(self) -> BaseTool:
@@ -60,5 +63,5 @@ class GherkinSupervisorTools(BaseSupervisorTools):
             args_schema=CallCompositionAgentGherkinArgs,
             returns_input_keys=["instructions"],
             processing_note="Agent invokes composition orchestrator with instructions, "
-                           "injecting current LocalizedScenario from state",
+            "injecting current LocalizedScenario from state",
         )

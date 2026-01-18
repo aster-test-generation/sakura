@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 from langchain_core.messages import AIMessage, ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
+from pydantic import BaseModel
 
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.core.message_redactor import MessageRedactor
@@ -14,6 +15,8 @@ from nltest.nl2test.generation.common.compilation_execution import (
     CompilationExecutionMixin,
 )
 from nltest.nl2test.models import AgentState
+from nltest.nl2test.models.agents import FinalizeCommentsArgs
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm import LLMClient, FormatValidator
 from nltest.utils.constants import TEST_DIR
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
@@ -103,6 +106,31 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         self.module_root = (
             resolved_module_root.resolve() if resolved_module_root is not None else None
         )
+
+    def _get_finalize_schema(self) -> Type[BaseModel]:
+        return FinalizeCommentsArgs
+
+    def _get_force_finalize_system_prompt(self) -> str:
+        template = LoadPrompt.load_prompt(
+            "composition_agent_gherkin_finalize.jinja2",
+            PromptFormat.JINJA2,
+            "system",
+        )
+        return template.format()
+
+    def _get_force_finalize_chat_prompt(self) -> str:
+        template = LoadPrompt.load_prompt(
+            "composition_agent_gherkin_finalize.jinja2",
+            PromptFormat.JINJA2,
+            "chat",
+        )
+        return template.format()
+
+    def _process_force_finalize_result(
+        self, result: BaseModel, state: AgentState
+    ) -> None:
+        state.finalize_called = True
+        state.final_comments = getattr(result, "comments", "")
 
     @staticmethod
     def _cleanup_empty_dirs(base_dir: Path, start_dir: Path) -> None:

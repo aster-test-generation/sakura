@@ -957,3 +957,177 @@ class TestLocalizationToolInjection:
             t for t in tools if t.name == "get_inherited_library_classes"
         )
         assert inherited_tool is not None
+
+
+class TestLocalizationForceFinalize:
+    """Tests for force_finalize hooks and structured output in localization agent."""
+
+    @staticmethod
+    def _create_mock_finalize_tool():
+        """Create a mock finalize tool to satisfy strict_finalize validation."""
+        mock_tool = MagicMock()
+        mock_tool.name = "finalize"
+        return mock_tool
+
+    @staticmethod
+    def _create_mock_localization_agent(
+        decomposition_mode: DecompositionMode, strict_finalize: bool = False
+    ):
+        """Create a LocalizationReActAgent with mocked dependencies."""
+        from nltest.nl2test.generation.localization.agent import LocalizationReActAgent
+
+        mock_llm = MagicMock()
+        mock_finalize = TestLocalizationForceFinalize._create_mock_finalize_tool()
+        mock_tools = [mock_finalize]
+
+        agent = LocalizationReActAgent(
+            llm=mock_llm,
+            tools=mock_tools,
+            system_message="Test system message",
+            decomposition_mode=decomposition_mode,
+            max_iters=5,
+        )
+        agent.strict_finalize = strict_finalize
+        return agent
+
+    def test_get_finalize_schema_gherkin_returns_scenario_args(self):
+        """Verify _get_finalize_schema returns FinalizeScenarioArgs for Gherkin mode."""
+        from nltest.nl2test.models.agents import FinalizeScenarioArgs
+
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+        schema = agent._get_finalize_schema()
+
+        assert schema is FinalizeScenarioArgs
+
+    def test_get_finalize_schema_grammatical_returns_atomic_block_args(self):
+        """Verify _get_finalize_schema returns FinalizeAtomicBlockArgs for Grammatical mode."""
+        from nltest.nl2test.models.agents import FinalizeAtomicBlockArgs
+
+        agent = self._create_mock_localization_agent(DecompositionMode.GRAMMATICAL)
+        schema = agent._get_finalize_schema()
+
+        assert schema is FinalizeAtomicBlockArgs
+
+    def test_get_force_finalize_system_prompt_gherkin_loads_template(self):
+        """Verify _get_force_finalize_system_prompt loads jinja2 template for Gherkin mode."""
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+        prompt = agent._get_force_finalize_system_prompt()
+
+        assert isinstance(prompt, str)
+        assert len(prompt) > 100
+        assert "localization" in prompt.lower()
+        assert (
+            "localized scenario" in prompt.lower()
+            or "localized_scenario" in prompt.lower()
+        )
+
+    def test_get_force_finalize_chat_prompt_gherkin_loads_template(self):
+        """Verify _get_force_finalize_chat_prompt loads jinja2 template for Gherkin mode."""
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+        prompt = agent._get_force_finalize_chat_prompt()
+
+        assert isinstance(prompt, str)
+        assert len(prompt) > 50
+        assert (
+            "conversation history" in prompt.lower()
+            or "localized scenario" in prompt.lower()
+        )
+
+    def test_process_force_finalize_result_gherkin_sets_state(self):
+        """Verify _process_force_finalize_result correctly updates state for Gherkin mode."""
+        from nltest.nl2test.models.agents import FinalizeScenarioArgs
+
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+        state = AgentState()
+
+        localized_scenario = LocalizedScenario(
+            setup=[],
+            gherkin_groups=[],
+            teardown=[],
+        )
+        result = FinalizeScenarioArgs(
+            localized_scenario=localized_scenario,
+            comments="Test localization complete",
+        )
+
+        agent._process_force_finalize_result(result, state)
+
+        assert state.finalize_called is True
+        assert state.final_comments == "Test localization complete"
+        assert state.localized_scenario is not None
+        assert isinstance(state.localized_scenario, LocalizedScenario)
+
+    def test_process_force_finalize_result_grammatical_sets_state(self):
+        """Verify _process_force_finalize_result correctly updates state for Grammatical mode."""
+        from nltest.nl2test.models.agents import FinalizeAtomicBlockArgs
+
+        agent = self._create_mock_localization_agent(DecompositionMode.GRAMMATICAL)
+        state = AgentState()
+
+        atomic_blocks = AtomicBlockList(atomic_blocks=[])
+        result = FinalizeAtomicBlockArgs(
+            current_blocks=atomic_blocks,
+            comments="Grammatical localization complete",
+        )
+
+        agent._process_force_finalize_result(result, state)
+
+        assert state.finalize_called is True
+        assert state.final_comments == "Grammatical localization complete"
+        assert state.atomic_blocks is not None
+        assert isinstance(state.atomic_blocks, AtomicBlockList)
+
+    def test_execute_force_end_with_mocked_llm_gherkin(self):
+        """Test _execute_force_end with mocked LLM returning valid structured output."""
+        from nltest.nl2test.models.agents import FinalizeScenarioArgs
+
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+
+        localized_scenario = LocalizedScenario(
+            setup=[],
+            gherkin_groups=[],
+            teardown=[],
+        )
+        mock_result = FinalizeScenarioArgs(
+            localized_scenario=localized_scenario,
+            comments="Force finalized successfully",
+        )
+
+        agent.llm.invoke_structured_with_retries = MagicMock(return_value=mock_result)
+
+        state = AgentState(messages=[])
+        result_state = agent._execute_force_end(state)
+
+        assert result_state.finalize_called is True
+        assert result_state.final_comments == "Force finalized successfully"
+        assert result_state.localized_scenario is not None
+        agent.llm.invoke_structured_with_retries.assert_called_once()
+
+    def test_execute_force_end_with_mocked_llm_failure_strict(self):
+        """Test _execute_force_end raises exception when LLM fails in strict mode."""
+        from nltest.utils.exceptions import ConfigurationException
+
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+        agent.strict_finalize = True
+
+        agent.llm.invoke_structured_with_retries = MagicMock(return_value=None)
+
+        state = AgentState(messages=[])
+
+        with pytest.raises(ConfigurationException) as exc_info:
+            agent._execute_force_end(state)
+
+        assert "finalize_not_called" in str(exc_info.value.config_var)
+
+    def test_execute_force_end_with_mocked_llm_failure_non_strict(self):
+        """Test _execute_force_end auto-finalizes when LLM fails in non-strict mode."""
+        agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
+        agent.strict_finalize = False
+
+        agent.llm.invoke_structured_with_retries = MagicMock(return_value=None)
+
+        state = AgentState(messages=[])
+        result_state = agent._execute_force_end(state)
+
+        assert result_state.finalize_called is True
+        assert "Auto-finalized" in result_state.final_comments

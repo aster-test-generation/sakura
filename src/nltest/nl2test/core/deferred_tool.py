@@ -28,13 +28,13 @@ class DeferredTool:
 
     @staticmethod
     def create(
-            name: str,
-            description: str,
-            args_schema: Type[BaseModel],
-            returns_input_keys: Optional[List[str]] = None,
-            returns_static: Optional[Dict[str, Any]] = None,
-            processing_note: Optional[str] = None,
-            handle_tool_error: Optional[Callable] = None,
+        name: str,
+        description: str,
+        args_schema: Type[BaseModel],
+        returns_input_keys: Optional[List[str]] = None,
+        returns_static: Optional[Dict[str, Any]] = None,
+        processing_note: Optional[str] = None,
+        handle_tool_error: Optional[Callable] = None,
     ) -> StructuredTool:
         """
         Create a stub tool that returns its inputs for agent-side processing.
@@ -68,12 +68,15 @@ class DeferredTool:
         docstring = "\n".join(doc_parts)
 
         if returns_static is not None:
+
             def stub_func(**kwargs) -> Dict[str, Any]:
                 return dict(returns_static)
         elif returns_input_keys is not None:
+
             def stub_func(**kwargs) -> Dict[str, Any]:
                 return {k: kwargs[k] for k in returns_input_keys if k in kwargs}
         else:
+
             def stub_func(**kwargs) -> Dict[str, Any]:
                 return dict(kwargs)
 
@@ -90,11 +93,11 @@ class DeferredTool:
 
     @staticmethod
     def create_no_args(
-            name: str,
-            description: str,
-            returns_static: Optional[Dict[str, Any]] = None,
-            processing_note: Optional[str] = None,
-            handle_tool_error: Optional[Callable] = None,
+        name: str,
+        description: str,
+        returns_static: Optional[Dict[str, Any]] = None,
+        processing_note: Optional[str] = None,
+        handle_tool_error: Optional[Callable] = None,
     ) -> StructuredTool:
         """
         Create a stub tool with no arguments that returns a static value.

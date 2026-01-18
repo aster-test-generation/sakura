@@ -1,27 +1,29 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Type
 
-from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import END, StateGraph
 from langchain_core.messages import (
     AIMessage,
     BaseMessage,
-    SystemMessage,
     HumanMessage,
-    ToolMessage,
+    SystemMessage,
     ToolCall,
+    ToolMessage,
 )
 from langchain_core.tools import BaseTool
+from langgraph.checkpoint.memory import MemorySaver
+from langgraph.graph import END, StateGraph
+from pydantic import BaseModel
+
 from nltest.nl2test.models import AgentState
+from nltest.utils.exceptions import ConfigurationException
 from nltest.utils.llm import LLMClient
+from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.tool_messages import (
     format_tool_error,
     format_tool_ok,
 )
-from nltest.utils.pretty.color_logger import RichLog
-from nltest.utils.exceptions import ConfigurationException
 
 
 class ReActAgent:
@@ -36,8 +38,9 @@ class ReActAgent:
         max_iters: int = 20,
         strict_finalize: bool = True,
         use_checkpointer: bool = True,
+        max_force_end_attempts: int = 3,
     ) -> None:
-        self.llm = llm
+        self.llm: LLMClient = llm
         self.tools = tools
         self.allow_duplicate_tools = allow_duplicate_tools or []
         self.max_iters = max_iters
@@ -45,6 +48,7 @@ class ReActAgent:
         self.allow_parallelize = allow_parallelize
         self.strict_finalize = strict_finalize
         self.use_checkpointer = use_checkpointer
+        self.max_force_end_attempts = max_force_end_attempts
 
         self._allow_duplicate_tool_names = {t.name for t in self.allow_duplicate_tools}
         self.tool_map: Dict[str, BaseTool] = {t.name: t for t in tools}
@@ -68,6 +72,73 @@ class ReActAgent:
     def reset_agent(self) -> None:
         """Reset internal termination flag so the agent can continue running."""
         self._end_now = False
+
+    def _get_finalize_schema(self) -> Type[BaseModel]:
+        """Return the Pydantic schema for finalize args. Must be implemented by subclasses."""
+        raise NotImplementedError(
+            "Subclasses must implement _get_finalize_schema() to return a Pydantic schema."
+        )
+
+    def _get_force_finalize_system_prompt(self) -> str:
+        """Return system prompt for force_finalize structured output. Must be implemented by subclasses."""
+        raise NotImplementedError(
+            "Subclasses must implement _get_force_finalize_system_prompt() to return a system prompt."
+        )
+
+    def _get_force_finalize_chat_prompt(self) -> str:
+        """Return chat prompt for force_finalize structured output. Must be implemented by subclasses."""
+        raise NotImplementedError(
+            "Subclasses must implement _get_force_finalize_chat_prompt() to return a chat prompt."
+        )
+
+    def _process_force_finalize_result(
+        self, result: BaseModel, state: AgentState
+    ) -> None:
+        """Process the structured finalize result. Must be implemented by subclasses."""
+        raise NotImplementedError(
+            "Subclasses must implement _process_force_finalize_result() to process the result."
+        )
+
+    def _execute_force_end(self, state: AgentState) -> AgentState:
+        """Execute force finalize logic. Override in subclasses to customize behavior."""
+        state.force_end_attempts += 1
+
+        finalize_schema = self._get_finalize_schema()
+        force_system = self._get_force_finalize_system_prompt()
+        force_chat = self._get_force_finalize_chat_prompt()
+        messages_for_structured: List[BaseMessage] = [
+            SystemMessage(content=force_system),
+        ]
+        for m in state.messages:
+            if isinstance(m, BaseMessage) and not isinstance(m, SystemMessage):
+                messages_for_structured.append(m)
+        messages_for_structured.append(HumanMessage(content=force_chat))
+
+        try:
+            result = self.llm.invoke_structured_with_retries(
+                messages=messages_for_structured,
+                schema=finalize_schema,
+                strict=True,
+                max_attempts=self.max_force_end_attempts,
+                on_failure="return_none",
+            )
+        except Exception as exc:
+            RichLog.warn(f"[ReActAgent] force_end structured output failed: {exc}")
+            result = None
+
+        if result is not None:
+            self._process_force_finalize_result(result, state)
+            return state
+
+        if self.strict_finalize:
+            raise ConfigurationException(
+                "finalize_not_called",
+                message="Failed to produce finalize output after max attempts.",
+                details={"attempts": self.max_force_end_attempts},
+            )
+        state.finalize_called = True
+        state.final_comments = "Auto-finalized: structured output failed"
+        return state
 
     # Subclass hook
     def prepare_tool_args(
@@ -382,89 +453,7 @@ class ReActAgent:
 
         # Force the model to end if remaining iterations is 0
         def force_end(state: AgentState) -> AgentState:
-            state.force_end_attempts += 1
-            attempt = state.force_end_attempts
-
-            # Nudge the model explicitly to call finalize with the available context
-            if attempt == 1:
-                prompt = (
-                    "You have reached the iteration limit. Use the 'finalize' tool now to produce the final answer "
-                    "based on all prior tool results and messages. Do not call any other tools or perform any other behavior."
-                )
-            else:
-                prompt = (
-                    "FINAL NOTICE: You must call the 'finalize' tool immediately. No other tools are allowed. "
-                    "Summarize the best available result, then call finalize now."
-                )
-
-            human_prompt = HumanMessage(content=prompt)
-            # Include the instruction in the state history
-            state.messages.append(human_prompt)
-
-            finalize_tools = [t for t in self.tools if t.name == "finalize"]
-            tools_to_bind = finalize_tools if finalize_tools else self.tools
-
-            # Route explicitly to the finalize tool when available
-            tool_choice = (
-                {"type": "function", "function": {"name": "finalize"}}
-                if finalize_tools
-                else "auto"
-            )
-
-            out: AIMessage = self.llm.invoke_messages(
-                state.messages,
-                tools=tools_to_bind,
-                tool_choice=tool_choice,
-                # extra_model_kwargs={"parallel_tool_calls": False},  # No parallel tool call; force end; DEFAULT TO MODEL BINDING, as this was causing errors
-            )
-            state.messages.append(out)
-
-            last_ai: Optional[AIMessage] = out
-            tool_calls: List[ToolCall] = last_ai.tool_calls
-            requested_finalize = any(tc.get("name") == "finalize" for tc in tool_calls)
-
-            if self.strict_finalize:
-                if not tool_calls or not requested_finalize:
-                    raise ConfigurationException(
-                        "finalize_not_called",
-                        message=(
-                            "Model did not call 'finalize' in force_end despite strict enforcement."
-                            if not tool_calls
-                            else "Model called a non-finalize tool during force_end in strict mode."
-                        ),
-                        details={"state": state},
-                    )
-            else:
-                if not requested_finalize:
-                    # Prevent execution of unrelated tools; retry with stronger reminder.
-                    last_ai.tool_calls = []
-                    if attempt >= 2:
-                        raise ConfigurationException(
-                            "non_strict_finalize_not_called",
-                            message=(
-                                "Model failed to call 'finalize' after explicit reminders; aborting."
-                            ),
-                            details={"attempts": attempt, "state": state},
-                        )
-
-            return state
-
-        # Decide what to do after force_end model call
-        def should_continue_force_end(state: AgentState) -> str:
-            last_ai: Optional[AIMessage] = None
-            for msg in reversed(state.messages):
-                if isinstance(msg, AIMessage):
-                    last_ai = msg
-                    break
-            if last_ai and last_ai.tool_calls:
-                return "use_tools"
-            if (
-                not state.finalize_called
-                and not self.strict_finalize
-                and state.force_end_attempts < 2
-            ):
-                return "force_end"
-            return "end"
+            return self._execute_force_end(state)
 
         # Decide whether to end after tools or continue/force end
         def should_continue_after_tools(state: AgentState) -> str:
@@ -514,14 +503,7 @@ class ReActAgent:
                 "end": END,
             },
         )
-        workflow.add_conditional_edges(
-            "force_end",
-            should_continue_force_end,
-            {
-                "use_tools": "call_tools",
-                "end": END,
-            },
-        )
+        workflow.add_edge("force_end", END)
         workflow.add_conditional_edges(
             "call_tools",
             should_continue_after_tools,

@@ -1,14 +1,17 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Type
 
 from langchain_core.messages import ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
+from pydantic import BaseModel
 
 from nltest.nl2test.core.react_agent import ReActAgent
 from nltest.nl2test.generation.common.cldk_normalizer import CLDKArgNormalizer
 from nltest.nl2test.models import AgentState
+from nltest.nl2test.models.agents import FinalizeScenarioArgs, FinalizeAtomicBlockArgs
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm import LLMClient
 from nltest.utils.tool_messages import format_tool_ok, format_tool_error
 
@@ -42,10 +45,56 @@ class LocalizationReActAgent(ReActAgent):
         )
         self.decomposition_mode = decomposition_mode
 
+    def _get_finalize_schema(self) -> Type[BaseModel]:
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            return FinalizeScenarioArgs
+        return FinalizeAtomicBlockArgs
+
+    def _get_force_finalize_system_prompt(self) -> str:
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            template = LoadPrompt.load_prompt(
+                "localization_agent_gherkin_finalize.jinja2",
+                PromptFormat.JINJA2,
+                "system",
+            )
+            return template.format()
+        return (
+            "You must produce the finalize output for the localization task. "
+            "Use the message history to extract the current state of the localized steps."
+        )
+
+    def _get_force_finalize_chat_prompt(self) -> str:
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            template = LoadPrompt.load_prompt(
+                "localization_agent_gherkin_finalize.jinja2",
+                PromptFormat.JINJA2,
+                "chat",
+            )
+            return template.format()
+        return "Produce the final localized blocks based on the conversation history."
+
+    def _process_force_finalize_result(
+        self, result: BaseModel, state: AgentState
+    ) -> None:
+        state.finalize_called = True
+        state.final_comments = getattr(result, "comments", "")
+
+        if self.decomposition_mode == DecompositionMode.GHERKIN:
+            if hasattr(result, "localized_scenario"):
+                localized = getattr(result, "localized_scenario")
+                localized.enforce_candidate_limits()
+                state.localized_scenario = localized
+        else:
+            if hasattr(result, "current_blocks"):
+                blocks = getattr(result, "current_blocks")
+                blocks.enforce_candidate_limits()
+                state.atomic_blocks = blocks
+
     def prepare_tool_args(
-        self, tool_name: str, raw_args: Dict[str, Any], _state: AgentState
+        self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
     ) -> Tuple[str, Dict[str, Any]]:
         """Normalize tool arguments for CLDK compatibility."""
+        _ = state
         updated_args = CLDKArgNormalizer.normalize_args(tool_name, raw_args)
         return tool_name, updated_args
 

@@ -27,6 +27,45 @@ Each step must include:
 - comments: 1-2 sentences explaining why the method matches and any assumptions
 - external: true only if the intended call is not in application source
 
+## Localized Step Structure
+When calling finalize, each step in the localized_scenario must conform to the structure shown in this example:
+
+**Example** (use actual values from your tool results, not these placeholder values):
+```json
+{
+  "id": 1,
+  "task": "Description of what the step accomplishes",
+  "uses": "Input dependencies, e.g., ${imageBytes}",
+  "produces": "metadata",
+  "candidate_methods": [
+    {
+      "declaring_class_name": "org.apache.commons.imaging.Imaging",
+      "containing_class_name": "org.apache.commons.imaging.Imaging",
+      "method_signature": "getMetadata(byte[])",
+      "return_type": "org.apache.commons.imaging.common.ImageMetadata"
+    }
+  ],
+  "arg_bindings": [
+    {
+      "arg_name": "bytes",
+      "arg_value": "${imageBytes}"
+    }
+  ],
+  "comments": "Explanation of method selection",
+  "external": false
+}
+```
+
+**Format requirements**:
+- `declaring_class_name` and `containing_class_name`: Fully qualified class names (e.g., `org.apache.commons.imaging.Imaging`)
+- `method_signature`: Method name with parameter types (e.g., `getMetadata(byte[])`)
+- `return_type`: Fully qualified return type (e.g., `java.lang.String`, `void`, `int`)
+- `arg_bindings`: Use `${varName}` syntax to reference outputs from previous steps' `produces` field
+- `candidate_methods` must be an array of objects (not strings); use empty `[]` if no match found
+- `arg_bindings` must be an array of ArgBinding objects; use empty `[]` if no bindings needed
+
+**Note**: Static analysis tool call results (e.g., from `get_method_details`, `query_method_db`) showcase the correct fully qualified class name and method signature formats. Use these as reference when populating candidate_methods.
+
 ## Tool Workflow (Optimize for Fewer Iterations)
 Tool calls are cheap; model iterations/messages are expensive. Try to localize many steps in parallel and minimize back-and-forth.
 Default workflow:

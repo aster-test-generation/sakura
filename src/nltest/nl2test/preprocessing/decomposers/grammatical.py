@@ -17,10 +17,14 @@ class GrammaticalDecomposer(BaseDecomposer):
 
     def decompose(self, nl_description: str) -> GrammaticalBlockList:
         system_prompt = LoadPrompt.load_prompt(
-            "grammatical_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="system"
+            "grammatical_decomposition.jinja2",
+            prompt_format=PromptFormat.JINJA2,
+            prompt_type="system",
         ).format()
         chat_prompt = LoadPrompt.load_prompt(
-            "grammatical_decomposition.jinja2", prompt_format=PromptFormat.JINJA2, prompt_type="chat"
+            "grammatical_decomposition.jinja2",
+            prompt_format=PromptFormat.JINJA2,
+            prompt_type="chat",
         ).format(input=nl_description)
 
         result: GrammaticalBlockList = self.invoke_with_retries(

@@ -613,3 +613,129 @@ class TestCompositionToolInjection:
         )
 
         assert gherkin_compile.func() == grammatical_compile.func() == {}
+
+
+class TestCompositionForceFinalize:
+    """Tests for force_finalize hooks and structured output in composition agent."""
+
+    @staticmethod
+    def _create_mock_finalize_tool():
+        """Create a mock finalize tool to satisfy strict_finalize validation."""
+        mock_tool = MagicMock()
+        mock_tool.name = "finalize"
+        return mock_tool
+
+    @staticmethod
+    def _create_mock_composition_agent(strict_finalize: bool = False):
+        """Create a CompositionReActAgent with mocked dependencies."""
+        from pathlib import Path
+
+        from nltest.nl2test.generation.composition.agent import CompositionReActAgent
+
+        mock_llm = MagicMock()
+        mock_finalize = TestCompositionForceFinalize._create_mock_finalize_tool()
+        mock_tools = [mock_finalize]
+
+        agent = CompositionReActAgent(
+            llm=mock_llm,
+            tools=mock_tools,
+            system_message="Test system message",
+            project_root=Path("/tmp/test"),
+            max_iters=5,
+        )
+        agent.strict_finalize = strict_finalize
+        return agent
+
+    def test_get_finalize_schema_returns_comments_args(self):
+        """Verify _get_finalize_schema returns FinalizeCommentsArgs."""
+        from nltest.nl2test.models.agents import FinalizeCommentsArgs
+
+        agent = self._create_mock_composition_agent()
+        schema = agent._get_finalize_schema()
+
+        assert schema is FinalizeCommentsArgs
+
+    def test_get_force_finalize_system_prompt_loads_template(self):
+        """Verify _get_force_finalize_system_prompt loads jinja2 template."""
+        agent = self._create_mock_composition_agent()
+        prompt = agent._get_force_finalize_system_prompt()
+
+        assert isinstance(prompt, str)
+        assert len(prompt) > 100
+        assert "composition" in prompt.lower()
+        assert "comments" in prompt.lower()
+
+    def test_get_force_finalize_chat_prompt_loads_template(self):
+        """Verify _get_force_finalize_chat_prompt loads jinja2 template."""
+        agent = self._create_mock_composition_agent()
+        prompt = agent._get_force_finalize_chat_prompt()
+
+        assert isinstance(prompt, str)
+        assert len(prompt) > 50
+        assert "comments" in prompt.lower()
+
+    def test_process_force_finalize_result_sets_state(self):
+        """Verify _process_force_finalize_result correctly updates state."""
+        from nltest.nl2test.models.agents import FinalizeCommentsArgs
+
+        agent = self._create_mock_composition_agent()
+        state = AgentState()
+
+        result = FinalizeCommentsArgs(
+            comments="Test composition complete with some errors",
+        )
+
+        agent._process_force_finalize_result(result, state)
+
+        assert state.finalize_called is True
+        assert state.final_comments == "Test composition complete with some errors"
+
+    def test_execute_force_end_with_mocked_llm(self):
+        """Test _execute_force_end with mocked LLM returning valid structured output."""
+        from nltest.nl2test.models.agents import FinalizeCommentsArgs
+
+        agent = self._create_mock_composition_agent()
+
+        mock_result = FinalizeCommentsArgs(
+            comments="Force finalized: test compiles but has assertion failures",
+        )
+
+        agent.llm.invoke_structured_with_retries = MagicMock(return_value=mock_result)
+
+        state = AgentState(messages=[])
+        result_state = agent._execute_force_end(state)
+
+        assert result_state.finalize_called is True
+        assert "Force finalized" in result_state.final_comments
+        agent.llm.invoke_structured_with_retries.assert_called_once()
+
+    def test_execute_force_end_with_mocked_llm_failure_strict(self):
+        """Test _execute_force_end raises exception when LLM fails in strict mode."""
+        import pytest
+
+        from nltest.utils.exceptions import ConfigurationException
+
+        agent = self._create_mock_composition_agent()
+        agent.strict_finalize = True
+
+        agent.llm.invoke_structured_with_retries = MagicMock(return_value=None)
+
+        state = AgentState(messages=[])
+
+        with pytest.raises(ConfigurationException) as exc_info:
+            agent._execute_force_end(state)
+
+        assert "finalize_not_called" in str(exc_info.value.config_var)
+
+    def test_execute_force_end_with_mocked_llm_failure_non_strict(self):
+        """Test _execute_force_end auto-finalizes when LLM fails in non-strict mode."""
+        agent = self._create_mock_composition_agent()
+        agent.strict_finalize = False
+
+        agent.llm.invoke_structured_with_retries = MagicMock(return_value=None)
+
+        state = AgentState(messages=[])
+        result_state = agent._execute_force_end(state)
+
+        assert result_state.finalize_called is True
+        assert "Auto-finalized" in result_state.final_comments

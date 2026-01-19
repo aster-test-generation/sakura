@@ -32,7 +32,7 @@ def init_config(
     supervisor_max_iters: int = 5,
     can_parallel_tool: bool = True,
     reuse_config: bool = False,
-    max_tokens: int = 12288,
+    max_tokens: int = 16384,
     reasoning_enabled: bool = True,
     reasoning_effort: str = "medium",
     exclude_reasoning: bool = True,
@@ -83,6 +83,8 @@ def init_config(
         config.set("llm", "api_url", val="http://localhost:8000/v1")
     elif llm_provider == Provider.GCP:
         config.set("llm", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
+    elif llm_provider == Provider.MISTRAL:
+        config.set("llm", "api_url", val="https://api.mistral.ai/v1")
 
     config.set("llm", "api_key", val=llm_api_key)
 

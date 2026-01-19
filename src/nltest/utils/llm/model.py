@@ -9,6 +9,7 @@ class Provider(Enum):
     OLLAMA = "ollama"
     OPENAI = "openai"
     GCP = "gcp"
+    MISTRAL = "mistral"
 
 
 @dataclass

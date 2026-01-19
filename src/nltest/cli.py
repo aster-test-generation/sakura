@@ -758,6 +758,13 @@ def run_nl2test(
             show_default=True,
         ),
     ] = True,
+    max_tokens: Annotated[
+        int,
+        typer.Option(
+            help="Maximum tokens for LLM completion output. Increase for reasoning models (e.g., 32768 or 65536 for MiniMax M2.1).",
+            show_default=True,
+        ),
+    ] = 16384,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -931,6 +938,7 @@ def run_nl2test(
                 reasoning_enabled=enable_reasoning,
                 reasoning_effort=reasoning_effort,
                 exclude_reasoning=exclude_reasoning,
+                max_tokens=max_tokens,
             )
 
             payloads = [

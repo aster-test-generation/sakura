@@ -8,9 +8,13 @@ import uuid
 from typing import Any, Dict, Literal, Optional, Sequence, Type, TypeVar, Union
 
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+from openai import LengthFinishReasonError
 from pydantic import BaseModel
 
-from .general_prompts.structured_retry import STRUCTURED_OUTPUT_RETRY_PROMPT
+from .general_prompts.structured_retry import (
+    LENGTH_EXCEEDED_RETRY_PROMPT,
+    STRUCTURED_OUTPUT_RETRY_PROMPT,
+)
 
 SchemaT = TypeVar("SchemaT", bound=BaseModel)
 from langchain_core.runnables import RunnableSerializable
@@ -22,7 +26,9 @@ from tenacity import (
     retry,
     retry_if_exception,
     stop_after_attempt,
-    wait_exponential_jitter,
+    wait_chain,
+    wait_none,
+    wait_random,
 )
 
 from nltest.utils.pretty.color_logger import RichLog
@@ -44,6 +50,9 @@ def _is_retriable_error(exc: BaseException) -> bool:
         return True
     msg = str(exc).lower()
     if "rate limit" in msg or "too many requests" in msg or "overloaded" in msg:
+        return True
+    # Handle empty structured output responses (common with some models via OpenRouter)
+    if isinstance(exc, ValueError) and "does not have a 'parsed' field nor a 'refusal' field" in str(exc):
         return True
     return False
 
@@ -93,7 +102,7 @@ class LLMClient:
         try:
             max_tokens = config.get("llm", "max_tokens")
         except ConfigurationException:
-            max_tokens = 12288
+            max_tokens = 16384
 
         try:
             timeout = config.get("llm", "timeout")
@@ -131,6 +140,8 @@ class LLMClient:
                 "effort": reasoning_effort,
                 "exclude": reasoning_exclude,
             }
+        else:
+            extra_body["reasoning"] = {"effort": "none"}
 
         if provider == Provider.OPENROUTER:
             default_headers = {} if default_headers is None else default_headers
@@ -150,10 +161,16 @@ class LLMClient:
         # Note: max_retries is omitted to let tenacity handle all retry logic
         # with proper exponential backoff. Add max_retries here if you want
         # LangChain's built-in HTTP-level retries to stack with tenacity.
+        # Mistral API requires max_tokens in extra_body (rejects max_completion_tokens)
+        if provider == Provider.MISTRAL:
+            extra_body["max_tokens"] = max_tokens
+            max_tokens_kwarg = {}
+        else:
+            max_tokens_kwarg = {"max_tokens": max_tokens}
         self._chat = ChatOpenAI(
             model=model,
             temperature=temp,
-            max_completion_tokens=max_tokens,
+            **max_tokens_kwarg,
             base_url=base_url.rstrip("/") if base_url else None,
             api_key=SecretStr(api_key),
             timeout=timeout,
@@ -227,8 +244,8 @@ class LLMClient:
         return ai_msg
 
     @retry(
-        stop=stop_after_attempt(5),
-        wait=wait_exponential_jitter(initial=1, max=60),
+        stop=stop_after_attempt(4),
+        wait=wait_chain(wait_none(), wait_random(10, 20), wait_random(50, 60)),
         retry=retry_if_exception(_is_retriable_error),
         before_sleep=_log_retry_attempt,
         reraise=True,
@@ -284,9 +301,13 @@ class LLMClient:
             raise
 
         if hasattr(out, "usage_metadata") and out.usage_metadata:
+            output_tokens = out.usage_metadata.get("output_tokens", 0)
+            # Include reasoning tokens in output count (billed as output tokens)
+            output_details = out.usage_metadata.get("output_token_details") or {}
+            reasoning_tokens = output_details.get("reasoning_tokens", 0)
             self._usage_tracker.record(
                 input_tokens=out.usage_metadata.get("input_tokens", 0),
-                output_tokens=out.usage_metadata.get("output_tokens", 0),
+                output_tokens=output_tokens + reasoning_tokens,
             )
 
         return self._normalize_tool_call_ids(out) if isinstance(out, AIMessage) else out
@@ -393,7 +414,29 @@ class LLMClient:
                     strict=strict,
                 )
                 return result
+            except LengthFinishReasonError as length_exc:
+                last_error = length_exc
+                # Extract partial output from the completion if available
+                partial_content = ""
+                completion = getattr(length_exc, "completion", None)
+                if completion:
+                    choices = getattr(completion, "choices", [])
+                    if choices:
+                        message = getattr(choices[0], "message", None)
+                        if message:
+                            partial_content = getattr(message, "content", "") or ""
+
+                retry_prompt = LENGTH_EXCEEDED_RETRY_PROMPT.format(
+                    attempt=attempt,
+                    partial_output=partial_content[:500]
+                    if partial_content
+                    else "(none available)",
+                )
+                failures.append(retry_prompt)
             except Exception as exc:
+                # Don't retry transient errors - tenacity already exhausted retries
+                if _is_retriable_error(exc):
+                    raise
                 last_error = exc
                 error_excerpt = (str(exc) or repr(exc)).strip()[:800]
 

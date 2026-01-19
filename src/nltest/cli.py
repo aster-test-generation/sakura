@@ -17,6 +17,7 @@ from nltest.ray_utils.test2nl_actor import Test2NLActor
 from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
 from nltest.utils.file_io.structured_data_manager import StructuredDataManager
 from nltest.utils.llm.model import Provider
+from nltest.utils.models import NL2TestFailure
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.vcs.git_utils import GitUtilities
 
@@ -141,6 +142,9 @@ def _clear_nl2test_output_artifacts(
             results_path = project_dir / "nl2test_evaluation_results.json"
             if results_path.exists():
                 results_path.unlink()
+            failures_path = project_dir / "nl2test_failures.json"
+            if failures_path.exists():
+                failures_path.unlink()
 
         temp_analysis = project_dir / "temp_analysis"
         if temp_analysis.exists():
@@ -148,6 +152,17 @@ def _clear_nl2test_output_artifacts(
 
         for log_file in project_dir.glob("*.log"):
             log_file.unlink()
+
+
+def _create_failure(
+    payload: dict, error: str, error_type: str, traceback: str | None = None
+) -> NL2TestFailure:
+    return NL2TestFailure(
+        nl2test_input=NL2TestInput(**payload),
+        error=error,
+        error_type=error_type,
+        traceback=traceback,
+    )
 
 
 @app.command()
@@ -972,6 +987,22 @@ def run_nl2test(
             except Exception as exc:
                 RichLog.error(f"[{project_name}] NL2Test batch failed: {exc}")
                 total_failed += project_payload_counts.get(project_name, 0)
+                batch_failures = [
+                    _create_failure(
+                        inp.model_dump(mode="json"),
+                        str(exc),
+                        type(exc).__name__,
+                    )
+                    for inp in nl2test_inputs_by_project.get(project_name, [])
+                ]
+                if batch_failures:
+                    project_manager = get_project_data_manager(project_name)
+                    project_manager.save(
+                        "nl2test_failures.json",
+                        batch_failures,
+                        format="json",
+                        mode="append",
+                    )
                 launch_projects_up_to_limit()
                 continue
 
@@ -1003,6 +1034,23 @@ def run_nl2test(
                             f"[{project_name}] Compilation error details:\n"
                             + "\n".join(error_details)
                         )
+                    total_failed += project_payload_counts.get(project_name, 0)
+                    batch_failures = [
+                        _create_failure(
+                            inp.model_dump(mode="json"),
+                            error_message or "Project failed baseline compilation",
+                            "ProjectCompilationError",
+                        )
+                        for inp in nl2test_inputs_by_project.get(project_name, [])
+                    ]
+                    if batch_failures:
+                        project_manager = get_project_data_manager(project_name)
+                        project_manager.save(
+                            "nl2test_failures.json",
+                            batch_failures,
+                            format="json",
+                            mode="append",
+                        )
                     launch_projects_up_to_limit()
                     continue
 
@@ -1010,6 +1058,7 @@ def run_nl2test(
             project_success = 0
             project_failed = 0
             batch_to_save: list[NL2TestEval] = []
+            batch_failures: list[NL2TestFailure] = []
             for item in results or []:
                 if item.get("success"):
                     res = item.get("result")
@@ -1018,7 +1067,21 @@ def run_nl2test(
                         if isinstance(res, dict):
                             res = NL2TestEval(**res)
                         batch_to_save.append(res)
-                    project_success += 1
+                        project_success += 1
+                    else:
+                        RichLog.warn(
+                            f"[{project_name}] Success reported but result is None"
+                        )
+                        payload = item.get("input") or {}
+                        if payload:
+                            batch_failures.append(
+                                _create_failure(
+                                    payload,
+                                    "Success reported but result is None",
+                                    "EmptyResult",
+                                )
+                            )
+                        project_failed += 1
                 else:
                     # Log details to help pinpoint failing inputs
                     err = item.get("error")
@@ -1033,12 +1096,23 @@ def run_nl2test(
                     if tb:
                         # Tracebacks can be long; emit only at debug level unless debug is off.
                         RichLog.debug(tb)
+                    if payload:
+                        batch_failures.append(
+                            _create_failure(payload, err or "", err_type, tb)
+                        )
                     project_failed += 1
 
+            project_manager = get_project_data_manager(project_name)
             if batch_to_save:
-                project_manager = get_project_data_manager(project_name)
                 project_manager.save(
                     results_filename, batch_to_save, format="json", mode="append"
+                )
+            if batch_failures:
+                project_manager.save(
+                    "nl2test_failures.json",
+                    batch_failures,
+                    format="json",
+                    mode="append",
                 )
 
             total_success += project_success

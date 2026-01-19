@@ -5,6 +5,7 @@ from typing import Annotated, Any, Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+
 class AbstractionLevel(Enum):
     HIGH = "high"
     MEDIUM = "medium"
@@ -90,8 +91,19 @@ class NL2TestEval(BaseModel):
     nl2test_metadata: NL2TestMetadata
     structured_eval: Optional[NL2TestStructuralEval]
     coverage_eval: Optional[NL2TestCoverageEval]
-    localization_eval: Optional[Any] = None  # Accepts LocalizationEval from nl2test flows.
+    localization_eval: Optional[Any] = (
+        None  # Accepts LocalizationEval from nl2test flows.
+    )
     tool_log: Optional[ToolLog] = None
     input_tokens: int = 0
     output_tokens: int = 0
     llm_calls: int = 0
+
+
+class NL2TestFailure(BaseModel):
+    """Captures a failed NL2Test generation attempt."""
+
+    nl2test_input: NL2TestInput
+    error: str
+    error_type: str
+    traceback: Optional[str] = None

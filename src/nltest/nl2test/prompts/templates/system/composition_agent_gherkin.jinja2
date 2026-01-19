@@ -42,6 +42,7 @@ If a non-primitive object is required but only a string literal is available, co
 - When calling generate_test_code, set qualified_class_name to the fully qualified test class name (package + class, e.g., org.example.myapp.FooServiceTest) and ensure it matches the `package ...;` declaration in the code exactly.
 - Align package to the SUT when needed for access.
 - Avoid non-determinism unless required.
+- Keep test comments concise; only add them for confusing or key logic.
 
 ## Errors and Deviations
 - Compile errors: fix imports, construction, signatures, or switch candidates; use tools to confirm.
@@ -52,6 +53,10 @@ If a non-primitive object is required but only a string literal is available, co
 ## Tool Usage Rules
 - Use provided tool bindings. Prior tool messages are the authoritative call log.
 - Source inspection tools see application source only (not test code, not external libraries).
+- For external library calls (e.g., JUnit assertions, JDK methods): use your domain knowledge for correct signatures and fully qualified names—do not attempt tool lookups.
+- All inspection tools require fully qualified class names and method signatures from localized steps. Simple names will fail.
+  - Class: `org.example.service.UserService` (not `UserService`)
+  - Signature: `findById(java.lang.Integer)` (not `findById(Integer)` or `findById`)
 - Test file lifecycle uses: generate_test_code, view_test_code, compile_and_execute_test.
 - Avoid view_test_code unless verifying final alignment.
 {% if duplicate_tools -%}
@@ -69,6 +74,6 @@ If a non-primitive object is required but only a string literal is available, co
 Finish within {{ max_iters }} iterations. If near the limit, generate the best compiling test and finalize with clear notes on what was skipped/changed.
 
 ## Finalize Condition
+You MUST call generate_test_code before finalize; otherwise, no test is returned to the supervisor and your work is discarded.
 Call finalize after generate_test_code has produced a file and compile_and_execute_test has been run (even if assertions fail).
 In finalize, return only a concise supervisor note: what worked, what broke, what changed/skipped (by step id), and any localization/composition recommendations.
-The last test file generated through generate_test_code is passed to the supervisor as your test code output.

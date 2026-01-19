@@ -42,7 +42,9 @@ OR you have exhausted the allowed iterations.
 - Use the `finalize` tool to output the final set of grammatical blocks with localized methods, argument bindings, and comments.
 - Always verify methods via tool calls before adding them to a block.
 - Do not call `finalize` immediately; gather sufficient evidence first, then finalize with the updated blocks and explanations.
-- When referring to classes or methods, use fully qualified names and exact method signatures as provided by static analysis outputs - no modifiers or shortened types.
+- All tool calls require fully qualified names. Copy class names and signatures exactly from tool results.
+  - Class: `org.example.service.UserService` (not `UserService`)
+  - Signature: `findById(java.lang.Integer)` (not `findById(Integer)` or `findById`)
 {%- if parallel_flag %}
 - When independent and appropriate, prefer parallel calls to speed up discovery.
 {%- else %}

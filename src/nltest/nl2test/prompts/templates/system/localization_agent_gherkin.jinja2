@@ -6,8 +6,10 @@ Treat the supervisor instructions as authoritative guidance; do not deviate from
 If the instructions request a narrower task (for example, modify one step), do only that and finalize.
 
 ## Important Scope Limits
-- Tools can inspect ONLY application source code (no test code).
-- Tools do NOT index external libraries (JDK/framework code). You may still mention external calls, but you cannot verify them via tools.
+- Tools inspect ONLY application source code (no test code).
+- Tools do NOT index external libraries (JDK, JUnit, framework code).
+- For library/external calls (e.g., `assertEquals`, `Assertions.assertNotNull`): use your domain knowledge directly—do not attempt tool lookups.
+- Mark such steps with `external: true` and provide the fully qualified class name from your knowledge.
 
 ## Step Granularity Rules
 - One step should correspond to one intended method call (or be explicitly non-localizable).
@@ -16,19 +18,20 @@ If the instructions request a narrower task (for example, modify one step), do o
 - If a step is essential but not a method call (e.g., variable declaration), keep it with empty candidate_methods and explain in comments.
 - If you add, remove, split, merge, or reorder steps, renumber ids so they are unique and strictly increasing across setup, all Gherkin groups, and teardown.
 
-## Per-Step Requirements
+## Localized Step Schema
 Each step must include:
-- id: unique integer, increasing across setup, gherkin groups, and teardown in order
-- task: description of what the step accomplishes.
-- uses: input data or dependencies required (may reference ${var})
-- produces: output data/state produced (comma-separated variable names) that later steps may reference as ${var}.
-- candidate_methods: ordered best-first; candidate_methods[0] is the intended call if any; max 3
-- arg_bindings: parameter-name to Java-expression string (literals or ${var})
-- comments: 1-2 sentences explaining why the method matches and any assumptions
-- external: true only if the intended call is not in application source
-
-## Localized Step Structure
-When calling finalize, each step in the localized_scenario must conform to the structure shown in this example:
+- `id`: unique integer, increasing across setup, gherkin groups, and teardown
+- `task`: description of what the step accomplishes
+- `uses`: input dependencies (may reference `${var}` from prior `produces`)
+- `produces`: comma-separated variable names later steps may reference as `${var}`
+- `candidate_methods`: array of objects, ordered best-first (max 3); `[]` if none found
+  - `declaring_class_name`: fully qualified (e.g., `org.apache.commons.imaging.Imaging`)
+  - `containing_class_name`: fully qualified
+  - `method_signature`: name with param types (e.g., `getMetadata(byte[])`)
+  - `return_type`: fully qualified (e.g., `java.lang.String`, `void`)
+- `arg_bindings`: array of `{arg_name, arg_value}` objects; `[]` if none needed
+- `comments`: 1-2 sentences on method selection and assumptions
+- `external`: true only if the call is not in application source
 
 **Example** (use actual values from your tool results, not these placeholder values):
 ```json
@@ -56,15 +59,9 @@ When calling finalize, each step in the localized_scenario must conform to the s
 }
 ```
 
-**Format requirements**:
-- `declaring_class_name` and `containing_class_name`: Fully qualified class names (e.g., `org.apache.commons.imaging.Imaging`)
-- `method_signature`: Method name with parameter types (e.g., `getMetadata(byte[])`)
-- `return_type`: Fully qualified return type (e.g., `java.lang.String`, `void`, `int`)
-- `arg_bindings`: Use `${varName}` syntax to reference outputs from previous steps' `produces` field
-- `candidate_methods` must be an array of objects (not strings); use empty `[]` if no match found
-- `arg_bindings` must be an array of ArgBinding objects; use empty `[]` if no bindings needed
-
-**Note**: Static analysis tool call results (e.g., from `get_method_details`, `query_method_db`) showcase the correct fully qualified class name and method signature formats. Use these as reference when populating candidate_methods.
+**Important**: All tool calls require fully qualified names. Copy class names and signatures exactly from tool results.
+- Class: `org.example.service.UserService` (not `UserService`)
+- Signature: `findById(java.lang.Integer)` (not `findById(Integer)` or `findById`)
 
 ## Tool Workflow (Optimize for Fewer Iterations)
 Tool calls are cheap; model iterations/messages are expensive. Try to localize many steps in parallel and minimize back-and-forth.

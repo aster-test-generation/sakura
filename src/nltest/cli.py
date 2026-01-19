@@ -37,7 +37,7 @@ IGNORED_DIRS = {
     ".vscode",
 }
 
-NL2TEST_DEBUG = True
+NL2TEST_DEBUG = False
 
 
 @app.callback()
@@ -73,7 +73,7 @@ def _load_nl2_inputs_by_project_from_csv(
     if NL2TEST_DEBUG:
         debug_csv_path = (
             Path(__file__).parent.parent.parent
-            / "resources/test2nl/filtered_dataset/spanning_subset_20.csv"
+            / "resources/test2nl/filtered_dataset/spanning_subset_40.csv"
         )
         if not debug_csv_path.exists():
             raise Exception(f"Debug CSV file not found: {debug_csv_path}")

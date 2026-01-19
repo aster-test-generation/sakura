@@ -24,10 +24,10 @@ USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "minimax/minimax-m2.1"
+LLM_MODEL = "xiaomi/mimo-v2-flash"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
-    "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp"
+    "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
 )
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
@@ -45,7 +45,7 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 CAN_PARALLEL_TOOL_CALL: bool = True
 
 # Config reasoning abilities
-REASONING_ENABLED: bool = True
+REASONING_ENABLED: bool = False
 REASONING_EFFORT: str = "low"
 EXCLUDE_REASONING: bool = False
 

@@ -340,7 +340,7 @@ class ReActAgent:
             out: AIMessage = self.llm.invoke_messages(
                 state.messages,
                 tools=self.tools,
-                tool_choice="auto",
+                tool_choice="required",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
             # Validate response - API requires assistant messages have content or tool_calls

@@ -128,6 +128,7 @@ class ReActAgent:
 
         if result is not None:
             self._process_force_finalize_result(result, state)
+            self._log_force_finalize(state)
             return state
 
         if self.strict_finalize:
@@ -138,7 +139,14 @@ class ReActAgent:
             )
         state.finalize_called = True
         state.final_comments = "Auto-finalized: structured output failed"
+        self._log_force_finalize(state)
         return state
+
+    def _log_force_finalize(self, state: AgentState) -> None:
+        """Log finalize to tool trajectory and counts for force_end consistency."""
+        state.curr_tool_trajectory.append("finalize")
+        total_history = state.total_tool_calls.setdefault("finalize", {})
+        total_history["<force_finalize>"] = total_history.get("<force_finalize>", 0) + 1
 
     # Subclass hook
     def prepare_tool_args(
@@ -359,6 +367,11 @@ class ReActAgent:
             )
             tool_msgs: List[ToolMessage] = []
             tool_calls = last_ai.tool_calls
+            tool_names = [tc.get("name") for tc in tool_calls]
+            RichLog.debug(
+                f"[ReActAgent] call_tools: iteration={state.iterations}, "
+                f"tools={tool_names}"
+            )
             skipped_tool_calls: List[ToolCall] = []
             if not self.allow_parallelize and len(tool_calls) > 1:
                 skipped_tool_calls = tool_calls[1:]
@@ -466,17 +479,31 @@ class ReActAgent:
 
         # Force the model to end if remaining iterations is 0
         def force_end(state: AgentState) -> AgentState:
+            RichLog.debug(
+                f"[ReActAgent] force_end: triggering force finalize "
+                f"(iteration={state.iterations}, attempts={state.force_end_attempts})"
+            )
             return self._execute_force_end(state)
 
         # Decide whether to end after tools or continue/force end
         def should_continue_after_tools(state: AgentState) -> str:
-            if self._should_end_after_tools(
-                state
-            ):  # If the end_now is called from finalize tool
+            end_now = self._should_end_after_tools(state)
+            if end_now:
+                RichLog.debug(
+                    f"[ReActAgent] should_continue_after_tools: 'end' "
+                    f"(_end_now=True, iteration={state.iterations})"
+                )
                 return "end"
-            # If we've consumed the final allowed model step already, switch to force_end
             if state.iterations >= self.max_iters:
+                RichLog.debug(
+                    f"[ReActAgent] should_continue_after_tools: 'force_end' "
+                    f"(iteration={state.iterations} >= max_iters={self.max_iters})"
+                )
                 return "force_end"
+            RichLog.debug(
+                f"[ReActAgent] should_continue_after_tools: 'continue' "
+                f"(iteration={state.iterations})"
+            )
             return "continue"
 
         # Conditional edge to determine if the agent should continue
@@ -490,15 +517,33 @@ class ReActAgent:
 
             # If the last message is an AI message and it has tool calls, continue
             if last_ai and last_ai.tool_calls:
+                tool_names = [tc.get("name") for tc in last_ai.tool_calls]
+                RichLog.debug(
+                    f"[ReActAgent] should_continue_after_llm: 'use_tools' "
+                    f"(tools={tool_names}, iteration={state.iterations})"
+                )
                 return "use_tools"
 
             # No tool calls: enforce finalize when required and guard iteration limit
             if self.strict_finalize and not state.finalize_called:
+                RichLog.debug(
+                    f"[ReActAgent] should_continue_after_llm: 'force_end' "
+                    f"(strict_finalize=True, finalize_called=False, "
+                    f"iteration={state.iterations})"
+                )
                 return "force_end"
 
             if state.iterations >= self.max_iters:
+                RichLog.debug(
+                    f"[ReActAgent] should_continue_after_llm: 'force_end' "
+                    f"(iteration={state.iterations} >= max_iters={self.max_iters})"
+                )
                 return "force_end"
 
+            RichLog.debug(
+                f"[ReActAgent] should_continue_after_llm: 'end' "
+                f"(finalize_called={state.finalize_called}, iteration={state.iterations})"
+            )
             return "end"
 
         # Assemble graph: define all nodes and edges together for readability

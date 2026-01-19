@@ -95,6 +95,7 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         state.force_end_attempts += 1
         state.finalize_called = True
         state.final_comments = ""
+        self._log_force_finalize(state)
         return state
 
     def _get_force_finalize_system_prompt(self) -> str:

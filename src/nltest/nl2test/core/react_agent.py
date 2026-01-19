@@ -335,6 +335,19 @@ class ReActAgent:
                 tool_choice="auto",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
+            # Validate response - API requires assistant messages have content or tool_calls
+            has_content = out.content and (
+                isinstance(out.content, str)
+                and out.content.strip()
+                or isinstance(out.content, list)
+                and len(out.content) > 0
+            )
+            has_tool_calls = out.tool_calls and len(out.tool_calls) > 0
+            if not has_content and not has_tool_calls:
+                RichLog.warn(
+                    "[ReActAgent] LLM returned empty response, injecting fallback"
+                )
+                out = AIMessage(content="[No response generated - continuing]")
             state.messages.append(out)
             state.iterations += 1
             return state

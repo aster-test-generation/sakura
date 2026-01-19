@@ -494,13 +494,13 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
     def _process_finalize_tool_output(
         self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        comments = result
+        comments = result.get("comments", "") if isinstance(result, dict) else result
         state.final_comments = str(comments)
         state.finalize_called = True
         state.force_end_attempts = 0
         outputs.append(
             ToolMessage(
-                content=format_tool_ok({"comments": str(comments)}),
+                content=format_tool_ok({"comments": state.final_comments}),
                 tool_call_id=tool_call["id"],
             )
         )

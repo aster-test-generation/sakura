@@ -150,10 +150,16 @@ class LLMClient:
         # Note: max_retries is omitted to let tenacity handle all retry logic
         # with proper exponential backoff. Add max_retries here if you want
         # LangChain's built-in HTTP-level retries to stack with tenacity.
+        # Mistral API requires max_tokens in extra_body (rejects max_completion_tokens)
+        if provider == Provider.MISTRAL:
+            extra_body["max_tokens"] = max_tokens
+            max_tokens_kwarg = {}
+        else:
+            max_tokens_kwarg = {"max_tokens": max_tokens}
         self._chat = ChatOpenAI(
             model=model,
             temperature=temp,
-            max_completion_tokens=max_tokens,
+            **max_tokens_kwarg,
             base_url=base_url.rstrip("/") if base_url else None,
             api_key=SecretStr(api_key),
             timeout=timeout,

@@ -83,6 +83,8 @@ def init_config(
         config.set("llm", "api_url", val="http://localhost:8000/v1")
     elif llm_provider == Provider.GCP:
         config.set("llm", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
+    elif llm_provider == Provider.MISTRAL:
+        config.set("llm", "api_url", val="https://api.mistral.ai/v1")
 
     config.set("llm", "api_key", val=llm_api_key)
 

@@ -19,12 +19,12 @@ CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 # CLI arguments
 MAX_ENTRIES = 1
 # Note: 0 = unlimited
-DEBUG = True
+DEBUG = False
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "xiaomi/mimo-v2-flash"
+LLM_MODEL = "google/gemini-2.5-pro"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
     "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
@@ -45,9 +45,9 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 CAN_PARALLEL_TOOL_CALL: bool = True
 
 # Config reasoning abilities
-REASONING_ENABLED: bool = False
-REASONING_EFFORT: str = "low"
-EXCLUDE_REASONING: bool = False
+REASONING_ENABLED: bool = True
+REASONING_EFFORT: str = "minimal"
+EXCLUDE_REASONING: bool = True
 
 # Maximum tokens for LLM completion output.
 # Default: 16384. Use 32768 or 65536 for extensive reasoning models like MiniMax M2.1.

@@ -32,7 +32,7 @@ def init_config(
     supervisor_max_iters: int = 5,
     can_parallel_tool: bool = True,
     reuse_config: bool = False,
-    max_tokens: int = 12288,
+    max_tokens: int = 16384,
     reasoning_enabled: bool = True,
     reasoning_effort: str = "medium",
     exclude_reasoning: bool = True,

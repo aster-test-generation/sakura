@@ -49,6 +49,10 @@ REASONING_ENABLED: bool = True
 REASONING_EFFORT: str = "low"
 EXCLUDE_REASONING: bool = False
 
+# Maximum tokens for LLM completion output.
+# Default: 16384. Use 32768 or 65536 for extensive reasoning models like MiniMax M2.1.
+MAX_TOKENS: int = 32768
+
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8
 LOCALIZATION_MAX_ITERS: int = 12
@@ -176,6 +180,7 @@ def main() -> None:
         cmd.append("--exclude-reasoning")
     else:
         cmd.append("--no-exclude-reasoning")
+    cmd.extend(["--max-tokens", str(MAX_TOKENS)])
 
     print("Running NL2Test on Test2NL inputs...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)

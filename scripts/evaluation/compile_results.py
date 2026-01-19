@@ -18,7 +18,7 @@ from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 # EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_flash_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_200_output" / "evaluation"
-EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_subset_minimax_output"
+EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_devstral_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_pro_incomplete_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
@@ -27,7 +27,7 @@ BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_test
 BUCKETED_DATASET_FILE = "nl2test.json"
 
 # PRICING_MODEL = "minimax/minimax-m2.1"
-PRICING_MODEL = "gemini-2.5-pro"
+PRICING_MODEL = "devstral-small-latest"
 # PRICING_MODEL = "gemini-2.5-flash"
 # PRICING_MODEL = "qwen/qwen3-coder"
 
@@ -41,12 +41,13 @@ ONLY_SHARED_ENTRIES = (
     True  # Only include entries present in all DIRS_TO_INCLUDE (allows non-compiling)
 )
 DIRS_TO_INCLUDE: List[Path] = [
-    # ROOT_DIR / "resources" / "outputs" / "gemini_cli_200_output" / "evaluation",
-    # ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_flash_output",
-    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_minimax_output",
-    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_qwen3_coder_output",
-    # ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_pro_incomplete_output",
-    # ROOT_DIR / "resources" / "output"
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_devstral_output",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_deepseek_v3.2_output",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_gemini_flash_output",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_gemini_pro_low_output",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_mimo_v2_flash_output",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_minimax_output",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_qwen3_coder_output",
 ]
 
 # Pricing per million tokens (USD)
@@ -73,6 +74,14 @@ MODEL_PRICING = {
     "qwen/qwen3-coder": {
         "input_per_million": 0.22,
         "output_per_million": 0.95,
+    },
+    "devstral-small-latest": {
+        "input_per_million": 0.0,
+        "output_per_million": 0.0,
+    },
+    "deepseek/deepseek-v3.2": {
+        "input_per_million": 0.25,
+        "output_per_million": 0.38,
     },
 }
 FOCAL_BUCKET_ORDER = (
@@ -1074,7 +1083,8 @@ def main() -> None:
         }
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    output_file = OUTPUT_DIR / "compiled_results.json"
+    output_name = output_dir.name.replace("output", "eval") + ".json"
+    output_file = OUTPUT_DIR / output_name
     with output_file.open("w", encoding="utf-8") as handle:
         json.dump(json_output, handle, indent=2)
     print(f"\nJSON results written to: {output_file}")

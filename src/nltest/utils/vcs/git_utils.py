@@ -14,6 +14,7 @@ class GitUtilities:
         """Return True when the repo has any local changes."""
         repo_path = Path(repo_path)
         GitUtilities._ensure_git_repo(repo_path)
+        GitUtilities._clean_lock_files(repo_path)
         result = GitUtilities._run_git_command(
             ["git", "status", "--porcelain"], repo_path
         )
@@ -28,6 +29,7 @@ class GitUtilities:
         """
         repo_path = Path(repo_path)
         GitUtilities._ensure_git_repo(repo_path)
+        GitUtilities._clean_lock_files(repo_path)
         GitUtilities._run_git_command(["git", "reset", "--hard"], repo_path)
         GitUtilities._run_git_command(["git", "clean", "-fdx"], repo_path)
 
@@ -47,6 +49,40 @@ class GitUtilities:
                 continue
             RichLog.info(f"Resetting submodule at {submodule_path}")
             GitUtilities.reset_submodule(submodule_path)
+
+    @staticmethod
+    def _get_git_dir(repo_path: Path) -> Path | None:
+        """Resolve the actual .git directory for a repo or submodule."""
+        git_path = repo_path / ".git"
+        if not git_path.exists():
+            return None
+        if git_path.is_dir():
+            return git_path
+        # Submodules have a .git file pointing to the actual git directory
+        try:
+            content = git_path.read_text().strip()
+            if content.startswith("gitdir: "):
+                gitdir = Path(content[8:])
+                if not gitdir.is_absolute():
+                    gitdir = (repo_path / gitdir).resolve()
+                return gitdir
+        except (OSError, IOError):
+            pass
+        return None
+
+    @staticmethod
+    def _clean_lock_files(repo_path: Path) -> None:
+        """Remove stale git lock files left by crashed processes."""
+        git_dir = GitUtilities._get_git_dir(repo_path)
+        if git_dir is None:
+            return
+        lock_file = git_dir / "index.lock"
+        if lock_file.exists():
+            RichLog.warn(f"Removing stale git lock file: {lock_file}")
+            try:
+                lock_file.unlink()
+            except OSError as exc:
+                RichLog.warn(f"Failed to remove lock file: {exc}")
 
     @staticmethod
     def _is_git_repo(repo_path: Path) -> bool:

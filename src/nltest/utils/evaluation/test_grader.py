@@ -11,22 +11,22 @@ from hamster.code_analysis.focal_class_method.focal_class_method import (
 from hamster.code_analysis.model.models import (
     AssertionDetails,
     AssertionType,
-    CallAndAssertionSequenceDetails,
     CallableDetails,
+    CallAndAssertionSequenceDetails,
 )
 from hamster.code_analysis.test_statistics import (
     SetupAnalysisInfo,
     TestMethodAnalysisInfo,
 )
 
+from nltest.utils.analysis import CommonAnalysis
+from nltest.utils.coverage.individual_test_coverage import IndividualTestCoverage
 from nltest.utils.models import (
     NL2TestCoverageEval,
     NL2TestInput,
     NL2TestMetadata,
     NL2TestStructuralEval,
 )
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.coverage.individual_test_coverage import IndividualTestCoverage
 from nltest.utils.pretty.color_logger import RichLog
 
 
@@ -446,6 +446,12 @@ class TestGrader:
             return self._zero_structural_eval(), self._zero_coverage_eval()
 
         pred_class_name = nl2_metadata.qualified_test_class_name
+
+        # If the predicted class isn't in the symbol table (e.g., due to
+        # syntax errors or package/path mismatch), return zeros.
+        if not self.analysis.get_class(pred_class_name):
+            return self._zero_structural_eval(), self._zero_coverage_eval()
+
         # Prefer method signature from metadata when available. If that method
         # cannot be found in the analysis, fall back to the first discovered test
         # method, and if none exist, use the first declared method.

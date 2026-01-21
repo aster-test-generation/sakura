@@ -9,6 +9,7 @@ from .nl2test import (
     NL2TestInput,
     NL2TestMetadata,
     NL2TestStructuralEval,
+    OutOfBoxAgentEval,
     ToolLog,
 )
 
@@ -23,5 +24,6 @@ __all__ = [
     "NL2TestCoverageEval",
     "NL2TestMetadata",
     "NL2TestStructuralEval",
+    "OutOfBoxAgentEval",
     "ToolLog",
 ]

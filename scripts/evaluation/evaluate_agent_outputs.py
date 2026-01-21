@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
+import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
@@ -18,26 +20,33 @@ from nltest.utils.evaluation import TestGrader
 from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from nltest.utils.models import (
     NL2TestCoverageEval,
-    NL2TestEval,
     NL2TestInput,
     NL2TestMetadata,
     NL2TestStructuralEval,
+    OutOfBoxAgentEval,
 )
 from nltest.utils.pretty.color_logger import RichLog
 from nltest.utils.utilities import test2nl_entry_to_nl2test_input
 from nltest.utils.vcs.git_utils import GitUtilities
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "agent_outputs"
+AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output"
 TEST2NL_DIR = ROOT_DIR / "resources" / "test2nl" / "filtered_dataset"
 TEST2NL_FILE_NAME = "test2nl.csv"
 PROJECTS_DIR = ROOT_DIR / "resources" / "datasets"
 TEMP_ANALYSIS_DIR = ROOT_DIR / "resources" / "temp_analysis"
-OUTPUT_DIR = ROOT_DIR / "resources" / "agent_outputs" / "evaluation"
+OUTPUT_DIR = (
+    ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation"
+)
 OUTPUT_FILE_NAME = "nl2test_evaluation_results.json"
 RUN_DIR_NAME = "run_001"
 GENERATED_TESTS_DIR_NAME = "generated_tests"
 METADATA_FILE_NAME = "metadata.json"
+
+MAX_ENTRIES = 0  # 0 for all entries
+NUM_PROJ_PARALLEL = 20  # Maximum number of projects to process concurrently
+TARGET_PROJECTS: list[str] = []  # Empty for all projects, or specify e.g. ["commons-io", "commons-lang"]
+SKIP_DIRS = {"evaluation"}  # Directories to skip when iterating agent outputs
 
 
 @dataclass(frozen=True)
@@ -79,8 +88,13 @@ def index_test2nl_entries(
     return {entry.id: entry for entry in entries}
 
 
-def build_empty_eval(nl2_input: NL2TestInput) -> NL2TestEval:
-    return NL2TestEval(
+def build_empty_eval(
+    nl2_input: NL2TestInput,
+    *,
+    failed_test_file_generation: bool = False,
+    failed_code_generation: bool = False,
+) -> OutOfBoxAgentEval:
+    return OutOfBoxAgentEval(
         compiles=False,
         nl2test_input=nl2_input,
         nl2test_metadata=NL2TestMetadata(qualified_test_class_name="", code=""),
@@ -91,6 +105,8 @@ def build_empty_eval(nl2_input: NL2TestInput) -> NL2TestEval:
         input_tokens=0,
         output_tokens=0,
         llm_calls=0,
+        failed_test_file_generation=failed_test_file_generation,
+        failed_code_generation=failed_code_generation,
     )
 
 
@@ -307,9 +323,62 @@ def matches_error_path(error_path: str, qualified_class_name: str) -> bool:
     return normalized.endswith(pred_simple_file)
 
 
+def extract_code_from_stdout(metadata: dict[str, Any]) -> str | None:
+    """Extract Java code from stdout response field if present.
+
+    Looks for a JSON object in stdout containing a "response" field with
+    a markdown code block.
+    """
+    import re
+
+    stdout = metadata.get("stdout")
+    if not isinstance(stdout, str) or not stdout.strip():
+        return None
+
+    response_match = re.search(r'"response"\s*:\s*"((?:[^"\\]|\\.)*)"', stdout)
+    if not response_match:
+        return None
+
+    response_raw = response_match.group(1)
+    response = response_raw.encode().decode("unicode_escape")
+
+    code_match = re.search(r"```(?:java)?\s*\n(.*?)```", response, re.DOTALL)
+    if not code_match:
+        return None
+
+    return code_match.group(1).strip()
+
+
+def parse_java_package_and_class(code: str) -> tuple[str, str] | None:
+    """Extract package name and class name from Java source code.
+
+    Returns (package_name, class_name) or None if parsing fails.
+    Package name may be empty string for default package.
+    """
+    import re
+
+    package_match = re.search(
+        r"^\s*package\s+([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)\s*;",
+        code,
+        re.MULTILINE,
+    )
+    package_name = package_match.group(1) if package_match else ""
+
+    class_match = re.search(
+        r"(?:public\s+)?(?:abstract\s+|final\s+)?(?:class|interface|enum|record)\s+"
+        r"([A-Za-z_]\w*)",
+        code,
+    )
+    if not class_match:
+        return None
+
+    class_name = class_match.group(1)
+    return package_name, class_name
+
+
 def evaluate_entry(
     context: ProjectContext, entry: Test2NLEntry, entry_dir: Path
-) -> NL2TestEval:
+) -> OutOfBoxAgentEval:
     nl2_input = test2nl_entry_to_nl2test_input(entry)
     result = build_empty_eval(nl2_input)
 
@@ -327,33 +396,59 @@ def evaluate_entry(
     result.output_tokens = output_tokens
 
     generated_file_entry = first_generated_file(metadata)
-    if not generated_file_entry:
-        RichLog.warn(f"No generated_files entry in metadata: {metadata_path}")
-        result.structured_eval = zero_structural_eval()
-        result.coverage_eval = zero_coverage_eval()
-        return result
+    generated_code: str | None = None
+    derived_qualified_name: str | None = None
+    code_from_stdout = False
 
-    generated_content = generated_file_entry.get("content")
-    generated_path = generated_file_entry.get("path") or generated_file_entry.get(
-        "absolute_path"
-    )
-    if generated_path is None and generated_content is None:
-        RichLog.warn(f"Generated test content is empty in {metadata_path}")
-        result.structured_eval = zero_structural_eval()
-        result.coverage_eval = zero_coverage_eval()
-        return result
-    if generated_path is None:
-        if not isinstance(generated_content, str) or not generated_content.strip():
+    if not generated_file_entry:
+        stdout_code = extract_code_from_stdout(metadata)
+        if stdout_code:
+            RichLog.info(
+                f"No generated_files entry, but found code in stdout: {metadata_path}"
+            )
+            result.failed_test_file_generation = True
+            generated_code = stdout_code
+            code_from_stdout = True
+
+            parsed = parse_java_package_and_class(stdout_code)
+            if parsed:
+                package_name, class_name = parsed
+                derived_qualified_name = (
+                    f"{package_name}.{class_name}" if package_name else class_name
+                )
+            else:
+                RichLog.warn("Could not parse package/class from stdout code")
+                result.structured_eval = zero_structural_eval()
+                result.coverage_eval = zero_coverage_eval()
+                return result
+        else:
+            RichLog.warn(f"No generated_files and no code in stdout: {metadata_path}")
+            result.failed_code_generation = True
+            result.structured_eval = zero_structural_eval()
+            result.coverage_eval = zero_coverage_eval()
+            return result
+    else:
+        generated_content = generated_file_entry.get("content")
+        generated_path = generated_file_entry.get("path") or generated_file_entry.get(
+            "absolute_path"
+        )
+        if generated_path is None and generated_content is None:
             RichLog.warn(f"Generated test content is empty in {metadata_path}")
             result.structured_eval = zero_structural_eval()
             result.coverage_eval = zero_coverage_eval()
             return result
+        if generated_path is None:
+            if not isinstance(generated_content, str) or not generated_content.strip():
+                RichLog.warn(f"Generated test content is empty in {metadata_path}")
+                result.structured_eval = zero_structural_eval()
+                result.coverage_eval = zero_coverage_eval()
+                return result
 
-    if not generated_tests_dir.is_dir():
-        RichLog.warn(f"Generated tests directory not found: {generated_tests_dir}")
-        result.structured_eval = zero_structural_eval()
-        result.coverage_eval = zero_coverage_eval()
-        return result
+        if not generated_tests_dir.is_dir():
+            RichLog.warn(f"Generated tests directory not found: {generated_tests_dir}")
+            result.structured_eval = zero_structural_eval()
+            result.coverage_eval = zero_coverage_eval()
+            return result
 
     ensure_clean_submodule(context.project_root)
 
@@ -362,28 +457,35 @@ def evaluate_entry(
         module_root, project_root=context.project_root
     )
 
-    generated_file_path = resolve_generated_test_path(
-        generated_tests_dir, metadata, context.project_root
-    )
-    if not generated_file_path:
-        RichLog.warn(f"No generated Java file found in {generated_tests_dir}")
-        result.structured_eval = zero_structural_eval()
-        result.coverage_eval = zero_coverage_eval()
-        return result
+    if not code_from_stdout:
+        generated_file_path = resolve_generated_test_path(
+            generated_tests_dir, metadata, context.project_root
+        )
+        if not generated_file_path:
+            RichLog.warn(f"No generated Java file found in {generated_tests_dir}")
+            result.structured_eval = zero_structural_eval()
+            result.coverage_eval = zero_coverage_eval()
+            return result
 
-    try:
-        generated_relative = generated_file_path.relative_to(generated_tests_dir)
-    except ValueError:
-        generated_relative = generated_file_path
+        try:
+            generated_relative = generated_file_path.relative_to(generated_tests_dir)
+        except ValueError:
+            generated_relative = generated_file_path
 
-    derived_qualified_name = derive_qualified_class_name(
-        generated_relative, test_base_dir, context.project_root
-    )
+        derived_qualified_name = derive_qualified_class_name(
+            generated_relative, test_base_dir, context.project_root
+        )
 
-    try:
-        generated_code = load_generated_code(generated_file_path, metadata)
-    except FileNotFoundError as exc:
-        RichLog.warn(f"{exc} ({generated_file_path})")
+        try:
+            generated_code = load_generated_code(generated_file_path, metadata)
+        except FileNotFoundError as exc:
+            RichLog.warn(f"{exc} ({generated_file_path})")
+            result.structured_eval = zero_structural_eval()
+            result.coverage_eval = zero_coverage_eval()
+            return result
+
+    if derived_qualified_name is None or generated_code is None:
+        RichLog.warn("Internal error: qualified name or code not set")
         result.structured_eval = zero_structural_eval()
         result.coverage_eval = zero_coverage_eval()
         return result
@@ -439,10 +541,6 @@ def evaluate_entry(
             result.nl2test_metadata.code = saved_code
         except FileNotFoundError:
             pass
-
-        if not result.nl2test_metadata.code.strip():
-            result.structured_eval = zero_structural_eval()
-            result.coverage_eval = zero_coverage_eval()
     finally:
         if saved_qualified_name:
             try:
@@ -457,9 +555,12 @@ def evaluate_entry(
 
 
 def collect_project_results(
-    context: ProjectContext, entries: dict[int, Test2NLEntry], project_dir: Path
-) -> list[NL2TestEval]:
-    results: list[NL2TestEval] = []
+    context: ProjectContext,
+    entries: dict[int, Test2NLEntry],
+    project_dir: Path,
+    entry_ids_to_process: list[int] | None = None,
+) -> list[OutOfBoxAgentEval]:
+    results: list[OutOfBoxAgentEval] = []
     entry_dirs = [path for path in project_dir.iterdir() if path.is_dir()]
 
     for entry_dir in sorted(entry_dirs, key=lambda path: path.name):
@@ -469,6 +570,9 @@ def collect_project_results(
             RichLog.warn(
                 f"Skipping non-numeric entry directory {entry_dir} in {project_dir}."
             )
+            continue
+
+        if entry_ids_to_process is not None and entry_id not in entry_ids_to_process:
             continue
 
         entry = entries.get(entry_id)
@@ -484,7 +588,51 @@ def collect_project_results(
     return results
 
 
-def write_results(project_name: str, results: list[NL2TestEval]) -> None:
+@ray.remote
+def evaluate_project_remote(
+    project_name: str,
+    entry_lookup: dict[int, dict[str, Any]],
+    entry_ids_to_process: list[int],
+) -> dict[str, Any]:
+    """Ray remote function to evaluate a single project's entries sequentially."""
+    entries = {
+        entry_id: Test2NLEntry(
+            id=data["id"],
+            description=data["description"],
+            project_name=data["project_name"],
+            qualified_class_name=data["qualified_class_name"],
+            method_signature=data["method_signature"],
+            abstraction_level=(
+                AbstractionLevel(data["abstraction_level"])
+                if data.get("abstraction_level")
+                else None
+            ),
+            is_bdd=data.get("is_bdd", False),
+        )
+        for entry_id, data in entry_lookup.items()
+    }
+
+    project_dir = AGENT_OUTPUT_DIR / project_name
+    context = build_project_context(project_name)
+    if not context:
+        return {
+            "project_name": project_name,
+            "success": False,
+            "error": f"Could not build project context for {project_name}",
+            "results": [],
+        }
+
+    results = collect_project_results(
+        context, entries, project_dir, entry_ids_to_process
+    )
+    return {
+        "project_name": project_name,
+        "success": True,
+        "results": [r.model_dump() for r in results],
+    }
+
+
+def write_results(project_name: str, results: list[OutOfBoxAgentEval]) -> None:
     output_dir = OUTPUT_DIR / project_name
     output_dir.mkdir(parents=True, exist_ok=True)
     output_file = output_dir / OUTPUT_FILE_NAME
@@ -500,20 +648,146 @@ def main() -> None:
 
     entries = load_test2nl_entries(test2nl_file)
     entry_lookup = index_test2nl_entries(entries)
+    entry_lookup_serializable = {
+        entry_id: {
+            "id": entry.id,
+            "description": entry.description,
+            "project_name": entry.project_name,
+            "qualified_class_name": entry.qualified_class_name,
+            "method_signature": entry.method_signature,
+            "abstraction_level": (
+                entry.abstraction_level.value if entry.abstraction_level else None
+            ),
+            "is_bdd": entry.is_bdd,
+        }
+        for entry_id, entry in entry_lookup.items()
+    }
 
     if not AGENT_OUTPUT_DIR.is_dir():
         raise FileNotFoundError(f"Agent output directory not found: {AGENT_OUTPUT_DIR}")
 
-    project_dirs = [path for path in AGENT_OUTPUT_DIR.iterdir() if path.is_dir()]
-    for project_dir in sorted(project_dirs, key=lambda path: path.name):
-        context = build_project_context(project_dir.name)
-        if not context:
-            continue
-        results = collect_project_results(context, entry_lookup, project_dir)
-        if results:
-            write_results(context.project_name, results)
-        else:
-            RichLog.warn(f"No evaluations produced for {context.project_name}.")
+    project_dirs = [
+        path
+        for path in AGENT_OUTPUT_DIR.iterdir()
+        if path.is_dir() and path.name not in SKIP_DIRS
+    ]
+    if TARGET_PROJECTS:
+        target_set = set(TARGET_PROJECTS)
+        project_dirs = [p for p in project_dirs if p.name in target_set]
+        RichLog.info(
+            f"TARGET_PROJECTS: processing {len(project_dirs)} projects: {TARGET_PROJECTS}"
+        )
+    project_dirs = sorted(project_dirs, key=lambda path: path.name)
+
+    # Build per-project entry ID lists from agent output directories
+    entries_by_project: dict[str, list[int]] = {}
+    for project_dir in project_dirs:
+        project_name = project_dir.name
+        entry_ids: list[int] = []
+        for entry_dir in project_dir.iterdir():
+            if not entry_dir.is_dir():
+                continue
+            try:
+                entry_id = int(entry_dir.name)
+                if entry_id in entry_lookup:
+                    entry_ids.append(entry_id)
+            except ValueError:
+                continue
+        if entry_ids:
+            entries_by_project[project_name] = sorted(entry_ids)
+
+    # Apply MAX_ENTRIES limit across all projects
+    if MAX_ENTRIES > 0:
+        total_assigned = 0
+        limited_entries_by_project: dict[str, list[int]] = {}
+        for project_name, entry_ids in entries_by_project.items():
+            if total_assigned >= MAX_ENTRIES:
+                break
+            remaining = MAX_ENTRIES - total_assigned
+            limited_ids = entry_ids[:remaining]
+            if limited_ids:
+                limited_entries_by_project[project_name] = limited_ids
+                total_assigned += len(limited_ids)
+        entries_by_project = limited_entries_by_project
+        RichLog.info(
+            f"MAX_ENTRIES={MAX_ENTRIES}: processing {total_assigned} entries across {len(entries_by_project)} projects"
+        )
+
+    if not entries_by_project:
+        RichLog.warn("No entries to process. Exiting.")
+        return
+
+    # Initialize Ray
+    try:
+        if not ray.is_initialized():
+            ray.init()
+    except Exception as exc:
+        raise RuntimeError(f"Failed to initialize Ray: {exc}") from exc
+
+    # Project-level parallel scheduling
+    pending_projects = deque(entries_by_project.keys())
+    inflight_futures: set[ray.ObjectRef] = set()
+    future_to_project: dict[ray.ObjectRef, str] = {}
+
+    def launch_projects_up_to_limit() -> None:
+        while len(inflight_futures) < NUM_PROJ_PARALLEL and pending_projects:
+            project_name = pending_projects.popleft()
+            entry_ids = entries_by_project[project_name]
+            RichLog.info(
+                f"Starting evaluation for project: {project_name} ({len(entry_ids)} entries)"
+            )
+            fut = evaluate_project_remote.remote(
+                project_name, entry_lookup_serializable, entry_ids
+            )
+            inflight_futures.add(fut)
+            future_to_project[fut] = project_name
+
+    launch_projects_up_to_limit()
+
+    # Main scheduling loop
+    while inflight_futures or pending_projects:
+        if not inflight_futures:
+            launch_projects_up_to_limit()
+            if not inflight_futures and not pending_projects:
+                break
+
+        ready_refs, _ = ray.wait(list(inflight_futures), num_returns=1)
+        for ref in ready_refs:
+            project_name = future_to_project.pop(ref, None)
+            inflight_futures.discard(ref)
+            if project_name is None:
+                continue
+
+            try:
+                result: dict[str, Any] = ray.get(ref)
+            except Exception as exc:
+                RichLog.error(f"[{project_name}] Evaluation failed: {exc}")
+                launch_projects_up_to_limit()
+                continue
+
+            if not result.get("success"):
+                RichLog.warn(f"[{project_name}] {result.get('error', 'Unknown error')}")
+                launch_projects_up_to_limit()
+                continue
+
+            results_data = result.get("results", [])
+            if results_data:
+                results = [OutOfBoxAgentEval(**r) for r in results_data]
+                write_results(project_name, results)
+                RichLog.info(
+                    f"[{project_name}] Completed evaluation: {len(results)} results"
+                )
+            else:
+                RichLog.warn(f"No evaluations produced for {project_name}.")
+
+            launch_projects_up_to_limit()
+
+    # Shutdown Ray
+    try:
+        if ray.is_initialized():
+            ray.shutdown()
+    except Exception:
+        pass
 
 
 if __name__ == "__main__":

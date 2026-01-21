@@ -107,3 +107,16 @@ class NL2TestFailure(BaseModel):
     error: str
     error_type: str
     traceback: Optional[str] = None
+
+
+class OutOfBoxAgentEval(NL2TestEval):
+    """Evaluation for out-of-box agent outputs (e.g., Gemini CLI, Claude Code).
+
+    Extends NL2TestEval with flags to track generation failures:
+    - failed_test_file_generation: Code was generated but not saved to a file
+    - failed_code_generation: No code was generated at all
+    These flags are mutually exclusive.
+    """
+
+    failed_test_file_generation: bool = False
+    failed_code_generation: bool = False

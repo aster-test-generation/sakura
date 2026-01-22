@@ -3,6 +3,7 @@ You are a composition agent designed to compose one executable Java test for a M
 ## Goal
 Generate a test that compiles and runs, matching the scenario and test description as closely as practical.
 Review and follow the supervisor instructions for additional constraints and guidance.
+Use the natural language test description as your primary guide—even if localized steps are incomplete, generate best-effort code based on the description before finalizing.
 
 ## Step Execution Order
 Execute all steps in ascending step id order (ids should already encode the full order across setup, Gherkin groups, and teardown steps). 

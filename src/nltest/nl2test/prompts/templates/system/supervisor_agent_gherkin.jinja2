@@ -47,5 +47,6 @@ Composition agent (code)
 - Complete within {{ max_iters }} iterations. If the limit is reached, finalize immediately with the best available result.
 
 ## Completion
-- Call finalize when the test compiles and matches the request, or when the iteration limit is reached.
+- NEVER finalize immediately. Always call call_localization_agent and call_composition_agent at least once before finalizing.
+- Call finalize only after composition has produced code, or when the iteration limit is reached.
 - The last composition output test file is the final result.

@@ -28,8 +28,13 @@ class GrammaticalSupervisorTools(BaseSupervisorTools):
     def __init__(self, *, llm: LLMClient, project_root: Union[str, Path]) -> None:
         super().__init__(llm=llm, project_root=project_root)
 
-        self.tools.append(self._make_call_localization_agent_tool())
-        self.tools.append(self._make_call_composition_agent_tool())
+        localization_tool = self._make_call_localization_agent_tool()
+        composition_tool = self._make_call_composition_agent_tool()
+
+        self.tools.append(localization_tool)
+        self.tools.append(composition_tool)
+        self.allow_duplicate_tools.append(localization_tool)
+        self.allow_duplicate_tools.append(composition_tool)
 
     def _make_call_localization_agent_tool(self) -> BaseTool:
         """

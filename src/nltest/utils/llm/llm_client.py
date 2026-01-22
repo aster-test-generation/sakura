@@ -127,21 +127,23 @@ class LLMClient:
         except ConfigurationException:
             reasoning_enabled = False
 
-        if reasoning_enabled:
-            try:
-                reasoning_effort = config.get("reasoning", "effort")
-            except ConfigurationException:
-                reasoning_effort = "low"
-            try:
-                reasoning_exclude = config.get("reasoning", "exclude")
-            except ConfigurationException:
-                reasoning_exclude = False
-            extra_body["reasoning"] = {
-                "effort": reasoning_effort,
-                "exclude": reasoning_exclude,
-            }
-        else:
-            extra_body["reasoning"] = {"effort": "none"}
+        # The reasoning parameter format is OpenRouter-specific
+        if provider == Provider.OPENROUTER:
+            if reasoning_enabled:
+                try:
+                    reasoning_effort = config.get("reasoning", "effort")
+                except ConfigurationException:
+                    reasoning_effort = "low"
+                try:
+                    reasoning_exclude = config.get("reasoning", "exclude")
+                except ConfigurationException:
+                    reasoning_exclude = False
+                extra_body["reasoning"] = {
+                    "effort": reasoning_effort,
+                    "exclude": reasoning_exclude,
+                }
+            else:
+                extra_body["reasoning"] = {"effort": "none"}
 
         if provider == Provider.OPENROUTER:
             default_headers = {} if default_headers is None else default_headers

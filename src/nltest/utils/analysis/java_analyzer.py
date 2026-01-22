@@ -154,6 +154,17 @@ class CommonAnalysis:
         except Exception as e:
             raise _map_file_exception(qualified_class_name, e)
 
+    def get_ncloc(self, declaration: str, body: str) -> int:
+        """
+        Get the number of non-comment lines of code.
+        Args:
+            declaration: The declaration part of the code.
+            body: The body part of the code.
+        Returns:
+            int: Number of non-comment lines.
+        """
+        return self._hamster.get_ncloc(declaration, body)
+
     def get_imports_for_class(self, qualified_class_name: str) -> List[str]:
         if not self.analysis.get_class(qualified_class_name):
             return []

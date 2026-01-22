@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Tuple
 
@@ -14,11 +12,18 @@ from pydantic import ValidationError
 from nltest.dataset_creation.model import NL2TestDataset, Test
 from nltest.nl2test.models.decomposition import LocalizationEval
 from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput
+from nltest.utils.statistics import (
+    DistributionSummary,
+    build_distributions,
+    distributions_to_dict,
+)
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 # EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_flash_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_200_output" / "evaluation"
-EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_devstral_output"
+EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation"
+# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_pro_backup_output_eval"
+# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_gemini_flash_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_pro_incomplete_output"
 # EVAL_DIR = ROOT_DIR / "resources" / "output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
@@ -27,8 +32,8 @@ BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_test
 BUCKETED_DATASET_FILE = "nl2test.json"
 
 # PRICING_MODEL = "minimax/minimax-m2.1"
-PRICING_MODEL = "devstral-small-latest"
-# PRICING_MODEL = "gemini-2.5-flash"
+# PRICING_MODEL = "devstral-small-latest"
+PRICING_MODEL = "gemini-2.5-flash"
 # PRICING_MODEL = "qwen/qwen3-coder"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
@@ -41,13 +46,16 @@ ONLY_SHARED_ENTRIES = (
     True  # Only include entries present in all DIRS_TO_INCLUDE (allows non-compiling)
 )
 DIRS_TO_INCLUDE: List[Path] = [
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_devstral_output",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_deepseek_v3.2_output",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_gemini_flash_output",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_gemini_pro_low_output",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_mimo_v2_flash_output",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_minimax_output",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_qwen3_coder_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_devstral_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_deepseek_v3.2_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_gemini_flash_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_gemini_pro_low_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_mimo_v2_flash_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_minimax_output",
+    # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_qwen3_coder_output"
+    ROOT_DIR / "resources" / "outputs" / "gemini_cli_pro_backup_output_eval",
+    ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation",
+    ROOT_DIR / "resources" / "outputs" / "nl2test_gemini_flash_output",
 ]
 
 # Pricing per million tokens (USD)
@@ -126,19 +134,6 @@ ALL_METRICS = (
 )
 
 MetricValues = Dict[str, List[float]]
-
-
-@dataclass(frozen=True)
-class DistributionSummary:
-    mean: float
-    p25: float
-    p50: float
-    p75: float
-    p90: float
-    max: float
-    count: int
-
-
 MetricDistributions = Dict[str, DistributionSummary]
 ProblemEntry = Tuple[int, str, str, str, str]
 
@@ -449,65 +444,6 @@ def append_metrics_pair(
 ) -> None:
     append_metrics(overall_metrics, source, metric_names)
     append_metrics(per_level_metrics, source, metric_names)
-
-
-def percentile(sorted_values: List[float], percentile_value: float) -> float:
-    if not sorted_values:
-        return 0.0
-    if len(sorted_values) == 1:
-        return sorted_values[0]
-
-    position = (percentile_value / 100) * (len(sorted_values) - 1)
-    lower_index = int(math.floor(position))
-    upper_index = int(math.ceil(position))
-    if lower_index == upper_index:
-        return sorted_values[lower_index]
-
-    lower_value = sorted_values[lower_index]
-    upper_value = sorted_values[upper_index]
-    weight = position - lower_index
-    return lower_value + weight * (upper_value - lower_value)
-
-
-def summarize_distribution(values: List[float]) -> DistributionSummary:
-    if not values:
-        return DistributionSummary(
-            mean=0.0, p25=0.0, p50=0.0, p75=0.0, p90=0.0, max=0.0, count=0
-        )
-
-    sorted_values = sorted(values)
-    mean_value = sum(values) / len(values)
-    return DistributionSummary(
-        mean=mean_value,
-        p25=percentile(sorted_values, 25),
-        p50=percentile(sorted_values, 50),
-        p75=percentile(sorted_values, 75),
-        p90=percentile(sorted_values, 90),
-        max=sorted_values[-1],
-        count=len(values),
-    )
-
-
-def build_distributions(metrics: Mapping[str, List[float]]) -> MetricDistributions:
-    return {name: summarize_distribution(values) for name, values in metrics.items()}
-
-
-def distribution_to_dict(summary: DistributionSummary) -> Dict[str, Any]:
-    return {
-        "mean": summary.mean,
-        "p25": summary.p25,
-        "p50": summary.p50,
-        "p75": summary.p75,
-        "p90": summary.p90,
-        "max": summary.max,
-        "count": summary.count,
-    }
-
-
-def distributions_to_dict(distributions: MetricDistributions) -> Dict[str, Any]:
-    return {
-        name: distribution_to_dict(summary) for name, summary in distributions.items()
-    }
 
 
 def print_main_header(title: str) -> None:

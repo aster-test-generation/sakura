@@ -55,7 +55,6 @@ class CandidateMethod(BaseModel):
         str  # The class that inherits/contains the method (class under analysis)
     )
     method_signature: str
-    return_type: str
 
 
 def _is_valid_candidate(candidate: CandidateMethod | None) -> bool:
@@ -71,12 +70,11 @@ def _is_valid_candidate(candidate: CandidateMethod | None) -> bool:
     )
 
 
-def _candidate_key(candidate: CandidateMethod) -> Tuple[str, str, str, str]:
+def _candidate_key(candidate: CandidateMethod) -> Tuple[str, str, str]:
     return (
         (candidate.declaring_class_name or "").strip(),
         (candidate.containing_class_name or "").strip(),
         (candidate.method_signature or "").strip(),
-        (candidate.return_type or "").strip(),
     )
 
 
@@ -89,7 +87,7 @@ def _normalize_candidates(
         return [], best_candidate
 
     ordered: List[CandidateMethod] = []
-    seen: Set[Tuple[str, str, str, str]] = set()
+    seen: Set[Tuple[str, str, str]] = set()
 
     def _add(candidate: CandidateMethod | None) -> None:
         if not _is_valid_candidate(candidate):
@@ -225,7 +223,6 @@ class AtomicBlock(GrammaticalBlock):
             declaring_class_name="",
             containing_class_name="",
             method_signature="",
-            return_type="",
         )
     )
     notes: str
@@ -257,7 +254,6 @@ class AtomicBlock(GrammaticalBlock):
                 declaring_class_name="",
                 containing_class_name="",
                 method_signature="",
-                return_type="",
             )
         )
         return cls(

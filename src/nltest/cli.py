@@ -74,7 +74,7 @@ def _load_nl2_inputs_by_project_from_csv(
     if NL2TEST_DEBUG:
         debug_csv_path = (
             Path(__file__).parent.parent.parent
-            / "resources/test2nl/filtered_dataset/spanning_subset_40.csv"
+            / "resources/test2nl/filtered_dataset/spanning_subset_20.csv"
         )
         if not debug_csv_path.exists():
             raise Exception(f"Debug CSV file not found: {debug_csv_path}")
@@ -752,13 +752,13 @@ def run_nl2test(
             show_default=True,
         ),
     ] = False,
-    enable_reasoning: Annotated[
+    configure_reasoning: Annotated[
         bool,
         typer.Option(
-            help="Enable extended reasoning for LLM calls (for reasoning models like MiniMax M2.1).",
+            help="Configure reasoning parameters for OpenRouter provider (only applies when using OpenRouter).",
             show_default=True,
         ),
-    ] = True,
+    ] = False,
     reasoning_effort: Annotated[
         str,
         typer.Option(
@@ -950,7 +950,7 @@ def run_nl2test(
                 debug=bool(debug),
                 log_file_name=actor_log_file_name,
                 exclude_test_dirs=exclude_test_dirs,
-                reasoning_enabled=enable_reasoning,
+                configure_reasoning=configure_reasoning,
                 reasoning_effort=reasoning_effort,
                 exclude_reasoning=exclude_reasoning,
                 max_tokens=max_tokens,

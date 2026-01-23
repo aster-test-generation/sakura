@@ -52,7 +52,9 @@ def _is_retriable_error(exc: BaseException) -> bool:
     if "rate limit" in msg or "too many requests" in msg or "overloaded" in msg:
         return True
     # Handle empty structured output responses (common with some models via OpenRouter)
-    if isinstance(exc, ValueError) and "does not have a 'parsed' field nor a 'refusal' field" in str(exc):
+    if isinstance(
+        exc, ValueError
+    ) and "does not have a 'parsed' field nor a 'refusal' field" in str(exc):
         return True
     return False
 
@@ -122,28 +124,26 @@ class LLMClient:
         # Extract extra_body from model_kwargs if present (should be a direct kwarg)
         extra_body: dict[str, Any] = model_kwargs.pop("extra_body", {})
 
+        # The reasoning parameter is OpenRouter-specific and should only be sent
+        # when explicitly configured (configure_reasoning=True)
         try:
-            reasoning_enabled = config.get("reasoning", "enabled")
+            configure_reasoning = config.get("reasoning", "configure")
         except ConfigurationException:
-            reasoning_enabled = False
+            configure_reasoning = False
 
-        # The reasoning parameter format is OpenRouter-specific
-        if provider == Provider.OPENROUTER:
-            if reasoning_enabled:
-                try:
-                    reasoning_effort = config.get("reasoning", "effort")
-                except ConfigurationException:
-                    reasoning_effort = "low"
-                try:
-                    reasoning_exclude = config.get("reasoning", "exclude")
-                except ConfigurationException:
-                    reasoning_exclude = False
-                extra_body["reasoning"] = {
-                    "effort": reasoning_effort,
-                    "exclude": reasoning_exclude,
-                }
-            else:
-                extra_body["reasoning"] = {"effort": "none"}
+        if provider == Provider.OPENROUTER and configure_reasoning:
+            try:
+                reasoning_effort = config.get("reasoning", "effort")
+            except ConfigurationException:
+                reasoning_effort = "low"
+            try:
+                reasoning_exclude = config.get("reasoning", "exclude")
+            except ConfigurationException:
+                reasoning_exclude = False
+            extra_body["reasoning"] = {
+                "effort": reasoning_effort,
+                "exclude": reasoning_exclude,
+            }
 
         if provider == Provider.OPENROUTER:
             default_headers = {} if default_headers is None else default_headers

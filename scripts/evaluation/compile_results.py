@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from nltest.dataset_creation.model import NL2TestDataset, Test
 from nltest.nl2test.models.decomposition import LocalizationEval
-from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput
+from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput, OutOfBoxAgentEval
 from nltest.utils.statistics import (
     DistributionSummary,
     build_distributions,
@@ -317,7 +317,7 @@ def sort_focal_class_counts(counts: Iterable[str]) -> List[str]:
     )
 
 
-def load_eval_file(eval_file: Path) -> List[NL2TestEval]:
+def load_eval_file(eval_file: Path) -> List[OutOfBoxAgentEval]:
     try:
         with eval_file.open("r", encoding="utf-8") as handle:
             data = json.load(handle)
@@ -329,10 +329,10 @@ def load_eval_file(eval_file: Path) -> List[NL2TestEval]:
         print(f"Skipping {eval_file}: expected a list of entries.")
         return []
 
-    results: List[NL2TestEval] = []
+    results: List[OutOfBoxAgentEval] = []
     for index, item in enumerate(data):
         try:
-            results.append(NL2TestEval.model_validate(item))
+            results.append(OutOfBoxAgentEval.model_validate(item))
         except ValidationError:
             print(f"Skipping entry {index} in {eval_file} due to validation error.")
     return results
@@ -575,6 +575,8 @@ def main() -> None:
     missing_structured = 0
     missing_coverage = 0
     missing_localization = 0
+    failed_code_generation_count = 0
+    failed_test_file_generation_count = 0
 
     bucketed_datasets: Dict[str, NL2TestDataset | None] = {}
     bucket_test_maps: Dict[str, BucketTestMap] = {}
@@ -606,6 +608,15 @@ def main() -> None:
                 missing_coverage += 1
             if not has_localization:
                 missing_localization += 1
+
+            code_is_empty = (
+                not entry.nl2test_metadata.code
+                or not entry.nl2test_metadata.code.strip()
+            )
+            if entry.failed_code_generation or code_is_empty:
+                failed_code_generation_count += 1
+            if entry.failed_test_file_generation:
+                failed_test_file_generation_count += 1
 
             abstraction_level = normalize_abstraction_level(
                 entry.nl2test_input.abstraction_level
@@ -776,6 +787,8 @@ def main() -> None:
     print(f"Missing structured:  {missing_structured}")
     print(f"Missing coverage:    {missing_coverage}")
     print(f"Missing localization: {missing_localization}")
+    print(f"Failed code generation:      {failed_code_generation_count}")
+    print(f"Failed test file generation: {failed_test_file_generation_count}")
     print(f"Non-compiling IDs:   {len(non_compiling_ids)}")
     if non_compiling_ids:
         print(f"  IDs: {non_compiling_ids}")
@@ -943,6 +956,8 @@ def main() -> None:
             "missing_structured": missing_structured,
             "missing_coverage": missing_coverage,
             "missing_localization": missing_localization,
+            "failed_code_generation": failed_code_generation_count,
+            "failed_test_file_generation": failed_test_file_generation_count,
             "non_compiling_ids": non_compiling_ids,
             "ignore_if_not_compile": IGNORE_IF_NOT_COMPILE,
             "only_shared_entries": ONLY_SHARED_ENTRIES,

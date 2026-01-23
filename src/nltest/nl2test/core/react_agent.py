@@ -498,9 +498,23 @@ class ReActAgent:
 
         # Nudge the model to call a tool when it returns empty tool calls
         def nudge_model(state: AgentState) -> AgentState:
+            # Find the last AIMessage to log what the model said without calling tools
+            last_ai: Optional[AIMessage] = None
+            for msg in reversed(state.messages):
+                if isinstance(msg, AIMessage):
+                    last_ai = msg
+                    break
+            ai_content = ""
+            if last_ai and last_ai.content:
+                ai_content = (
+                    last_ai.content[:500] + "..."
+                    if len(last_ai.content) > 500
+                    else last_ai.content
+                )
             RichLog.debug(
                 f"[ReActAgent] nudge_model: prompting model to call a tool "
-                f"(retry {state.empty_response_retries}, iteration={state.iterations})"
+                f"(retry {state.empty_response_retries}, iteration={state.iterations})\n"
+                f"  AIMessage content (no tool calls): {ai_content!r}"
             )
             nudge_message = HumanMessage(
                 content=(
@@ -653,7 +667,8 @@ class ReActAgent:
 
             effective.messages.append(HumanMessage(content=input_msg))
 
-        min_recursion_limit = 3 * self.max_iters
+        # Multiplier accounts for potential nudge cycles (call_model -> nudge -> call_model -> tools)
+        min_recursion_limit = 5 * self.max_iters
         if config is None:
             final_config: Dict[str, Any] = {
                 "configurable": {"thread_id": "default"},

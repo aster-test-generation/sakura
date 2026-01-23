@@ -39,6 +39,7 @@ class ReActAgent:
         strict_finalize: bool = True,
         use_checkpointer: bool = True,
         max_force_end_attempts: int = 3,
+        max_empty_response_retries: int = 2,
     ) -> None:
         self.llm: LLMClient = llm
         self.tools = tools
@@ -49,6 +50,7 @@ class ReActAgent:
         self.strict_finalize = strict_finalize
         self.use_checkpointer = use_checkpointer
         self.max_force_end_attempts = max_force_end_attempts
+        self.max_empty_response_retries = max_empty_response_retries
 
         self._allow_duplicate_tool_names = {t.name for t in self.allow_duplicate_tools}
         self.tool_map: Dict[str, BaseTool] = {t.name: t for t in tools}
@@ -387,6 +389,8 @@ class ReActAgent:
                 f"[ReActAgent] call_tools: iteration={state.iterations}, "
                 f"tools={tool_names}"
             )
+            # Reset empty response retry counter since we have tool calls
+            state.empty_response_retries = 0
             skipped_tool_calls: List[ToolCall] = []
             if not self.allow_parallelize and len(tool_calls) > 1:
                 skipped_tool_calls = tool_calls[1:]
@@ -492,6 +496,21 @@ class ReActAgent:
             state.messages.extend(tool_msgs)
             return state
 
+        # Nudge the model to call a tool when it returns empty tool calls
+        def nudge_model(state: AgentState) -> AgentState:
+            RichLog.debug(
+                f"[ReActAgent] nudge_model: prompting model to call a tool "
+                f"(retry {state.empty_response_retries}, iteration={state.iterations})"
+            )
+            nudge_message = HumanMessage(
+                content=(
+                    "You must call a tool to proceed. If you have completed your task, "
+                    "call the finalize tool. Otherwise, call an appropriate tool to continue."
+                )
+            )
+            state.messages.append(nudge_message)
+            return state
+
         # Force the model to end if remaining iterations is 0
         def force_end(state: AgentState) -> AgentState:
             RichLog.debug(
@@ -539,11 +558,21 @@ class ReActAgent:
                 )
                 return "use_tools"
 
-            # No tool calls: enforce finalize when required and guard iteration limit
+            # No tool calls: check if we should retry before forcing end
             if self.strict_finalize and not state.finalize_called:
+                # Give the model another chance if we haven't exceeded retry limit
+                if state.empty_response_retries < self.max_empty_response_retries:
+                    state.empty_response_retries += 1
+                    RichLog.debug(
+                        f"[ReActAgent] should_continue_after_llm: 'nudge' "
+                        f"(no tool calls, retry {state.empty_response_retries}/"
+                        f"{self.max_empty_response_retries}, iteration={state.iterations})"
+                    )
+                    return "nudge"
                 RichLog.debug(
                     f"[ReActAgent] should_continue_after_llm: 'force_end' "
                     f"(strict_finalize=True, finalize_called=False, "
+                    f"retries exhausted={state.empty_response_retries}, "
                     f"iteration={state.iterations})"
                 )
                 return "force_end"
@@ -564,6 +593,7 @@ class ReActAgent:
         # Assemble graph: define all nodes and edges together for readability
         workflow.add_node("call_model", call_model)
         workflow.add_node("call_tools", call_tools)
+        workflow.add_node("nudge_model", nudge_model)
         workflow.add_node("force_end", force_end)
 
         workflow.set_entry_point("call_model")
@@ -572,10 +602,12 @@ class ReActAgent:
             should_continue_after_llm,
             {
                 "use_tools": "call_tools",
+                "nudge": "nudge_model",
                 "force_end": "force_end",
                 "end": END,
             },
         )
+        workflow.add_edge("nudge_model", "call_model")
         workflow.add_edge("force_end", END)
         workflow.add_conditional_edges(
             "call_tools",

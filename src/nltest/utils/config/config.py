@@ -33,7 +33,7 @@ def init_config(
     can_parallel_tool: bool = True,
     reuse_config: bool = False,
     max_tokens: int = 16384,
-    reasoning_enabled: bool = True,
+    configure_reasoning: bool = False,
     reasoning_effort: str = "medium",
     exclude_reasoning: bool = True,
 ) -> "Config":
@@ -63,7 +63,7 @@ def init_config(
     config.set("llm", "structured_temp", structured_temp)
     config.set("llm", "max_tokens", max_tokens)
 
-    config.set("reasoning", "enabled", reasoning_enabled)
+    config.set("reasoning", "configure", configure_reasoning)
     config.set("reasoning", "effort", reasoning_effort)
     config.set("reasoning", "exclude", exclude_reasoning)
 

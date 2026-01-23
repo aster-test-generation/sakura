@@ -19,15 +19,15 @@ CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 # CLI arguments
 MAX_ENTRIES = 1
 # Note: 0 = unlimited
-DEBUG = False
+DEBUG = True
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "google/gemini-2.5-pro"
+LLM_MODEL = "devstral-small-latest"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
-    "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
+    "mistral"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
 )
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
@@ -44,14 +44,14 @@ DECOMPOSITION_MODE = "gherkin"  # Only supporting "gherkin" atm.
 # Parallel tool call behavior for the LLM
 CAN_PARALLEL_TOOL_CALL: bool = True
 
-# Config reasoning abilities
-REASONING_ENABLED: bool = True
+# Config reasoning abilities (only applies when using OpenRouter provider)
+CONFIGURE_REASONING: bool = False
 REASONING_EFFORT: str = "minimal"
-EXCLUDE_REASONING: bool = True
+EXCLUDE_REASONING: bool = False
 
 # Maximum tokens for LLM completion output.
 # Default: 16384. Use 32768 or 65536 for extensive reasoning models like MiniMax M2.1.
-MAX_TOKENS: int = 32768
+MAX_TOKENS: int = 16384
 
 # Iteration settings on agents (trajectory length ceiling)
 SUPERVISOR_MAX_ITERS: int = 8
@@ -59,7 +59,7 @@ LOCALIZATION_MAX_ITERS: int = 12
 COMPOSITION_MAX_ITERS: int = 14
 
 # Parallelization defaults (only between projects)
-NUM_PROJ_PARALLEL = 20
+NUM_PROJ_PARALLEL = 10
 MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
 
@@ -171,10 +171,10 @@ def main() -> None:
     if COMPOSITION_MAX_ITERS is not None:
         cmd.extend(["--composition-max-iters", str(COMPOSITION_MAX_ITERS)])
 
-    if REASONING_ENABLED:
-        cmd.append("--enable-reasoning")
+    if CONFIGURE_REASONING:
+        cmd.append("--configure-reasoning")
     else:
-        cmd.append("--no-enable-reasoning")
+        cmd.append("--no-configure-reasoning")
     cmd.extend(["--reasoning-effort", REASONING_EFFORT])
     if EXCLUDE_REASONING:
         cmd.append("--exclude-reasoning")

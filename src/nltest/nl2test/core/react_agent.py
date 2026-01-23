@@ -328,17 +328,32 @@ class ReActAgent:
                 "First message must be a SystemMessage"
             )
 
-            # Check if we're approaching the iteration limit and add a warning
-            remaining_iterations = self.max_iters - state.iterations
-            if remaining_iterations == 1:
-                warning_message = "SYSTEM NOTICE: Final iteration. Call the finalize tool now using the best available context."
-                state.messages.append(HumanMessage(content=warning_message))
-            elif remaining_iterations == 2:
-                warning_message = "SYSTEM NOTICE: Second-to-last iteration. Finish any remaining tool work now; plan to call finalize next turn."
-                state.messages.append(HumanMessage(content=warning_message))
+            # Check if we're approaching the iteration limit and prepare a warning
+            
+            # Augment the SystemMessage temporarily instead of appending HumanMessage
+            # to avoid ToolMessage -> HumanMessage sequences that violate some LLM APIs
+            remaining = self.max_iters - state.iterations
+            notice = None
+            if remaining == 1:
+                notice = (
+                    "SYSTEM NOTICE: Final iteration. "
+                    "Call the finalize tool now using the best available context."
+                )
+            elif remaining == 2:
+                notice = (
+                    "SYSTEM NOTICE: Second-to-last iteration. "
+                    "Finish any remaining tool work now; plan to call finalize next turn."
+                )
+
+            messages_for_llm = list(state.messages)
+            if notice:
+                original_system = state.messages[0]
+                messages_for_llm[0] = SystemMessage(
+                    content=f"{original_system.content}\n\n{notice}"
+                )
 
             out: AIMessage = self.llm.invoke_messages(
-                state.messages,
+                messages_for_llm,
                 tools=self.tools,
                 tool_choice="required",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},

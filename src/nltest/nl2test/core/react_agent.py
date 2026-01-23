@@ -357,7 +357,7 @@ class ReActAgent:
             out: AIMessage = self.llm.invoke_messages(
                 messages_for_llm,
                 tools=self.tools,
-                tool_choice="required",
+                tool_choice="auto",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
             state.messages.append(out)

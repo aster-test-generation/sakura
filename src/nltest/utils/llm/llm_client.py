@@ -27,7 +27,6 @@ from tenacity import (
     retry_if_exception,
     stop_after_attempt,
     wait_chain,
-    wait_none,
     wait_random,
 )
 
@@ -52,6 +51,11 @@ def _is_retriable_error(exc: BaseException) -> bool:
     )
     if status in {429, 500, 502, 503, 504}:
         return True
+    # Handle provider validation errors that may be transient
+    if status == 400:
+        msg = str(exc).lower()
+        if "input validation error" in msg or "provider returned error" in msg:
+            return True
     if isinstance(exc, (ConnectionError, TimeoutError)):
         return True
     msg = str(exc).lower()
@@ -261,8 +265,13 @@ class LLMClient:
         return ai_msg
 
     @retry(
-        stop=stop_after_attempt(4),
-        wait=wait_chain(wait_none(), wait_random(10, 20), wait_random(50, 60)),
+        stop=stop_after_attempt(5),
+        wait=wait_chain(
+            wait_random(1, 2),
+            wait_random(5, 10),
+            wait_random(20, 30),
+            wait_random(45, 60),
+        ),
         retry=retry_if_exception(_is_retriable_error),
         before_sleep=_log_retry_attempt,
         reraise=True,
@@ -276,12 +285,12 @@ class LLMClient:
         if isinstance(out, AIMessage):
             # Treat "successful but empty" LLM responses as errors (likely provider problem) and retry.
             has_tool_calls = bool(getattr(out, "tool_calls", None))
-            has_content = bool(out.content) and (
-                isinstance(out.content, str)
-                and out.content.strip()
-                or isinstance(out.content, list)
-                and len(out.content) > 0
-            )
+            if isinstance(out.content, str):
+                has_content = bool(out.content.strip())
+            elif isinstance(out.content, list):
+                has_content = len(out.content) > 0
+            else:
+                has_content = bool(out.content)
             if not has_tool_calls and not has_content:
                 raise EmptyLLMResponseError(
                     "LLM returned an empty AIMessage (no content, no tool_calls)."

@@ -63,7 +63,7 @@ class AgentState(BaseModel):
         int,
         "Number of times the agent has entered the force_end node to coerce finalization.",
     ] = 0
-    empty_response_retries: Annotated[
+    no_tool_retries: Annotated[
         int,
         "Number of consecutive LLM responses with no tool calls (reset on successful tool call).",
     ] = 0
@@ -74,7 +74,7 @@ class AgentState(BaseModel):
         self.final_comments = ""
         self.finalize_called = False
         self.force_end_attempts = 0
-        self.empty_response_retries = 0
+        self.no_tool_retries = 0
         self.messages = []  # TODO: Maybe have some functionality for summarizing this instead of clearing
         self.curr_tool_calls = {}
         self.curr_tool_trajectory.clear()

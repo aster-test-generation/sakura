@@ -39,7 +39,7 @@ class ReActAgent:
         strict_finalize: bool = True,
         use_checkpointer: bool = True,
         max_force_end_attempts: int = 3,
-        max_empty_response_retries: int = 2,
+        max_no_tool_retries: int = 2,
     ) -> None:
         self.llm: LLMClient = llm
         self.tools = tools
@@ -50,7 +50,7 @@ class ReActAgent:
         self.strict_finalize = strict_finalize
         self.use_checkpointer = use_checkpointer
         self.max_force_end_attempts = max_force_end_attempts
-        self.max_empty_response_retries = max_empty_response_retries
+        self.max_no_tool_retries = max_no_tool_retries
 
         self._allow_duplicate_tool_names = {t.name for t in self.allow_duplicate_tools}
         self.tool_map: Dict[str, BaseTool] = {t.name: t for t in tools}
@@ -360,19 +360,6 @@ class ReActAgent:
                 tool_choice="required",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
             )
-            # Validate response - API requires assistant messages have content or tool_calls
-            has_content = out.content and (
-                isinstance(out.content, str)
-                and out.content.strip()
-                or isinstance(out.content, list)
-                and len(out.content) > 0
-            )
-            has_tool_calls = out.tool_calls and len(out.tool_calls) > 0
-            if not has_content and not has_tool_calls:
-                RichLog.warn(
-                    "[ReActAgent] LLM returned empty response, injecting fallback"
-                )
-                out = AIMessage(content="[No response generated - continuing]")
             state.messages.append(out)
             state.iterations += 1
             return state
@@ -389,8 +376,8 @@ class ReActAgent:
                 f"[ReActAgent] call_tools: iteration={state.iterations}, "
                 f"tools={tool_names}"
             )
-            # Reset empty response retry counter since we have tool calls
-            state.empty_response_retries = 0
+            # Reset no-tool retry counter since we have tool calls
+            state.no_tool_retries = 0
             skipped_tool_calls: List[ToolCall] = []
             if not self.allow_parallelize and len(tool_calls) > 1:
                 skipped_tool_calls = tool_calls[1:]
@@ -498,24 +485,6 @@ class ReActAgent:
 
         # Nudge the model to call a tool when it returns empty tool calls
         def nudge_model(state: AgentState) -> AgentState:
-            # Find the last AIMessage to log what the model said without calling tools
-            last_ai: Optional[AIMessage] = None
-            for msg in reversed(state.messages):
-                if isinstance(msg, AIMessage):
-                    last_ai = msg
-                    break
-            ai_content = ""
-            if last_ai and last_ai.content:
-                ai_content = (
-                    last_ai.content[:500] + "..."
-                    if len(last_ai.content) > 500
-                    else last_ai.content
-                )
-            RichLog.debug(
-                f"[ReActAgent] nudge_model: prompting model to call a tool "
-                f"(retry {state.empty_response_retries}, iteration={state.iterations})\n"
-                f"  AIMessage content (no tool calls): {ai_content!r}"
-            )
             nudge_message = HumanMessage(
                 content=(
                     "You must call a tool to proceed. If you have completed your task, "
@@ -575,18 +544,18 @@ class ReActAgent:
             # No tool calls: check if we should retry before forcing end
             if self.strict_finalize and not state.finalize_called:
                 # Give the model another chance if we haven't exceeded retry limit
-                if state.empty_response_retries < self.max_empty_response_retries:
-                    state.empty_response_retries += 1
+                if state.no_tool_retries < self.max_no_tool_retries:
+                    state.no_tool_retries += 1
                     RichLog.debug(
                         f"[ReActAgent] should_continue_after_llm: 'nudge' "
-                        f"(no tool calls, retry {state.empty_response_retries}/"
-                        f"{self.max_empty_response_retries}, iteration={state.iterations})"
+                        f"(no tool calls, retry {state.no_tool_retries}/"
+                        f"{self.max_no_tool_retries}, iteration={state.iterations})"
                     )
                     return "nudge"
                 RichLog.debug(
                     f"[ReActAgent] should_continue_after_llm: 'force_end' "
                     f"(strict_finalize=True, finalize_called=False, "
-                    f"retries exhausted={state.empty_response_retries}, "
+                    f"retries exhausted={state.no_tool_retries}, "
                     f"iteration={state.iterations})"
                 )
                 return "force_end"

@@ -28,7 +28,6 @@ Each step must include:
   - `declaring_class_name`: fully qualified (e.g., `org.apache.commons.imaging.Imaging`)
   - `containing_class_name`: fully qualified
   - `method_signature`: name with param types (e.g., `getMetadata(byte[])`)
-  - `return_type`: fully qualified (e.g., `java.lang.String`, `void`)
 - `arg_bindings`: array of `{arg_name, arg_value}` objects; `[]` if none needed
 - `comments`: 1-2 sentences on method selection and assumptions
 - `external`: true only if the call is not in application source
@@ -44,8 +43,7 @@ Each step must include:
     {
       "declaring_class_name": "org.apache.commons.imaging.Imaging",
       "containing_class_name": "org.apache.commons.imaging.Imaging",
-      "method_signature": "getMetadata(byte[])",
-      "return_type": "org.apache.commons.imaging.common.ImageMetadata"
+      "method_signature": "getMetadata(byte[])"
     }
   ],
   "arg_bindings": [

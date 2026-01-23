@@ -266,7 +266,7 @@ class ReActAgent:
         error_msg = error_info.get("message") or ""
 
         matching_call: ToolCall | None = None
-        tool_calls = llm_message.tool_calls
+        tool_calls = llm_message.tool_calls or []
         for tc in tool_calls:
             if tc.get("id") == tool_call_id:
                 matching_call = tc
@@ -329,7 +329,7 @@ class ReActAgent:
             )
 
             # Check if we're approaching the iteration limit and prepare a warning
-            
+
             # Augment the SystemMessage temporarily instead of appending HumanMessage
             # to avoid ToolMessage -> HumanMessage sequences that violate some LLM APIs
             remaining = self.max_iters - state.iterations
@@ -381,7 +381,7 @@ class ReActAgent:
                 m for m in reversed(state.messages) if isinstance(m, AIMessage)
             )
             tool_msgs: List[ToolMessage] = []
-            tool_calls = last_ai.tool_calls
+            tool_calls = last_ai.tool_calls or []
             tool_names = [tc.get("name") for tc in tool_calls]
             RichLog.debug(
                 f"[ReActAgent] call_tools: iteration={state.iterations}, "

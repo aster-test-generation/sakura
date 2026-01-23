@@ -24,10 +24,10 @@ USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "devstral-small-latest"
+LLM_MODEL = "qwen/qwen3-coder"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
-    "mistral"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
+    "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
 )
 LLM_API_URL: str | None = None  # OpenAI-compatible base URL if overriding
 
@@ -48,6 +48,10 @@ CAN_PARALLEL_TOOL_CALL: bool = True
 CONFIGURE_REASONING: bool = False
 REASONING_EFFORT: str = "minimal"
 EXCLUDE_REASONING: bool = False
+
+# Provider ignore list for OpenRouter (only applies when using OpenRouter provider)
+OPENROUTER_IGNORE_PROVIDERS: list[str] | None = None # e.g., ["nebius/fp8"]
+# Note: "nebius/fp8" has problems when using qwen3-coder
 
 # Maximum tokens for LLM completion output.
 # Default: 16384. Use 32768 or 65536 for extensive reasoning models like MiniMax M2.1.
@@ -181,6 +185,10 @@ def main() -> None:
     else:
         cmd.append("--no-exclude-reasoning")
     cmd.extend(["--max-tokens", str(MAX_TOKENS)])
+
+    if OPENROUTER_IGNORE_PROVIDERS:
+        for provider_name in OPENROUTER_IGNORE_PROVIDERS:
+            cmd.extend(["--openrouter-ignore-providers", provider_name])
 
     print("Running NL2Test on Test2NL inputs...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)

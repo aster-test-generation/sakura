@@ -780,6 +780,12 @@ def run_nl2test(
             show_default=True,
         ),
     ] = 16384,
+    openrouter_ignore_providers: Annotated[
+        list[str],
+        typer.Option(
+            help="Provider names to exclude when routing through OpenRouter (can be repeated).",
+        ),
+    ] = [],
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -954,6 +960,9 @@ def run_nl2test(
                 reasoning_effort=reasoning_effort,
                 exclude_reasoning=exclude_reasoning,
                 max_tokens=max_tokens,
+                openrouter_ignore_providers=openrouter_ignore_providers
+                if openrouter_ignore_providers
+                else None,
             )
 
             payloads = [

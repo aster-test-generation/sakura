@@ -39,8 +39,14 @@ from .model import ClientType, Provider
 from .usage_tracker import UsageTracker
 
 
+class EmptyLLMResponseError(RuntimeError):
+    """Raised when the provider returns an AIMessage with no content and no tool calls."""
+
+
 def _is_retriable_error(exc: BaseException) -> bool:
     """Check if exception is transient and worth retrying."""
+    if isinstance(exc, EmptyLLMResponseError):
+        return True
     status = getattr(exc, "status_code", None) or getattr(
         getattr(exc, "response", None), "status_code", None
     )
@@ -150,6 +156,15 @@ class LLMClient:
             default_headers.setdefault("HTTP-Referer", "http://localhost")
             default_headers.setdefault("X-Title", "NL2Test LLM Client")
 
+            try:
+                ignore_providers = config.get("openrouter", "ignore_providers")
+                if ignore_providers:
+                    if "provider" not in extra_body:
+                        extra_body["provider"] = {}
+                    extra_body["provider"]["ignore"] = ignore_providers
+            except ConfigurationException:
+                pass
+
         # Configure parallel tool call behavior from Config
         try:
             can_parallel_tool = config.get("llm", "can_parallel_tool")
@@ -256,7 +271,23 @@ class LLMClient:
         self, runnable: RunnableSerializable, messages: Sequence[BaseMessage]
     ) -> Any:
         """Internal method that performs the actual invocation with retry logic."""
-        return runnable.invoke(list(messages))
+        out = runnable.invoke(list(messages))
+
+        if isinstance(out, AIMessage):
+            # Treat "successful but empty" LLM responses as errors (likely provider problem) and retry.
+            has_tool_calls = bool(getattr(out, "tool_calls", None))
+            has_content = bool(out.content) and (
+                isinstance(out.content, str)
+                and out.content.strip()
+                or isinstance(out.content, list)
+                and len(out.content) > 0
+            )
+            if not has_tool_calls and not has_content:
+                raise EmptyLLMResponseError(
+                    "LLM returned an empty AIMessage (no content, no tool_calls)."
+                )
+
+        return out
 
     def invoke_messages(
         self,

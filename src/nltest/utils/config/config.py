@@ -36,6 +36,7 @@ def init_config(
     configure_reasoning: bool = False,
     reasoning_effort: str = "medium",
     exclude_reasoning: bool = True,
+    openrouter_ignore_providers: list[str] | None = None,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -66,6 +67,9 @@ def init_config(
     config.set("reasoning", "configure", configure_reasoning)
     config.set("reasoning", "effort", reasoning_effort)
     config.set("reasoning", "exclude", exclude_reasoning)
+
+    if openrouter_ignore_providers:
+        config.set("openrouter", "ignore_providers", openrouter_ignore_providers)
 
     # Assign embedding settings
     config.set("emb", "model", emb_model)

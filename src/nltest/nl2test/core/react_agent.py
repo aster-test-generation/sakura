@@ -114,6 +114,13 @@ class ReActAgent:
         for m in state.messages:
             if isinstance(m, BaseMessage) and not isinstance(m, SystemMessage):
                 messages_for_structured.append(m)
+
+        # Insert AIMessage before HumanMessage if last message is ToolMessage
+        if messages_for_structured and isinstance(
+            messages_for_structured[-1], ToolMessage
+        ):
+            messages_for_structured.append(AIMessage(content="Acknowledged."))
+
         messages_for_structured.append(HumanMessage(content=force_chat))
 
         try:
@@ -331,9 +338,6 @@ class ReActAgent:
             )
 
             # Check if we're approaching the iteration limit and prepare a warning
-
-            # Augment the SystemMessage temporarily instead of appending HumanMessage
-            # to avoid ToolMessage -> HumanMessage sequences that violate some LLM APIs
             remaining = self.max_iters - state.iterations
             notice = None
             if remaining == 1:
@@ -349,10 +353,23 @@ class ReActAgent:
 
             messages_for_llm = list(state.messages)
             if notice:
-                original_system = state.messages[0]
-                messages_for_llm[0] = SystemMessage(
-                    content=f"{original_system.content}\n\n{notice}"
-                )
+                last_msg = messages_for_llm[-1]
+                if isinstance(last_msg, ToolMessage):
+                    messages_for_llm.append(AIMessage(content="Acknowledged."))
+                    messages_for_llm.append(HumanMessage(content=notice))
+                elif isinstance(last_msg, HumanMessage):
+                    # Consolidate with existing HumanMessage to avoid consecutive HumanMessages
+                    existing_content = (
+                        last_msg.content
+                        if isinstance(last_msg.content, str)
+                        else str(last_msg.content)
+                    )
+                    messages_for_llm[-1] = HumanMessage(
+                        content=f"{existing_content}\n\n{notice}"
+                    )
+                else:
+                    # Last message is AIMessage - just append HumanMessage
+                    messages_for_llm.append(HumanMessage(content=notice))
 
             out: AIMessage = self.llm.invoke_messages(
                 messages_for_llm,

@@ -67,6 +67,9 @@ COMPOSITION_MAX_ITERS: int = 14
 NUM_PROJ_PARALLEL = 10
 MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
+# Save localized scenarios to separate JSON file per-project (GHERKIN mode only)
+SAVE_LOCALIZED_SCENARIOS: bool = False
+
 
 def main() -> None:
     # Set up paths using configuration constants
@@ -193,6 +196,9 @@ def main() -> None:
     if OPENROUTER_IGNORE_PROVIDERS:
         for provider_name in OPENROUTER_IGNORE_PROVIDERS:
             cmd.extend(["--openrouter-ignore-providers", provider_name])
+
+    if SAVE_LOCALIZED_SCENARIOS:
+        cmd.append("--save-localized-scenarios")
 
     print("Running NL2Test on Test2NL inputs...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)

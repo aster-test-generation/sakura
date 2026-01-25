@@ -41,6 +41,7 @@ from nltest.utils.models import (
     AgentToolLog,
     NL2TestCoverageEval,
     NL2TestEval,
+    NL2TestPipelineResult,
     NL2TestStructuralEval,
     ToolLog,
 )
@@ -297,7 +298,10 @@ class Pipeline:
         )
         return analysis
 
-    def run_nl2test(self, nl2_input: NL2TestInput) -> NL2TestEval:
+    def run_nl2test(
+        self,
+        nl2_input: NL2TestInput,
+    ) -> NL2TestPipelineResult:
         if not self.method_searcher or not self.class_searcher:
             raise Exception("Preprocessing not completed...")
 
@@ -468,4 +472,12 @@ class Pipeline:
         final_result.output_tokens = totals["output_tokens"]
         final_result.llm_calls = totals["calls"]
 
-        return final_result
+        # Extract localized scenario if available (GHERKIN mode only)
+        localized_scenario = None
+        if self.decomposition_mode == DecompositionMode.GHERKIN and supervisor_state:
+            localized_scenario = supervisor_state.localized_scenario
+
+        return NL2TestPipelineResult(
+            eval=final_result,
+            localized_scenario=localized_scenario,
+        )

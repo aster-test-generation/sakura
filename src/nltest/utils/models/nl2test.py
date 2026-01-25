@@ -100,6 +100,19 @@ class NL2TestEval(BaseModel):
     llm_calls: int = 0
 
 
+class NL2TestPipelineResult(BaseModel):
+    """Result from Pipeline.run_nl2test().
+
+    Contains the evaluation result and an optional localized scenario
+    (populated only in GHERKIN decomposition mode).
+    """
+
+    eval: NL2TestEval
+    localized_scenario: Optional[Any] = (
+        None  # Accepts LocalizedScenario from nl2test flows.
+    )
+
+
 class NL2TestFailure(BaseModel):
     """Captures a failed NL2Test generation attempt."""
 

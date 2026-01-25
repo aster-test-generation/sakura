@@ -96,15 +96,13 @@ FOCAL_BUCKET_ORDER = (
     "one_focal",
     "two_focal",
     "three_to_five_focal",
-    "six_to_ten_focal",
-    "more_than_ten_focal",
+    "more_than_five_focal",
 )
 FOCAL_BUCKET_NAMES = {
     "one_focal": "1 Focal Method",
     "two_focal": "2 Focal Methods",
     "three_to_five_focal": "3-5 Focal Methods",
-    "six_to_ten_focal": "6-10 Focal Methods",
-    "more_than_ten_focal": ">10 Focal Methods",
+    "more_than_five_focal": ">5 Focal Methods",
 }
 
 STRUCTURAL_METRICS = (
@@ -269,8 +267,8 @@ def build_bucket_test_map(dataset: NL2TestDataset) -> BucketTestMap:
         (dataset.tests_with_one_focal_methods, "one_focal"),
         (dataset.tests_with_two_focal_methods, "two_focal"),
         (dataset.tests_with_more_than_two_to_five_focal_methods, "three_to_five_focal"),
-        (dataset.tests_with_more_than_five_to_ten_focal_methods, "six_to_ten_focal"),
-        (dataset.tests_with_more_than_ten_focal_methods, "more_than_ten_focal"),
+        (dataset.tests_with_more_than_five_to_ten_focal_methods, "more_than_five_focal"),
+        (dataset.tests_with_more_than_ten_focal_methods, "more_than_five_focal"),
     ]
     for tests, bucket_name in buckets:
         for test in tests:

@@ -80,7 +80,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1012,
       "description": "Define a test class containing two private static final fields: `VERBOSITY` of type `org.apache.commons.cli.Option` and `OPTIONS` of type `org.apache.commons.cli.Options`, initialized with appropriate values that allow the test to execute (the exact initialization logic is not provided in the test method, so assume these fields are properly configured to support parsing a verbosity option with short name `\"-v\"`). Within the test method annotated with `@Test` and declared to throw `org.apache.commons.cli.ParseException`, instantiate a new `DefaultParser` by invoking its no-argument constructor, then immediately invoke the `parse` method on this parser instance, passing `OPTIONS` as the first argument and a new `String[]` array containing three elements\u2014each element being the literal string `\"-v\"`\u2014as the second argument, and assign the returned `org.apache.commons.cli.CommandLine` object to a local variable named `cmdLine`. Following this assignment, invoke `assertEquals` with integer literal `3` as the first argument and the result of calling `getOptionCount(VERBOSITY)` on `cmdLine` as the second argument, thereby asserting that the verbosity option appears exactly three times in the parsed command line. The test uses JUnit 5 Assertions via the `assertEquals` method and relies on the Apache Commons CLI library classes `DefaultParser`, `CommandLine`, and `Option`.",
@@ -91,33 +91,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DefaultParserTest1 {\n\n    private static final Option VERBOSITY = new Option(\"v\", false, \"verbose\");\n\n    private static final Options OPTIONS = new Options().addOption(VERBOSITY);\n\n    @Test\n    public void testGetOptionCount() throws ParseException {\n        final DefaultParser parser = new DefaultParser();\n        final CommandLine cmdLine = parser.parse(OPTIONS, new String[]{\"-v\", \"-v\", \"-v\"});\n        assertEquals(3, cmdLine.getOptionCount(VERBOSITY));\n    }\n}",
+      "method_signature": "testThreeSwitches()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9677,
+      "line_coverage": 0.932,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 111926,
     "output_tokens": 3571,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -240,7 +240,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1272,
       "description": "Define a test method annotated with `@Test` that declares a `throws ParseException` clause, then begin by invoking `Option.builder()` and chaining `.option(\"a\")`, `.longOpt(\"first-letter\")`, and `.get()` to assign the result to variable `a` of type `Option`, repeating this pattern to create variable `b` by invoking `Option.builder().option(\"b\").longOpt(\"second-letter\").get()` and variable `c` by invoking `Option.builder().option(\"c\").longOpt(\"third-letter\").get()`. Instantiate a new `Options` object and assign it to variable `baseOptions`, then invoke `addOption` on `baseOptions` passing `a`, followed by invoking `addOption` on `baseOptions` passing `b`. Instantiate another new `Options` object and assign it to variable `specificOptions`, then invoke `addOption` on `specificOptions` passing `a`, invoke `addOption` on `specificOptions` passing `b`, and invoke `addOption` on `specificOptions` passing `c`. Declare a `String[]` variable `args` initialized with the array literal `{ \"-a\", \"-b\", \"-c\", \"-d\", \"arg1\", \"arg2\" }`. Instantiate a new `DefaultParser` and assign it to variable `parser`, then invoke `parse` on `parser` with arguments `baseOptions`, `null`, `DefaultParser.NonOptionAction.SKIP`, and `args`, assigning the result to variable `baseCommandLine` of type `CommandLine`. Immediately invoke `assertEquals` with arguments `2` and the result of invoking `getOptions()` on `baseCommandLine` followed by accessing the `length` field of the returned array, then invoke `assertEquals` with arguments `4` and the result of invoking `getArgs()` on `baseCommandLine` followed by accessing the `length` field of the returned array. Invoke `assertThrows` with `UnrecognizedOptionException.class` and a lambda expression that invokes `parse` on `parser` with arguments `specificOptions`, `null`, `DefaultParser.NonOptionAction.THROW`, and `args`, assigning the returned exception to variable `e` of type `UnrecognizedOptionException`, then invoke `assertTrue` passing the result of invoking `contains(\"-d\")` on the result of invoking `getMessage()` on `e`. The test uses JUnit 5 Assertions (`assertEquals`, `assertTrue`, `assertThrows`) and is annotated with `@Test`.",
@@ -251,33 +251,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DefaultParserTest1 {\n\n    @Test\n    public void testNonOptionActions() throws ParseException {\n        final Option a = Option.builder().option(\"a\").longOpt(\"first-letter\").get();\n        final Option b = Option.builder().option(\"b\").longOpt(\"second-letter\").get();\n        final Option c = Option.builder().option(\"c\").longOpt(\"third-letter\").get();\n\n        final Options baseOptions = new Options();\n        baseOptions.addOption(a);\n        baseOptions.addOption(b);\n\n        final Options specificOptions = new Options();\n        specificOptions.addOption(a);\n        specificOptions.addOption(b);\n        specificOptions.addOption(c);\n\n        final String[] args = { \"-a\", \"-b\", \"-c\", \"-d\", \"arg1\", \"arg2\" };\n\n        final DefaultParser parser = new DefaultParser();\n\n        final CommandLine baseCommandLine = parser.parse(baseOptions, null, DefaultParser.NonOptionAction.SKIP, args);\n        assertEquals(2, baseCommandLine.getOptions().length);\n        assertEquals(4, baseCommandLine.getArgs().length);\n\n        final UnrecognizedOptionException e = assertThrows(UnrecognizedOptionException.class,\n                () -> parser.parse(specificOptions, null, DefaultParser.NonOptionAction.THROW, args));\n        assertTrue(e.getMessage().contains(\"-d\"));\n    }\n}",
+      "method_signature": "testParseSkipNonHappyPath()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 0.75,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9756,
+      "line_coverage": 0.9586,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 24150,
     "output_tokens": 1521,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -440,7 +440,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1281,
       "description": "Define a test method annotated with `@Test` that declares `throws ParseException` and begins by invoking `Option.builder()`, chaining `.option(\"a\")`, chaining `.longOpt(\"first-letter\")`, and chaining `.get()`, assigning the result to variable `a` of type `Option`, then repeat this pattern to create variable `b` by invoking `Option.builder().option(\"b\").longOpt(\"second-letter\").get()` and variable `c` by invoking `Option.builder().option(\"c\").longOpt(\"third-letter\").get()`. Instantiate a new `Options` object and assign it to variable `baseOptions`, then invoke `addOption` on `baseOptions` passing `a`, followed by invoking `addOption` on `baseOptions` passing `b`. Instantiate another new `Options` object and assign it to variable `specificOptions`, then invoke `addOption` on `specificOptions` passing `a`, invoke `addOption` on `specificOptions` passing `b`, and invoke `addOption` on `specificOptions` passing `c`. Declare a `String[]` variable `args` initialized with the array literal `{ \"-a\", \"-b\", \"-c\", \"-d\", \"arg1\", \"arg2\" }`. Instantiate a new `DefaultParser` and assign it to variable `parser`, then invoke `parse` on `parser` with arguments `baseOptions`, `null`, `DefaultParser.NonOptionAction.IGNORE`, and `args`, assigning the result to variable `baseCommandLine` of type `CommandLine`. Immediately assert using `assertEquals(2, baseCommandLine.getOptions().length)` to verify the options array length is `2`, then assert using `assertEquals(2, baseCommandLine.getArgs().length)` to verify the arguments array length is `2`. Invoke `assertThrows` with `UnrecognizedOptionException.class` and a lambda expression that calls `parser.parse(specificOptions, null, DefaultParser.NonOptionAction.THROW, args)`, assigning the returned exception to variable `e` of type `UnrecognizedOptionException`, then assert using `assertTrue(e.getMessage().contains(\"-d\"))` to verify the exception message contains the string literal `\"-d\"`. The test uses JUnit 5 Assertions (`assertEquals`, `assertTrue`, `assertThrows`) and is annotated with `@Test`.",
@@ -451,33 +451,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DefaultParserTest1 {\n\n    @Test\n    public void testNonOptionActions() throws ParseException {\n        final Option a = Option.builder().option(\"a\").longOpt(\"first-letter\").get();\n        final Option b = Option.builder().option(\"b\").longOpt(\"second-letter\").get();\n        final Option c = Option.builder().option(\"c\").longOpt(\"third-letter\").get();\n\n        final Options baseOptions = new Options();\n        baseOptions.addOption(a);\n        baseOptions.addOption(b);\n\n        final Options specificOptions = new Options();\n        specificOptions.addOption(a);\n        specificOptions.addOption(b);\n        specificOptions.addOption(c);\n\n        final String[] args = { \"-a\", \"-b\", \"-c\", \"-d\", \"arg1\", \"arg2\" };\n\n        final DefaultParser parser = new DefaultParser();\n\n        final CommandLine baseCommandLine = parser.parse(baseOptions, null, DefaultParser.NonOptionAction.IGNORE, args);\n        assertEquals(2, baseCommandLine.getOptions().length);\n        assertEquals(2, baseCommandLine.getArgs().length);\n\n        final UnrecognizedOptionException e = assertThrows(UnrecognizedOptionException.class, () -> {\n            parser.parse(specificOptions, null, DefaultParser.NonOptionAction.THROW, args);\n        });\n        assertTrue(e.getMessage().contains(\"-d\"));\n    }\n}",
+      "method_signature": "testParseIgnoreNonHappyPath()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.9667,
+      "focal_recall": 0.75,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9756,
+      "line_coverage": 0.9586,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 30618,
     "output_tokens": 1880,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -680,7 +680,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1291,
       "description": "Define a test class containing two private fields: `sb` of type `java.lang.StringBuilder` and `underTest` of type `org.apache.commons.cli.help.TextHelpAppendable`, and implement a setup method annotated with `@BeforeEach` that instantiates `sb` by invoking `new StringBuilder()` and then instantiates `underTest` by invoking `new TextHelpAppendable(sb)`, passing the newly created `StringBuilder` as the constructor argument. Within the test method annotated with `@Test`, begin by constructing a `String` variable named `text` initialized to the concatenation of the literal `\"Header\\t\"` and the character cast of `Character.PARAGRAPH_SEPARATOR`, then create a `TextStyle.Builder` variable named `styleBuilder` by invoking `TextStyle.builder()` and chaining `setMaxWidth(10)`, `setIndent(0)`, and `setLeftPad(0)` in sequence. Next, instantiate a `Queue<String>` variable named `expected` by invoking `new LinkedList<>()`, then populate it by calling `expected.add(\"Header \")` followed by `expected.add(\" \")` with the exact string literals including the trailing space in the first and the single space in the second. Having prepared the expected queue, invoke `underTest.makeColumnQueue(text, styleBuilder.get())` where `styleBuilder.get()` produces the finalized `TextStyle` instance, and assign the returned `Queue<String>` to a variable named `result`. Finally, assert equality by invoking `assertEquals(expected, result, \"left aligned failed\")` with the expected queue, the result queue, and the failure message string literal in that order. The test uses JUnit 5 Assertions with the `@Test` annotation at the method level and no class-level annotations.",
@@ -691,33 +691,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.help.TextHelpAppendableTest1",
+      "code": "package org.apache.commons.cli.help;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.lang.StringBuilder;\nimport java.util.LinkedList;\nimport java.util.Queue;\nimport org.apache.commons.cli.help.TextHelpAppendable;\nimport org.apache.commons.cli.help.TextStyle;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\npublic class TextHelpAppendableTest1 {\n\n    private StringBuilder sb;\n    private TextHelpAppendable underTest;\n\n    @BeforeEach\n    public void setUp() {\n        sb = new StringBuilder();\n        underTest = new TextHelpAppendable(sb);\n    }\n\n    @Test\n    public void testMakeColumnQueue() {\n        String text = \"Header\t\" + Character.PARAGRAPH_SEPARATOR;\n        TextStyle.Builder styleBuilder = TextStyle.builder().setMaxWidth(10).setIndent(0).setLeftPad(0);\n        Queue<String> expected = new LinkedList<>();\n        expected.add(\"Header \");\n        expected.add(\" \");\n        Queue<String> result = underTest.makeColumnQueue(text, styleBuilder.get());\n        assertEquals(expected, result, \"left aligned failed\");\n    }\n}",
+      "method_signature": "testMakeColumnQueueWithMultipleTrailingLineBreaks()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 23290,
     "output_tokens": 1380,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -851,9 +851,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.help.TextHelpAppendableTest1",
+      "code": "package org.apache.commons.cli.help;\n\nimport org.apache.commons.cli.HelpFormatter;\nimport org.junit.jupiter.api.Test;\n\nimport java.util.LinkedList;\nimport java.util.Queue;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n/**\n * Test class for {@link TextHelpAppendable}.\n */\npublic class TextHelpAppendableTest1 {\n\n    @Test\n    public void testMakeColumnQueueWithAlignment() {\n        StringBuilder sb = new StringBuilder();\n        TextHelpAppendable th = new TextHelpAppendable(sb);\n\n        String text = \"This is a sample text for wrapping.\";\n        TextStyle.Builder styleBuilder = new TextStyle.Builder();\n        Queue<String> expected = new LinkedList<>();\n\n        // 1. Test Left Alignment\n        styleBuilder.maxWidth(10).indent(0).leftPad(0).alignment(HelpFormatter.Alignment.LEFT);\n        expected.add(\"This is a \");\n        expected.add(\"sample    \");\n        expected.add(\"text for  \");\n        expected.add(\"wrapping. \");\n        Queue<String> actual = th.makeColumnQueue(text, styleBuilder.build());\n        assertEquals(expected, actual, \"Left alignment should match\");\n\n        // 2. Test Right Alignment\n        expected.clear();\n        styleBuilder.alignment(HelpFormatter.Alignment.RIGHT);\n        expected.add(\" This is a\");\n        expected.add(\"    sample\");\n        expected.add(\"  text for\");\n        expected.add(\" wrapping.\");\n        actual = th.makeColumnQueue(text, styleBuilder.build());\n        assertEquals(expected, actual, \"Right alignment should match\");\n\n        // 3. Test Center Alignment\n        expected.clear();\n        styleBuilder.alignment(HelpFormatter.Alignment.CENTER);\n        expected.add(\"This is a \");\n        expected.add(\"  sample  \");\n        expected.add(\" text for \");\n        expected.add(\"wrapping. \");\n        actual = th.makeColumnQueue(text, styleBuilder.build());\n        assertEquals(expected, actual, \"Center alignment should match\");\n\n        // 4. Test Complex Alignment (Right with indent and padding)\n        expected = new LinkedList<>();\n        styleBuilder.alignment(HelpFormatter.Alignment.RIGHT).leftPad(5).indent(2);\n        expected.add(\"       Thi\");\n        expected.add(\"     s is \");\n        expected.add(\"         a\");\n        expected.add(\"     sampl\");\n        expected.add(\"         e\");\n        expected.add(\"      text\");\n        expected.add(\"       for\");\n        expected.add(\"     wrapp\");\n        expected.add(\"      ing.\");\n        actual = th.makeColumnQueue(text, styleBuilder.build());\n        assertEquals(expected, actual, \"Complex right alignment with padding and indent should match\");\n    }\n}",
+      "method_signature": "testMakeColumnQueue()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -876,8 +876,8 @@
     "input_tokens": 18717,
     "output_tokens": 8277,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -920,7 +920,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1301,
       "description": "Define a test class containing two private fields: `sb` of type `java.lang.StringBuilder` and `underTest` of type `org.apache.commons.cli.help.TextHelpAppendable`, then implement a setup method annotated with `@BeforeEach` that instantiates `sb` by invoking `new StringBuilder()` and assigns it to the field, followed by instantiating `underTest` by invoking `new TextHelpAppendable(sb)` passing the `sb` instance as the constructor argument. Within the test method annotated with `@Test`, begin by declaring a final `String` variable named `text` initialized to the literal value `\"The quick brown fox jumps over the lazy dog\"`, then create a `TextStyle.Builder` variable named `styleBuilder` by invoking `TextStyle.builder()` and chaining `setMaxWidth(10)`, `setIndent(0)`, and `setLeftPad(0)` in sequence. Instantiate a `Queue<String>` variable named `expected` by invoking `new LinkedList<>()`, then populate it by calling `add(\"The quick \")`, `add(\"brown fox \")`, `add(\"jumps over\")`, `add(\"the lazy \")`, and `add(\"dog \")` in that order. Invoke `makeColumnQueue` on `underTest` passing `text` and the result of `styleBuilder.get()` as arguments, assigning the returned `Queue<String>` to a variable named `result`, and immediately assert equality by calling `assertEquals(expected, result, \"left aligned failed\")`. Clear the `expected` queue by invoking `clear()`, then add the strings `\" The quick\"`, `\" brown fox\"`, `\"jumps over\"`, `\" the lazy\"`, and `\" dog\"` in sequence. Chain `setAlignment(TextStyle.Alignment.RIGHT)` on `styleBuilder`, invoke `makeColumnQueue` on `underTest` with `text` and `styleBuilder.get()`, assign the result to `result`, and assert equality with `assertEquals(expected, result, \"right aligned failed\")`. Clear `expected` again, add `\"The quick \"`, `\"brown fox \"`, `\"jumps over\"`, `\" the lazy \"`, and `\" dog \"`, then chain `setAlignment(TextStyle.Alignment.CENTER)` on `styleBuilder`, invoke `makeColumnQueue` with `text` and `styleBuilder.get()`, assign to `result`, and assert with `assertEquals(expected, result, \"center aligned failed\")`. Reassign `expected` by invoking `new LinkedList<>()`, add the strings `\" The quick\"`, `\" brown\"`, `\" fox\"`, `\" jumps\"`, `\" over the\"`, and `\" lazy dog\"`, then chain `setAlignment(TextStyle.Alignment.RIGHT)`, `setLeftPad(5)`, and `setIndent(2)` on `styleBuilder`, invoke `makeColumnQueue` with `text` and `styleBuilder.get()`, assign to `result`, and perform the final assertion with `assertEquals(expected, result, \"right aligned failed\")`. The test uses method-level annotation `@Test`, assertion library JUnit 5 Assertions, and no mocking libraries.",
@@ -931,33 +931,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.help.TextHelpAppendableTest1",
+      "code": "package org.apache.commons.cli.help;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.util.LinkedList;\nimport java.util.Queue;\n\nimport org.apache.commons.cli.help.TextStyle;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\npublic class TextHelpAppendableTest1 {\n\n    private StringBuilder sb;\n    private TextHelpAppendable underTest;\n\n    @BeforeEach\n    public void setUp() {\n        sb = new StringBuilder();\n        underTest = new TextHelpAppendable(sb);\n    }\n\n    @Test\n    public void testMakeColumnQueue() {\n        final String text = \"The quick brown fox jumps over the lazy dog\";\n        TextStyle.Builder styleBuilder = TextStyle.builder().setMaxWidth(10).setIndent(0).setLeftPad(0);\n\n        Queue<String> expected = new LinkedList<>();\n        expected.add(\"The quick \");\n        expected.add(\"brown fox \");\n        expected.add(\"jumps over\");\n        expected.add(\"the lazy \");\n        expected.add(\"dog \");\n        Queue<String> result = underTest.makeColumnQueue(text, styleBuilder.get());\n        assertEquals(expected, result, \"left aligned failed\");\n\n        expected.clear();\n        expected.add(\" The quick\");\n        expected.add(\" brown fox\");\n        expected.add(\"jumps over\");\n        expected.add(\" the lazy\");\n        expected.add(\" dog\");\n        styleBuilder.setAlignment(TextStyle.Alignment.RIGHT);\n        result = underTest.makeColumnQueue(text, styleBuilder.get());\n        assertEquals(expected, result, \"right aligned failed\");\n\n        expected.clear();\n        expected.add(\"The quick \");\n        expected.add(\"brown fox \");\n        expected.add(\"jumps over\");\n        expected.add(\" the lazy \");\n        expected.add(\" dog \");\n        styleBuilder.setAlignment(TextStyle.Alignment.CENTER);\n        result = underTest.makeColumnQueue(text, styleBuilder.get());\n        assertEquals(expected, result, \"center aligned failed\");\n\n        expected = new LinkedList<>();\n        expected.add(\" The quick\");\n        expected.add(\" brown\");\n        expected.add(\" fox\");\n        expected.add(\" jumps\");\n        expected.add(\" over the\");\n        expected.add(\" lazy dog\");\n        styleBuilder.setAlignment(TextStyle.Alignment.RIGHT).setLeftPad(5).setIndent(2);\n        result = underTest.makeColumnQueue(text, styleBuilder.get());\n        assertEquals(expected, result, \"right aligned failed\");\n    }\n}",
+      "method_signature": "testMakeColumnQueue()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 14936,
     "output_tokens": 3785,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -1120,7 +1120,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1339,
       "description": "Define a test method that validates the command-line parser's behavior when encountering unrecognized options with both stop-at-non-option enabled and disabled modes. Build three Option instances using the builder pattern, each configured with a short option identifier and a long option name, then instantiate an Options container and register all three options with it. Construct a string array containing three valid option flags followed by an unrecognized option flag and two positional argument strings. Instantiate a DefaultParser and invoke its parse method on the options container with the argument array, passing null for properties and true for the stop-at-non-option flag to enable lenient parsing. Upon receiving the resulting CommandLine instance, assert that exactly three options were recognized by checking the options array length, then verify that exactly three arguments were captured in the arguments list by checking its length. Confirm that the arguments list contains the unrecognized option flag as well as both positional argument strings to validate that unrecognized tokens were treated as arguments rather than causing parse failure. To verify strict parsing behavior, assert that invoking the parse method again with the same options and arguments but with the stop-at-non-option flag set to false throws an UnrecognizedOptionException, then validate that the exception message contains the unrecognized option flag to confirm proper error reporting. This test uses JUnit 5 for test execution and assertions.",
@@ -1131,36 +1131,36 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport org.apache.commons.cli.CommandLine;\nimport org.apache.commons.cli.DefaultParser;\nimport org.apache.commons.cli.Option;\nimport org.apache.commons.cli.Options;\nimport org.apache.commons.cli.ParseException;\nimport org.apache.commons.cli.UnrecognizedOptionException;\nimport org.junit.jupiter.api.Test;\n\nimport java.util.List;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\npublic class DefaultParserTest1 {\n\n    @Test\n    public void testUnrecognizedOptionsWithStopAtNonOption() throws ParseException {\n        // Build three Option instances using the builder pattern, each configured with a short option identifier and a long option name\n        Option optionA = Option.builder(\"a\").longOpt(\"alpha\").build();\n        Option optionB = Option.builder(\"b\").longOpt(\"beta\").build();\n        Option optionC = Option.builder(\"c\").longOpt(\"charlie\").build();\n\n        // instantiate an Options container and register all three options with it\n        Options options = new Options();\n        options.addOption(optionA);\n        options.addOption(optionB);\n        options.addOption(optionC);\n\n        // Construct a string array containing three valid option flags followed by an unrecognized option flag and two positional argument strings\n        String[] arguments = {\"--alpha\", \"-b\", \"--charlie\", \"-d\", \"arg1\", \"arg2\"};\n\n        // Instantiate a DefaultParser\n        DefaultParser parser = new DefaultParser();\n\n        // invoke its parse method on the options container with the argument array, passing null for properties and true for the stop-at-non-option flag to enable lenient parsing\n        CommandLine commandLine = parser.parse(options, arguments, null, true);\n\n        // assert that exactly three options were recognized by checking the options array length\n        assertEquals(3, commandLine.getOptions().length);\n\n        // then verify that exactly three arguments were captured in the arguments list by checking its length\n        List<String> argList = commandLine.getArgList();\n        assertEquals(3, argList.size());\n\n        // Confirm that the arguments list contains the unrecognized option flag as well as both positional argument strings\n        assertArrayEquals(new String[]{\"-d\", \"arg1\", \"arg2\"}, argList.toArray(new String[0]));\n\n        // To verify strict parsing behavior, assert that invoking the parse method again with the same options and arguments but with the stop-at-non-option flag set to false throws an UnrecognizedOptionException\n        UnrecognizedOptionException e = assertThrows(UnrecognizedOptionException.class, () -> {\n            parser.parse(options, arguments, null, false);\n        });\n\n        // then validate that the exception message contains the unrecognized option flag to confirm proper error reporting\n        assertEquals(\"-d\", e.getOption());\n    }\n}",
+      "method_signature": "testLegacyStopAtNonOption()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 0.4286,
+      "assertion_precision": 0.6,
+      "callable_recall": 0.4,
+      "callable_precision": 0.5385,
+      "focal_recall": 0.5,
+      "focal_precision": 0.5
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9302,
+      "line_coverage": 0.9419,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 16950,
     "output_tokens": 6665,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1341,
       "description": "Define a test method annotated with `@Test` that declares it may throw `ParseException`, then create three `Option` instances by invoking `Option.builder()` followed by chaining `.option(\"a\")`, `.longOpt(\"first-letter\")`, and `.get()` for the first option assigned to variable `a`, repeating the pattern with `.option(\"b\")` and `.longOpt(\"second-letter\")` for variable `b`, and `.option(\"c\")` with `.longOpt(\"third-letter\")` for variable `c`. Instantiate a new `Options` object assigned to variable `options`, then invoke `addOption` on `options` three times passing `a`, `b`, and `c` respectively. Declare a `String` array variable `args` initialized with the literal values `\"-a\"`, `\"-b\"`, `\"-c\"`, `\"-d\"`, `\"arg1\"`, and `\"arg2\"` in that order. Instantiate a new `DefaultParser` assigned to variable `parser`, then invoke `parse` on `parser` with arguments `options`, `args`, `null`, and boolean literal `true`, assigning the result to variable `commandLine` of type `CommandLine`. Immediately assert using `assertEquals` that integer literal `3` equals the length of the array returned by invoking `getOptions()` on `commandLine`, then assert using `assertEquals` that integer literal `3` equals the length of the array returned by invoking `getArgs()` on `commandLine`. Invoke `getArgList()` on `commandLine` and chain `.contains(\"-d\")`, wrapping the result in `assertTrue`, then repeat this pattern with `assertTrue(commandLine.getArgList().contains(\"arg1\"))` and `assertTrue(commandLine.getArgList().contains(\"arg2\"))`. Use `assertThrows` to capture an `UnrecognizedOptionException` by passing `UnrecognizedOptionException.class` and a lambda expression that invokes `parser.parse(options, args, null, false)`, assigning the caught exception to variable `e`, then assert using `assertTrue` that invoking `getMessage()` on `e` followed by `.contains(\"-d\")` returns true. The test uses JUnit 5 Assertions with method-level annotation `@Test` and declares `ParseException` in the throws clause.",
@@ -1171,36 +1171,36 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nclass DefaultParserTest1 {\n\n    @Test\n    void testStopAtNonOption() throws ParseException {\n        final Option a = Option.builder().option(\"a\").longOpt(\"first-letter\").get();\n        final Option b = Option.builder().option(\"b\").longOpt(\"second-letter\").get();\n        final Option c = Option.builder().option(\"c\").longOpt(\"third-letter\").get();\n\n        final Options options = new Options();\n        options.addOption(a);\n        options.addOption(b);\n        options.addOption(c);\n\n        final String[] args = {\"-a\", \"-b\", \"-c\", \"-d\", \"arg1\", \"arg2\"};\n\n        final DefaultParser parser = new DefaultParser();\n\n        final CommandLine commandLine = parser.parse(options, args, null, true);\n\n        assertEquals(3, commandLine.getOptions().length);\n        assertEquals(3, commandLine.getArgs().length);\n        assertTrue(commandLine.getArgList().contains(\"-d\"));\n        assertTrue(commandLine.getArgList().contains(\"arg1\"));\n        assertTrue(commandLine.getArgList().contains(\"arg2\"));\n\n        final UnrecognizedOptionException e = assertThrows(UnrecognizedOptionException.class, () -> {\n            parser.parse(options, args, null, false);\n        });\n        assertTrue(e.getMessage().contains(\"-d\"));\n    }\n}",
+      "method_signature": "testLegacyStopAtNonOption()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.9722,
+      "focal_recall": 0.8333,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9767,
+      "line_coverage": 0.9593,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 4240624,
     "output_tokens": 26491,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1444,
       "description": "Define a test method that validates the Option Builder's enforcement of mandatory configuration constraints by verifying that IllegalStateException is thrown when attempting to construct an Option without specifying either a short or long option name. Obtain a new Option Builder instance without providing any option identifier, then configure it with a description string before invoking the build method within an assertion that expects an IllegalStateException to be raised, confirming that the builder rejects incomplete configurations. Repeat this validation pattern by obtaining another unconfigured Option Builder instance, applying the same description configuration, and this time invoking the get method within an assertion that similarly expects an IllegalStateException, thereby verifying that both construction pathways enforce the requirement for at least one option identifier to be present before allowing Option instantiation. This test uses JUnit 5 for the testing framework and its assertion capabilities.",
@@ -1211,36 +1211,36 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.OptionBuilderTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link Option.Builder}.\n */\nclass OptionBuilderTest1 {\n\n    @Test\n    void testIncompleteConfiguration() {\n        assertThrows(IllegalStateException.class, () -> Option.builder().desc(\"description\").build(),\n                \"Building an Option without an identifier should throw an IllegalStateException.\");\n\n        // The test description explicitly mentions a 'get' method as a second construction pathway.\n        // Assuming 'get' is a synonym for 'build' as Option.Builder does not have a 'get' method.\n        assertThrows(IllegalStateException.class, () -> Option.builder().desc(\"description\").build(),\n                \"Construction via the second pathway without an identifier should also throw an IllegalStateException.\");\n    }\n}",
+      "method_signature": "testCli343Part2()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 23598,
     "output_tokens": 9231,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 1445,
       "description": "Define a test method that verifies the `Option.Builder` throws `IllegalStateException` when attempting to finalize an incomplete builder configuration. Begin by invoking `assertThrows` with `IllegalStateException.class` as the first argument and a lambda expression as the second argument, where the lambda calls `Option.builder()` to obtain a new `Builder` instance, immediately chains `required(false)` passing the boolean literal `false`, then chains `build()` to attempt construction, expecting this sequence to throw `IllegalStateException` due to the absence of a required option identifier. Following this first assertion, invoke `assertThrows` again with `IllegalStateException.class` and another lambda expression, where the lambda calls `Option.builder()` to obtain a fresh `Builder` instance, chains `required(false)` with boolean literal `false`, then chains `get()` instead of `build()` to attempt finalization, expecting this alternative finalization method to also throw `IllegalStateException` for the same reason of missing option configuration. The test uses JUnit 5 Assertions via the `@Test` annotation.",
@@ -1251,33 +1251,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.OptionBuilderTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link Option.Builder}.\n */\npublic class OptionBuilderTest1 {\n\n    @Test\n    public void testIncompleteBuilderConfiguration() {\n        assertThrows(IllegalStateException.class, () -> Option.builder().required(false).build());\n        assertThrows(IllegalStateException.class, () -> Option.builder().required(false).get());\n    }\n}",
+      "method_signature": "testCli343Part1()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 28169,
     "output_tokens": 1776,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -1400,7 +1400,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 819,
       "description": "Define a test class that maintains two static final fields: an Option instance representing a verbosity flag and an Options collection to hold the available command-line options, then construct a test method that instantiates a DefaultParser and invokes its parse method with the Options collection and a string array containing a single short-form switch argument. Upon successful parsing, capture the resulting CommandLine object and verify that querying the option count returns the expected value of one when accessed through three different mechanisms: first by passing the Option instance directly, then by passing the long-form option name as a string, and finally by passing the short-form option character. Each assertion confirms that the parser correctly recognized and registered the single switch argument across all supported lookup methods. This test uses JUnit for the test framework and standard assertion methods for validation.",
@@ -1411,33 +1411,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DefaultParserTest1 {\n\n    private static final Option VERBOSITY_OPTION = new Option(\"v\", \"verbose\", false, \"Enable verbose output\");\n\n    private static final Options OPTIONS = new Options();\n    static {\n        OPTIONS.addOption(VERBOSITY_OPTION);\n    }\n\n    @Test\n    public void testParseShortSwitch() throws ParseException {\n        final DefaultParser parser = new DefaultParser();\n        final String[] args = {\"-v\"};\n        final CommandLine cmd = parser.parse(OPTIONS, args);\n        assertEquals(1, cmd.getOptionCount(VERBOSITY_OPTION));\n        assertEquals(1, cmd.getOptionCount(\"verbose\"));\n        assertEquals(1, cmd.getOptionCount('v'));\n    }\n}",
+      "method_signature": "testOneSwitch()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9722,
+      "line_coverage": 0.9369,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 91140,
     "output_tokens": 1991,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -1640,7 +1640,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 833,
       "description": "Define a test class containing two private static final fields: `VERBOSITY` of type `org.apache.commons.cli.Option` and `OPTIONS` of type `org.apache.commons.cli.Options`, which must be initialized in a static initializer block or field declarations before the test method executes. Within the test method annotated with `@Test` and declared to throw `ParseException`, instantiate a new `DefaultParser` by invoking its no-argument constructor, then immediately invoke `parse` on this parser instance, passing `OPTIONS` as the first argument and a new empty `String` array (created via `new String[]{}`) as the second argument, assigning the returned `CommandLine` object to a local variable named `cmdLine`. Following this assignment, invoke `assertEquals` with integer literal `0` as the first argument and the result of calling `getOptionCount` on `cmdLine` with argument `VERBOSITY` as the second argument, thereby asserting that the option count for `VERBOSITY` in the parsed command line equals zero. The test uses class-level annotation: none; method-level annotation: `@Test`; assertion library: JUnit 5 Assertions (via `assertEquals`); and no mocking libraries are present.",
@@ -1651,36 +1651,36 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.DefaultParserTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test class for the DefaultParser.\n */\npublic class DefaultParserTest1 {\n\n    private static final Option VERBOSITY = new Option(\"v\", \"verbose\", false, \"be verbose\");\n\n    private static final Options OPTIONS = new Options();\n    static {\n        OPTIONS.addOption(VERBOSITY);\n    }\n\n    @Test\n    void testGetOptionCount() throws ParseException {\n        final DefaultParser parser = new DefaultParser();\n        final CommandLine cmdLine = parser.parse(OPTIONS, new String[]{});\n        assertEquals(0, cmdLine.getOptionCount(VERBOSITY));\n    }\n}",
+      "method_signature": "testNoSwitch()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.88,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 34091,
     "output_tokens": 2813,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 834,
       "description": "Create a test case to validate that the command-line processing system correctly recognizes and counts a single switch option when provided by the user, ensuring the system can identify the option through multiple reference methods including its short name, long name, and character representation. Configure the system with a verbosity option that accepts a short flag format, then simulate a user submitting a command with the verbosity flag enabled using its abbreviated form. After processing the command input, verify that the system correctly registers exactly one occurrence of the verbosity option and confirms this count is accessible whether querying by the option's full configuration object, its string-based short name, or its character identifier, ensuring all three query methods return the same count of one to demonstrate consistent option tracking across different access patterns. Use JUnit 5 as the testing framework and verify the expected counts using standard equality assertions.",
@@ -1691,33 +1691,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.OptionCountTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for checking the option count.\n */\npublic class OptionCountTest1 {\n\n    @Test\n    public void testSingleSwitchOptionCount() throws ParseException {\n        // 1. Configure the system with a verbosity option\n        final Options options = new Options();\n        final Option verbosityOption = new Option(\"v\", \"verbose\", false, \"Enable verbosity\");\n        options.addOption(verbosityOption);\n\n        // 2. Simulate user input with the verbosity flag\n        final String[] args = {\"-v\"};\n\n        // 3. Process the command input\n        final CommandLineParser parser = new DefaultParser();\n        final CommandLine cmd = parser.parse(options, args);\n\n        // 4. Verify the option count through multiple access methods\n        assertEquals(1, cmd.getOptionCount(verbosityOption), \"Count by Option object should be 1\");\n        assertEquals(1, cmd.getOptionCount(\"v\"), \"Count by short name string should be 1\");\n        assertEquals(1, cmd.getOptionCount('v'), \"Count by character identifier should be 1\");\n    }\n}",
+      "method_signature": "testOneSwitch()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.3333,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.7273,
       "focal_recall": 0.0,
       "focal_precision": 0.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9722,
+      "line_coverage": 0.9369,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 174241,
     "output_tokens": 5485,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -1920,7 +1920,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 858,
       "description": "Define a test method that validates the Builder's enforcement of required configuration state before constructing an Option instance. Invoke the static builder factory method on the Option class without providing any configuration parameters, then immediately attempt to retrieve the constructed Option by calling the get method on the returned Builder instance. Assert that this invocation throws an IllegalStateException, confirming that the Builder correctly prevents construction when neither the short option name nor the long option name has been specified. This test uses JUnit 5 for the test framework and its assertion mechanism for exception validation.",
@@ -1931,33 +1931,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.OptionBuilderTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link Option.Builder}.\n */\npublic class OptionBuilderTest1 {\n\n    @Test\n    public void testMissingOptAndLongOpt() {\n        assertThrows(IllegalStateException.class, () -> Option.builder().get());\n    }\n}",
+      "method_signature": "testBuilderEmpty()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.6667,
+      "line_coverage": 0.8095,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 15929,
     "output_tokens": 1526,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -2160,7 +2160,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 878,
       "description": "Define a test method annotated with `@ParameterizedTest` and `@ValueSource(ints = { -100, -1, 0 })` accepting a single `int` parameter named `width`, then instantiate a new `Options` object by invoking its no-argument constructor and assign it to variable `options`, immediately invoke `addOption` on `options` with arguments `\"h\"`, `\"help\"`, boolean `false`, and String literal `\"Show help\"`, create a new `StringWriter` instance by invoking its no-argument constructor and assign it to variable `out`, construct a new `PrintWriter` by passing `out` to its constructor and assign it to variable `pw`, instantiate a new `HelpFormatter` using its no-argument constructor and immediately invoke `printOptions` on it with arguments `pw`, the parameter `width`, `options`, integer literal `1`, and integer literal `3`, invoke `toString()` on `out` and assign the returned String to variable `result`, and assert that `result` is not null using `assertNotNull(result)`. Class-level annotations: None. Method-level annotations: `@ParameterizedTest`, `@ValueSource(ints = { -100, -1, 0 })`. Assertion library: JUnit 5 Assertions. Mocking library: None.",
@@ -2171,33 +2171,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.HelpFormatterTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.io.PrintWriter;\nimport java.io.StringWriter;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.ValueSource;\n\npublic class HelpFormatterTest1 {\n\n    @ParameterizedTest\n    @ValueSource(ints = { -100, -1, 0 })\n    public void testPrintOptions(int width) {\n        Options options = new Options();\n        options.addOption(\"h\", \"help\", false, \"Show help\");\n        StringWriter out = new StringWriter();\n        PrintWriter pw = new PrintWriter(out);\n        HelpFormatter formatter = new HelpFormatter();\n        formatter.printOptions(pw, width, options, 1, 3);\n        String result = out.toString();\n        assertNotNull(result);\n    }\n}",
+      "method_signature": "testDeprecatedPrintOptionsZeroWidth(int)"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 23162,
     "output_tokens": 1520,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -2280,7 +2280,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 886,
       "description": "Define a test method annotated with `@Test` that begins by instantiating a new `ArrayList<String>` and assigning it to a variable named `originalList`, then invoke `add` on `originalList` with the String literal `\"optA\"` followed by another invocation of `add` with the String literal `\"optB\"`. Next, instantiate a `MissingOptionException` by passing `originalList` as the constructor argument and assign the resulting exception object to a variable named `exception`. Immediately invoke `getMessage()` on `exception` and assert using `assertEquals` that the returned String equals exactly `\"Missing required options: optA, optB\"`. Following this assertion, construct a second `MissingOptionException` by passing a freshly instantiated empty `ArrayList<>()` as the constructor argument, invoke `getMessage()` on this inline exception instance, and assert using `assertEquals` that the returned String equals exactly `\"Missing required options: \"`. The test uses JUnit 5 Assertions with the `assertEquals` method and operates on the application class `MissingOptionException` from package `org.apache.commons.cli`.",
@@ -2291,33 +2291,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.MissingOptionExceptionTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.util.ArrayList;\nimport java.util.List;\nimport org.junit.jupiter.api.Test;\n\npublic class MissingOptionExceptionTest1 {\n\n    @Test\n    public void testGetMessage() {\n        final List<String> originalList = new ArrayList<>();\n        originalList.add(\"optA\");\n        originalList.add(\"optB\");\n        final MissingOptionException exception = new MissingOptionException(originalList);\n        assertEquals(\"Missing required options: optA, optB\", exception.getMessage());\n        assertEquals(\"Missing required options: \", new MissingOptionException(new ArrayList<>()).getMessage());\n    }\n}",
+      "method_signature": "testGetMessage()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 36121,
     "output_tokens": 2685,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -2800,7 +2800,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 945,
       "description": "Define a test method annotated with `@Test` that declares it throws `IOException`, then instantiate two `Option` objects by invoking the constructor `new Option(\"o1\", \"Descr\")` and assigning the result to `o1`, and similarly `new Option(\"o2\", \"Descr\")` assigning to `o2`, after which instantiate an `Options` object via `new Options()` and assign it to `options`, then invoke `addOption` on `options` passing `o1` as the argument, followed by invoking `addOption` on `options` passing `o2`, next instantiate an `OptionGroup` via `new OptionGroup()` and assign it to `group`, then invoke `addOption` on `group` passing `o1`, followed by invoking `addOption` on `group` passing `o2`, and then invoke `addOptionGroup` on `options` passing `group` as the argument, after which instantiate a `StringBuilder` via `new StringBuilder()` and assign it to `output`, then construct a `HelpFormatter` by invoking the static method `org.apache.commons.cli.help.HelpFormatter.builder()` which returns a `Builder`, chain `setShowSince(false)` on that builder, chain `setHelpAppendable(new TextHelpAppendable(output))` where the `TextHelpAppendable` is constructed by passing `output` as the constructor argument, and finally chain `get()` to obtain the `HelpFormatter` instance, assigning the entire result to `newFormatter`, then invoke `printHelp` on `newFormatter` with arguments `\"Command\"`, `null`, `options`, `null`, and the boolean literal `true`, and immediately assert by invoking `assertTrue` passing the result of invoking `contains` on the string obtained by calling `toString()` on `output`, where the argument to `contains` is the string literal `\"[-o1 | -o2]\"`, with class-level annotations being none, method-level annotations being `@Test`, assertion library being JUnit 5 Assertions, and no mocking libraries present.",
@@ -2811,33 +2811,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.help.HelpFormatterTest1",
+      "code": "package org.apache.commons.cli.help;\n\nimport org.apache.commons.cli.Option;\nimport org.apache.commons.cli.Options;\nimport org.apache.commons.cli.OptionGroup;\nimport org.junit.jupiter.api.Test;\nimport java.io.IOException;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class HelpFormatterTest1 {\n\n    @Test\n    public void testPrintHelpWithOptionGroup() throws IOException {\n        Option o1 = new Option(\"o1\", \"Descr\");\n        Option o2 = new Option(\"o2\", \"Descr\");\n        Options options = new Options();\n        options.addOption(o1);\n        options.addOption(o2);\n        OptionGroup group = new OptionGroup();\n        group.addOption(o1);\n        group.addOption(o2);\n        options.addOptionGroup(group);\n        StringBuilder output = new StringBuilder();\n        HelpFormatter newFormatter = org.apache.commons.cli.help.HelpFormatter.builder()\n                .setShowSince(false)\n                .setHelpAppendable(new TextHelpAppendable(output))\n                .get();\n        newFormatter.printHelp(\"Command\", null, options, null, true);\n        assertTrue(output.toString().contains(\"[-o1 | -o2]\"));\n    }\n}",
+      "method_signature": "verifyOptionGroupingOutput()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 0.9286,
+      "line_coverage": 0.9462,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 30427,
     "output_tokens": 1823,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -2960,7 +2960,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 967,
       "description": "Define a test method that verifies the `Option.Builder` class throws `IllegalStateException` when attempting to build an option without specifying either a short option name or long option name. Begin by invoking the static method `Option.builder()` with no arguments to obtain a fresh `Option.Builder` instance, then immediately chain the `desc` method passing the String literal `\"description\"` as the argument, which returns the same builder instance, and finally chain the `build` method to attempt construction of the `Option`, wrapping this entire fluent chain inside a lambda expression passed to `assertThrows` with the first argument being `IllegalStateException.class` to verify that this exact exception type is thrown during the build attempt. Next, invoke `Option.builder()` again with no arguments to obtain another fresh `Option.Builder` instance, chain the `desc` method passing the String literal `\"description\"`, and this time chain the `get` method instead of `build` to attempt construction, wrapping this entire fluent chain inside a second lambda expression passed to `assertThrows` with `IllegalStateException.class` as the first argument to verify that the same exception type is thrown when using the `get` method without a valid option identifier. The test uses JUnit 5 Assertions with the `@Test` annotation at the method level.",
@@ -2971,33 +2971,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.OptionBuilderTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\nclass OptionBuilderTest1 {\n\n    @Test\n    void testMissingOptionName() {\n        assertThrows(IllegalStateException.class, () -> Option.builder().desc(\"description\").build());\n        assertThrows(IllegalStateException.class, () -> Option.builder().desc(\"description\").get());\n    }\n}",
+      "method_signature": "testCli343Part2()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 22825,
     "output_tokens": 1065,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -3040,7 +3040,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 971,
       "description": "Define a test method annotated with `@Test` that begins by declaring a final String variable `key` initialized to the literal `\"a\"`, then instantiate an `Option` object named `option` by invoking the constructor with arguments `key`, the String literal `\"along\"`, the boolean literal `false`, and the String literal `\"Option A\"`, after which invoke `setRequired` on `option` passing the boolean literal `true` to mark it as required. Next, instantiate an `Options` object named `options` using the no-argument constructor, then invoke `addOption` on `options` passing `option` as the argument to register the option. Immediately assert using `assertTrue` that the result of invoking `getRequiredOptions()` on `options` and chaining `contains(key)` returns `true`, verifying the option appears in the required list. Following this verification, instantiate an `OptionGroup` object named `optionGroup` using the no-argument constructor, then invoke `addOption` on `optionGroup` passing `option` as the argument to add the option to the group. Subsequently, invoke `addOptionGroup` on `options` passing `optionGroup` as the argument to register the group with the options collection. After adding the group, invoke `getOption` on `options` with argument `key`, chain `isRequired()` on the returned `Option`, and assert using `assertFalse` that the result is `false`, confirming the option is no longer marked as required. Finally, invoke `getRequiredOptions()` on `options`, chain `contains(key)` on the returned list, and assert using `assertFalse` with the message `\"Option in group shouldn't be in required options list.\"` that the result is `false`, verifying the option has been removed from the required options list upon group assignment. The test class is annotated with `@SuppressWarnings(\"deprecation\")`, the test method uses `@Test`, relies on JUnit 5 Assertions for `assertTrue` and `assertFalse`, and exercises the `Options`, `Option`, and `OptionGroup` classes from `org.apache.commons.cli`.",
@@ -3051,33 +3051,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.cli.OptionsTest1",
+      "code": "package org.apache.commons.cli;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\n@SuppressWarnings(\"deprecation\")\npublic class OptionsTest1 {\n\n    @Test\n    public void testRequiredOptionInGroup() {\n        final String key = \"a\";\n        final Option option = new Option(key, \"along\", false, \"Option A\");\n        option.setRequired(true);\n\n        final Options options = new Options();\n        options.addOption(option);\n\n        assertTrue(options.getRequiredOptions().contains(key));\n\n        final OptionGroup optionGroup = new OptionGroup();\n        optionGroup.addOption(option);\n        options.addOptionGroup(optionGroup);\n\n        assertFalse(options.getOption(key).isRequired());\n        assertFalse(options.getRequiredOptions().contains(key), \"Option in group shouldn't be in required options list.\");\n    }\n}",
+      "method_signature": "testRequiredOptionInGroupShouldNotBeInRequiredList()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 44373,
     "output_tokens": 1571,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,

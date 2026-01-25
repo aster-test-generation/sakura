@@ -11,9 +11,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "package org.apache.commons.pool3;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n/**\n * Tests for {@link PooledObject}.\n */\npublic class PooledObjectTest1 {\n\n    @Test\n    public void testNonNull() {\n        // Test that a direct null returns false.\n        assertFalse(PooledObject.nonNull(null));\n\n        // Test that a wrapped null returns false.\n        final PooledObject<String> nullWrapper = new DefaultPooledObject<>(null);\n        assertFalse(PooledledObject.nonNull(nullWrapper));\n\n        // Test that a wrapped non-null returns true.\n        final PooledObject<String> nonNullWrapper = new DefaultPooledObject<>(\"test\");\n        assertTrue(PooledObject.nonNull(nonNullWrapper));\n    }\n}",
+      "method_signature": "testNonNull()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -36,8 +36,8 @@
     "input_tokens": 34173,
     "output_tokens": 3365,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -80,7 +80,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 425,
       "description": "Create a test case to validate the system's ability to correctly determine whether a managed resource container holds a valid object or represents an empty or missing state. First, verify that when no container is provided at all, the system recognizes this as an invalid state. Next, confirm that when a container exists but holds no actual object inside, the system also identifies this as invalid. Finally, ensure that when a container holds a legitimate object with actual content, the system correctly recognizes this as a valid, usable resource. The validation should confirm the system's ability to distinguish between truly available resources and those that are absent or incomplete, which is essential for resource management operations. Use JUnit 5 for the testing framework with standard boolean assertions to verify each scenario returns the expected validity status.",
@@ -91,36 +91,36 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.pool3;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n/**\n * Tests for {@link PooledObject}.\n */\npublic class PooledObjectTest1 {\n\n    @Test\n    public void testResourceValidation() {\n        // Scenario 1: No container provided at all (null)\n        // System should recognize this as an invalid state.\n        assertFalse(PooledObject.nonNull(null), \"A null container should be considered invalid\");\n\n        // Scenario 2: Container exists but holds no actual object\n        // System should also identify this as invalid.\n        PooledObject<Object> emptyContainer = new DefaultPooledObject<>(null);\n        assertFalse(PooledObject.nonNull(emptyContainer), \"A container with a null object should be considered invalid\");\n\n        // Scenario 3: Container holds a legitimate object\n        // System should correctly recognize this as a valid, usable resource.\n        PooledObject<String> validContainer = new DefaultPooledObject<>(\"test_content\");\n        assertTrue(PooledObject.nonNull(validContainer), \"A container with a non-null object should be considered valid\");\n    }\n}",
+      "method_signature": "testNonNull()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 211832,
     "output_tokens": 4463,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 426,
       "description": "Define a test method that validates the static null-checking utility method on the PooledObject interface by examining three distinct scenarios involving wrapped object states. Begin by invoking the isNull utility method with a direct null reference and assert that it correctly identifies this as a null condition. Next, instantiate a DefaultPooledObject wrapper configured with a null internal object, pass this wrapper to the isNull method, and verify that it returns true, confirming the method detects null-wrapped objects. Then create another DefaultPooledObject instance but this time wrap a non-null string value, invoke the isNull method with this populated wrapper, and assert that it returns false, demonstrating the method distinguishes between null and valid wrapped objects. This test uses JUnit for assertions.",
@@ -131,36 +131,36 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "package org.apache.commons.pool3;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n/**\n * Tests for {@link PooledObject}.\n */\npublic class PooledObjectTest1 {\n\n    @Test\n    public void testIsNull() {\n        assertTrue(PooledObject.isNull(null));\n        assertTrue(PooledObject.isNull(new DefaultPooledObject<>(null)));\n        assertFalse(PooledObject.isNull(new DefaultPooledObject<>(\"test\")));\n    }\n}",
+      "method_signature": "testIsNull()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 23258,
     "output_tokens": 1036,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 427,
       "description": "Define a test method that verifies the static `getObject` method of the `PooledObject` interface handles null inputs and wrapped objects correctly. Begin by invoking `PooledObject.getObject` with a `null` argument and assert that the result is null using `assertNull`. Next, instantiate a `DefaultPooledObject` by passing `null` to its constructor, then invoke `PooledObject.getObject` with this instance as the argument, and assert that the returned value is null using `assertNull`. Finally, create another `DefaultPooledObject` instance by passing the String literal `\"a\"` to its constructor, invoke `PooledObject.getObject` with this instance, and assert that the result is not null using `assertNotNull`. The test uses JUnit 5 Assertions and no mocking libraries, with method-level annotation `@Test` and no class-level annotations.",
@@ -171,33 +171,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "package org.apache.commons.pool3;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertNull;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link PooledObject}.\n */\nclass PooledObjectTest1 {\n\n    @Test\n    void testGetObject() {\n        assertNull(PooledObject.getObject(null));\n        assertNull(PooledObject.getObject(new DefaultPooledObject<>(null)));\n        assertNotNull(PooledObject.getObject(new DefaultPooledObject<>(\"a\")));\n    }\n\n}",
+      "method_signature": "testGetObject()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 0.5,
+      "method_coverage": 0.6667,
+      "line_coverage": 0.5385,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 58693,
     "output_tokens": 5640,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -240,7 +240,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 433,
       "description": "Define a test method annotated with `@Test` that verifies the static method `isNull` on the `PooledObject` interface by executing three distinct assertion scenarios in sequence. Begin by invoking `PooledObject.isNull` with the literal `null` argument and assert the result is true using `assertTrue`. Next, instantiate a `DefaultPooledObject` by calling its constructor with the argument `null`, pass this newly created instance to `PooledObject.isNull`, and assert the result is true using `assertTrue`. Finally, instantiate another `DefaultPooledObject` by calling its constructor with the String literal `\"a\"` as the argument, pass this instance to `PooledObject.isNull`, and assert the result is false using `assertFalse`. The test uses JUnit 5 Assertions (`assertTrue`, `assertFalse`) and requires no class-level annotations, field declarations, setup methods, or teardown methods.",
@@ -251,33 +251,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "package org.apache.commons.pool3;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests {@link PooledObject}.\n */\npublic class PooledObjectTest1 {\n\n    @Test\n    public void testIsNull() {\n        assertTrue(PooledObject.isNull(null));\n        final PooledObject<Object> p = new DefaultPooledObject<>(null);\n        assertTrue(PooledObject.isNull(p));\n        final PooledObject<String> p2 = new DefaultPooledObject<>(\"a\");\n        assertFalse(PooledObject.isNull(p2));\n    }\n\n}",
+      "method_signature": "testIsNull()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 20160,
     "output_tokens": 2098,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,

@@ -1851,9 +1851,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.jexl3.AnnotationTest1",
+      "code": "package org.apache.commons.jexl3;\n\nimport java.util.Collections;\nimport java.util.HashSet;\nimport java.util.Set;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n@SuppressWarnings({\"UnnecessaryBoxing\", \"AssertEqualsBetweenInconvertibleTypes\"})\npublic class AnnotationTest1 {\n\n    static final JexlEngine JEXL = new JexlBuilder().cache(512).create();\n\n    public static class AnnotationContext extends MapContext implements JexlContext.AnnotationProcessor {\n        private int count = 0;\n        private final Set<String> names = new HashSet<>();\n\n        @Override\n        public Object processAnnotation(final String name, final Object[] args, final JexlInfo info) {\n            count += 1;\n            names.add(name);\n            return name;\n        }\n\n        public int getCount() {\n            return count;\n        }\n\n        public Set<String> getNames() {\n            return names;\n        }\n    }\n\n    private void debuggerCheck(final JexlEngine ijexl) {\n        Util.debuggerCheck(ijexl);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        debuggerCheck(JEXL);\n    }\n\n    @Test\n    public void testBlockStatements() throws Exception {\n        final AnnotationTest.AnnotationContext jc = new AnnotationTest.AnnotationContext();\n        JexlScript e;\n        Object r;\n\n        e = JEXL.createScript(\"let n = 41 @synchronized { n += 1; }\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n        assertEquals(1, jc.getCount());\n        assertTrue(jc.getNames().contains(\"synchronized\"));\n\n        e = JEXL.createScript(\"let n = 41 @synchronized { n += 1 }\");\n        r = e.execute(jc);\n        assertEquals(Collections.singleton(42), r);\n        assertEquals(2, jc.getCount());\n        assertTrue(jc.getNames().contains(\"synchronized\"));\n\n        e = JEXL.createScript(\"let n = 41 { n += 1 }\");\n        r = e.execute(jc);\n        assertEquals(Collections.singleton(42), r);\n\n        e = JEXL.createScript(\"let n = 41 { n += 1; }\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\"{ 'A' : 1, 'B' : 42 }['B']\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\"{ n = 42; }\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\" @synchronized(y) { n = 42; }\", \"y\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\"{ n = 42 }\");\n        r = e.execute(jc);\n        assertEquals(Collections.singleton(42), r);\n\n        e = JEXL.createScript(\" @synchronized(z) { n = 42 }\", \"z\");\n        r = e.execute(jc);\n        assertEquals(Collections.singleton(42), r);\n\n        e = JEXL.createScript(\"{ n = 41; m = 42 }\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\"{ 20 + 22; }\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\" @synchronized { 20 + 22; }\");\n        r = e.execute(jc);\n        assertEquals(42, r);\n\n        e = JEXL.createScript(\"{ 6 * 7 }\");\n        r = e.execute(jc);\n        assertEquals(Collections.singleton(42), r);\n    }\n}",
+      "method_signature": "testSetVSBlock()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -1876,8 +1876,8 @@
     "input_tokens": 23197,
     "output_tokens": 8335,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -2211,9 +2211,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.jexl3.SwitchTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.jexl3;\n\nimport org.apache.commons.jexl3.internal.Debugger;\nimport org.junit.After;\nimport org.junit.Test;\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertTrue;\nimport static org.junit.Assert.fail;\nimport java.util.Collections;\n\n/**\n * Tests for switch statement\n */\npublic class SwitchTest1 {\n\n    private JexlEngine jexl;\n\n    public enum E {\n        ONE, TWO\n    }\n\n    @After\n    public void tearDown() {\n        if (jexl != null) {\n            new Debugger().validate(jexl);\n        }\n    }\n\n    @Test\n    public void testSwitchEnumStatement() throws Exception {\n        jexl = new JexlBuilder()\n                .loader(this.getClass().getClassLoader())\n                .imports(Collections.singletonList(SwitchTest.class.getName()))\n                .create();\n        \n        final String src = \"(x) -> { switch(x) { case E.ONE: 'one'; } }\";\n        final JexlScript script = jexl.createScript(src, \"x\");\n\n        final Object result = script.execute(null, E.ONE);\n        assertEquals(\"one\", result);\n\n        try {\n            script.execute(null, E.TWO);\n            fail(\"script should not execute successfully when the switch expression lacks a default case\");\n        } catch (final JexlException.Switch ex) {\n            final String msg = ex.getMessage();\n            assertTrue(msg.contains(\"switch\"));\n        }\n    }\n}",
+      "method_signature": "test440e()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -2236,8 +2236,8 @@
     "input_tokens": 23617,
     "output_tokens": 4454,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,

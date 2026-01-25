@@ -14,18 +14,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ROOT_DIR = Path(__file__).parent.parent.parent.resolve()
-CLEANED_RESULTS_DIR = ROOT_DIR / "resources" / "cleaned_evaluation"
-OUTPUT_DIR = ROOT_DIR / "resources" / "diagrams"
+CLEANED_RESULTS_DIR = ROOT_DIR / "outputs" / "evaluation_stats"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "diagrams"
 
 INPUT_FILES: dict[str, str] = {
-    "gemini_cli_200_eval.json": "Gemini CLI (Pro 2.5)",
-    "nl2test_subset_40_gemini_flash_eval.json": "NL2Test (Gemini Flash 2.5)",
-    "nl2test_subset_40_gemini_pro_low_eval.json": "NL2Test (Gemini Pro 2.5)",
-    "nl2test_subset_40_deepseek_v3.2_eval.json": "NL2Test (DeepSeek V3.2)",
-    "nl2test_subset_40_devstral_eval.json": "NL2Test (Devstral)",
-    "nl2test_subset_40_minimax_eval.json": "NL2Test (Minimax M2.1)",
-    "nl2test_subset_40_mimo_v2_flash_eval.json": "NL2Test (Mimo V2 Flash)",
-    "nl2test_subset_40_qwen3_coder_eval.json": "NL2Test (Qwen3-Coder)",
+    "gemini_cli_flash_eval.json": "Gemini CLI (Flash 2.5)",
+    "gemini_cli_pro_eval.json": "Gemini CLI (Pro 2.5)",
+    "nl2test_gemini_flash_eval.json": "NL2Test (Flash 2.5)",
+    "nl2test_gemini_pro_eval.json": "NL2Test (Pro 2.5)",
+    # "gemini_cli_200_eval.json": "Gemini CLI (Pro 2.5)",
+    # "nl2test_subset_40_gemini_flash_eval.json": "NL2Test (Gemini Flash 2.5)",
+    # "nl2test_subset_40_gemini_pro_low_eval.json": "NL2Test (Gemini Pro 2.5)",
+    # "nl2test_subset_40_deepseek_v3.2_eval.json": "NL2Test (DeepSeek V3.2)",
+    # "nl2test_subset_40_devstral_eval.json": "NL2Test (Devstral)",
+    # "nl2test_subset_40_minimax_eval.json": "NL2Test (Minimax M2.1)",
+    # "nl2test_subset_40_mimo_v2_flash_eval.json": "NL2Test (Mimo V2 Flash)",
+    # "nl2test_subset_40_qwen3_coder_eval.json": "NL2Test (Qwen3-Coder)",
 }
 
 # Color palette for multiple datasets

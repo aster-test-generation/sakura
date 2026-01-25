@@ -21,10 +21,6 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 from make_other_agent_eval import (
-    PROJECTS_DIR,
-    RUN_DIR_NAME,
-    TEMP_ANALYSIS_DIR,
-    ProjectContext,
     build_project_context,
     evaluate_entry,
     index_test2nl_entries,
@@ -37,18 +33,18 @@ from nltest.utils.pretty.color_logger import RichLog
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 OLD_EVAL_DIR = (
-    ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation"
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"
 )
 NEW_EVAL_DIR = (
-    ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation_updated"
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output_updated"
 )
-AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output"
+AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_pro_output"
 TEST2NL_DIR = ROOT_DIR / "resources" / "test2nl" / "filtered_dataset"
 TEST2NL_FILE_NAME = "test2nl.csv"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 
 # Re-grading criteria flags
-REGRADE_NO_CODE_GENERATION = False  # Re-grade entries with failed_code_generation=True
+REGRADE_NO_CODE_GENERATION = True  # Re-grade entries with failed_code_generation=True
 
 # Parallelization settings
 NUM_PROJ_PARALLEL = 20

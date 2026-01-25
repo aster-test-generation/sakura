@@ -4,7 +4,7 @@ import csv
 import json
 from pathlib import Path
 
-EVAL_DIR = Path("resources/outputs/nl2test_gemini_flash_output")
+EVAL_DIR = Path("outputs/raw_outputs/gemini_cli_pro_output_updated/")
 TEST2NL_FILE = Path("resources/test2nl/filtered_dataset/test2nl.csv")
 
 

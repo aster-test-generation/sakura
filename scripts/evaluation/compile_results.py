@@ -11,7 +11,7 @@ from pydantic import ValidationError
 
 from nltest.dataset_creation.model import NL2TestDataset, Test
 from nltest.nl2test.models.decomposition import LocalizationEval
-from nltest.utils.models.nl2test import NL2TestEval, NL2TestInput, OutOfBoxAgentEval
+from nltest.utils.models.nl2test import NL2TestInput, OutOfBoxAgentEval
 from nltest.utils.statistics import (
     DistributionSummary,
     build_distributions,
@@ -19,21 +19,15 @@ from nltest.utils.statistics import (
 )
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_flash_output"
-# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_200_output" / "evaluation"
-EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation"
-# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_pro_backup_output_eval"
-# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_gemini_flash_output"
-# EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "nl2test_200_gemini_pro_incomplete_output"
-# EVAL_DIR = ROOT_DIR / "resources" / "output"
+EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
-OUTPUT_DIR = ROOT_DIR / "resources" / "cleaned_evaluation"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "evaluation_stats"
 BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
 BUCKETED_DATASET_FILE = "nl2test.json"
 
 # PRICING_MODEL = "minimax/minimax-m2.1"
 # PRICING_MODEL = "devstral-small-latest"
-PRICING_MODEL = "gemini-2.5-flash"
+PRICING_MODEL = "gemini-2.5-pro"
 # PRICING_MODEL = "qwen/qwen3-coder"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
@@ -53,9 +47,10 @@ DIRS_TO_INCLUDE: List[Path] = [
     # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_mimo_v2_flash_output",
     # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_minimax_output",
     # ROOT_DIR / "resources" / "outputs" / "nl2test_subset_40_qwen3_coder_output"
-    ROOT_DIR / "resources" / "outputs" / "gemini_cli_pro_backup_output_eval",
-    ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output" / "evaluation",
-    ROOT_DIR / "resources" / "outputs" / "nl2test_gemini_flash_output",
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output",
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_flash_output",
+    ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_flash_output",
+    ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_pro_output",
 ]
 
 # Pricing per million tokens (USD)

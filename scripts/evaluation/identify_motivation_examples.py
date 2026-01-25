@@ -11,7 +11,7 @@ import argparse
 import json
 import math
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
 from pydantic import ValidationError
 
@@ -34,6 +34,9 @@ OUTPUT_DIR = ROOT_DIR / "outputs" / "motivation"
 
 # Evaluation file name
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
+
+# Default threshold for "significant" average gap (NL2Test - other)
+DEFAULT_SIGNIFICANT_GAP_THRESHOLD = 0.2
 
 # Type alias for evaluation entries (can be either NL2TestEval or OutOfBoxAgentEval)
 EvalEntry = Union[NL2TestEval, OutOfBoxAgentEval]
@@ -215,21 +218,134 @@ def has_complete_eval_data(entry: EvalEntry) -> bool:
     return entry.structured_eval is not None and entry.coverage_eval is not None
 
 
+def _get_metric_pairs(
+    nl2test_structural: NL2TestStructuralEval,
+    nl2test_coverage: NL2TestCoverageEval,
+    other_structural: NL2TestStructuralEval,
+    other_coverage: NL2TestCoverageEval,
+) -> List[Tuple[float, float]]:
+    """Extract all 8 metric pairs for comparison between NL2Test and other agent.
+
+    Args:
+        nl2test_structural: NL2Test structural evaluation metrics.
+        nl2test_coverage: NL2Test coverage evaluation metrics.
+        other_structural: Other agent structural evaluation metrics.
+        other_coverage: Other agent coverage evaluation metrics.
+
+    Returns:
+        List of (nl2test_value, other_value) tuples for all 8 metrics.
+    """
+    return [
+        # Structural recall metrics
+        (nl2test_structural.obj_creation_recall, other_structural.obj_creation_recall),
+        (nl2test_structural.assertion_recall, other_structural.assertion_recall),
+        (nl2test_structural.callable_recall, other_structural.callable_recall),
+        (nl2test_structural.focal_recall, other_structural.focal_recall),
+        # Coverage metrics
+        (nl2test_coverage.class_coverage, other_coverage.class_coverage),
+        (nl2test_coverage.method_coverage, other_coverage.method_coverage),
+        (nl2test_coverage.line_coverage, other_coverage.line_coverage),
+        (nl2test_coverage.branch_coverage, other_coverage.branch_coverage),
+    ]
+
+
+def nl2test_beats_other(
+    nl2test_structural: NL2TestStructuralEval,
+    nl2test_coverage: NL2TestCoverageEval,
+    other_structural: NL2TestStructuralEval,
+    other_coverage: NL2TestCoverageEval,
+    min_gap: float = 0.0,
+) -> bool:
+    """Check if NL2Test beats other agent on all metrics with optional minimum gap.
+
+    When min_gap == 0: Returns True if all NL2Test metrics >= other, with at least
+    one strictly greater.
+    When min_gap > 0: Returns True if all NL2Test metrics >= other + min_gap
+    (the "at least one strictly greater" requirement is automatically satisfied).
+
+    Uses math.isclose() for floating-point comparisons to avoid precision issues.
+
+    Args:
+        nl2test_structural: NL2Test structural evaluation metrics.
+        nl2test_coverage: NL2Test coverage evaluation metrics.
+        other_structural: Other agent structural evaluation metrics.
+        other_coverage: Other agent coverage evaluation metrics.
+        min_gap: Minimum gap required (NL2Test must be >= other + min_gap).
+
+    Returns:
+        True if NL2Test beats other on all metrics (with gap), False otherwise.
+    """
+    metric_pairs = _get_metric_pairs(
+        nl2test_structural, nl2test_coverage, other_structural, other_coverage
+    )
+
+    # Check all NL2Test metrics >= other + min_gap (with float tolerance)
+    target_vals = [other_val + min_gap for _, other_val in metric_pairs]
+    all_at_least_gap = all(
+        nl2test_val >= target or math.isclose(nl2test_val, target, rel_tol=1e-9)
+        for (nl2test_val, _), target in zip(metric_pairs, target_vals)
+    )
+
+    if not all_at_least_gap:
+        return False
+
+    # When min_gap > 0, the gap requirement already ensures strict improvement
+    if min_gap > 0:
+        return True
+
+    # When min_gap == 0, require at least one metric to be strictly greater
+    # (greater than other AND not approximately equal)
+    return any(
+        nl2test_val > other_val and not math.isclose(nl2test_val, other_val, rel_tol=1e-9)
+        for nl2test_val, other_val in metric_pairs
+    )
+
+
+def compute_average_gap(
+    nl2test_structural: NL2TestStructuralEval,
+    nl2test_coverage: NL2TestCoverageEval,
+    other_structural: NL2TestStructuralEval,
+    other_coverage: NL2TestCoverageEval,
+) -> float:
+    """Compute the average gap between NL2Test and other agent across all 8 metrics.
+
+    Args:
+        nl2test_structural: NL2Test structural evaluation metrics.
+        nl2test_coverage: NL2Test coverage evaluation metrics.
+        other_structural: Other agent structural evaluation metrics.
+        other_coverage: Other agent coverage evaluation metrics.
+
+    Returns:
+        Average gap (NL2Test - other) across all 8 metrics.
+    """
+    metric_pairs = _get_metric_pairs(
+        nl2test_structural, nl2test_coverage, other_structural, other_coverage
+    )
+    gaps = [nl2test_val - other_val for nl2test_val, other_val in metric_pairs]
+    return sum(gaps) / len(gaps)
+
+
 def find_motivation_examples(
     nl2test_dir: Path,
     other_agent_dir: Path,
+    significant_gap_threshold: float = DEFAULT_SIGNIFICANT_GAP_THRESHOLD,
 ) -> Dict[str, Any]:
     """Find entries where NL2Test outperforms other agent.
 
     Identifies two categories:
     1. Compile Gap: NL2Test compiles, other agent doesn't (with failed_code_generation=False)
-    2. Quality Gap: Both compile, but NL2Test quality high and other agent quality low
+    2. Quality Gap: Both compile, NL2Test beats other agent on all 8 metrics
+       - beats_other: All metrics >=, at least one strictly >
+       - significant: Average gap across all metrics > significant_gap_threshold
+       - perfect: All NL2Test metrics = 1.0 while beating other
+       - perfect_significant: Perfect scores AND average gap > significant_gap_threshold
 
     Note: Entries without structural_eval or coverage_eval are skipped.
 
     Args:
         nl2test_dir: Directory with NL2Test evaluation results.
         other_agent_dir: Directory with other agent evaluation results.
+        significant_gap_threshold: Minimum average gap to be considered "significant".
 
     Returns:
         Dictionary with summary and categorized entry IDs.
@@ -251,8 +367,10 @@ def find_motivation_examples(
     compile_gap_perfect: List[int] = []
 
     # Quality Gap buckets
-    quality_gap_high: List[int] = []
+    quality_gap_beats_other: List[int] = []
+    quality_gap_significant: List[int] = []
     quality_gap_perfect: List[int] = []
+    quality_gap_perfect_significant: List[int] = []
 
     for entry_id in sorted(matching_ids):
         nl2test_entry = nl2test_entries[entry_id]
@@ -298,31 +416,40 @@ def find_motivation_examples(
             assert other_entry.structured_eval is not None
             assert other_entry.coverage_eval is not None
 
-            # Check if other agent has low quality (< 0.4)
-            other_low = (
-                check_structural_recall_below(other_entry.structured_eval, 0.4)
-                and check_coverage_below(other_entry.coverage_eval, 0.4)
-            )
+            # high_quality: NL2Test beats other agent on all 8 metrics (at least one strictly >)
+            if nl2test_beats_other(
+                nl2test_entry.structured_eval,
+                nl2test_entry.coverage_eval,
+                other_entry.structured_eval,
+                other_entry.coverage_eval,
+                min_gap=0.0,
+            ):
+                quality_gap_beats_other.append(entry_id)
 
-            if not other_low:
-                continue
+                # Compute average gap for significant checks
+                avg_gap = compute_average_gap(
+                    nl2test_entry.structured_eval,
+                    nl2test_entry.coverage_eval,
+                    other_entry.structured_eval,
+                    other_entry.coverage_eval,
+                )
 
-            # NL2Test high quality (> 0.8)
-            nl2test_high = (
-                check_structural_recall_above(nl2test_entry.structured_eval, 0.8)
-                and check_coverage_above(nl2test_entry.coverage_eval, 0.8)
-            )
+                # significant: Average gap across all metrics > threshold
+                is_significant = avg_gap > significant_gap_threshold
+                if is_significant:
+                    quality_gap_significant.append(entry_id)
 
-            if nl2test_high:
-                quality_gap_high.append(entry_id)
-
-                # Check for perfect (== 1.0)
-                nl2test_perfect = (
+                # perfect: NL2Test achieves perfect scores (1.0) while beating other
+                is_perfect = (
                     check_structural_recall_equals(nl2test_entry.structured_eval, 1.0)
                     and check_coverage_equals(nl2test_entry.coverage_eval, 1.0)
                 )
-                if nl2test_perfect:
+                if is_perfect:
                     quality_gap_perfect.append(entry_id)
+
+                    # perfect_significant: Perfect scores AND significant gap
+                    if is_significant:
+                        quality_gap_perfect_significant.append(entry_id)
 
     return {
         "summary": {
@@ -346,16 +473,26 @@ def find_motivation_examples(
             },
         },
         "quality_gap": {
-            "description": "Both compile, but NL2Test quality high and other agent low (<0.4)",
-            "high_quality": {
-                "description": "NL2Test structural recall > 0.8 and coverage > 0.8",
-                "count": len(quality_gap_high),
-                "entry_ids": quality_gap_high,
+            "description": "Both compile, NL2Test beats other agent on all 8 metrics",
+            "beats_other": {
+                "description": "All NL2Test metrics >= other agent, at least one strictly greater",
+                "count": len(quality_gap_beats_other),
+                "entry_ids": quality_gap_beats_other,
+            },
+            "significant": {
+                "description": f"Average gap across all 8 metrics > {significant_gap_threshold}",
+                "count": len(quality_gap_significant),
+                "entry_ids": quality_gap_significant,
             },
             "perfect": {
-                "description": "NL2Test structural recall = 1.0 and coverage = 1.0",
+                "description": "All NL2Test metrics = 1.0 while beating other agent",
                 "count": len(quality_gap_perfect),
                 "entry_ids": quality_gap_perfect,
+            },
+            "perfect_significant": {
+                "description": f"All metrics = 1.0 AND average gap > {significant_gap_threshold}",
+                "count": len(quality_gap_perfect_significant),
+                "entry_ids": quality_gap_perfect_significant,
             },
         },
     }
@@ -384,6 +521,12 @@ def parse_args() -> argparse.Namespace:
         default=OUTPUT_DIR,
         help="Directory to write output JSON",
     )
+    parser.add_argument(
+        "--significant-gap-threshold",
+        type=float,
+        default=DEFAULT_SIGNIFICANT_GAP_THRESHOLD,
+        help=f"Minimum average gap to be considered 'significant' (default: {DEFAULT_SIGNIFICANT_GAP_THRESHOLD})",
+    )
     return parser.parse_args()
 
 
@@ -391,7 +534,9 @@ def main() -> None:
     """Main entry point."""
     args = parse_args()
 
-    results = find_motivation_examples(args.nl2test_dir, args.other_agent_dir)
+    results = find_motivation_examples(
+        args.nl2test_dir, args.other_agent_dir, args.significant_gap_threshold
+    )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     output_file = args.output_dir / "motivation_examples.json"
@@ -403,8 +548,10 @@ def main() -> None:
     print("\nSummary:")
     print(f"  Compile Gap - High Quality: {results['compile_gap']['high_quality']['count']}")
     print(f"  Compile Gap - Perfect: {results['compile_gap']['perfect']['count']}")
-    print(f"  Quality Gap - High Quality: {results['quality_gap']['high_quality']['count']}")
+    print(f"  Quality Gap - Beats Other: {results['quality_gap']['beats_other']['count']}")
+    print(f"  Quality Gap - Significant: {results['quality_gap']['significant']['count']}")
     print(f"  Quality Gap - Perfect: {results['quality_gap']['perfect']['count']}")
+    print(f"  Quality Gap - Perfect Significant: {results['quality_gap']['perfect_significant']['count']}")
 
 
 if __name__ == "__main__":

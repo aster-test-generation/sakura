@@ -323,11 +323,16 @@ def matches_error_path(error_path: str, qualified_class_name: str) -> bool:
     return normalized.endswith(pred_simple_file)
 
 
-def extract_code_from_stdout(metadata: dict[str, Any]) -> str | None:
-    """Extract Java code from stdout response field if present.
+def extract_code_from_stdout(metadata: dict[str, Any]) -> tuple[str, str] | None:
+    """Extract Java code from stdout.
 
-    Looks for a JSON object in stdout containing a "response" field with
-    a markdown code block.
+    Looks for:
+    1. A JSON object in stdout containing a "response" field with a markdown code block
+    2. A write_file tool call with Java code in the content field
+
+    Returns:
+        Tuple of (code, file_path) or None if extraction fails.
+        file_path may be empty string if extracted from response field.
     """
     import re
 
@@ -335,18 +340,32 @@ def extract_code_from_stdout(metadata: dict[str, Any]) -> str | None:
     if not isinstance(stdout, str) or not stdout.strip():
         return None
 
+    # First, try extracting from response field with markdown code block
     response_match = re.search(r'"response"\s*:\s*"((?:[^"\\]|\\.)*)"', stdout)
-    if not response_match:
-        return None
+    if response_match:
+        response_raw = response_match.group(1)
+        response = response_raw.encode().decode("unicode_escape")
+        code_match = re.search(r"```(?:java)?\s*\n(.*?)```", response, re.DOTALL)
+        if code_match:
+            return code_match.group(1).strip(), ""
 
-    response_raw = response_match.group(1)
-    response = response_raw.encode().decode("unicode_escape")
+    # Second, try extracting from write_file tool call
+    # Match the toolCall JSON structure to get both content and file_path
+    tool_call_pattern = r'\[MESSAGE_BUS\] publish: (\{[^\n]+\})'
+    for match in re.finditer(tool_call_pattern, stdout):
+        try:
+            msg = json.loads(match.group(1))
+            tool_call = msg.get("toolCall", {})
+            if tool_call.get("name") == "write_file":
+                args = tool_call.get("args", {})
+                content = args.get("content", "")
+                file_path = args.get("file_path", "")
+                if content and ("class " in content or "interface " in content or "package " in content):
+                    return content, file_path
+        except (json.JSONDecodeError, KeyError):
+            continue
 
-    code_match = re.search(r"```(?:java)?\s*\n(.*?)```", response, re.DOTALL)
-    if not code_match:
-        return None
-
-    return code_match.group(1).strip()
+    return None
 
 
 def parse_java_package_and_class(code: str) -> tuple[str, str] | None:
@@ -399,10 +418,12 @@ def evaluate_entry(
     generated_code: str | None = None
     derived_qualified_name: str | None = None
     code_from_stdout = False
+    stdout_file_path: str | None = None
 
     if not generated_file_entry:
-        stdout_code = extract_code_from_stdout(metadata)
-        if stdout_code:
+        stdout_result = extract_code_from_stdout(metadata)
+        if stdout_result:
+            stdout_code, stdout_file_path = stdout_result
             RichLog.info(
                 f"No generated_files entry, but found code in stdout: {metadata_path}"
             )
@@ -410,17 +431,20 @@ def evaluate_entry(
             generated_code = stdout_code
             code_from_stdout = True
 
-            parsed = parse_java_package_and_class(stdout_code)
-            if parsed:
-                package_name, class_name = parsed
-                derived_qualified_name = (
-                    f"{package_name}.{class_name}" if package_name else class_name
-                )
-            else:
-                RichLog.warn("Could not parse package/class from stdout code")
-                result.structured_eval = zero_structural_eval()
-                result.coverage_eval = zero_coverage_eval()
-                return result
+            # If we have a file_path from write_file, defer deriving qualified name
+            # until test_base_dir is available. Otherwise, parse from code.
+            if not stdout_file_path:
+                parsed = parse_java_package_and_class(stdout_code)
+                if parsed:
+                    package_name, class_name = parsed
+                    derived_qualified_name = (
+                        f"{package_name}.{class_name}" if package_name else class_name
+                    )
+                else:
+                    RichLog.warn("Could not parse package/class from stdout code")
+                    result.structured_eval = zero_structural_eval()
+                    result.coverage_eval = zero_coverage_eval()
+                    return result
         else:
             RichLog.warn(f"No generated_files and no code in stdout: {metadata_path}")
             result.failed_code_generation = True
@@ -456,6 +480,12 @@ def evaluate_entry(
     test_base_dir = context.common.resolve_test_base_dir(
         module_root, project_root=context.project_root
     )
+
+    # If code came from stdout with a file_path, derive qualified name from path
+    if code_from_stdout and stdout_file_path:
+        derived_qualified_name = derive_qualified_class_name(
+            Path(stdout_file_path), test_base_dir, context.project_root
+        )
 
     if not code_from_stdout:
         generated_file_path = resolve_generated_test_path(

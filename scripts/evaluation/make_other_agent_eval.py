@@ -45,7 +45,7 @@ METADATA_FILE_NAME = "metadata.json"
 
 MAX_ENTRIES = 0  # 0 for all entries
 NUM_PROJ_PARALLEL = 20  # Maximum number of projects to process concurrently
-TARGET_PROJECTS: list[str] = []  # Empty for all projects, or specify e.g. ["commons-io", "commons-lang"]
+TARGET_PROJECTS: list[str] = ["commons-fileupload"]  # Empty for all projects, or specify e.g. ["commons-io", "commons-lang"]
 SKIP_DIRS = {"evaluation"}  # Directories to skip when iterating agent outputs
 
 

@@ -1,0 +1,2075 @@
+[
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 80,
+            "description": "Create a test case to validate that the process monitoring system can be properly configured through its configuration interface under various setup scenarios. Begin by confirming that the system can produce a basic monitoring component without any custom settings, verifying the component is created successfully but has no active monitoring mechanism assigned. Next, demonstrate that when the system is configured with missing timeout settings, it still produces a valid component. After establishing this baseline, configure the system with a specific duration limit of one minute and verify the resulting monitoring component correctly reflects this time constraint. Then confirm the system handles missing thread management settings gracefully by producing a valid component. Finally, test a combined configuration scenario where both missing thread management settings and a one-minute duration limit are specified together, ensuring the resulting monitoring component maintains proper thread management capabilities despite the initial missing setting. Throughout these scenarios, verify using standard equality and presence assertions to confirm the system produces valid components and correctly applies configuration values when provided. This validation employs JUnit 5 as the testing framework with AssertJ for assertions.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.WatchdogConfigurationTest",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport org.apache.commons.exec.ExecuteWatchdog;\nimport java.time.Duration;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class WatchdogConfigurationTest {\n\n    @Test\n    public void testWatchdogConfiguration() {\n        // Step 0 & 1: Create a basic monitoring component\n        ExecuteWatchdog.Builder builder = ExecuteWatchdog.builder();\n        ExecuteWatchdog basic_component = builder.get();\n\n        // Step 2: Verify the component is created successfully\n        assertNotNull(basic_component);\n\n        // Step 3: Verify the component has no active monitoring mechanism assigned\n        assertFalse(basic_component.isWatching());\n\n        // Step 4 & 5: Create a component with missing timeout settings\n        ExecuteWatchdog.Builder config_with_missing_timeout = ExecuteWatchdog.builder();\n        ExecuteWatchdog component_from_missing_timeout_config = config_with_missing_timeout.get();\n\n        // Step 6: Verify a valid component is produced\n        assertNotNull(component_from_missing_timeout_config);\n\n        // Step 7 & 8: Create a component with a duration limit\n        ExecuteWatchdog.Builder config_with_duration_limit_builder = ExecuteWatchdog.builder().setTimeout(Duration.ofMinutes(1));\n        ExecuteWatchdog component_with_duration_limit = config_with_duration_limit_builder.get();\n        assertNotNull(component_with_duration_limit);\n\n        // Step 9: Skipped as per supervisor instructions.\n\n        // Step 10 & 11: Create a component with missing thread management settings\n        ExecuteWatchdog.Builder config_with_missing_threads = ExecuteWatchdog.builder();\n        ExecuteWatchdog component_from_missing_threads_config = config_with_missing_threads.get();\n\n        // Step 12: Verify a valid component is produced\n        assertNotNull(component_from_missing_threads_config);\n\n        // Step 13 & 14: Create a component with combined settings\n        ExecuteWatchdog.Builder combined_config_builder = ExecuteWatchdog.builder().setTimeout(Duration.ofMinutes(1));\n        ExecuteWatchdog component_from_combined_config = combined_config_builder.get();\n        assertNotNull(component_from_combined_config);\n\n        // Step 15: Verify the monitoring component maintains proper thread management capabilities\n        assertFalse(component_from_combined_config.isWatching());\n\n        // Step 16: Skipped as per supervisor instructions.\n    }\n}",
+            "method_signature": "testWatchdogConfiguration()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.8333,
+            "assertion_precision": 0.7143,
+            "callable_recall": 0.6129,
+            "callable_precision": 0.8261,
+            "focal_recall": 0.75,
+            "focal_precision": 0.75
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.get()",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.ExecuteWatchdog.builder()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.get()",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.ExecuteWatchdog.builder()"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)"
+            ],
+            "tp": 3,
+            "fn": 1,
+            "localization_recall": 0.75
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 2,
+                    "query_method_db": 1,
+                    "search_reachable_methods_in_class": 4,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 4,
+                    "generate_test_code": 6,
+                    "compile_and_execute_test": 4,
+                    "get_maven_dependencies": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 162199,
+        "output_tokens": 17890,
+        "llm_calls": 20
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 86,
+            "description": "Define a test method that validates the builder pattern for the Execute Watchdog component by verifying its construction behavior across multiple configuration scenarios. Begin by invoking the builder factory method on Execute Watchdog and immediately materializing an instance through the builder's get method, then assert that the resulting watchdog instance is not null. Next, construct another instance using the same builder pattern and retrieve its internal watchdog component to verify that it returns null when no timeout is configured. Following this, build a third instance by explicitly setting a null timeout on the builder before materialization, confirming that the resulting watchdog is still instantiated despite the null configuration. To validate timeout propagation, construct a builder instance, configure it with a one-minute duration, materialize the watchdog, access its internal watchdog component, retrieve the configured timeout, and assert that it equals the one-minute duration originally provided. Proceed to test thread factory handling by building an instance with an explicitly null thread factory, verifying the watchdog materializes successfully. Finally, chain both configuration methods by setting a null thread factory and a one-minute timeout on the builder, materialize the watchdog, navigate to its internal watchdog component, retrieve the thread factory, and assert that it is not null, demonstrating that null thread factory inputs are replaced with default implementations. This test uses JUnit for the testing framework and standard JUnit assertions.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.ExecuteWatchdogTest1",
+            "code": "package org.apache.commons.exec; \n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertNull;\n\nimport java.time.Duration;\nimport java.util.concurrent.ThreadFactory;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link ExecuteWatchdog.Builder}.\n */\npublic class ExecuteWatchdogTest1 {\n\n    @Test\n    public void testExecuteWatchdogBuilder() {\n        // Step 1 & 2: Basic builder validation\n        final ExecuteWatchdog.Builder watchdogBuilder = ExecuteWatchdog.builder();\n        final ExecuteWatchdog watchdogInstance = watchdogBuilder.get();\n        assertNotNull(watchdogInstance);\n\n        // Step 3-6: Default (no timeout) behavior\n        final ExecuteWatchdog.Builder watchdogBuilder2 = ExecuteWatchdog.builder();\n        final ExecuteWatchdog watchdogInstance2 = watchdogBuilder2.get();\n        final Watchdog internalWatchdog = watchdogInstance2.getWatchdog();\n        assertNull(internalWatchdog);\n\n        // Step 7-11: Null timeout behavior\n        final Duration nullTimeout = null;\n        final ExecuteWatchdog.Builder watchdogBuilder3 = ExecuteWatchdog.builder();\n        watchdogBuilder3.setTimeout(nullTimeout);\n        final ExecuteWatchdog watchdogInstance3 = watchdogBuilder3.get();\n        assertNotNull(watchdogInstance3);\n\n        // Step 12-18: Timeout propagation\n        final Duration oneMinuteDuration = Duration.ofMinutes(1);\n        final ExecuteWatchdog.Builder watchdogBuilder4 = ExecuteWatchdog.builder();\n        watchdogBuilder4.setTimeout(oneMinuteDuration);\n        final ExecuteWatchdog watchdogInstance4 = watchdogBuilder4.get();\n        final Watchdog internalWatchdog4 = watchdogInstance4.getWatchdog();\n        final Duration configuredTimeout = internalWatchdog4.getTimeout();\n        assertEquals(oneMinuteDuration, configuredTimeout);\n\n        // Step 19-23: Null thread factory behavior\n        final ThreadFactory nullThreadFactory = null;\n        final ExecuteWatchdog.Builder watchdogBuilder5 = ExecuteWatchdog.builder();\n        watchdogBuilder5.setThreadFactory(nullThreadFactory);\n        final ExecuteWatchdog watchdogInstance5 = watchdogBuilder5.get();\n        assertNotNull(watchdogInstance5);\n\n        // Step 24-32: Chained configuration\n        final ThreadFactory nullThreadFactory2 = null;\n        final Duration oneMinuteDuration2 = Duration.ofMinutes(1);\n        final ExecuteWatchdog.Builder watchdogBuilder6 = ExecuteWatchdog.builder();\n        watchdogBuilder6.setThreadFactory(nullThreadFactory2);\n        watchdogBuilder6.setTimeout(oneMinuteDuration2);\n        final ExecuteWatchdog watchdogInstance6 = watchdogBuilder6.get();\n        final Watchdog internalWatchdog6 = watchdogInstance6.getWatchdog();\n        final ThreadFactory retrievedThreadFactory = internalWatchdog6.getThreadFactory();\n        assertNotNull(retrievedThreadFactory);\n    }\n}",
+            "method_signature": "testExecuteWatchdogBuilder()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.9677,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.8889,
+            "line_coverage": 0.9545,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.get()",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.ExecuteWatchdog.builder()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.get()",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.ExecuteWatchdog.builder()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 4,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 7,
+                    "query_class_db": 1,
+                    "get_method_details": 5,
+                    "search_reachable_methods_in_class": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 86325,
+        "output_tokens": 9787,
+        "llm_calls": 12
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 94,
+            "description": "Define a test method annotated with `@Test` that validates the builder pattern of `ExecuteWatchdog` through a sequence of six assertion chains. Begin by invoking `ExecuteWatchdog.builder()` to obtain an `ExecuteWatchdog.Builder` instance, immediately chain `.get()` to produce an `ExecuteWatchdog` object, and pass this result to `assertNotNull` to verify the instance is non-null. Next, invoke `ExecuteWatchdog.builder()` again, chain `.get()`, then invoke `getWatchdog()` on the resulting `ExecuteWatchdog` to retrieve the internal `Watchdog` object, and pass this to `assertNull` to confirm it is null when no timeout is configured. For the third assertion, invoke `ExecuteWatchdog.builder()`, chain `.setTimeout(null)` passing the null literal, chain `.get()`, and pass the resulting `ExecuteWatchdog` to `assertNotNull` to verify the instance is created despite the null timeout. For the fourth assertion, create a `Duration` by calling `Duration.ofMinutes(1)`, then invoke `ExecuteWatchdog.builder()`, chain `.setTimeout(Duration.ofMinutes(1))` passing the one-minute duration, chain `.get()` to obtain the `ExecuteWatchdog`, invoke `getWatchdog()` on it to retrieve the `Watchdog`, invoke `getTimeout()` on the `Watchdog` to get the configured timeout duration, and use `assertEquals(Duration.ofMinutes(1), ...)` to verify the timeout equals the expected one-minute duration. For the fifth assertion, invoke `ExecuteWatchdog.builder()`, chain `.setThreadFactory(null)` passing the null literal, chain `.get()`, and pass the resulting `ExecuteWatchdog` to `assertNotNull` to confirm the instance is created with a null thread factory. For the sixth and final assertion, invoke `ExecuteWatchdog.builder()`, chain `.setThreadFactory(null)`, then chain `.setTimeout(Duration.ofMinutes(1))` passing the one-minute duration created via `Duration.ofMinutes(1)`, chain `.get()` to obtain the `ExecuteWatchdog`, invoke `getWatchdog()` to retrieve the `Watchdog`, invoke `getThreadFactory()` on the `Watchdog` to get the configured thread factory, and pass this to `assertNotNull` to verify the thread factory is non-null despite the initial null assignment. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.ExecuteWatchdogBuilderTest",
+            "code": "package org.apache.commons.exec;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertNull;\n\nimport java.time.Duration;\n\nimport org.junit.jupiter.api.Test;\n\nclass ExecuteWatchdogBuilderTest {\n\n    @Test\n    void testBuilder() {\n        assertNotNull(ExecuteWatchdog.builder().get());\n        assertNull(ExecuteWatchdog.builder().get().getWatchdog());\n        assertNotNull(ExecuteWatchdog.builder().setTimeout(null).get());\n        final Duration duration = Duration.ofMinutes(1);\n        assertEquals(duration, ExecuteWatchdog.builder().setTimeout(duration).get().getWatchdog().getTimeout());\n        assertNotNull(ExecuteWatchdog.builder().setThreadFactory(null).get());\n        assertNotNull(ExecuteWatchdog.builder().setThreadFactory(null).setTimeout(duration).get().getWatchdog().getThreadFactory());\n    }\n}",
+            "method_signature": "testBuilder()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.9355,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.ExecuteWatchdogTest",
+            "method_signature": "testBuilder()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.get()",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.ExecuteWatchdog.builder()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.get()",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.ExecuteWatchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.ExecuteWatchdog.builder()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 4,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 7,
+                    "query_class_db": 1,
+                    "get_method_details": 7,
+                    "search_reachable_methods_in_class": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_maven_dependencies": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 88149,
+        "output_tokens": 12021,
+        "llm_calls": 12
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 4,
+            "description": "Define a test method annotated with `@Test` that validates the behavior of the `isArch` static method from class `org.apache.commons.exec.OS` when provided with invalid architecture arguments. Begin by invoking `OS.isArch` with a `null` argument and immediately assert that the returned boolean value is `false` using `assertFalse`. Following this, invoke `OS.isArch` again, this time passing the String literal `\"....\"` as the argument, and assert that the returned boolean value is `false` using `assertFalse`. The test uses JUnit 5 Assertions with method-level annotation `@Test` and no class-level annotations.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class OSTest1 {\n\n    @Test\n    public void testIsArch() {\n        boolean is_arch_result = OS.isArch(null);\n        assertFalse(is_arch_result);\n\n        is_arch_result = OS.isArch(\"....\");\n        assertFalse(is_arch_result);\n    }\n}",
+            "method_signature": "testIsArch()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.6667,
+            "line_coverage": 0.8235,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isArch(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isArch(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 31302,
+        "output_tokens": 4572,
+        "llm_calls": 10
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 14,
+            "description": "Define a test method that validates the architecture matching capability of the OS utility class by invoking its static isArch method with invalid inputs to confirm proper rejection behavior. Begin by calling isArch with a null string reference and assert that the result is false, confirming the method correctly handles absent architecture values. Following this validation, invoke isArch again with a non-standard architecture string consisting of four periods and verify that this also returns false, ensuring the method rejects malformed or unrecognized architecture identifiers. The test exercises boundary conditions for the architecture detection logic without requiring any component initialization, mock configuration, or resource cleanup, using a standard assertion library such as JUnit.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class OSTest1 {\n\n    @Test\n    public void testIsArch() {\n        // Step 0: Invoke the static isArch method with a null string reference\n        boolean is_arch_result_null = OS.isArch(null);\n\n        // Step 1: Assert that the result is false\n        assertFalse(is_arch_result_null);\n\n        // Step 2: Invoke the static isArch method with a non-standard architecture string '....'\n        boolean is_arch_result_malformed = OS.isArch(\"....\");\n\n        // Step 3: Assert that the result is false\n        assertFalse(is_arch_result_malformed);\n    }\n}",
+            "method_signature": "testIsArch()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.6667,
+            "line_coverage": 0.8235,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isArch(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isArch(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 1,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 33562,
+        "output_tokens": 3023,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 16,
+            "description": "Create a test case to validate that the system correctly rejects invalid or missing architecture specifications when evaluating platform compatibility. Ensure the system returns a negative result when attempting to match against an architecture that is not provided, confirming that absent architecture information is properly handled as a non-match. Similarly, verify the system denies a match when presented with an invalid architecture designation consisting of meaningless characters, demonstrating that the platform detection mechanism recognizes and rejects malformed architecture specifications rather than incorrectly accepting them. Through these validations, confirm the system maintains strict requirements for architecture matching and refuses to operate on incomplete or corrupted platform information. Use JUnit 5 as the testing framework and verify the outcomes using standard boolean assertion checks that confirm the system properly returns false for both scenarios.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.PlatformCompatibilityTest",
+            "code": "package org.apache.commons.exec;import org.junit.jupiter.api.Test;import static org.junit.jupiter.api.Assertions.assertFalse;public class PlatformCompatibilityTest {    @Test    public void testIsOsWithMissingArchitecture() {        boolean compatibility_result_for_missing = OS.isOs(null, null, null, null);        assertFalse(compatibility_result_for_missing);    }    @Test    public void testIsOsWithInvalidArchitecture() {        boolean compatibility_result_for_invalid = OS.isOs(null, null, \"!@#$%\", null);        assertFalse(compatibility_result_for_invalid);    }}",
+            "method_signature": "testIsOsWithMissingArchitecture()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.5,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.25,
+            "callable_precision": 0.5,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArch()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isArch(java.lang.String)"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.exec.OS.isArch(java.lang.String)"
+            ],
+            "tp": 0,
+            "fn": 1,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 2,
+                    "get_method_details": 1,
+                    "search_reachable_methods_in_class": 1,
+                    "extract_method_code": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "extract_method_code",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 68116,
+        "output_tokens": 8748,
+        "llm_calls": 15
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 83,
+            "description": "Create a test case to validate that the operating system detection capability correctly identifies a Mac environment and accurately reports its family membership across all supported platform categories. Since this validation must run exclusively on Mac hardware, configure the test to execute only when the underlying platform is Mac-based. Query the system to confirm it does not belong to the DOS family, then verify it correctly identifies as part of the Mac family, followed by confirming it is not classified as Netware, OpenVMS, OS/2, OS/400, or Tandem. After establishing the Mac classification, validate that the system also recognizes its Unix heritage by confirming Unix family membership, then ensure it does not incorrectly report membership in the Windows 9x, general Windows, Windows NT, or z/OS families. This comprehensive verification ensures the platform detection logic maintains accurate family categorization when operating on Mac systems, preventing false positives across incompatible platform types while correctly identifying the dual Mac and Unix nature of the environment. Use JUnit 5 as the testing framework with standard boolean equality assertions to verify each family membership check produces the expected true or false result.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.condition.EnabledOnOs;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class OSTest1 {\n\n    @Test\n    @EnabledOnOs(org.junit.jupiter.api.condition.OS.MAC)\n    public void testOSDetectionOnMac() {\n        assertFalse(OS.isFamilyDOS());\n        assertTrue(OS.isFamilyMac());\n        assertFalse(OS.isFamilyNetware());\n        assertFalse(OS.isFamilyOpenVms());\n        assertFalse(OS.isFamilyOS2());\n        assertFalse(OS.isFamilyOS400());\n        assertFalse(OS.isFamilyTandem());\n        assertTrue(OS.isFamilyUnix());\n        assertFalse(OS.isFamilyWin9x());\n        assertFalse(OS.isFamilyWindows());\n        assertFalse(OS.isFamilyWinNT());\n        assertFalse(OS.isFamilyZOS());\n    }\n}",
+            "method_signature": "testOSDetectionOnMac()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isFamilyDOS()",
+                "org.apache.commons.exec.OS.isFamilyMac()",
+                "org.apache.commons.exec.OS.isFamilyNetware()",
+                "org.apache.commons.exec.OS.isFamilyOS2()",
+                "org.apache.commons.exec.OS.isFamilyOS400()",
+                "org.apache.commons.exec.OS.isFamilyOpenVms()",
+                "org.apache.commons.exec.OS.isFamilyTandem()",
+                "org.apache.commons.exec.OS.isFamilyUnix()",
+                "org.apache.commons.exec.OS.isFamilyWin9x()",
+                "org.apache.commons.exec.OS.isFamilyWinNT()",
+                "org.apache.commons.exec.OS.isFamilyWindows()",
+                "org.apache.commons.exec.OS.isFamilyZOS()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isFamilyDOS()",
+                "org.apache.commons.exec.OS.isFamilyMac()",
+                "org.apache.commons.exec.OS.isFamilyNetware()",
+                "org.apache.commons.exec.OS.isFamilyOS2()",
+                "org.apache.commons.exec.OS.isFamilyOS400()",
+                "org.apache.commons.exec.OS.isFamilyOpenVms()",
+                "org.apache.commons.exec.OS.isFamilyTandem()",
+                "org.apache.commons.exec.OS.isFamilyUnix()",
+                "org.apache.commons.exec.OS.isFamilyWin9x()",
+                "org.apache.commons.exec.OS.isFamilyWinNT()",
+                "org.apache.commons.exec.OS.isFamilyWindows()",
+                "org.apache.commons.exec.OS.isFamilyZOS()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 12,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "search_reachable_methods_in_class": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 58207,
+        "output_tokens": 8032,
+        "llm_calls": 12
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 88,
+            "description": "Define a test method that validates the Operating System utility's family detection capabilities when executed on a macOS platform, ensuring the test runs only when the underlying operating system is macOS. Invoke the OS utility's family detection method for DOS and verify it returns false, then immediately invoke the Mac family detection method and confirm it returns true to validate the primary platform identification. Proceed to systematically query each remaining OS family detection method\u2014Netware, OpenVMS, OS/2, OS/400, and Tandem\u2014verifying each returns false to confirm the utility correctly excludes non-Mac platforms. Invoke the Unix family detection method and assert it returns true, recognizing that macOS is Unix-based, thereby validating the utility's understanding of platform inheritance. Continue by querying the Windows family detection methods including Win9x, Windows, and WinNT, asserting each returns false to ensure Windows platforms are properly distinguished from macOS. Finally, invoke the z/OS family detection method and verify it returns false, completing the comprehensive validation that the OS utility accurately identifies macOS while correctly rejecting all other platform families. This test uses JUnit 5 for test execution with conditional test enablement based on operating system type.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSFamilyDetectionTest",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.condition.EnabledOnOs;\nimport org.junit.jupiter.api.condition.OS;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class OSFamilyDetectionTest {\n\n    @Test\n    @EnabledOnOs(OS.MAC)\n    public void testOSFamilyDetectionOnMac() {\n        boolean dos_detection_result = org.apache.commons.exec.OS.isFamilyDOS();\n        assertFalse(dos_detection_result);\n\n        boolean mac_detection_result = org.apache.commons.exec.OS.isFamilyMac();\n        assertTrue(mac_detection_result);\n\n        boolean netware_detection_result = org.apache.commons.exec.OS.isFamilyNetware();\n        assertFalse(netware_detection_result);\n\n        boolean openvms_detection_result = org.apache.commons.exec.OS.isFamilyOpenVms();\n        assertFalse(openvms_detection_result);\n\n        boolean os2_detection_result = org.apache.commons.exec.OS.isFamilyOS2();\n        assertFalse(os2_detection_result);\n\n        boolean os400_detection_result = org.apache.commons.exec.OS.isFamilyOS400();\n        assertFalse(os400_detection_result);\n\n        boolean tandem_detection_result = org.apache.commons.exec.OS.isFamilyTandem();\n        assertFalse(tandem_detection_result);\n\n        boolean unix_detection_result = org.apache.commons.exec.OS.isFamilyUnix();\n        assertTrue(unix_detection_result);\n\n        boolean win9x_detection_result = org.apache.commons.exec.OS.isFamilyWin9x();\n        assertFalse(win9x_detection_result);\n\n        boolean windows_detection_result = org.apache.commons.exec.OS.isFamilyWindows();\n        assertFalse(windows_detection_result);\n\n        boolean winnt_detection_result = org.apache.commons.exec.OS.isFamilyWinNT();\n        assertFalse(winnt_detection_result);\n\n        boolean zos_detection_result = org.apache.commons.exec.OS.isFamilyZOS();\n        assertFalse(zos_detection_result);\n    }\n}",
+            "method_signature": "testOSFamilyDetectionOnMac()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isFamilyDOS()",
+                "org.apache.commons.exec.OS.isFamilyMac()",
+                "org.apache.commons.exec.OS.isFamilyNetware()",
+                "org.apache.commons.exec.OS.isFamilyOS2()",
+                "org.apache.commons.exec.OS.isFamilyOS400()",
+                "org.apache.commons.exec.OS.isFamilyOpenVms()",
+                "org.apache.commons.exec.OS.isFamilyTandem()",
+                "org.apache.commons.exec.OS.isFamilyUnix()",
+                "org.apache.commons.exec.OS.isFamilyWin9x()",
+                "org.apache.commons.exec.OS.isFamilyWinNT()",
+                "org.apache.commons.exec.OS.isFamilyWindows()",
+                "org.apache.commons.exec.OS.isFamilyZOS()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isFamilyDOS()",
+                "org.apache.commons.exec.OS.isFamilyMac()",
+                "org.apache.commons.exec.OS.isFamilyNetware()",
+                "org.apache.commons.exec.OS.isFamilyOS2()",
+                "org.apache.commons.exec.OS.isFamilyOS400()",
+                "org.apache.commons.exec.OS.isFamilyOpenVms()",
+                "org.apache.commons.exec.OS.isFamilyTandem()",
+                "org.apache.commons.exec.OS.isFamilyUnix()",
+                "org.apache.commons.exec.OS.isFamilyWin9x()",
+                "org.apache.commons.exec.OS.isFamilyWinNT()",
+                "org.apache.commons.exec.OS.isFamilyWindows()",
+                "org.apache.commons.exec.OS.isFamilyZOS()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 12,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 12,
+                    "get_method_details": 14,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 104239,
+        "output_tokens": 14254,
+        "llm_calls": 14
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 90,
+            "description": "Define a test method annotated with `@Test` and `@EnabledOnOs(org.junit.jupiter.api.condition.OS.MAC)` that verifies the operating system family detection behavior of the `org.apache.commons.exec.OS` class when running on macOS. Begin by invoking the static method `OS.isFamilyDOS()` and assert its return value is `false` using `assertFalse`. Next, invoke `OS.isFamilyMac()` and assert its return value is `true` using `assertTrue`. Continue by invoking `OS.isFamilyNetware()` and assert the result is `false` with `assertFalse`, then invoke `OS.isFamilyOpenVms()` and assert `false` using `assertFalse`. Proceed by calling `OS.isFamilyOS2()` and asserting `false` with `assertFalse`, followed by invoking `OS.isFamilyOS400()` and asserting `false` using `assertFalse`. Invoke `OS.isFamilyTandem()` and assert the return value is `false` with `assertFalse`, then call `OS.isFamilyUnix()` and assert the result is `true` using `assertTrue`. Continue the verification sequence by invoking `OS.isFamilyWin9x()` and asserting `false` with `assertFalse`, then call `OS.isFamilyWindows()` and assert `false` using `assertFalse`. Invoke `OS.isFamilyWinNT()` and assert the return value is `false` with `assertFalse`, and finally call `OS.isFamilyZOS()` and assert `false` using `assertFalse`. The test uses method-level annotations `@Test` and `@EnabledOnOs(org.junit.jupiter.api.condition.OS.MAC)`, and relies on JUnit 5 Assertions for verification.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.condition.EnabledOnOs;\nimport org.junit.jupiter.api.condition.OS;\n\npublic class OSTest1 {\n\n    @Test\n    @EnabledOnOs(OS.MAC)\n    public void testOSDetectionOnMac() {\n        assertFalse(org.apache.commons.exec.OS.isFamilyDOS());\n        assertTrue(org.apache.commons.exec.OS.isFamilyMac());\n        assertFalse(org.apache.commons.exec.OS.isFamilyNetware());\n        assertFalse(org.apache.commons.exec.OS.isFamilyOpenVms());\n        assertFalse(org.apache.commons.exec.OS.isFamilyOS2());\n        assertFalse(org.apache.commons.exec.OS.isFamilyOS400());\n        assertFalse(org.apache.commons.exec.OS.isFamilyTandem());\n        assertTrue(org.apache.commons.exec.OS.isFamilyUnix());\n        assertFalse(org.apache.commons.exec.OS.isFamilyWin9x());\n        assertFalse(org.apache.commons.exec.OS.isFamilyWindows());\n        assertFalse(org.apache.commons.exec.OS.isFamilyWinNT());\n        assertFalse(org.apache.commons.exec.OS.isFamilyZOS());\n    }\n}",
+            "method_signature": "testOSDetectionOnMac()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsArchMacOs()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isFamilyDOS()",
+                "org.apache.commons.exec.OS.isFamilyMac()",
+                "org.apache.commons.exec.OS.isFamilyNetware()",
+                "org.apache.commons.exec.OS.isFamilyOS2()",
+                "org.apache.commons.exec.OS.isFamilyOS400()",
+                "org.apache.commons.exec.OS.isFamilyOpenVms()",
+                "org.apache.commons.exec.OS.isFamilyTandem()",
+                "org.apache.commons.exec.OS.isFamilyUnix()",
+                "org.apache.commons.exec.OS.isFamilyWin9x()",
+                "org.apache.commons.exec.OS.isFamilyWinNT()",
+                "org.apache.commons.exec.OS.isFamilyWindows()",
+                "org.apache.commons.exec.OS.isFamilyZOS()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isFamilyDOS()",
+                "org.apache.commons.exec.OS.isFamilyMac()",
+                "org.apache.commons.exec.OS.isFamilyNetware()",
+                "org.apache.commons.exec.OS.isFamilyOS2()",
+                "org.apache.commons.exec.OS.isFamilyOS400()",
+                "org.apache.commons.exec.OS.isFamilyOpenVms()",
+                "org.apache.commons.exec.OS.isFamilyTandem()",
+                "org.apache.commons.exec.OS.isFamilyUnix()",
+                "org.apache.commons.exec.OS.isFamilyWin9x()",
+                "org.apache.commons.exec.OS.isFamilyWinNT()",
+                "org.apache.commons.exec.OS.isFamilyWindows()",
+                "org.apache.commons.exec.OS.isFamilyZOS()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 12,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 12,
+                    "get_method_details": 14,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 75087,
+        "output_tokens": 8245,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 2,
+            "description": "Define a test method that validates the OS utility class's version matching capability by invoking the static `isVersion` method on the OS class with a null input and asserting that it returns false, then invoke the same method with a string containing four periods and verify that it also returns false, thereby confirming the method correctly rejects invalid version strings through both null and malformed input scenarios using JUnit and standard assertion utilities.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class OSTest1 {\n\n    @Test\n    public void testIsVersionWithInvalidInput() {\n        // Test with null input\n        boolean result1 = OS.isVersion(null);\n        assertFalse(result1, \"isVersion(null) should return false\");\n\n        // Test with a malformed version string\n        String malformedVersionString = \"1.2.3.4.5\";\n        boolean result2 = OS.isVersion(malformedVersionString);\n        assertFalse(result2, \"isVersion with malformed string should return false\");\n    }\n}",
+            "method_signature": "testIsVersionWithInvalidInput()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.6667,
+            "line_coverage": 0.8235,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isVersion(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isVersion(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "search_reachable_methods_in_class": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 34643,
+        "output_tokens": 3222,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 3,
+            "description": "Create a test case to validate that the system correctly rejects invalid version specifications when determining operating system compatibility, ensuring that when the version detection capability receives missing input or malformed version patterns, the system consistently reports that no valid version match exists, thereby protecting downstream processes from unreliable operating system identification, using JUnit 5 with standard boolean assertions to verify the rejection behavior for both absent version information and improperly formatted version strings.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class OSTest1 {\n\n    @Test\n    public void testIsVersionWithAbsentVersion() {\n        // Step 0: Prepare an input with absent version information\n        String absent_version_input = null;\n\n        // Step 1: Invoke the version detection capability\n        boolean rejection_result = OS.isVersion(absent_version_input);\n\n        // Step 2: Assert that the system reports no valid version match exists\n        assertFalse(rejection_result);\n    }\n\n    @Test\n    public void testIsVersionWithMalformedVersion() {\n        // Step 3: Prepare an input with an improperly formatted version string\n        String malformed_version_input = \"invalid.version\";\n\n        // Step 4: Invoke the version detection capability\n        boolean rejection_result = OS.isVersion(malformed_version_input);\n\n        // Step 5: Assert that the system reports no valid version match exists\n        assertFalse(rejection_result);\n    }\n}",
+            "method_signature": "testIsVersionWithAbsentVersion()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.5,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.5,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.6667,
+            "line_coverage": 0.2353,
+            "branch_coverage": 0.1667
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isVersion(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isVersion(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 1,
+                    "get_method_details": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 68605,
+        "output_tokens": 8245,
+        "llm_calls": 12
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 10,
+            "description": "Define a test method annotated with `@Test` that validates the behavior of the `isVersion` static method from the `org.apache.commons.exec.OS` class by invoking `assertFalse(OS.isVersion(null))` to verify that passing `null` as the version argument returns false, then immediately invoke `assertFalse(OS.isVersion(\"....\"))` to verify that passing the String literal `\"....\"` as the version argument also returns false. The test uses JUnit assertions (specifically `assertFalse` from JUnit) and operates on the static method `isVersion` of the `OS` application class without requiring any field declarations, setup methods, or teardown logic. Class-level annotations: None. Method-level annotations: `@Test`. Assertion library: JUnit. Mocking libraries: None.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.OSTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class OSTest1 {\n\n    @Test\n    public void testIsVersion() {\n        assertFalse(OS.isVersion(null));\n        assertFalse(OS.isVersion(\"....\"));\n    }\n}",
+            "method_signature": "testIsVersion()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.6667,
+            "line_coverage": 0.8235,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.OSTest",
+            "method_signature": "testIsVersion()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.OS.isVersion(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.OS.isVersion(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "modify_scenario_comment": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "get_maven_dependencies": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "modify_scenario_comment",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 50696,
+        "output_tokens": 5020,
+        "llm_calls": 14
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 23,
+            "description": "Define a test method that validates the Watchdog Builder's ability to construct Watchdog instances under various configuration scenarios by first obtaining a builder instance and invoking its build method to produce a Watchdog, then asserting that the resulting instance is not null to confirm default construction succeeds. Next, acquire another builder instance, configure it with a null timeout value to trigger default behavior, build the Watchdog, and verify the instance is not null. Following this, obtain a third builder instance, configure it with a specific timeout duration of one minute, build the Watchdog, retrieve its timeout property, and assert that the returned duration equals the configured one-minute value. Subsequently, obtain a fourth builder instance, configure it with a null thread factory to trigger default factory assignment, build the Watchdog, and verify the resulting instance is not null. Finally, obtain a fifth builder instance, configure it with a null thread factory, build the Watchdog, retrieve its thread factory property, and assert that the factory is not null to confirm the builder properly initializes a default factory when none is explicitly provided. This test uses JUnit for test execution and assertions.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.WatchdogBuilderTest",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport java.time.Duration;\nimport java.util.concurrent.ThreadFactory;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class WatchdogBuilderTest {\n\n    @Test\n    public void testWatchdogBuilder() {\n        // Step 0-2: Default build\n        Watchdog.Builder watchdog_builder = Watchdog.builder();\n        Watchdog watchdog_instance = watchdog_builder.get();\n        assertNotNull(watchdog_instance);\n\n        // Step 3-6: Build with null timeout\n        watchdog_builder = Watchdog.builder();\n        watchdog_builder.setTimeout(null);\n        watchdog_instance = watchdog_builder.get();\n        assertNotNull(watchdog_instance);\n\n        // Step 7-12: Build with specific timeout\n        Duration one_minute_duration = Duration.ofMinutes(1);\n        watchdog_builder = Watchdog.builder();\n        watchdog_builder.setTimeout(one_minute_duration);\n        watchdog_instance = watchdog_builder.get();\n        Duration retrieved_timeout = watchdog_instance.getTimeout();\n        assertEquals(one_minute_duration, retrieved_timeout);\n\n        // Step 13-16: Build with null thread factory (assert not null instance)\n        watchdog_builder = Watchdog.builder();\n        watchdog_builder.setThreadFactory(null);\n        watchdog_instance = watchdog_builder.get();\n        assertNotNull(watchdog_instance);\n\n        // Step 17-21: Build with null thread factory (assert not null factory)\n        watchdog_builder = Watchdog.builder();\n        watchdog_builder.setThreadFactory(null);\n        watchdog_instance = watchdog_builder.get();\n        ThreadFactory retrieved_thread_factory = watchdog_instance.getThreadFactory();\n        assertNotNull(retrieved_thread_factory);\n    }\n}",
+            "method_signature": "testWatchdogBuilder()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.9565,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.get()",
+                "org.apache.commons.exec.Watchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.Watchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.Watchdog.builder()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.get()",
+                "org.apache.commons.exec.Watchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.Watchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.Watchdog.builder()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 4,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 7,
+                    "search_reachable_methods_in_class": 3,
+                    "get_method_details": 7,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 74157,
+        "output_tokens": 8713,
+        "llm_calls": 12
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 33,
+            "description": "Create a test case to validate that the system can properly construct a watchdog monitoring component through its configuration mechanism under various setup scenarios. Begin by verifying that the system successfully creates a functional watchdog monitor with default settings when no specific configuration is provided. Once confirmed, demonstrate that the system remains resilient by creating a valid watchdog even when an explicit timeout value is intentionally left unspecified, ensuring the component falls back to sensible defaults. After establishing this baseline behavior, configure a watchdog with a specific one-minute timeout duration and verify the system correctly applies this custom time limit to the resulting monitor. Next, confirm the system can create a watchdog when the threading mechanism is explicitly left unconfigured, ensuring the component establishes a default threading strategy. Finally, verify that even with an unspecified threading mechanism, the resulting watchdog possesses a valid and operational threading capability, demonstrating the system's ability to provide complete, functional monitoring components regardless of partial configuration. Validate all outcomes using standard equality assertions with JUnit 5 and AssertJ, confirming both the existence of created components and the accuracy of their configured properties.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.ExecuteWatchdogTest1",
+            "code": "package org.apache.commons.exec;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\nimport java.time.Duration;\n\npublic class ExecuteWatchdogTest1 {\n\n    @Test\n    public void testDefaultConfiguration() {\n        ExecuteWatchdog.Builder watchdog_builder = ExecuteWatchdog.builder();\n        ExecuteWatchdog created_watchdog = watchdog_builder.get();\n        Assertions.assertNotNull(created_watchdog);\n        Assertions.assertNull(created_watchdog.getWatchdog());\n    }\n\n    @Test\n    public void testUnspecifiedTimeout() {\n        ExecuteWatchdog.Builder watchdog_builder = ExecuteWatchdog.builder();\n        ExecuteWatchdog created_watchdog = watchdog_builder.get();\n        Assertions.assertNotNull(created_watchdog);\n        Assertions.assertNull(created_watchdog.getWatchdog());\n    }\n\n    @Test\n    public void testCustomTimeout() {\n        ExecuteWatchdog.Builder watchdog_builder = ExecuteWatchdog.builder().setTimeout(Duration.ofMinutes(1));\n        ExecuteWatchdog created_watchdog = watchdog_builder.get();\n        Assertions.assertNotNull(created_watchdog);\n        Watchdog watchdog = created_watchdog.getWatchdog();\n        Assertions.assertNotNull(watchdog);\n        Duration timeout = watchdog.getTimeout();\n        Assertions.assertEquals(Duration.ofMinutes(1), timeout);\n    }\n\n    @Test\n    public void testUnconfiguredThreading() {\n        ExecuteWatchdog.Builder watchdog_builder = ExecuteWatchdog.builder();\n        ExecuteWatchdog created_watchdog = watchdog_builder.get();\n        Assertions.assertNotNull(created_watchdog);\n        Assertions.assertNull(created_watchdog.getWatchdog());\n    }\n}",
+            "method_signature": "testDefaultConfiguration()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.4,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.1739,
+            "callable_precision": 0.8,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.get()",
+                "org.apache.commons.exec.Watchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.Watchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.Watchdog.builder()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.get()",
+                "org.apache.commons.exec.Watchdog.Builder.setTimeout(java.time.Duration)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.Watchdog.builder()"
+            ],
+            "tp": 2,
+            "fn": 2,
+            "localization_recall": 0.5
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 4,
+                    "get_method_details": 5,
+                    "search_reachable_methods_in_class": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 6,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "extract_method_code": 3,
+                    "get_class_constructors_and_factories": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "get_class_constructors_and_factories",
+                        "extract_method_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 112493,
+        "output_tokens": 9927,
+        "llm_calls": 17
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 41,
+            "description": "Define a test method annotated with `@Test` that verifies the builder pattern for `Watchdog` by performing a sequence of assertions on various builder configurations. Begin by invoking `Watchdog.builder()` to obtain a `Watchdog.Builder` instance, immediately chain `.get()` to construct a `Watchdog` object, and pass the result to `assertNotNull` to verify the instance is not null. Next, invoke `Watchdog.builder()` again, chain `.setTimeout(null)` to reset the timeout to default, chain `.get()` to build the `Watchdog`, and pass the result to `assertNotNull` to confirm non-null construction. Proceed by invoking `Watchdog.builder()`, chaining `.setTimeout(Duration.ofMinutes(1))` where the argument is created by calling `Duration.ofMinutes(1)`, then chain `.get()` to obtain the built `Watchdog`, invoke `.getTimeout()` on that instance to retrieve the timeout duration, and pass both the expected value `Duration.ofMinutes(1)` (created by calling `Duration.ofMinutes(1)`) and the retrieved timeout to `assertEquals` to verify they match. Continue by invoking `Watchdog.builder()`, chaining `.setThreadFactory(null)` to reset the thread factory to default, chaining `.get()` to build the `Watchdog`, and passing the result to `assertNotNull` to confirm the instance is not null. Finally, invoke `Watchdog.builder()` once more, chain `.setThreadFactory(null)`, chain `.get()` to obtain the `Watchdog` instance, invoke `.getThreadFactory()` on that instance to retrieve the thread factory, and pass the result to `assertNotNull` to verify the thread factory is not null. The test uses method-level annotation `@Test` and assertion library JUnit 5 Assertions.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.WatchdogTest1",
+            "code": "package org.apache.commons.exec;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.time.Duration;\nimport java.util.concurrent.ThreadFactory;\n\nimport org.junit.jupiter.api.Test;\n\npublic class WatchdogTest1 {\n\n    @Test\n    public void testWatchdogBuilder() {\n        // Step 0 & 1\n        Watchdog watchdog1 = Watchdog.builder().get();\n        assertNotNull(watchdog1);\n\n        // Step 2 & 3\n        Watchdog watchdog2 = Watchdog.builder().setTimeout(null).get();\n        assertNotNull(watchdog2);\n\n        // Step 4, 5, 6, & 7\n        Duration expectedTimeout = Duration.ofMinutes(1);\n        Watchdog watchdog3 = Watchdog.builder().setTimeout(expectedTimeout).get();\n        Duration actualTimeout = watchdog3.getTimeout();\n        assertEquals(expectedTimeout, actualTimeout);\n\n        // Step 8 & 9\n        Watchdog watchdog4 = Watchdog.builder().setThreadFactory(null).get();\n        assertNotNull(watchdog4);\n\n        // Step 10, 11, & 12\n        Watchdog watchdog5 = Watchdog.builder().setThreadFactory(null).get();\n        ThreadFactory actualThreadFactory = watchdog5.getThreadFactory();\n        assertNotNull(actualThreadFactory);\n    }\n}",
+            "method_signature": "testWatchdogBuilder()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.9565,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 0.9474,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.WatchdogTest",
+            "method_signature": "testBuilder()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.get()",
+                "org.apache.commons.exec.Watchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.Watchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.Watchdog.builder()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.get()"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.exec.Watchdog.Builder.setThreadFactory(java.util.concurrent.ThreadFactory)",
+                "org.apache.commons.exec.Watchdog.Builder.setTimeout(java.time.Duration)",
+                "org.apache.commons.exec.Watchdog.builder()"
+            ],
+            "tp": 1,
+            "fn": 3,
+            "localization_recall": 0.25
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 6,
+                    "query_class_db": 1,
+                    "search_reachable_methods_in_class": 3,
+                    "get_method_details": 10,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 1,
+                    "get_method_details": 6,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 103287,
+        "output_tokens": 10826,
+        "llm_calls": 16
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 25,
+            "description": "Define a test method that validates the quote normalization behavior of the String Utility component by invoking its quote argument processing capability across multiple input scenarios. Begin by calling the quote argument method with a string already enclosed in single quotes and assert that the returned value matches the unquoted content, then repeat this pattern with a string enclosed in double quotes to verify symmetric quote removal behavior. Next, invoke the method with a string containing an embedded single-quoted phrase and assert that the result wraps the entire argument in double quotes to preserve the internal single quotes, followed by invoking the method with a string containing embedded double quotes and verifying that the result wraps the argument in single quotes to preserve the internal double quotes. Finally, invoke the method with a string containing both single and double quotes within the same argument and verify that an illegal argument error is raised, confirming that the component rejects inputs mixing both quote types as unsupported. This test uses JUnit 5 for test structure and assertions.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.util.StringUtilsQuoteArgumentTest",
+            "code": "package org.apache.commons.exec.util;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\npublic class StringUtilsQuoteArgumentTest {\n\n    @Test\n    public void testQuoteArgument() {\n        // Variables based on supervisor instructions and scenario steps\n        String content_with_space = \"unquoted content\";\n        String single_quoted_string = \"'\" + content_with_space + \"'\";\n        String double_quoted_string = \"\\\"\" + content_with_space + \"\\\"\";\n        String string_with_embedded_single_quotes = \"it's a test\";\n        String expected_double_quoted_output = \"\\\"it's a test\\\"\";\n        String string_with_embedded_double_quotes = \"a \\\"test\\\"\";\n        String expected_single_quoted_output = \"'a \\\"test\\\"'\";\n        String string_with_mixed_quotes = \"it's a \\\"test\\\"\";\n\n        // Step 0 & 1: Call with single-quoted string and assert\n        // The method strips quotes and then re-quotes if spaces are present.\n        String result1 = StringUtils.quoteArgument(single_quoted_string);\n        assertEquals(\"\\\"\" + content_with_space + \"\\\"\", result1);\n\n        // Step 2 & 3: Call with double-quoted string and assert\n        String result2 = StringUtils.quoteArgument(double_quoted_string);\n        assertEquals(\"\\\"\" + content_with_space + \"\\\"\", result2);\n\n        // Step 4 & 5: Call with embedded single quotes and assert\n        String result3 = StringUtils.quoteArgument(string_with_embedded_single_quotes);\n        assertEquals(expected_double_quoted_output, result3);\n\n        // Step 6 & 7: Call with embedded double quotes and assert\n        String result4 = StringUtils.quoteArgument(string_with_embedded_double_quotes);\n        assertEquals(expected_single_quoted_output, result4);\n\n        // Step 8 & 9: Call with mixed quotes and assert exception\n        assertThrows(IllegalArgumentException.class, () -> {\n            StringUtils.quoteArgument(string_with_mixed_quotes);\n        });\n    }\n}",
+            "method_signature": "testQuoteArgument()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 0.9,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.5,
+            "line_coverage": 0.8571,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.util.StringUtils.quoteArgument(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.util.StringUtils.quoteArgument(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 1,
+                    "query_class_db": 1,
+                    "get_method_details": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 2,
+                    "generate_test_code": 3,
+                    "compile_and_execute_test": 3,
+                    "extract_method_code": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_method_details",
+                        "extract_method_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 112054,
+        "output_tokens": 9954,
+        "llm_calls": 18
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 31,
+            "description": "Create a test case to validate the system's text argument quoting functionality across multiple scenarios, ensuring proper handling of quoted strings for command-line processing. Begin by verifying that when text already surrounded by single quotes is provided, the system removes those outer quotes and returns the clean content. Next, confirm that text enclosed in double quotes similarly has those outer delimiters stripped away, yielding the inner text. After establishing basic quote removal, test a more complex scenario where text contains internal single quotes, ensuring the system properly wraps the entire argument in double quotes to preserve the embedded quotation marks. Following this, validate the reverse situation where text includes internal double quotes, verifying the system encases the argument in single quotes to protect the nested double-quoted content. Finally, confirm that when text contains both single and double quotes intermixed, the system recognizes this as an unsupported condition and rejects the input with an appropriate business rule violation, preventing ambiguous quoting scenarios that could lead to incorrect command interpretation. Use JUnit 5 for the testing framework with standard equality assertions to verify expected outputs and exception assertions to confirm proper rejection of invalid mixed-quote scenarios.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.util.StringUtilsTest",
+            "code": "package org.apache.commons.exec.util;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test cases for the quoting behavior.\n */\npublic class StringUtilsTest {\n\n    @Test\n    public void testQuoteArgumentContainingSingleQuotes() {\n        final String argument = \"text_with'single_quote\";\n        final String expected = \"\\\"text_with'single_quote\\\"\";\n        final String actual = StringUtils.quoteArgument(argument);\n        assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testQuoteArgumentContainingDoubleQuotes() {\n        final String argument = \"text_with\\\"double_quote\";\n        final String expected = \"'text_with\\\"double_quote'\";\n        final String actual = StringUtils.quoteArgument(argument);\n        assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testQuoteArgumentWithSingleQuotes() {\n        final String argument = \"'single_quoted_text'\";\n        final String expected = \"single_quoted_text\";\n        final String actual = StringUtils.quoteArgument(argument);\n        assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testQuoteArgumentWithDoubleQuotes() {\n        final String argument = \"\\\"double_quoted_text\\\"\";\n        final String expected = \"double_quoted_text\";\n        final String actual = StringUtils.quoteArgument(argument);\n        assertEquals(expected, actual);\n    }\n\n    @Test\n    public void testQuoteArgumentWithMixedQuotes() {\n        final String argument = \"text_with'single_and\\\"double_quotes\";\n        assertThrows(IllegalArgumentException.class, () -> {\n            StringUtils.quoteArgument(argument);\n        });\n    }\n}",
+            "method_signature": "testQuoteArgumentWithMixedQuotes()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.2,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.2222,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.5,
+            "line_coverage": 0.5,
+            "branch_coverage": 0.8
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.util.StringUtils.quoteArgument(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.util.StringUtils.quoteArgument(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 1,
+                    "query_class_db": 1,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 44140,
+        "output_tokens": 5194,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 32,
+            "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then begin by invoking the static method `quoteArgument` on `org.apache.commons.exec.util.StringUtils` with the String literal `\"'hi'\"` and assert using `assertEquals` that the returned value equals `\"hi\"`. Next, invoke `quoteArgument` again with the argument `\"\\\"hi\\\"\"` (a String containing double quotes around \"hi\") and assert the result equals `\"hi\"`. Following this, call `quoteArgument` with the String literal `\"echo 'hi'\"` and assert the returned value equals `\"\\\"echo 'hi'\\\"\"` (double quotes wrapping the entire phrase). Then invoke `quoteArgument` with `\"echo \\\"hi\\\"\"` (containing escaped double quotes) and assert the result equals `\"'echo \\\"hi\\\"'\"` (single quotes wrapping the phrase with escaped double quotes inside). Finally, use `assertThrows` to verify that invoking `quoteArgument` with the argument `\"echo \\\"hi 'world'\\\"\"` (a String containing both escaped double quotes and single quotes) throws an `IllegalArgumentException`, passing the lambda expression `() -> StringUtils.quoteArgument(\"echo \\\"hi 'world'\\\"\")` as the executable and the message `\"Can't handle single and double quotes in same argument\"` as the third argument. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+            "project_name": "commons-exec",
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.exec.util.StringUtilsTest",
+            "code": "package org.apache.commons.exec.util;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test cases for the quoting handling.\n */\npublic class StringUtilsTest {\n\n    @Test\n    public void testQuoteArgument() throws Exception {\n        assertEquals(\"hi\", StringUtils.quoteArgument(\"'hi'\"));\n        assertEquals(\"hi\", StringUtils.quoteArgument(\"\\\"hi\\\"\"));\n        assertEquals(\"\\\"echo 'hi'\\\"\", StringUtils.quoteArgument(\"echo 'hi'\"));\n        assertEquals(\"'echo \\\"hi\\\"'\", StringUtils.quoteArgument(\"echo \\\"hi\\\"\"));\n        assertThrows(IllegalArgumentException.class, () -> StringUtils.quoteArgument(\"echo \\\"hi 'world'\\\"\"), \"Can't handle single and double quotes in same argument\");\n    }\n}",
+            "method_signature": "testQuoteArgument()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.5,
+            "line_coverage": 0.9286,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.exec.util.StringUtilTest",
+            "method_signature": "testQuoteArgument()",
+            "all_focal_methods": [
+                "org.apache.commons.exec.util.StringUtils.quoteArgument(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.exec.util.StringUtils.quoteArgument(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 2,
+                    "view_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "view_test_code",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "view_test_code": 1,
+                    "finalize": 2,
+                    "get_method_details": 1,
+                    "get_maven_dependencies": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "view_test_code",
+                        "finalize"
+                    ],
+                    [
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 81445,
+        "output_tokens": 7982,
+        "llm_calls": 17
+    }
+]

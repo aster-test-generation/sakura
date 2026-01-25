@@ -1,0 +1,962 @@
+[
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 422,
+      "description": "Define a test method that validates the static utility method on the PooledObject interface for checking non-null wrapped objects across three scenarios. First, invoke the nonNull method with a direct null reference and assert that it returns false to confirm null input detection. Next, instantiate a DefaultPooledObject wrapping a null value, pass this wrapper to the nonNull method, and assert that it returns false to verify detection of null-wrapped objects. Finally, instantiate a DefaultPooledObject wrapping a non-null string value, invoke the nonNull method with this wrapper, and assert that it returns true to confirm recognition of valid wrapped objects. This test uses JUnit for assertions.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testNonNull()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectNonNullTest",
+      "code": "package org.apache.commons.pool3;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\npublic class PooledObjectNonNullTest {\n\n    @Test\n    void testNonNullMethod() {\n        // Scenario 1: Invoke nonNull with a direct null reference\n        assertFalse(PooledObject.nonNull(null), \"nonNull(null) should return false\");\n\n        // Scenario 2: Instantiate a DefaultPooledObject wrapping a null value\n        final DefaultPooledObject<String> nullWrappedPooledObject = new DefaultPooledObject<>(null);\n        assertFalse(PooledObject.nonNull(nullWrappedPooledObject), \"nonNull(DefaultPooledObject<null>) should return false\");\n\n        // Scenario 3: Instantiate a DefaultPooledObject wrapping a non-null string value\n        final DefaultPooledObject<String> nonNullWrappedPooledObject = new DefaultPooledObject<>(\"testValue\");\n        assertTrue(PooledObject.nonNull(nonNullWrappedPooledObject), \"nonNull(DefaultPooledObject<\\\"testValue\\\">) should return true\");\n    }\n}",
+      "method_signature": "testNonNull()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19682,
+    "output_tokens": 864,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 424,
+      "description": "Create a test case to validate the system's ability to correctly identify when a managed resource wrapper is empty or contains no actual resource. Begin by verifying that the system recognizes a completely missing wrapper as empty, then confirm that a wrapper explicitly configured to hold no resource is also identified as empty, and finally ensure that a wrapper containing an actual resource is correctly recognized as non-empty. The test should confirm the system's capability to distinguish between truly empty resource containers and those holding valid resources, which is critical for proper resource management and allocation decisions. Use JUnit 5 for the testing framework with standard boolean assertions to verify the emptiness detection behavior across these three scenarios.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testIsNull()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectIsEmptyTest",
+      "code": "package org.apache.commons.pool3;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nclass PooledObjectIsEmptyTest {\n\n    @Test\n    void testIsEmptyDetection() {\n        // Scenario 1: Verify that a completely missing wrapper is recognized as empty.\n        final PooledObject<Object> nullPooledObject = null;\n        assertTrue(PooledObject.isNull(nullPooledObject), \"A null PooledObject should be considered empty.\");\n        assertFalse(PooledObject.nonNull(nullPooledObject), \"A null PooledObject should not be considered non-empty.\");\n\n        // Scenario 2: Confirm that a wrapper explicitly configured to hold no resource is also identified as empty.\n        final PooledObject<Object> emptyPooledObject = new DefaultPooledObject<>(null);\n        assertTrue(PooledObject.isNull(emptyPooledObject), \"A PooledObject wrapping a null resource should be considered empty.\");\n        assertFalse(PooledObject.nonNull(emptyPooledObject), \"A PooledObject wrapping a null resource should not be considered non-empty.\");\n\n        // Scenario 3: Ensure that a wrapper containing an actual resource is correctly recognized as non-empty.\n        final PooledObject<Object> nonEmptyPooledObject = new DefaultPooledObject<>(new Object());\n        assertFalse(PooledObject.isNull(nonEmptyPooledObject), \"A PooledObject wrapping a non-null resource should not be considered empty.\");\n        assertTrue(PooledObject.nonNull(nonEmptyPooledObject), \"A PooledObject wrapping a non-null resource should be considered non-empty.\");\n    }\n}",
+      "method_signature": "testIsNull()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.5,
+      "callable_recall": 1.0,
+      "callable_precision": 0.5333,
+      "focal_recall": 1.0,
+      "focal_precision": 0.5
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 22867,
+    "output_tokens": 1334,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 425,
+      "description": "Create a test case to validate the system's ability to correctly determine whether a managed resource container holds a valid object or represents an empty or missing state. First, verify that when no container is provided at all, the system recognizes this as an invalid state. Next, confirm that when a container exists but holds no actual object inside, the system also identifies this as invalid. Finally, ensure that when a container holds a legitimate object with actual content, the system correctly recognizes this as a valid, usable resource. The validation should confirm the system's ability to distinguish between truly available resources and those that are absent or incomplete, which is essential for resource management operations. Use JUnit 5 for the testing framework with standard boolean assertions to verify each scenario returns the expected validity status.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testNonNull()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5267,
+    "output_tokens": 3279,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 426,
+      "description": "Define a test method that validates the static null-checking utility method on the PooledObject interface by examining three distinct scenarios involving wrapped object states. Begin by invoking the isNull utility method with a direct null reference and assert that it correctly identifies this as a null condition. Next, instantiate a DefaultPooledObject wrapper configured with a null internal object, pass this wrapper to the isNull method, and verify that it returns true, confirming the method detects null-wrapped objects. Then create another DefaultPooledObject instance but this time wrap a non-null string value, invoke the isNull method with this populated wrapper, and assert that it returns false, demonstrating the method distinguishes between null and valid wrapped objects. This test uses JUnit for assertions.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testIsNull()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectNullTest",
+      "code": "package org.apache.commons.pool3;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\npublic class PooledObjectNullTest {\n\n    @Test\n    public void testIsNullScenarios() {\n        // Scenario 1: Invoke isNull with a direct null reference\n        PooledObject<?> nullPooledObject = null;\n        Assertions.assertTrue(PooledObject.isNull(nullPooledObject), \"Scenario 1: PooledObject.isNull(null) should return true\");\n\n        // Scenario 2: Instantiate DefaultPooledObject wrapping a null internal object\n        DefaultPooledObject<String> wrappedNull = new DefaultPooledObject<>(null);\n        Assertions.assertTrue(PooledObject.isNull(wrappedNull), \"Scenario 2: PooledObject.isNull(DefaultPooledObject(null)) should return true\");\n\n        // Scenario 3: Instantiate DefaultPooledObject wrapping a non-null string\n        DefaultPooledObject<String> wrappedNonNull = new DefaultPooledObject<>(\"test\");\n        Assertions.assertFalse(PooledObject.isNull(wrappedNonNull), \"Scenario 3: PooledObject.isNull(DefaultPooledObject(\\\"test\\\")) should return false\");\n    }\n}",
+      "method_signature": "testIsNull()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 37360,
+    "output_tokens": 1702,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 427,
+      "description": "Define a test method that verifies the static `getObject` method of the `PooledObject` interface handles null inputs and wrapped objects correctly. Begin by invoking `PooledObject.getObject` with a `null` argument and assert that the result is null using `assertNull`. Next, instantiate a `DefaultPooledObject` by passing `null` to its constructor, then invoke `PooledObject.getObject` with this instance as the argument, and assert that the returned value is null using `assertNull`. Finally, create another `DefaultPooledObject` instance by passing the String literal `\"a\"` to its constructor, invoke `PooledObject.getObject` with this instance, and assert that the result is not null using `assertNotNull`. The test uses JUnit 5 Assertions and no mocking libraries, with method-level annotation `@Test` and no class-level annotations.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testGetObject()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectStaticGetObjectTest",
+      "code": "package org.apache.commons.pool3;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertNull;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\npublic class PooledObjectStaticGetObjectTest {\n\n    @Test\n    void testStaticGetObjectWithVariousInputs() {\n        // Test with null PooledObject input\n        assertNull(PooledObject.getObject(null), \"PooledObject.getObject(null) should return null\");\n\n        // Test with a DefaultPooledObject wrapping a null object\n        final PooledObject<String> nullWrappedPooledObject = new DefaultPooledObject<>(null);\n        assertNull(PooledObject.getObject(nullWrappedPooledObject), \"PooledObject.getObject() with null-wrapped object should return null\");\n\n        // Test with a DefaultPooledObject wrapping a non-null object\n        final PooledObject<String> nonNullWrappedPooledObject = new DefaultPooledObject<>(\"a\");\n        assertNotNull(PooledObject.getObject(nonNullWrappedPooledObject), \"PooledObject.getObject() with non-null-wrapped object should return non-null\");\n    }\n}",
+      "method_signature": "testGetObject()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.6667,
+      "line_coverage": 0.5385,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 22984,
+    "output_tokens": 1555,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 429,
+      "description": "Define a test method annotated with `@Test` that verifies the static method `nonNull` on the `PooledObject` interface by executing three distinct assertion scenarios in sequence. Begin by invoking `PooledObject.nonNull(null)` with a literal `null` argument and assert that the returned boolean is `false` using `assertFalse`. Next, instantiate a `DefaultPooledObject` by calling its constructor with a single `null` argument, pass this newly created instance to `PooledObject.nonNull`, and assert that the result is `false` using `assertFalse`. Finally, instantiate another `DefaultPooledObject` by calling its constructor with the String literal `\"a\"` as the argument, pass this instance to `PooledObject.nonNull`, and assert that the result is `true` using `assertTrue`. The test uses JUnit 5 Assertions (`assertFalse`, `assertTrue`) and has no class-level or additional method-level annotations beyond `@Test`.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testNonNull()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "package org.apache.commons.pool3;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class PooledObjectTest1 {\n\n    @Test\n    void testNonNull() {\n        // Scenario 1: Invoke PooledObject.nonNull(null) with a literal null argument\n        assertFalse(PooledObject.nonNull(null), \"nonNull(null) should return false when input is null\");\n\n        // Scenario 2: Instantiate DefaultPooledObject with null, pass to PooledObject.nonNull\n        PooledObject<Object> nullWrappedObject = new DefaultPooledObject<>(null);\n        assertFalse(PooledObject.nonNull(nullWrappedObject), \"nonNull(new DefaultPooledObject<>(null)) should return false when wrapped object is null\");\n\n        // Scenario 3: Instantiate DefaultPooledObject with \"a\", pass to PooledObject.nonNull\n        PooledObject<String> nonNullWrappedObject = new DefaultPooledObject<>(\"a\");\n        assertTrue(PooledObject.nonNull(nonNullWrappedObject), \"nonNull(new DefaultPooledObject<>(\\\"a\\\")) should return true when wrapped object is non-null\");\n    }\n}",
+      "method_signature": "testNonNull()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.7143,
+      "line_coverage": 0.5556,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15392,
+    "output_tokens": 1629,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 433,
+      "description": "Define a test method annotated with `@Test` that verifies the static method `isNull` on the `PooledObject` interface by executing three distinct assertion scenarios in sequence. Begin by invoking `PooledObject.isNull` with the literal `null` argument and assert the result is true using `assertTrue`. Next, instantiate a `DefaultPooledObject` by calling its constructor with the argument `null`, pass this newly created instance to `PooledObject.isNull`, and assert the result is true using `assertTrue`. Finally, instantiate another `DefaultPooledObject` by calling its constructor with the String literal `\"a\"` as the argument, pass this instance to `PooledObject.isNull`, and assert the result is false using `assertFalse`. The test uses JUnit 5 Assertions (`assertTrue`, `assertFalse`) and requires no class-level annotations, field declarations, setup methods, or teardown methods.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testIsNull()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectIsNullTest",
+      "code": "package org.apache.commons.pool3;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nclass PooledObjectIsNullTest {\n\n    @Test\n    void testIsNull() {\n        // Scenario 1: Invoke PooledObject.isNull with literal null argument\n        assertTrue(PooledObject.isNull(null), \"isNull(null) should be true\");\n\n        // Scenario 2: Instantiate DefaultPooledObject with null, pass to PooledObject.isNull\n        DefaultPooledObject<Object> nullWrappedObject = new DefaultPooledObject<>(null);\n        assertTrue(PooledObject.isNull(nullWrappedObject), \"isNull(new DefaultPooledObject(null)) should be true\");\n\n        // Scenario 3: Instantiate DefaultPooledObject with \"a\", pass to PooledObject.isNull\n        DefaultPooledObject<String> stringWrappedObject = new DefaultPooledObject<>(\"a\");\n        assertFalse(PooledObject.isNull(stringWrappedObject), \"isNull(new DefaultPooledObject(\"a\")) should be false\");\n    }\n}",
+      "method_signature": "testIsNull()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 34339,
+    "output_tokens": 1272,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 434,
+      "description": "Define a test method that validates the static utility behavior of PooledObject's getObject method across three distinct scenarios involving null handling and object wrapping. Begin by invoking the getObject utility method with a null argument and assert that the result is null, confirming the method's null-safe behavior when no pooled object wrapper is provided. Next, instantiate a DefaultPooledObject wrapper initialized with a null underlying object, pass this wrapper to the getObject method, and assert that the extracted value is null, verifying that the utility correctly handles wrappers containing null references. Finally, create a DefaultPooledObject wrapper initialized with a non-null string value, invoke the getObject method with this wrapper, and assert that the returned object is not null, confirming successful extraction of the wrapped object. This test uses JUnit for assertions.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testGetObject()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.PooledObjectTest1",
+      "code": "package org.apache.commons.pool3;\n\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNull;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class PooledObjectTest1 {\n\n    @Test\n    void testGetObjectNullHandlingAndWrapping() {\n        // Scenario 1: Invoke getObject with a null argument\n        assertNull(PooledObject.getObject(null), \"getObject with null PooledObject should return null\");\n\n        // Scenario 2: DefaultPooledObject wrapper initialized with a null underlying object\n        PooledObject<Object> nullWrappedObject = new DefaultPooledObject<>(null);\n        assertNull(PooledObject.getObject(nullWrappedObject), \"getObject with DefaultPooledObject wrapping null should return null\");\n\n        // Scenario 3: DefaultPooledObject wrapper initialized with a non-null string value\n        String testString = \"hello\";\n        PooledObject<String> nonNullWrappedObject = new DefaultPooledObject<>(testString);\n        assertNotNull(PooledObject.getObject(nonNullWrappedObject), \"getObject with DefaultPooledObject wrapping non-null should return non-null\");\n        assertEquals(testString, PooledObject.getObject(nonNullWrappedObject), \"getObject should return the original wrapped object\");\n    }\n}",
+      "method_signature": "testGetObject()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.75,
+      "callable_recall": 1.0,
+      "callable_precision": 0.8,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.6667,
+      "line_coverage": 0.5385,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29420,
+    "output_tokens": 1566,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 436,
+      "description": "Create a test case to validate that the resource pooling system correctly manages its detailed statistics collection setting through both initial configuration and runtime adjustments. Establish a resource pool with a configured management policy that explicitly disables detailed statistics tracking, then verify the system reflects this disabled state. Once confirmed, release that configured pool instance and shift focus to the standard pool instance, where you should dynamically adjust the statistics collection setting at runtime by first disabling it and confirming the system honors this change, then enabling it and verifying the system now reports the feature as active. After completing these validations, ensure all pool resources are properly released and references are cleared. Use JUnit 5 for the test structure with standard boolean equality assertions to verify each configuration state matches the expected business requirement.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
+      "method_signature": "testCollectDetailedStatisticsConfiguration()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.StatisticsCollectionManagementTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.PooledObjectFactory;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nclass StatisticsCollectionManagementTest {\n\n    /**\n     * A simple class to be used as an object in the pool for testing purposes.\n     */\n    static class TestObject {\n        // No specific state or behavior is required for this test.\n    }\n\n    /**\n     * A basic implementation of PooledObjectFactory for TestObject.\n     * It provides default behavior suitable for testing basic pool operations\n     * without complex object lifecycle management.\n     */\n    static class TestObjectFactory implements PooledObjectFactory<TestObject, Exception> {\n        @Override\n        public PooledObject<TestObject> makeObject() throws Exception {\n            return new DefaultPooledObject<>(new TestObject());\n        }\n\n        @Override\n        public void destroyObject(final PooledObject<TestObject> p) {\n            // No-op: TestObject does not require explicit destruction.\n        }\n\n        @Override\n        public boolean validateObject(final PooledObject<TestObject> p) {\n            return true; // Always consider TestObject valid for this test.\n        }\n\n        @Override\n        public void activateObject(final PooledObject<TestObject> p) {\n            // No-op: TestObject does not require activation.\n        }\n\n        @Override\n        public void passivateObject(final PooledObject<TestObject> p) {\n            // No-op: TestObject does not require passivation.\n        }\n    }\n\n    @Test\n    void testDetailedStatisticsCollectionSetting() throws Exception {\n        // Scenario 1: Configure a pool to explicitly disable detailed statistics collection.\n        // Verify that the pool reflects this disabled state upon creation.\n        GenericObjectPoolConfig<TestObject> configWithStatsDisabled = new GenericObjectPoolConfig<>();\n        configWithStatsDisabled.setCollectDetailedStatistics(false);\n        TestObjectFactory factory1 = new TestObjectFactory();\n        GenericObjectPool<TestObject, Exception> poolConfiguredDisabled = new GenericObjectPool<>(factory1, configWithStatsDisabled);\n\n        assertFalse(poolConfiguredDisabled.getCollectDetailedStatistics(),\n                \"Pool created with disabled detailed statistics should report statistics as disabled.\");\n        poolConfiguredDisabled.close(); // Release pool resources.\n\n        // Scenario 2: Dynamically adjust detailed statistics collection setting at runtime.\n        // First, verify the default (enabled) state, then disable and verify, and finally enable and verify.\n        GenericObjectPoolConfig<TestObject> configDefaultStats = new GenericObjectPoolConfig<>();\n        // By default, collectDetailedStatistics is true in BaseObjectPoolConfig.\n        TestObjectFactory factory2 = new TestObjectFactory();\n        GenericObjectPool<TestObject, Exception> poolRuntimeAdjustable = new GenericObjectPool<>(factory2, configDefaultStats);\n\n        assertTrue(poolRuntimeAdjustable.getCollectDetailedStatistics(),\n                \"Pool created with default config should report detailed statistics as enabled.\");\n\n        // Dynamically disable detailed statistics\n        poolRuntimeAdjustable.setCollectDetailedStatistics(false);\n        assertFalse(poolRuntimeAdjustable.getCollectDetailedStatistics(),\n                \"Detailed statistics should be disabled after runtime adjustment.\");\n\n        // Dynamically enable detailed statistics\n        poolRuntimeAdjustable.setCollectDetailedStatistics(true);\n        assertTrue(poolRuntimeAdjustable.getCollectDetailedStatistics(),\n                \"Detailed statistics should be re-enabled after runtime adjustment.\");\n\n        poolRuntimeAdjustable.close(); // Release pool resources.\n    }\n}",
+      "method_signature": "testCollectDetailedStatisticsConfiguration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.6667,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.75,
+      "callable_recall": 0.6364,
+      "callable_precision": 0.3684,
+      "focal_recall": 1.0,
+      "focal_precision": 0.3333
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9919,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 94241,
+    "output_tokens": 3332,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 440,
+      "description": "Define a test class that validates the configuration of detailed statistics collection in an object pool through both initial configuration and runtime modification, initializing a factory and a generic object pool in the setup phase. First, construct a pool configuration object and disable detailed statistics collection on it, then instantiate a new pool using the factory and this configuration within a try-with-resources block, and immediately verify that the pool reports detailed statistics collection as disabled. After the scoped pool is automatically closed, shift focus to the pool instance initialized during setup and invoke its method to disable detailed statistics collection, then assert that the pool confirms this disabled state. Subsequently, enable detailed statistics collection on the same pool instance and verify that the pool now reports the feature as enabled. In the teardown phase, close the pool and clear references to both the pool and factory instances. This test uses JUnit 5 for test execution and assertions.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
+      "method_signature": "testCollectDetailedStatisticsConfiguration()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.GenericObjectPoolDetailedStatisticsTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.BasePooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n/**\n * Tests for detailed statistics collection in GenericObjectPool,\n * including initial configuration and runtime modification.\n */\npublic class GenericObjectPoolDetailedStatisticsTest {\n\n    private GenericObjectPool<Object> pool;\n    private BasePooledObjectFactory<Object> factory;\n\n    /**\n     * Initializes a factory and a generic object pool for testing.\n     */\n    @BeforeEach\n    public void setUp() {\n        factory = new BasePooledObjectFactory<Object>() {\n            @Override\n            public Object create() throws Exception {\n                // Return a simple new object for the pool\n                return new Object();\n            }\n\n            @Override\n            public PooledObject<Object> wrap(Object obj) {\n                return new DefaultPooledObject<>(obj);\n            }\n        };\n        // Initialize the pool with the factory. JMX (detailed statistics) is enabled by default.\n        pool = new GenericObjectPool<>(factory);\n    }\n\n    /**\n     * Closes the initialized pool and clears references.\n     */\n    @AfterEach\n    public void tearDown() {\n        if (pool != null) {\n            pool.close();\n            pool = null;\n        }\n        factory = null;\n    }\n\n    /**\n     * Validates the configuration of detailed statistics collection in an object pool\n     * through both initial configuration and runtime modification.\n     */\n    @Test\n    public void testDetailedStatisticsConfigurationAndRuntimeModification() throws Exception {\n        // Part 1: Initial configuration and verification for a new pool instance\n        GenericObjectPoolConfig<Object> config = new GenericObjectPoolConfig<>();\n        config.setJmxEnabled(false); // Disable detailed statistics collection on this config\n\n        // Instantiate a new pool using the factory and this configuration within a try-with-resources block\n        try (GenericObjectPool<Object> scopedPool = new GenericObjectPool<>(factory, config)) {\n            // Verify that the pool reports detailed statistics collection as disabled\n            assertFalse(scopedPool.isJmxEnabled(), \"Scoped pool should have detailed statistics disabled based on initial configuration.\");\n        } // The scopedPool is automatically closed here\n\n        // Part 2: Runtime modification and verification on the pool initialized during setup\n        // The pool initialized in setUp has JMX (detailed statistics) enabled by default.\n        assertTrue(pool.isJmxEnabled(), \"Setup pool should initially have detailed statistics enabled by default.\");\n\n        // Invoke its method to disable detailed statistics collection at runtime\n        pool.setJmxEnabled(false);\n        // Assert that the pool confirms this disabled state\n        assertFalse(pool.isJmxEnabled(), \"Setup pool should have detailed statistics disabled after runtime modification.\");\n\n        // Subsequently, enable detailed statistics collection on the same pool instance\n        pool.setJmxEnabled(true);\n        // Verify that the pool now reports the feature as enabled\n        assertTrue(pool.isJmxEnabled(), \"Setup pool should have detailed statistics enabled after runtime re-enabling.\");\n    }\n}",
+      "method_signature": "testCollectDetailedStatisticsConfiguration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5294,
+    "output_tokens": 3771,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 441,
+      "description": "Create a test case to validate the system's ability to safely retrieve managed resources from various container states, ensuring robust handling of edge cases where containers may be missing or empty. First, verify that when the system attempts to retrieve a resource from a completely absent container, it correctly recognizes the unavailability and returns nothing rather than failing. Next, simulate a scenario where a container exists but holds no actual resource within it, and confirm the system similarly recognizes this empty state and returns nothing. Then, establish a valid scenario where a container properly wraps an actual resource, and verify the system successfully retrieves and returns that resource. This validation ensures the resource management system gracefully handles both missing containers and empty containers while correctly providing access to legitimately wrapped resources. Use JUnit 5 for the testing framework and standard equality assertions to verify that missing or empty scenarios produce no result while valid scenarios produce the expected resource.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.PooledObjectTest",
+      "method_signature": "testGetObject()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.DefaultPooledObjectRetrievalTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.PooledObject;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\npublic class DefaultPooledObjectRetrievalTest {\n\n    /**\n     * Helper method to simulate a system safely retrieving a resource from a PooledObject.\n     * This method handles null PooledObject instances gracefully.\n     *\n     * @param container The PooledObject from which to retrieve the resource.\n     * @param <T> The type of the resource.\n     * @return The resource if available, or null if the container is null or holds no resource.\n     */\n    private <T> T retrieveResourceSafely(final PooledObject<T> container) {\n        if (container == null) {\n            // Simulate the system recognizing an absent container and returning nothing.\n            return null;\n        }\n        // Retrieve the object from the container. If the container holds null, this will return null.\n        return container.getObject();\n    }\n\n    @Test\n    void testResourceRetrievalFromVariousContainerStates() {\n        // Scenario 1: Verify that when the system attempts to retrieve a resource from a completely absent container (null PooledObject),\n        // it correctly recognizes the unavailability and returns nothing (null).\n        final PooledObject<String> absentContainer = null;\n        final String resultFromAbsentContainer = retrieveResourceSafely(absentContainer);\n        Assertions.assertNull(resultFromAbsentContainer,\n                \"Retrieving from an absent (null) container should yield a null resource.\");\n\n        // Scenario 2: Simulate a scenario where a container exists but holds no actual resource within it (DefaultPooledObject wrapping null),\n        // and confirm the system similarly recognizes this empty state and returns nothing (null).\n        final PooledObject<String> emptyContainer = new DefaultPooledObject<>(null);\n        final String resultFromEmptyContainer = retrieveResourceSafely(emptyContainer);\n        Assertions.assertNull(resultFromEmptyContainer,\n                \"Retrieving from an empty container (PooledObject wrapping null) should yield a null resource.\");\n\n        // Scenario 3: Establish a valid scenario where a container properly wraps an actual resource,\n        // and verify the system successfully retrieves and returns that resource.\n        final String expectedResource = \"ValidResourceContent\";\n        final PooledObject<String> validContainer = new DefaultPooledObject<>(expectedResource);\n        final String resultFromValidContainer = retrieveResourceSafely(validContainer);\n        Assertions.assertNotNull(resultFromValidContainer,\n                \"Retrieving from a valid container should not yield a null resource.\");\n        Assertions.assertEquals(expectedResource, resultFromValidContainer,\n                \"Retrieving from a valid container should yield the expected wrapped resource.\");\n    }\n}",
+      "method_signature": "testGetObject()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.75,
+      "callable_recall": 1.0,
+      "callable_precision": 0.6667,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.25,
+      "method_coverage": 0.5,
+      "line_coverage": 0.5,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5290,
+    "output_tokens": 3021,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 455,
+      "description": "Define a test class containing two fields: `pool` of type `BaseGenericObjectPool<String, TestException>` and `factory` of type `SimpleFactory`, where `SimpleFactory` is a helper class. Implement a setup method annotated with `@BeforeEach` that instantiates `factory` by invoking `new SimpleFactory()` and then instantiates `pool` by invoking `new GenericObjectPool<>(factory)`. Write a test method annotated with `@Test` that begins by instantiating a `GenericObjectPoolConfig<String>` object using `new GenericObjectPoolConfig<>()` and assigning it to variable `config`, then immediately invoke `setCollectDetailedStatistics(false)` on `config`. Within a try-with-resources block, instantiate a `GenericObjectPool<String, TestException>` by invoking `new GenericObjectPool<>(factory, config)` and assign it to variable `testPool`, then invoke `getCollectDetailedStatistics()` on `testPool` and assert using `assertFalse` that the returned value is false. After the try-with-resources block completes, invoke `setCollectDetailedStatistics(false)` on the class field `pool`, then invoke `getCollectDetailedStatistics()` on `pool` and assert using `assertFalse` that the returned value is false. Next, invoke `setCollectDetailedStatistics(true)` on `pool`, then invoke `getCollectDetailedStatistics()` on `pool` and assert using `assertTrue` that the returned value is true. Implement a teardown method annotated with `@AfterEach` that invokes `close()` on `pool`, then assigns `null` to `pool`, and finally assigns `null` to `factory`. The test uses class-level annotations: none. The test method uses annotation: `@Test`. Assertion library: JUnit 5 Assertions. Mocking library: none.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
+      "method_signature": "testCollectDetailedStatisticsConfiguration()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.GenericObjectPoolConfigStatisticsTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.PooledObjectFactory;\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport java.util.concurrent.atomic.AtomicInteger;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n/**\n * Tests for {@link GenericObjectPool} detailed statistics configuration.\n */\npublic class GenericObjectPoolConfigStatisticsTest {\n\n    // The description mentions BaseGenericObjectPool<String, TestException>, but BaseGenericObjectPool\n    // only takes one generic type parameter. GenericObjectPool is the concrete class used,\n    // which also takes one type parameter. We will use GenericObjectPool<String> for the field.\n    private GenericObjectPool<String> pool;\n    private SimpleFactory factory;\n\n    /**\n     * A simple factory for creating String objects, used for testing purposes.\n     */\n    private static class SimpleFactory implements PooledObjectFactory<String> {\n        private final AtomicInteger counter = new AtomicInteger(0);\n\n        @Override\n        public PooledObject<String> makeObject() throws Exception {\n            return new DefaultPooledObject<>(\"Object-\" + counter.incrementAndGet());\n        }\n\n        @Override\n        public void destroyObject(PooledObject<String> p) throws Exception {\n            // No-op for this test\n        }\n\n        @Override\n        public boolean validateObject(PooledObject<String> p) {\n            return true; // Always valid for this test\n        }\n\n        @Override\n        public void activateObject(PooledObject<String> p) throws Exception {\n            // No-op for this test\n        }\n\n        @Override\n        public void passivateObject(PooledObject<String> p) throws Exception {\n            // No-op for this test\n        }\n    }\n\n    /**\n     * A simple custom exception class mentioned in the test description.\n     */\n    private static class TestException extends RuntimeException {\n        // No specific implementation needed for this test's scope.\n    }\n\n    @BeforeEach\n    public void setUp() {\n        factory = new SimpleFactory();\n        pool = new GenericObjectPool<>(factory);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        if (pool != null) {\n            pool.close();\n            pool = null;\n        }\n        factory = null;\n    }\n\n    @Test\n    public void testCollectDetailedStatisticsConfiguration() {\n        // Instantiate a GenericObjectPoolConfig object and assign it to variable config\n        GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();\n        // Immediately invoke setCollectDetailedStatistics(false) on config\n        config.setCollectDetailedStatistics(false);\n\n        // Within a try-with-resources block, instantiate a GenericObjectPool with the factory and config\n        try (GenericObjectPool<String> testPool = new GenericObjectPool<>(factory, config)) {\n            // Invoke getCollectDetailedStatistics() on testPool and assert using assertFalse that the returned value is false\n            assertFalse(testPool.getCollectDetailedStatistics(), \"testPool should not collect detailed statistics when configured with false\");\n        } // The pool is automatically closed here\n\n        // After the try-with-resources block completes, invoke setCollectDetailedStatistics(false) on the class field pool\n        pool.setCollectDetailedStatistics(false);\n        // Invoke getCollectDetailedStatistics() on pool and assert using assertFalse that the returned value is false\n        assertFalse(pool.getCollectDetailedStatistics(), \"class field pool should not collect detailed statistics after setting to false\");\n\n        // Next, invoke setCollectDetailedStatistics(true) on pool\n        pool.setCollectDetailedStatistics(true);\n        // Invoke getCollectDetailedStatistics() on pool and assert using assertTrue that the returned value is true\n        assertTrue(pool.getCollectDetailedStatistics(), \"class field pool should collect detailed statistics after setting to true\");\n    }\n}",
+      "method_signature": "testCollectDetailedStatisticsConfiguration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5495,
+    "output_tokens": 4454,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 469,
+      "description": "Create a test case to validate that the object pool system correctly applies and reflects the detailed statistics collection preference when configured during pool construction. Begin by preparing a configuration that explicitly disables the detailed statistics collection feature, then construct a new object pool instance using this configuration along with the standard resource factory. Verify that the newly created pool respects the configuration by confirming the detailed statistics collection feature remains disabled as specified. Additionally, ensure the configuration's text representation includes a clear indication of the detailed statistics collection setting to support operational transparency. After validating both the pool's behavior and the configuration's visibility, release the pool resources. This test uses JUnit 5 for execution and AssertJ-style assertions to verify both the pool's adherence to the configuration setting and the presence of the configuration property in the text output.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
+      "method_signature": "testDetailedStatisticsConfigIntegration()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.DetailedStatisticsCollectionTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.BasePooledObjectFactory;\nimport org.apache.commons.pool3.ObjectPool;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\nimport java.util.concurrent.atomic.AtomicInteger;\n\n/**\n * Test case for validating detailed statistics collection preference in object pool configuration.\n */\nclass DetailedStatisticsCollectionTest {\n\n    /**\n     * Validates that the object pool system correctly applies and reflects the\n     * detailed statistics collection preference when configured during pool construction.\n     */\n    @Test\n    void testDetailedStatisticsCollectionDisabled() throws Exception {\n        // Prepare configuration to explicitly disable detailed statistics collection.\n        // JMX is the standard mechanism in Java for exposing management and monitoring information,\n        // which includes detailed statistics. Disabling JMX effectively disables detailed statistics\n        // collection via this mechanism for the pool.\n        final GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();\n        config.setJmxEnabled(false);\n        // Setting other test-related configurations to false to ensure the test focuses purely\n        // on the jmxEnabled setting and avoids potential side effects or additional requirements.\n        config.setTestOnBorrow(false);\n        config.setTestOnReturn(false);\n        config.setTestOnCreate(false);\n        config.setTestOnRelease(false);\n        config.setTestWhileIdle(false);\n\n        // Construct a new object pool instance using this configuration along with a standard resource factory.\n        // An anonymous BasePooledObjectFactory is used for creating simple String objects for pooling.\n        final AtomicInteger instanceCounter = new AtomicInteger();\n        final BasePooledObjectFactory<String, RuntimeException> factory = new BasePooledObjectFactory<String, RuntimeException>() {\n            @Override\n            public String create() {\n                return \"PooledObject-\" + instanceCounter.incrementAndGet();\n            }\n\n            @Override\n            public PooledObject<String> wrap(final String obj) {\n                return new DefaultPooledObject<>(obj);\n            }\n        };\n\n        // Initialize the object pool with the configured settings.\n        final ObjectPool<String> objectPool = new GenericObjectPool<>(factory, config);\n\n        try {\n            // Verify that the newly created pool respects the configuration by confirming\n            // the detailed statistics collection feature (via JMX) remains disabled as specified.\n            assertThat(objectPool.getJmxEnabled())\n                .as(\"The object pool's JMX (and thus detailed statistics collection) should be disabled as per configuration.\")\n                .isFalse();\n\n            // Additionally, ensure the configuration's text representation includes a clear indication\n            // of the detailed statistics collection setting to support operational transparency.\n            assertThat(config.toString())\n                .as(\"The configuration's toString() should explicitly indicate that JMX is disabled.\")\n                .contains(\"jmxEnabled=false\");\n\n        } finally {\n            // After validating both the pool's behavior and the configuration's visibility, release the pool resources.\n            objectPool.close();\n        }\n    }\n}",
+      "method_signature": "testDetailedStatisticsConfigIntegration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5272,
+    "output_tokens": 3849,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 477,
+      "description": "Define a test class that validates the integration of detailed statistics configuration with an object pool, declaring fields for a Generic Object Pool and a Simple Factory, then implement a setup method that instantiates the factory and constructs the pool using that factory. Within the test method, instantiate a Generic Object Pool Config and configure it to disable detailed statistics collection, then construct a test pool instance using the factory and this configuration within a try-with-resources block to ensure automatic cleanup. Upon pool creation, verify that the pool respects the configuration by asserting that its detailed statistics collection setting matches the disabled state specified in the config. Following this verification, retrieve the string representation of the configuration object and validate that it contains the property name for detailed statistics collection to confirm proper serialization of the configuration. After the test completes, the try-with-resources construct automatically closes the test pool, while a teardown method explicitly closes the class-level pool instance and nullifies both the pool and factory references to release resources. This test uses JUnit 5 for the testing framework and standard assertion methods for validation.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
+      "method_signature": "testDetailedStatisticsConfigIntegration()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.DetailedStatisticsConfigIntegrationTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.apache.commons.pool3.BasePooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\npublic class DetailedStatisticsConfigIntegrationTest {\n\n    private GenericObjectPool<String, RuntimeException> pool;\n    private MyFactory factory;\n\n    @BeforeEach\n    public void setUp() {\n        factory = new MyFactory();\n        // Initialize with a default config for the class-level pool,\n        // though it won't be used for the actual test scenario within the test method.\n        // We need a pool instance to pass to the constructor of GenericObjectPool,\n        // even if it's not the one we're explicitly testing configuration on.\n        // This pool will be closed in tearDown.\n        pool = new GenericObjectPool<>(factory);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        if (pool != null) {\n            pool.close();\n            pool = null;\n        }\n        factory = null;\n    }\n\n    @Test\n    public void testDetailedStatisticsConfiguration() {\n        // Instantiate a GenericObjectPoolConfig\n        GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();\n\n        // Configure it to disable detailed statistics collection\n        config.setCollectDetailedStatistics(false);\n\n        // Construct a test pool instance using the factory and this configuration\n        // Use try-with-resources to ensure automatic cleanup of this specific testPool\n        try (GenericObjectPool<String, RuntimeException> testPool = new GenericObjectPool<>(factory, config)) {\n            // Upon pool creation, verify that the pool respects the configuration\n            // by asserting that its detailed statistics collection setting matches the disabled state\n            assertFalse(testPool.getCollectDetailedStatistics(),\n                    \"Pool should have detailed statistics collection disabled as per config.\");\n\n            // Retrieve the string representation of the configuration object\n            String configString = config.toString();\n\n            // Validate that it contains the property name for detailed statistics collection\n            assertTrue(configString.contains(\"collectDetailedStatistics=false\"),\n                    \"Config's toString() should indicate detailed statistics collection is false.\");\n        }\n    }\n\n    /**\n     * A simple factory for String objects to be used with the GenericObjectPool.\n     */\n    private static class MyFactory extends BasePooledObjectFactory<String, RuntimeException> {\n        private int counter = 0;\n\n        @Override\n        public String create() {\n            return \"Object-\" + (++counter);\n        }\n\n        @Override\n        public PooledObject<String> wrap(final String value) {\n            return new DefaultPooledObject<>(value);\n        }\n    }\n}",
+      "method_signature": "testDetailedStatisticsConfigIntegration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 94586,
+    "output_tokens": 2873,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 483,
+      "description": "Create a test case to validate that when the resilient object factory system is initialized with minimal configuration, it properly establishes all default operational parameters and allows subsequent configuration adjustments. Begin by setting up a factory component that simulates potential creation failures, then initialize the resilient factory wrapper using only this basic factory without specifying any custom parameters. Verify that the monitoring process is not actively running, confirm that the automatic replenishment process is also inactive, and ensure the system adopts the standard configuration values for tracking capacity, monitoring intervals, creation delays, and historical analysis windows. Check that the event tracking log starts empty with no recorded creation attempts. After confirming these initial defaults, adjust the tracking capacity to a smaller value and verify the system accepts this new configuration, then modify the monitoring interval to a shorter duration to demonstrate the factory's ability to accept runtime configuration changes. Use JUnit 5 for the test structure and standard equality assertions to verify that all default settings match their expected baseline values and that configuration updates are properly applied.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory",
+      "method_signature": "testConstructorWithDefaults()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.ResilientPooledObjectFactoryTest",
+      "code": "// src/test/java/org/apache/commons/pool3/impl/ResilientPooledObjectFactoryTest.java\npackage org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.DestroyMode;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.PooledObjectFactory;\nimport org.junit.jupiter.api.Test;\n\nimport java.time.Duration;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nclass ResilientPooledObjectFactoryTest {\n\n    /**\n     * A dummy factory that always fails to create objects for testing failure scenarios.\n     * This is used to ensure the ResilientPooledObjectFactory handles creation attempts\n     * and failures correctly, even if the underlying factory is problematic.\n     */\n    static class FailingObjectFactory implements PooledObjectFactory<Object> {\n        @Override\n        public PooledObject<Object> makeObject() throws Exception {\n            throw new UnsupportedOperationException(\"Failing factory always fails to make objects.\");\n        }\n\n        @Override\n        public void destroyObject(final PooledObject<Object> p) {\n            // No-op\n        }\n\n        @Override\n        public void destroyObject(final PooledObject<Object> p, final DestroyMode destroyMode) {\n            // No-op\n        }\n\n        @Override\n        public boolean validateObject(final PooledObject<Object> p) {\n            return false;\n        }\n\n        @Override\n        public void activateObject(final PooledObject<Object> p) {\n            // No-op\n        }\n\n        @Override\n        public void passivateObject(final PooledObject<Object> p) {\n            // No-op\n        }\n    }\n\n    @Test\n    void testDefaultConfigurationAndAdjustments() {\n        // Setup: Create a factory that simulates potential creation failures.\n        // This factory is intentionally designed to throw an exception on makeObject(),\n        // allowing us to test how ResilientPooledObjectFactory records such events.\n        final FailingObjectFactory failingFactory = new FailingObjectFactory();\n\n        // Initialize the resilient factory wrapper using only this basic factory\n        // without specifying any custom parameters, relying on default configuration.\n        final ResilientPooledObjectFactory<Object> resilientFactory =\n                new ResilientPooledObjectFactory<>(failingFactory);\n\n        // --- Verify initial default operational parameters and configuration values ---\n\n        // Monitoring and replenishment processes should be disabled by default.\n        assertFalse(resilientFactory.isMonitoringEnabled(), \"Monitoring should be disabled by default.\");\n        assertFalse(resilientFactory.isReplenishmentEnabled(), \"Replenishment should be disabled by default.\");\n\n        // Confirm standard configuration values match their expected defaults.\n        assertEquals(ResilientPooledObjectFactoryConfig.DEFAULT_CREATION_TRACKING_CAPACITY,\n                resilientFactory.getCreationTrackingCapacity(),\n                \"Default creation tracking capacity mismatch.\");\n        assertEquals(Duration.ofMillis(ResilientPooledObjectFactoryConfig.DEFAULT_MONITORING_INTERVAL_MILLIS),\n                resilientFactory.getMonitoringInterval(),\n                \"Default monitoring interval mismatch.\");\n        assertEquals(Duration.ofMillis(ResilientPooledObjectFactoryConfig.DEFAULT_CREATION_RETRY_DELAY_MILLIS),\n                resilientFactory.getCreationRetryDelay(),\n                \"Default creation retry delay mismatch.\");\n        assertEquals(Duration.ofMillis(ResilientPooledObjectFactoryConfig.DEFAULT_CREATION_ANALYSIS_WINDOW_MILLIS),\n                resilientFactory.getCreationAnalysisWindow(),\n                \"Default creation analysis window mismatch.\");\n\n        // The event tracking logs (attempts and failures) should be empty initially as no objects have been created.\n        assertTrue(resilientFactory.getCreationAttempts().isEmpty(),\n                \"Creation attempts log should be empty initially.\");\n        assertTrue(resilientFactory.getCreationFailures().isEmpty(),\n                \"Creation failures log should be empty initially.\");\n\n        // --- Verify configuration adjustments ---\n\n        // Adjust the tracking capacity to a smaller value and verify the system accepts this new configuration.\n        final int newTrackingCapacity = 5;\n        resilientFactory.setCreationTrackingCapacity(newTrackingCapacity);\n        assertEquals(newTrackingCapacity, resilientFactory.getCreationTrackingCapacity(),\n                \"Tracking capacity should be updated after adjustment.\");\n\n        // Modify the monitoring interval to a shorter duration to demonstrate runtime configuration changes.\n        final Duration newMonitoringInterval = Duration.ofSeconds(1);\n        resilientFactory.setMonitoringInterval(newMonitoringInterval);\n        assertEquals(newMonitoringInterval, resilientFactory.getMonitoringInterval(),\n                \"Monitoring interval should be updated after adjustment.\");\n\n        // Ensure other defaults that were not explicitly changed remain intact.\n        assertEquals(Duration.ofMillis(ResilientPooledObjectFactoryConfig.DEFAULT_CREATION_RETRY_DELAY_MILLIS),\n                resilientFactory.getCreationRetryDelay(),\n                \"Creation retry delay should remain at its default value as it was not changed.\");\n        assertEquals(Duration.ofMillis(ResilientPooledObjectFactoryConfig.DEFAULT_CREATION_ANALYSIS_WINDOW_MILLIS),\n                resilientFactory.getCreationAnalysisWindow(),\n                \"Creation analysis window should remain at its default value as it was not changed.\");\n    }\n}",
+      "method_signature": "testConstructorWithDefaults()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5306,
+    "output_tokens": 5222,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 486,
+      "description": "Create a test case to validate that the resource pooling system correctly prevents capacity leakage when validation fails during resource creation, ensuring that failed validation attempts do not consume available capacity limits. Configure the pooling system to validate resources immediately upon creation rather than at borrowing time, establish a maximum capacity of two resources, and enable validation checking while initially setting all validation attempts to fail. Attempt to add two new resources to the pool for a specific category, then verify the system reports zero available resources and zero resources currently in use, confirming that the failed validations did not reduce the available capacity. After confirming the pool remains empty despite the failed creation attempts, reconfigure the validation mechanism to succeed, then request a resource from the pool for the same category and verify the system successfully provides a valid resource. Add one more resource to the pool for that category, and confirm the system now shows exactly one resource available for future use and one resource currently checked out, demonstrating that the pool correctly maintains capacity tracking even after previous validation failures. This validation uses JUnit 5 with standard equality assertions to verify the resource counts and non-null assertions to confirm successful resource acquisition.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testValidateOnCreateFailure()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.KeyedObjectPoolValidationFailureTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.util.NoSuchElementException;\nimport java.util.concurrent.atomic.AtomicInteger;\n\nimport org.apache.commons.pool3.KeyedPooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.junit.jupiter.api.Test;\n\npublic class KeyedObjectPoolValidationFailureTest {\n\n    private static class TestFactory implements KeyedPooledObjectFactory<String, String> {\n        private volatile boolean validationSuccess = true;\n        private final AtomicInteger createCounter = new AtomicInteger(0);\n\n        @Override\n        public void activateObject(final String key, final PooledObject<String> p) throws Exception {\n            // No-op\n        }\n\n        @Override\n        public void destroyObject(final String key, final PooledObject<String> p) throws Exception {\n            // No-op\n        }\n\n        @Override\n        public String makeObject(final String key) throws Exception {\n            return key + \"_\" + createCounter.getAndIncrement();\n        }\n\n        @Override\n        public void passivateObject(final String key, final PooledObject<String> p) throws Exception {\n            // No-op\n        }\n\n        public void setValidationSuccess(final boolean validationSuccess) {\n            this.validationSuccess = validationSuccess;\n        }\n\n        @Override\n        public boolean validateObject(final String key, final PooledObject<String> p) {\n            return validationSuccess;\n        }\n\n        @Override\n        public PooledObject<String> wrap(final String obj) {\n            return new DefaultPooledObject<>(obj);\n        }\n    }\n\n    @Test\n    public void testValidationFailureDoesNotLeakCapacity() throws Exception {\n        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();\n        config.setMaxTotalPerKey(2);\n        config.setTestOnCreate(true); // Validate immediately upon creation\n\n        final TestFactory factory = new TestFactory();\n        final GenericKeyedObjectPool<String, String> pool = new GenericKeyedObjectPool<>(factory, config);\n        final String testKey = \"testKey\";\n\n        try {\n            // Initially, validation fails\n            factory.setValidationSuccess(false);\n\n            // Attempt to add two resources. Since testOnCreate is true and validation fails,\n            // these attempts should not result in objects being added to the pool.\n            pool.addObjects(testKey, 2);\n\n            // Verify that no objects were added to the pool and no capacity was consumed.\n            assertEquals(0, pool.getNumActive(testKey), \"Active objects count should be zero after failed creation attempts.\");\n            assertEquals(0, pool.getNumIdle(testKey), \"Idle objects count should be zero after failed creation attempts.\");\n            assertEquals(0, pool.getNumTotal(), \"Total objects count should be zero after failed creation attempts.\");\n\n            // Reconfigure validation to succeed\n            factory.setValidationSuccess(true);\n\n            // Request a resource; this should now succeed\n            final String obj1 = pool.borrowObject(testKey);\n            assertNotNull(obj1, \"First borrowed object should not be null after validation succeeds.\");\n            assertEquals(1, pool.getNumActive(testKey), \"After borrowing one, active count should be 1.\");\n            assertEquals(0, pool.getNumIdle(testKey), \"After borrowing one, idle count should be 0.\");\n\n            // Add one more resource to the pool.\n            // This should create a new object (up to maxTotalPerKey) and add it to the idle pool.\n            pool.addObject(testKey);\n\n            // Verify the system state: one resource checked out, one available for future use.\n            assertEquals(1, pool.getNumActive(testKey), \"After adding one more, active count should still be 1.\");\n            assertEquals(1, pool.getNumIdle(testKey), \"After adding one more, idle count should be 1.\");\n            assertEquals(2, pool.getNumTotal(), \"Total objects count should be 2.\");\n\n            // Clean up\n            pool.returnObject(testKey, obj1);\n        } finally {\n            pool.close();\n        }\n    }\n}",
+      "method_signature": "testValidateOnCreateFailure()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5336,
+    "output_tokens": 4021,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 487,
+      "description": "Define a test method that validates the default configuration state of a Resilient Pooled Object Factory upon construction with minimal parameters. Instantiate a failing factory test helper, then construct a Resilient Pooled Object Factory wrapping this helper factory without providing explicit configuration parameters. Immediately verify that the monitor thread is not running by checking its running state, followed by confirming that the adder thread is also not running. Assert that the log size matches the factory's default log size value by comparing the instance's log size against the static default. Similarly, validate that the time between checks duration equals the default time between checks, the delay duration matches the default delay, and the look back duration corresponds to the default look back, retrieving each default value from the factory class itself. Confirm that the make object log is initially empty by asserting its size is zero. To verify mutability of configuration, update the log size to a positive integer value and assert the new log size reflects this change. Finally, modify the time between checks by setting it to a duration of 200 milliseconds. This test uses JUnit for test execution and standard assertion methods for validation.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory",
+      "method_signature": "testConstructorWithDefaults()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.ResilientPooledObjectFactoryDefaultConfigTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.time.Duration;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.PooledObjectFactory;\nimport org.junit.jupiter.api.Test;\n\npublic class ResilientPooledObjectFactoryDefaultConfigTest {\n\n    @Test\n    public void testDefaultConfigurationOnConstruction() {\n        // Instantiate a failing factory test helper\n        PooledObjectFactory<Object, Exception> failingFactory = new PooledObjectFactory<Object, Exception>() {\n            @Override\n            public PooledObject<Object> makeObject() throws Exception {\n                throw new UnsupportedOperationException(\"Not implemented for this test\");\n            }\n\n            @Override\n            public void destroyObject(PooledObject<Object> p) throws Exception {\n                // No-op for this test\n            }\n\n            @Override\n            public boolean validateObject(PooledObject<Object> p) {\n                return false; // Always invalid for this test\n            }\n\n            @Override\n            public void activateObject(PooledObject<Object> p) throws Exception {\n                // No-op for this test\n            }\n\n            @Override\n            public void passivateObject(PooledObject<Object> p) throws Exception {\n                // No-op for this test\n            }\n        };\n\n        // Construct a Resilient Pooled Object Factory wrapping this helper factory\n        // without providing explicit configuration parameters.\n        ResilientPooledObjectFactory<Object, Exception> factory = new ResilientPooledObjectFactory<>(failingFactory);\n\n        // Immediately verify that the monitor thread is not running\n        assertFalse(factory.isMonitorRunning(), \"Monitor thread should not be running initially.\");\n\n        // Confirm that the adder thread is also not running.\n        assertFalse(factory.isAdderRunning(), \"Adder thread should not be running initially.\");\n\n        // Assert that the log size matches the factory's default log size value\n        assertEquals(ResilientPooledObjectFactory.getDefaultLogSize(), factory.getLogSize(), \"Log size should match default.\");\n\n        // Validate that the time between checks duration equals the default time between checks\n        assertEquals(ResilientPooledObjectFactory.getDefaultTimeBetweenChecks(), factory.getTimeBetweenChecks(), \"Time between checks should match default.\");\n\n        // The delay duration matches the default delay\n        assertEquals(ResilientPooledObjectFactory.getDefaultDelay(), factory.getDelay(), \"Delay should match default.\");\n\n        // The look back duration corresponds to the default look back\n        assertEquals(ResilientPooledObjectFactory.getDefaultLookBack(), factory.getLookBack(), \"Look back duration should match default.\");\n\n        // Confirm that the make object log is initially empty by asserting its size is zero.\n        assertNotNull(factory.getMakeObjectLog(), \"Make object log should not be null.\");\n        assertEquals(0, factory.getMakeObjectLog().size(), \"Make object log should be empty initially.\");\n\n        // To verify mutability of configuration, update the log size to a positive integer value\n        int newLogSize = 20;\n        factory.setLogSize(newLogSize);\n        // Assert the new log size reflects this change.\n        assertEquals(newLogSize, factory.getLogSize(), \"Log size should be updated.\");\n\n        // Finally, modify the time between checks by setting it to a duration of 200 milliseconds.\n        Duration newTimeBetweenChecks = Duration.ofMillis(200);\n        factory.setTimeBetweenChecks(newTimeBetweenChecks);\n        // Assert the new time between checks reflects this change.\n        assertEquals(newTimeBetweenChecks, factory.getTimeBetweenChecks(), \"Time between checks should be updated.\");\n    }\n}",
+      "method_signature": "testConstructorWithDefaults()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.3333,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.8,
+      "callable_recall": 0.9615,
+      "callable_precision": 0.8065,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.9375,
+      "line_coverage": 0.9062,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 43650,
+    "output_tokens": 3856,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 495,
+      "description": "Define a test class containing two fields: `pool` of type `BaseGenericObjectPool<String, TestException>` and `factory` of type `SimpleFactory`, where `SimpleFactory` is a helper class. Implement a setup method annotated with `@BeforeEach` that instantiates `factory` by invoking `new SimpleFactory()` and assigns it, then instantiates `pool` by invoking `new GenericObjectPool<>(factory)` passing the factory instance. Write a test method annotated with `@Test` that begins by instantiating a `GenericObjectPoolConfig<String>` via `new GenericObjectPoolConfig<>()` and assigning it to variable `config`, then immediately invoke `setCollectDetailedStatistics(false)` on `config` passing the boolean literal `false`. Open a try-with-resources block by instantiating `testPool` of type `GenericObjectPool<String, TestException>` via `new GenericObjectPool<>(factory, config)` passing both the factory field and the config variable. Inside the try block, invoke `getCollectDetailedStatistics()` on `testPool` and pass the returned value to `assertFalse` along with the message String literal `\"Pool should respect collectDetailedStatistics setting from config\"`. Following this assertion, invoke `toString()` on `config` and assign the returned String to variable `configString`, then invoke `contains(\"collectDetailedStatistics\")` on `configString` passing the exact String literal `\"collectDetailedStatistics\"` and pass the boolean result to `assertTrue` along with the message String literal `\"Config toString should include collectDetailedStatistics property\"`. The try-with-resources automatically closes `testPool` upon block exit. Implement a teardown method annotated with `@AfterEach` that invokes `close()` on the `pool` field, then assigns `null` to both `pool` and `factory`. The test uses JUnit 5 Assertions with method-level annotation `@Test` and no class-level annotations.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestBaseGenericObjectPool",
+      "method_signature": "testDetailedStatisticsConfigIntegration()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.GenericObjectPoolConfigTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.BasePooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.apache.commons.pool3.impl.GenericObjectPool;\nimport org.apache.commons.pool3.impl.GenericObjectPoolConfig;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nclass GenericObjectPoolConfigTest {\n\n    // The prompt specified BaseGenericObjectPool<String, TestException>,\n    // but GenericObjectPool only takes one type parameter.\n    // Assuming GenericObjectPool<String> is intended for compilation.\n    private GenericObjectPool<String> pool;\n    private SimpleFactory factory;\n\n    /**\n     * Helper exception class for the test.\n     */\n    static class TestException extends Exception {\n        private static final long serialVersionUID = 1L;\n        public TestException(String message) {\n            super(message);\n        }\n    }\n\n    /**\n     * Helper factory class for the test.\n     * Extends BasePooledObjectFactory<String> to work with GenericObjectPool<String>.\n     */\n    static class SimpleFactory extends BasePooledObjectFactory<String> {\n        @Override\n        public String create() throws Exception {\n            return \"testObject\";\n        }\n\n        @Override\n        public PooledObject<String> wrap(String obj) {\n            return new DefaultPooledObject<>(obj);\n        }\n    }\n\n    @BeforeEach\n    void setUp() throws Exception {\n        factory = new SimpleFactory();\n        pool = new GenericObjectPool<>(factory);\n    }\n\n    @AfterEach\n    void tearDown() {\n        if (pool != null) {\n            pool.close();\n            pool = null;\n        }\n        factory = null;\n    }\n\n    @Test\n    void testCollectDetailedStatisticsConfig() throws Exception {\n        GenericObjectPoolConfig<String> config = new GenericObjectPoolConfig<>();\n        config.setCollectDetailedStatistics(false);\n\n        try (GenericObjectPool<String> testPool = new GenericObjectPool<>(factory, config)) {\n            assertFalse(testPool.getCollectDetailedStatistics(), \"Pool should respect collectDetailedStatistics setting from config\");\n\n            String configString = config.toString();\n            assertTrue(configString.contains(\"collectDetailedStatistics\"), \"Config toString should include collectDetailedStatistics property\");\n        }\n    }\n}",
+      "method_signature": "testDetailedStatisticsConfigIntegration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5522,
+    "output_tokens": 5913,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 497,
+      "description": "Define a test class that verifies the pool's behavior when validation-on-create is enabled and initially fails, ensuring that failed validations do not leak capacity from the pool. Initialize a keyed object pool with a factory configured to support validation, then configure the pool to enable test-on-create validation while disabling test-on-borrow validation and setting a maximum total capacity of two instances. Configure the factory to enable validation and mark all validation attempts as failing. Attempt to add two objects to the pool under a specific key, which should both fail validation during creation, then verify that both the idle and active instance counts remain at zero, confirming that failed validations did not consume pool capacity. Reconfigure the factory to mark validation attempts as successful, then borrow an object from the pool under the same key and verify that the borrowed object is not null. Add another object to the pool under the same key, then verify that the pool now contains exactly one idle instance and one active instance, confirming that the pool correctly manages capacity after the validation configuration change. Upon test completion, invoke the inherited teardown logic to clear the pool state, retrieve the JMX name associated with the pool, clear all pooled objects, close the pool, nullify the pool and factory references, query the platform MBean server for any remaining registered pool instances, and assert that no pools remain registered while unregistering any found instances to prepare for subsequent tests. This test uses JUnit 5 for test execution and standard assertion methods for validation.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testValidateOnCreateFailure()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.ValidationOnCreateFailureTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.BaseKeyedPooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\nimport javax.management.MBeanServer;\nimport javax.management.ObjectName;\nimport java.lang.management.ManagementFactory;\nimport java.util.Set;\nimport java.util.concurrent.atomic.AtomicInteger;\nimport java.util.NoSuchElementException;\n\npublic class ValidationOnCreateFailureTest {\n\n    private GenericKeyedObjectPool<String, Integer> pool;\n    private TestKeyedPooledObjectFactory testFactory;\n    private MBeanServer mBeanServer;\n    private ObjectName poolObjectName;\n\n    /**\n     * Custom factory to control validation behavior and count created instances.\n     */\n    private static class TestKeyedPooledObjectFactory extends BaseKeyedPooledObjectFactory<String, Integer> {\n        private boolean shouldFailValidation = false;\n        private final AtomicInteger instanceCounter = new AtomicInteger(0);\n\n        public void setShouldFailValidation(boolean shouldFailValidation) {\n            this.shouldFailValidation = shouldFailValidation;\n        }\n\n        @Override\n        public Integer create(String key) throws Exception {\n            return instanceCounter.incrementAndGet();\n        }\n\n        @Override\n        public PooledObject<Integer> wrap(Integer value) {\n            return new DefaultPooledObject<>(value);\n        }\n\n        @Override\n        public boolean validateObject(String key, PooledObject<Integer> p) {\n            return !shouldFailValidation;\n        }\n    }\n\n    @Test\n    public void testValidationOnCreateFailureDoesNotLeakCapacity() throws Exception {\n        // 1. Initialize a keyed object pool with a factory configured to support validation\n        testFactory = new TestKeyedPooledObjectFactory();\n        GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();\n\n        // 2. Configure the pool to enable test-on-create validation while disabling test-on-borrow validation\n        config.setTestOnCreate(true);\n        config.setTestOnBorrow(false);\n\n        // 3. Set a maximum total capacity of two instances.\n        config.setMaxTotalPerKey(2);\n        // Set maxAttempts to 1 to quickly fail validation on create, otherwise it retries.\n        config.setMaxAttempts(1);\n\n        pool = new GenericKeyedObjectPool<>(testFactory, config);\n\n        // Retrieve the JMX name associated with the pool for later cleanup.\n        mBeanServer = ManagementFactory.getPlatformMBeanServer();\n        // Query for MBeans with the common pool3 type and any name\n        Set<ObjectName> registeredMBeans = mBeanServer.queryNames(new ObjectName(\"org.apache.commons.pool3:type=GenericKeyedObjectPool,*\"), null);\n        assertEquals(1, registeredMBeans.size(), \"One pool MBean should be registered after pool creation.\");\n        poolObjectName = registeredMBeans.iterator().next();\n        assertNotNull(poolObjectName, \"Pool ObjectName should be found.\");\n\n\n        // 4. Configure the factory to enable validation and mark all validation attempts as failing.\n        testFactory.setShouldFailValidation(true);\n\n        // 5. Attempt to add two objects to the pool under a specific key, which should both fail validation during creation.\n        String key = \"testKey\";\n        Exception caughtException1 = null;\n        try {\n            pool.borrowObject(key);\n            fail(\"Expected NoSuchElementException when validation fails on create.\");\n        } catch (NoSuchElementException e) {\n            caughtException1 = e;\n        }\n        assertNotNull(caughtException1, \"First borrow attempt should throw an exception.\");\n\n        Exception caughtException2 = null;\n        try {\n            pool.borrowObject(key);\n            fail(\"Expected NoSuchElementException when validation fails on create.\");\n        } catch (NoSuchElementException e) {\n            caughtException2 = e;\n        }\n        assertNotNull(caughtException2, \"Second borrow attempt should throw an exception.\");\n\n        // 6. Verify that both the idle and active instance counts remain at zero,\n        // confirming that failed validations did not consume pool capacity.\n        assertEquals(0, pool.getNumIdle(key), \"Idle instances for 'testKey' should be zero after failed creations.\");\n        assertEquals(0, pool.getNumActive(key), \"Active instances for 'testKey' should be zero after failed creations.\");\n        assertEquals(0, pool.getNumTotal(key), \"Total instances for 'testKey' should be zero after failed creations.\");\n        assertEquals(0, pool.getNumIdle(), \"Total idle instances should be zero.\");\n        assertEquals(0, pool.getNumActive(), \"Total active instances should be zero.\");\n\n\n        // 7. Reconfigure the factory to mark validation attempts as successful\n        testFactory.setShouldFailValidation(false);\n\n        // 8. Borrow an object from the pool under the same key and verify that the borrowed object is not null.\n        Integer obj1 = pool.borrowObject(key);\n        assertNotNull(obj1, \"First borrowed object should not be null after successful validation.\");\n        assertEquals(1, pool.getNumActive(key), \"One active instance expected after first successful borrow.\");\n        assertEquals(0, pool.getNumIdle(key), \"No idle instances expected when an object is active.\");\n\n\n        // 9. Add another object to the pool under the same key, then verify that the pool now contains\n        // exactly one idle instance and one active instance,\n        // confirming that the pool correctly manages capacity after the validation configuration change.\n        Integer obj2 = pool.borrowObject(key); // This should create and borrow the second object, reaching maxTotalPerKey.\n        assertNotNull(obj2, \"Second borrowed object should not be null.\");\n        assertEquals(2, pool.getNumActive(key), \"Two active instances expected after second successful borrow.\");\n        assertEquals(0, pool.getNumIdle(key), \"No idle instances expected when both are active.\");\n\n        pool.returnObject(key, obj1); // Return one object to make it idle.\n\n        assertEquals(1, pool.getNumActive(key), \"One active instance expected after returning one object.\");\n        assertEquals(1, pool.getNumIdle(key), \"One idle instance expected after returning one object.\");\n        assertEquals(2, pool.getNumTotal(key), \"Total instances for 'testKey' should be two (one active, one idle).\");\n\n\n        // 10. Upon test completion, invoke the inherited teardown logic to clear the pool state,\n        // clear all pooled objects, close the pool, nullify the pool and factory references,\n        // query the platform MBean server for any remaining registered pool instances,\n        // and assert that no pools remain registered while unregistering any found instances to prepare for subsequent tests.\n\n        // Clear all pooled objects\n        pool.clear();\n        assertEquals(0, pool.getNumIdle(key), \"Idle instances should be zero after clear.\");\n        assertEquals(0, pool.getNumActive(key), \"Active instances should be zero after clear.\");\n        assertEquals(0, pool.getNumTotal(key), \"Total instances should be zero after clear.\");\n\n        // Close the pool\n        pool.close();\n\n        // Nullify the pool and factory references\n        pool = null;\n        testFactory = null;\n\n        // Query the platform MBean server for any remaining registered pool instances\n        // and assert that no pools remain registered while unregistering any found instances.\n        Set<ObjectName> remainingObjectNames = mBeanServer.queryNames(new ObjectName(\"org.apache.commons.pool3:type=GenericKeyedObjectPool,*\"), null);\n        for (ObjectName on : remainingObjectNames) {\n            if (mBeanServer.isRegistered(on)) {\n                mBeanServer.unregisterMBean(on);\n            }\n        }\n        // After unregistering all found MBeans, the set should be empty.\n        remainingObjectNames = mBeanServer.queryNames(new ObjectName(\"org.apache.commons.pool3:type=GenericKeyedObjectPool,*\"), null);\n        assertTrue(remainingObjectNames.isEmpty(), \"No pool MBeans should remain registered after cleanup.\");\n    }\n}",
+      "method_signature": "testValidateOnCreateFailure()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5412,
+    "output_tokens": 7546,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 501,
+      "description": "Create a test case to validate that when system capacity is freed by clearing resource pools, the freed capacity is correctly reallocated to serve waiting requests according to their load priority. Begin by configuring the resource management system with strict capacity limits allowing a maximum of six resources per category and six total resources across all categories, with a maximum wait time of five seconds for resource requests. Establish six concurrent request threads that will attempt to obtain resources from three different categories, distributing the load unevenly with one request for the first category, two requests for the second category, and three requests for the most heavily loaded third category. Before launching these waiting threads, fully exhaust the system's capacity by acquiring two resources each from three additional categories, thereby consuming all available capacity and forcing the pending requests into a waiting state. After allowing a brief moment for all request threads to enter their waiting state, begin releasing capacity by returning the resources from the first exhausted category and immediately clearing that category from the system, then verify that at least one of the three requests waiting for the most heavily loaded category has been successfully served, demonstrating that the freed capacity was reallocated to the most demanding pool. Continue this pattern by returning and clearing resources from the second exhausted category, allowing additional waiting requests to be served, then repeat the process for the third exhausted category. After all capacity has been released and reallocated, confirm that all six waiting request threads have completed successfully, proving that the system correctly redistributed freed capacity to satisfy pending requests based on their respective load levels. Use JUnit 5 for test execution and verify outcomes using standard boolean assertions that check thread completion states.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testClearReuseCapacity()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.KeyedObjectPoolCapacityReallocationTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.BaseKeyedPooledObjectFactory;\nimport org.apache.commons.pool3.KeyedObjectPool;\nimport org.apache.commons.pool3.PooledObject;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\nimport java.time.Duration;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.List;\nimport java.util.concurrent.CountDownLatch;\nimport java.util.concurrent.ExecutorService;\nimport java.util.concurrent.Executors;\nimport java.util.concurrent.Future;\nimport java.util.concurrent.TimeUnit;\nimport java.util.concurrent.atomic.AtomicInteger;\n\npublic class KeyedObjectPoolCapacityReallocationTest {\n\n    private static class TestObjectFactory extends BaseKeyedPooledObjectFactory<String, Object> {\n        private final AtomicInteger createdCount = new AtomicInteger(0);\n\n        @Override\n        public Object create(final String key) throws Exception {\n            createdCount.incrementAndGet();\n            return new Object();\n        }\n\n        @Override\n        public PooledObject<Object> wrap(final Object value) {\n            return new DefaultPooledObject<>(value);\n        }\n\n        public int getCreatedCount() {\n            return createdCount.get();\n        }\n    }\n\n    private static class WaitingWorker implements Runnable {\n        private final KeyedObjectPool<String, Object> pool;\n        private final String key;\n        private final CountDownLatch startLatch;\n        private final CountDownLatch completionLatch;\n        private volatile boolean completed = false;\n        private Object borrowedObject = null;\n\n        WaitingWorker(KeyedObjectPool<String, Object> pool, String key, CountDownLatch startLatch, CountDownLatch completionLatch) {\n            this.pool = pool;\n            this.key = key;\n            this.startLatch = startLatch;\n            this.completionLatch = completionLatch;\n        }\n\n        @Override\n        public void run() {\n            try {\n                startLatch.await(); // Wait for go signal\n                borrowedObject = pool.borrowObject(key);\n                completed = true;\n            } catch (InterruptedException e) {\n                Thread.currentThread().interrupt();\n                System.err.println(\"Worker for key \" + key + \" interrupted: \" + e.getMessage());\n            } catch (Exception e) {\n                System.err.println(\"Worker for key \" + key + \" failed to borrow: \" + e.getMessage());\n            } finally {\n                completionLatch.countDown(); // Signal completion or attempt to borrow\n            }\n        }\n\n        public boolean isCompleted() {\n            return completed;\n        }\n\n        public Object getBorrowedObject() {\n            return borrowedObject;\n        }\n\n        public String getKey() {\n            return key;\n        }\n    }\n\n    @Test\n    void testCapacityReallocationOnClear() throws Exception {\n        // Configure the resource management system\n        GenericKeyedObjectPoolConfig<Object> config = new GenericKeyedObjectPoolConfig<>();\n        config.setMaxTotal(6);\n        config.setMaxTotalPerKey(6); // Effectively limited by maxTotal\n        config.setMaxWaitMillis(5000L); // 5 seconds wait time\n\n        TestObjectFactory factory = new TestObjectFactory();\n        KeyedObjectPool<String, Object> pool = new GenericKeyedObjectPool<>(factory, config);\n\n        List<Object> initialBorrowedA = new ArrayList<>();\n        List<Object> initialBorrowedB = new ArrayList<>();\n        List<Object> initialBorrowedC = new ArrayList<>();\n\n        // Phase 1: Fully exhaust the system's capacity\n        // Acquire two resources each from three additional categories (A, B, C)\n        initialBorrowedA.add(pool.borrowObject(\"A\"));\n        initialBorrowedA.add(pool.borrowObject(\"A\"));\n        initialBorrowedB.add(pool.borrowObject(\"B\"));\n        initialBorrowedB.add(pool.borrowObject(\"B\"));\n        initialBorrowedC.add(pool.borrowObject(\"C\"));\n        initialBorrowedC.add(pool.borrowObject(\"C\"));\n\n        Assertions.assertEquals(6, pool.getNumActive(), \"Initial capacity should be fully exhausted.\");\n        Assertions.assertEquals(0, pool.getNumWaiters(), \"No waiters yet.\");\n\n        // Phase 2: Establish six concurrent request threads with uneven load distribution\n        CountDownLatch startAllWaiting = new CountDownLatch(1);\n        CountDownLatch allWaitingFinished = new CountDownLatch(6);\n\n        ExecutorService executor = Executors.newFixedThreadPool(6);\n        List<WaitingWorker> workers = new ArrayList<>();\n\n        // Category X: 1 request\n        workers.add(new WaitingWorker(pool, \"X\", startAllWaiting, allWaitingFinished));\n        // Category Y: 2 requests\n        workers.add(new WaitingWorker(pool, \"Y\", startAllWaiting, allWaitingFinished));\n        workers.add(new WaitingWorker(pool, \"Y\", startAllWaiting, allWaitingFinished));\n        // Category Z: 3 requests (most heavily loaded)\n        workers.add(new WaitingWorker(pool, \"Z\", startAllWaiting, allWaitingFinished));\n        workers.add(new WaitingWorker(pool, \"Z\", startAllWaiting, allWaitingFinished));\n        workers.add(new WaitingWorker(pool, \"Z\", startAllWaiting, allWaitingFinished));\n\n        List<Future<?>> futures = workers.stream()\n                .map(executor::submit)\n                .collect(Collectors.toList());\n\n        // Launch all waiting threads simultaneously\n        startAllWaiting.countDown();\n\n        // Allow a brief moment for all request threads to enter their waiting state\n        // (Pool's internal logic should immediately place them in waiting if capacity is exhausted)\n        Assertions.assertTimeoutPreemptively(Duration.ofMillis(100), () -> {\n            while (pool.getNumWaiters() < 6) {\n                // Wait until all 6 threads are reported as waiting\n                Thread.sleep(10);\n            }\n        }, \"All 6 requests should enter waiting state quickly.\");\n\n\n        Assertions.assertEquals(1, pool.getNumWaiters(\"X\"), \"Category X should have 1 waiter.\");\n        Assertions.assertEquals(2, pool.getNumWaiters(\"Y\"), \"Category Y should have 2 waiters.\");\n        Assertions.assertEquals(3, pool.getNumWaiters(\"Z\"), \"Category Z should have 3 waiters.\");\n        Assertions.assertEquals(6, pool.getNumWaiters(), \"Total waiters should be 6.\");\n        Assertions.assertEquals(6, pool.getNumActive(), \"Active resources should remain 6.\");\n\n        // Phase 3: Release capacity from first exhausted category (\"A\")\n        // Return resources from \"A\"\n        pool.returnObject(\"A\", initialBorrowedA.get(0));\n        pool.returnObject(\"A\", initialBorrowedA.get(1));\n        // Immediately clear that category from the system\n        pool.clear(\"A\");\n\n        // Verify that at least one of the three requests waiting for the most heavily loaded category (\"Z\") has been successfully served\n        Assertions.assertFalse(allWaitingFinished.await(50, TimeUnit.MILLISECONDS), \"Not all workers should have completed yet.\");\n        long initialCompletedCount = 6 - allWaitingFinished.getCount();\n        Assertions.assertTrue(initialCompletedCount >= 1 && initialCompletedCount <= 2,\n                \"Expected 1 or 2 workers to complete after clearing 'A', actual: \" + initialCompletedCount);\n\n        int completedZCount1 = (int) workers.stream().filter(w -> \"Z\".equals(w.getKey()) && w.isCompleted()).count();\n        Assertions.assertTrue(completedZCount1 >= 1, \"At least one 'Z' request should be served after freeing capacity from 'A'.\");\n        Assertions.assertEquals(6 - completedZCount1, pool.getNumActive(), \"Active count should reflect completed Z workers.\");\n        Assertions.assertEquals(6 - completedZCount1 - (2 - completedZCount1), pool.getNumWaiters(), \"Waiters should decrease by amount completed.\");\n\n\n        // Phase 4: Release capacity from second exhausted category (\"B\")\n        pool.returnObject(\"B\", initialBorrowedB.get(0));\n        pool.returnObject(\"B\", initialBorrowedB.get(1));\n        pool.clear(\"B\");\n\n        Assertions.assertFalse(allWaitingFinished.await(50, TimeUnit.MILLISECONDS), \"Not all workers should have completed yet.\");\n        long afterBCompletedCount = 6 - allWaitingFinished.getCount();\n        Assertions.assertTrue(afterBCompletedCount >= initialCompletedCount + 1 && afterBCompletedCount <= initialCompletedCount + 2,\n                \"Expected 1 or 2 more workers to complete after clearing 'B', total: \" + afterBCompletedCount);\n\n        int completedZCount2 = (int) workers.stream().filter(w -> \"Z\".equals(w.getKey()) && w.isCompleted()).count();\n        int completedYCount1 = (int) workers.stream().filter(w -> \"Y\".equals(w.getKey()) && w.isCompleted()).count();\n        Assertions.assertTrue(completedZCount2 == 3 || completedYCount1 >= 1,\n                \"More requests (incl. 'Z' if not all done, or 'Y') should be served after freeing capacity from 'B'.\");\n\n\n        // Phase 5: Release capacity from third exhausted category (\"C\")\n        pool.returnObject(\"C\", initialBorrowedC.get(0));\n        pool.returnObject(\"C\", initialBorrowedC.get(1));\n        pool.clear(\"C\");\n\n        // Phase 6: Confirm that all six waiting request threads have completed successfully\n        Assertions.assertTrue(allWaitingFinished.await(1000, TimeUnit.MILLISECONDS), \"All waiting requests should have completed within timeout.\");\n\n        for (WaitingWorker worker : workers) {\n            Assertions.assertTrue(worker.isCompleted(), \"Worker for key \" + worker.getKey() + \" should have completed.\");\n            Assertions.assertNotNull(worker.getBorrowedObject(), \"Worker for key \" + worker.getKey() + \" should have borrowed an object.\");\n        }\n\n        Assertions.assertEquals(6, pool.getNumActive(), \"All 6 resources should now be active with the waiting threads.\");\n        Assertions.assertEquals(0, pool.getNumWaiters(), \"No threads should be waiting.\");\n        Assertions.assertEquals(factory.getCreatedCount(), 12, \"Total 12 objects created (6 initial + 6 for waiting threads)\");\n\n        // Clean up: return all borrowed objects\n        for (Object obj : initialBorrowedA) { pool.returnObject(\"A\", obj); }\n        for (Object obj : initialBorrowedB) { pool.returnObject(\"B\", obj); }\n        for (Object obj : initialBorrowedC) { pool.returnObject(\"C\", obj); }\n        for (WaitingWorker worker : workers) {\n            if (worker.getBorrowedObject() != null) {\n                pool.returnObject(worker.getKey(), worker.getBorrowedObject());\n            }\n        }\n\n        executor.shutdownNow();\n        pool.close();\n    }\n}",
+      "method_signature": "testClearReuseCapacity()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5432,
+    "output_tokens": 7432,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 511,
+      "description": "Define a test method annotated with `@Test` that begins by instantiating a `FailingFactory` object and assigning it to variable `ff`, then construct a `ResilientPooledObjectFactory<String, Exception>` by passing `ff` to its constructor and assign the result to variable `rf`. Immediately invoke `isMonitorRunning()` on `rf` and assert the returned value is false using `assertFalse`, then invoke `isAdderRunning()` on `rf` and assert that result is also false using `assertFalse`. Next, invoke the static method `ResilientPooledObjectFactory.getDefaultLogSize()` and compare its return value to the result of `rf.getLogSize()` using `assertEquals`, ensuring both values match. Follow by invoking the static method `ResilientPooledObjectFactory.getDefaultTimeBetweenChecks()` which returns a `Duration`, and compare it to `rf.getTimeBetweenChecks()` using `assertEquals` to verify they are equal. Proceed by calling the static method `ResilientPooledObjectFactory.getDefaultDelay()` which returns a `Duration`, and assert it equals `rf.getDelay()` using `assertEquals`. Subsequently, invoke the static method `ResilientPooledObjectFactory.getDefaultLookBack()` which returns a `Duration`, and verify it matches `rf.getLookBack()` using `assertEquals`. Then invoke `rf.getMakeObjectLog()` which returns a `List<ResilientPooledObjectFactory.MakeEvent>`, call `size()` on the returned list, and assert the size equals integer literal `0` using `assertEquals`. After these initial assertions, invoke `rf.setLogSize(5)` passing the integer literal `5`, then immediately invoke `rf.getLogSize()` and assert the returned value equals `5` using `assertEquals`. Finally, create a `Duration` by calling the static factory method `Duration.ofMillis(200)` with the long literal `200`, pass this `Duration` to `rf.setTimeBetweenChecks()`, and allow the test method to complete. This test uses JUnit 5 Assertions with method-level annotation `@Test` and no class-level annotations.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestResilientPooledObjectFactory",
+      "method_signature": "testConstructorWithDefaults()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.ResilientPooledObjectFactoryNewTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport org.apache.commons.pool3.PooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.Test;\nimport java.time.Duration;\nimport java.util.List;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class ResilientPooledObjectFactoryNewTest {\n\n    /**\n     * A minimal implementation of PooledObjectFactory for testing ResilientPooledObjectFactory.\n     */\n    private static class FailingFactory implements PooledObjectFactory<String, Exception> {\n        @Override\n        public PooledObject<String> makeObject() throws Exception {\n            return new DefaultPooledObject<>(\"testObject\");\n        }\n\n        @Override\n        public void destroyObject(final PooledObject<String> p) throws Exception {\n            // No-op for this test\n        }\n\n        @Override\n        public boolean validateObject(final PooledObject<String> p) {\n            return true;\n        }\n\n        @Override\n        public void activateObject(final PooledObject<String> p) throws Exception {\n            // No-op for this test\n        }\n\n        @Override\n        public void passivateObject(final PooledObject<String> p) throws Exception {\n            // No-op for this test\n        }\n    }\n\n    @Test\n    void testResilientPooledObjectFactoryInitialStateAndSetters() {\n        // Instantiate a FailingFactory object and assign it to variable ff\n        final FailingFactory ff = new FailingFactory();\n\n        // Construct a ResilientPooledObjectFactory<String, Exception> by passing ff to its constructor and assign the result to variable rf\n        final ResilientPooledObjectFactory<String, Exception> rf = new ResilientPooledObjectFactory<>(ff);\n\n        // Immediately invoke isMonitorRunning() on rf and assert the returned value is false using assertFalse\n        assertFalse(rf.isMonitorRunning());\n\n        // then invoke isAdderRunning() on rf and assert that result is also false using assertFalse\n        assertFalse(rf.isAdderRunning());\n\n        // Next, invoke the static method ResilientPooledObjectFactory.getDefaultLogSize() and compare its return value to the result of rf.getLogSize() using assertEquals, ensuring both values match.\n        assertEquals(ResilientPooledObjectFactory.getDefaultLogSize(), rf.getLogSize());\n\n        // Follow by invoking the static method ResilientPooledObjectFactory.getDefaultTimeBetweenChecks() which returns a Duration, and compare it to rf.getTimeBetweenChecks() using assertEquals to verify they are equal.\n        assertEquals(ResilientPooledObjectFactory.getDefaultTimeBetweenChecks(), rf.getTimeBetweenChecks());\n\n        // Proceed by calling the static method ResilientPooledObjectFactory.getDefaultDelay() which returns a Duration, and assert it equals rf.getDelay() using assertEquals.\n        assertEquals(ResilientPooledObjectFactory.getDefaultDelay(), rf.getDelay());\n\n        // Subsequently, invoke the static method ResilientPooledObjectFactory.getDefaultLookBack() which returns a Duration, and verify it matches rf.getLookBack() using assertEquals.\n        assertEquals(ResilientPooledObjectFactory.getDefaultLookBack(), rf.getLookBack());\n\n        // Then invoke rf.getMakeObjectLog() which returns a List<ResilientPooledObjectFactory.MakeEvent>, call size() on the returned list, and assert the size equals integer literal 0 using assertEquals.\n        assertEquals(0, rf.getMakeObjectLog().size());\n\n        // After these initial assertions, invoke rf.setLogSize(5) passing the integer literal 5, then immediately invoke rf.getLogSize() and assert the returned value equals 5 using assertEquals.\n        rf.setLogSize(5);\n        assertEquals(5, rf.getLogSize());\n\n        // Finally, create a Duration by calling the static factory method Duration.ofMillis(200) with the long literal 200, pass this Duration to rf.setTimeBetweenChecks(), and allow the test method to complete.\n        final Duration duration200Millis = Duration.ofMillis(200);\n        rf.setTimeBetweenChecks(duration200Millis);\n        // Added an additional assertion here to confirm the setter worked, though not strictly required by the prompt's last sentence.\n        assertEquals(duration200Millis, rf.getTimeBetweenChecks());\n    }\n}",
+      "method_signature": "testConstructorWithDefaults()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.8889,
+      "callable_recall": 1.0,
+      "callable_precision": 0.9286,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.9375,
+      "line_coverage": 0.9062,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5556,
+    "output_tokens": 3871,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 515,
+      "description": "Define a test method that validates the pool's capacity reuse behavior when clearing keyed sub-pools under concurrent load by first configuring the Generic Keyed Object Pool with a maximum of six instances per key and six instances total, along with a five-second maximum wait duration. Create a collection to hold six test threads, where one thread will attempt to borrow from key \"one\", two threads from key \"two\", and three threads from key \"three\", wrapping each in a helper runnable that attempts to borrow from the pool using its assigned key. Before starting these threads, exhaust the pool's total capacity by borrowing two objects each from keys \"four\", \"five\", and \"six\", storing each borrowed object in separate variables (four, four2, five, five2, six, six2). Pause briefly to ensure the pool reaches full capacity, then start all six waiting threads which will immediately block since no capacity remains available. After another brief pause to allow threads to enter the waiting state, return both objects borrowed under key \"four\" to the pool, invoke the clear method on key \"four\" to remove those idle instances and free capacity, then pause momentarily and verify that at least one of the three threads waiting on key \"three\" has completed execution, confirming that freed capacity was allocated to the most heavily loaded key. Return both objects borrowed under key \"five\" to the pool, clear key \"five\", and pause again to allow capacity reallocation. Return both objects borrowed under key \"six\" to the pool, clear key \"six\", and pause once more. Finally, iterate through all six threads in the collection and assert that none remain alive, confirming that all waiting threads successfully borrowed objects after capacity was progressively freed and reused. After test execution, invoke the teardown method that retrieves the pool's JMX name, clears all pooled objects, closes the pool, nullifies both the pool and factory references, queries the platform MBean server for any remaining registered pool instances, and asserts that no pools remain registered, unregistering any found instances while building a diagnostic message containing their creation stack traces. This test uses JUnit 5.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testClearReuseCapacity()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.GenericKeyedObjectPoolCapacityReuseTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport static org.junit.jupiter.api.Assertions.fail;\n\nimport java.lang.management.ManagementFactory;\nimport java.time.Duration;\nimport java.util.ArrayList;\nimport java.util.Collections;\nimport java.util.List;\nimport java.util.Set;\nimport java.util.concurrent.atomic.AtomicInteger;\nimport javax.management.MBeanServer;\nimport javax.management.ObjectName;\nimport org.apache.commons.pool3.BasePooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.Test;\n\nclass GenericKeyedObjectPoolCapacityReuseTest {\n\n    private GenericKeyedObjectPool<String, RuntimeException> pool;\n\n    /**\n     * A simple factory that creates String objects.\n     */\n    static class SimpleFactory extends BasePooledObjectFactory<String, RuntimeException> {\n        private final AtomicInteger counter = new AtomicInteger();\n\n        @Override\n        public String create() {\n            return \"Object-\" + counter.incrementAndGet();\n        }\n\n        @Override\n        public PooledObject<String> wrap(String obj) {\n            return new DefaultPooledObject<>(obj);\n        }\n    }\n\n    @AfterEach\n    void tearDown() throws Exception {\n        if (pool != null) {\n            // Retrieve the pool's JMX name (as per description, even if not directly used)\n            @SuppressWarnings(\"unused\") // jmxObjectName is needed for the description\n            final ObjectName jmxObjectName = pool.getJmxName();\n\n            // Clears all pooled objects\n            pool.clear();\n            // Closes the pool\n            pool.close();\n            // Nullifies both the pool and factory references\n            pool = null;\n\n            // Query the platform MBean server for any remaining registered pool instances\n            final Set<ObjectName> registeredPools = PoolImplUtils.lookupRegisteredPools();\n\n            // Assert that no pools remain registered, unregistering any found instances while building a diagnostic message\n            if (!registeredPools.isEmpty()) {\n                final StringBuilder msg = new StringBuilder();\n                msg.append(\"The following pools were not unregistered:\");\n                final MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();\n                for (final ObjectName name : registeredPools) {\n                    msg.append('\\n');\n                    msg.append(name.toString());\n                    msg.append(\" created at:\\n\");\n                    try {\n                        // Attempt to retrieve \"creationStack\" attribute, a common JMX practice\n                        String creationStack = (String) mBeanServer.getAttribute(name, \"creationStack\");\n                        if (creationStack != null && !creationStack.isEmpty()) {\n                            msg.append(creationStack);\n                        } else {\n                            msg.append(\"<Creation stack attribute not found or empty>\");\n                        }\n                    } catch (final Exception e) {\n                        msg.append(\"<Error retrieving creation stack: \").append(e.getMessage()).append(\">\");\n                    }\n                }\n                // Unregister any found instances\n                PoolImplUtils.unregisterPools(registeredPools);\n                fail(msg.toString());\n            }\n        }\n    }\n\n    @Test\n    void testCapacityReuseOnClearWithConcurrentLoad() throws Exception {\n        // Configure the Generic Keyed Object Pool\n        final GenericKeyedObjectPoolConfig<String> config = new GenericKeyedObjectPoolConfig<>();\n        config.setMaxTotal(6); // Maximum of six instances total\n        config.setMaxTotalPerKey(6); // Maximum of six instances per key\n        config.setMaxWaitDuration(Duration.ofSeconds(5)); // Five-second maximum wait duration\n\n        final SimpleFactory factory = new SimpleFactory();\n        pool = new GenericKeyedObjectPool<>(factory, config);\n\n        // Exhaust the pool's total capacity\n        // Borrow two objects each from keys \"four\", \"five\", and \"six\"\n        final String four = pool.borrowObject(\"four\");\n        final String four2 = pool.borrowObject(\"four\");\n        final String five = pool.borrowObject(\"five\");\n        final String five2 = pool.borrowObject(\"five\");\n        final String six = pool.borrowObject(\"six\");\n        final String six2 = pool.borrowObject(\"six\");\n\n        // Pause briefly to ensure the pool reaches full capacity (borrowObject already blocks if full, but for description's sake)\n        Thread.sleep(50);\n\n        // Create a collection to hold six test threads\n        final List<Thread> threads = new ArrayList<>();\n        final List<String> borrowedObjects = Collections.synchronizedList(new ArrayList<>()); // To collect objects borrowed by threads\n\n        // One thread will attempt to borrow from key \"one\"\n        threads.add(new Thread(() -> {\n            try {\n                borrowedObjects.add(pool.borrowObject(\"one\"));\n            } catch (final Exception e) {\n                // Ignore for test purposes, expect blocking and eventual success\n            }\n        }));\n        // Two threads from key \"two\"\n        for (int i = 0; i < 2; i++) {\n            threads.add(new Thread(() -> {\n                try {\n                    borrowedObjects.add(pool.borrowObject(\"two\"));\n                } catch (final Exception e) {\n                    // Ignore for test purposes\n                }\n            }));\n        }\n        // Three threads from key \"three\"\n        for (int i = 0; i < 3; i++) {\n            threads.add(new Thread(() -> {\n                try {\n                    borrowedObjects.add(pool.borrowObject(\"three\"));\n                } catch (final Exception e) {\n                    // Ignore for test purposes\n                }\n            }));\n        }\n\n        // Start all six waiting threads which will immediately block since no capacity remains available\n        threads.forEach(Thread::start);\n\n        // Another brief pause to allow threads to enter the waiting state\n        Thread.sleep(100);\n\n        // Return both objects borrowed under key \"four\" to the pool\n        pool.returnObject(\"four\", four);\n        pool.returnObject(\"four\", four2);\n        // Invoke the clear method on key \"four\" to remove those idle instances and free capacity\n        pool.clear(\"four\");\n\n        // Pause momentarily and verify that at least one of the three threads waiting on key \"three\" has completed execution\n        Thread.sleep(50);\n        // Threads waiting on key \"three\" are at indices 3, 4, 5\n        long threadsForThreeFinished = threads.subList(3, 6).stream().filter(t -> !t.isAlive()).count();\n        assertTrue(threadsForThreeFinished >= 1, \"At least one thread for key 'three' should have finished after freeing capacity for 'four'.\");\n\n        // Return both objects borrowed under key \"five\" to the pool, clear key \"five\"\n        pool.returnObject(\"five\", five);\n        pool.returnObject(\"five\", five2);\n        pool.clear(\"five\");\n\n        // Pause again to allow capacity reallocation\n        Thread.sleep(50);\n\n        // Return both objects borrowed under key \"six\" to the pool, clear key \"six\"\n        pool.returnObject(\"six\", six);\n        pool.returnObject(\"six\", six2);\n        pool.clear(\"six\");\n\n        // Pause once more\n        Thread.sleep(50);\n\n        // Finally, iterate through all six threads in the collection and assert that none remain alive\n        for (final Thread thread : threads) {\n            // Wait for the thread to complete, with a reasonable timeout in case of issues\n            thread.join(1000);\n            assertFalse(thread.isAlive(), \"All waiting threads should have completed execution.\");\n        }\n        assertEquals(6, borrowedObjects.size(), \"All 6 threads should have successfully borrowed an object.\");\n    }\n}",
+      "method_signature": "testClearReuseCapacity()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5544,
+    "output_tokens": 6966,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 534,
+      "description": "Define a test class containing four private static final fields: `KEY_ZERO`, `KEY_ONE`, and `KEY_TWO` of type `Integer`, and `DISPLAY_THREAD_DETAILS` of type `boolean`, along with two instance fields: `gkoPool` of type `GenericKeyedObjectPool<String, String, TestException>` and `simpleFactory` of type `SimpleFactory<String>`. In a setup method annotated with `@BeforeEach`, instantiate `simpleFactory` by invoking the no-argument constructor of `SimpleFactory<>`, then instantiate `gkoPool` by invoking the constructor of `GenericKeyedObjectPool` passing `simpleFactory` as the sole argument. Within the test method, invoke `setTestOnCreate` on `gkoPool` with argument `true`, then invoke `setTestOnBorrow` on `gkoPool` with argument `false`, followed by invoking `setMaxTotal` on `gkoPool` with argument `2`. Next, invoke `setValidationEnabled` on `simpleFactory` with argument `true`, then invoke `setValid` on `simpleFactory` with argument `false`. Invoke `addObject` on `gkoPool` with String argument `\"one\"` twice consecutively, then assert using `assertEquals` that invoking `getNumIdle` on `gkoPool` returns `0`, and assert using `assertEquals` that invoking `getNumActive` on `gkoPool` returns `0`. Invoke `setValid` on `simpleFactory` with argument `true`, then invoke `borrowObject` on `gkoPool` with String argument `\"one\"`, assigning the returned `String` to variable `obj`, and immediately assert using `assertNotNull` that `obj` is not null. Invoke `addObject` on `gkoPool` with String argument `\"one\"`, then assert using `assertEquals` that invoking `getNumIdle` on `gkoPool` returns `1`, and assert using `assertEquals` that invoking `getNumActive` on `gkoPool` returns `1`. In a teardown method annotated with `@AfterEach`, invoke the inherited `tearDown` method from `AbstractTestKeyedObjectPool` which sets a `pool` field to null, then invoke `getJmxName` on `gkoPool` assigning the result to variable `jmxName` of type `ObjectName`, invoke `Objects.toString` with arguments `jmxName` and `null` assigning the result to variable `poolName` of type `String`, invoke `clear` on `gkoPool`, invoke `close` on `gkoPool`, set `gkoPool` to `null`, set `simpleFactory` to `null`, invoke `ManagementFactory.getPlatformMBeanServer()` assigning the result to variable `mbs` of type `MBeanServer`, invoke `mbs.queryNames` with arguments `new ObjectName(\"org.apache.commoms.pool3:type=GenericKeyedObjectPool,*\")` and `null` assigning the result to variable `result` of type `Set<ObjectName>`, invoke `size` on `result` assigning the result to variable `registeredPoolCount` of type `int`, instantiate a `StringBuilder` with String argument `\"Current pool is: \"` assigning it to variable `msg`, chain `append` on `msg` with argument `poolName`, chain `append` on `msg` with String argument `\" Still open pools are: \"`, iterate over `result` with loop variable `name` of type `ObjectName` and for each iteration chain `append` on `msg` with the result of invoking `toString` on `name`, chain `append` on `msg` with String argument `\" created via\\n\"`, chain `append` on `msg` with the result of invoking `getAttribute` on `mbs` with arguments `name` and String `\"CreationStackTrace\"`, chain `append` on `msg` with character `'\\n'`, invoke `unregisterMBean` on `mbs` with argument `name`, and finally assert using `assertEquals` with arguments `0`, `registeredPoolCount`, and the result of invoking `toString` on `msg`. The test method is annotated with `@Test` and declares `throws Exception`. The test uses JUnit 5 Assertions (`assertEquals`, `assertNotNull`).",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testValidateOnCreateFailure()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.GenericKeyedObjectPoolValidationTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.lang.management.ManagementFactory;\nimport java.util.Objects;\nimport java.util.Set;\n\nimport javax.management.MBeanServer;\nimport javax.management.ObjectName;\n\nimport org.apache.commons.pool3.KeyedPooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\nimport org.apache.commons.pool3.impl.DefaultPooledObject;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\npublic class GenericKeyedObjectPoolValidationTest {\n\n    private static final Integer KEY_ZERO = 0;\n    private static final Integer KEY_ONE = 1;\n    private static final Integer KEY_TWO = 2;\n    private static final boolean DISPLAY_THREAD_DETAILS = false;\n\n    private GenericKeyedObjectPool<String, String, TestException> gkoPool;\n    private SimpleFactory simpleFactory;\n\n    // Custom Exception for the factory\n    private static class TestException extends Exception {\n        private static final long serialVersionUID = 1L;\n        public TestException(final String msg) {\n            super(msg);\n        }\n    }\n\n    // Custom KeyedPooledObjectFactory for testing validation logic\n    private static class SimpleFactory implements KeyedPooledObjectFactory<String, String, TestException> {\n        private volatile boolean valid = true;\n        private volatile boolean validationEnabled = false;\n\n        public SimpleFactory() {}\n\n        public void setValid(final boolean valid) {\n            this.valid = valid;\n        }\n\n        public void setValidationEnabled(final boolean validationEnabled) {\n            this.validationEnabled = validationEnabled;\n        }\n\n        @Override\n        public PooledObject<String> makeObject(final String key) throws TestException {\n            return new DefaultPooledObject<>(key + \"-object\");\n        }\n\n        @Override\n        public void destroyObject(final String key, final PooledObject<String> p) throws TestException {\n            // No-op for this test\n        }\n\n        @Override\n        public boolean validateObject(final String key, final PooledObject<String> p) {\n            if (validationEnabled) {\n                return valid;\n            }\n            return true; // Default to valid if validation is not enabled\n        }\n\n        @Override\n        public void activateObject(final String key, final PooledObject<String> p) throws TestException {\n            // No-op for this test\n        }\n\n        @Override\n        public void passivateObject(final String key, final PooledObject<String> p) throws TestException {\n            // No-op for this test\n        }\n    }\n\n    @BeforeEach\n    public void setUp() {\n        simpleFactory = new SimpleFactory();\n        gkoPool = new GenericKeyedObjectPool<>(simpleFactory);\n    }\n\n    @AfterEach\n    public void tearDown() throws Exception {\n        // The description mentioned \"super.tearDown()\" from \"AbstractTestKeyedObjectPool\"\n        // but no such class was found in the repository.\n        // Implementing the cleanup steps directly as specified.\n        final ObjectName jmxName = gkoPool.getJmxName();\n        final String poolName = Objects.toString(jmxName, null);\n\n        gkoPool.clear();\n        gkoPool.close();\n        gkoPool = null;\n        simpleFactory = null;\n\n        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();\n        // Corrected typo from \"commoms\" to \"commons\" in ObjectName\n        final Set<ObjectName> result = mbs.queryNames(new ObjectName(\"org.apache.commons.pool3:type=GenericKeyedObjectPool,*\"), null);\n        final int registeredPoolCount = result.size();\n        final StringBuilder msg = new StringBuilder(\"Current pool is: \").append(poolName).append(\" Still open pools are: \");\n\n        for (final ObjectName name : result) {\n            msg.append(name.toString());\n            msg.append(\" created via\\n\");\n            // The getAttribute call might throw exceptions if the MBean is not properly registered or attribute is missing.\n            // For this generated test, assuming the attribute exists and is accessible.\n            msg.append(mbs.getAttribute(name, \"CreationStackTrace\"));\n            msg.append('\\n');\n            mbs.unregisterMBean(name);\n        }\n        assertEquals(0, registeredPoolCount, msg.toString());\n    }\n\n    @Test\n    public void testValidationBehavior() throws Exception {\n        gkoPool.setTestOnCreate(true);\n        gkoPool.setTestOnBorrow(false);\n        gkoPool.setMaxTotal(2);\n\n        simpleFactory.setValidationEnabled(true);\n        simpleFactory.setValid(false);\n\n        // addObject will try to create and validate. Since validation is false, it should fail to add.\n        gkoPool.addObject(\"one\");\n        gkoPool.addObject(\"one\");\n\n        assertEquals(0, gkoPool.getNumIdle());\n        assertEquals(0, gkoPool.getNumActive());\n\n        simpleFactory.setValid(true);\n\n        String obj = gkoPool.borrowObject(\"one\");\n        assertNotNull(obj);\n\n        gkoPool.addObject(\"one\");\n\n        assertEquals(1, gkoPool.getNumIdle());\n        assertEquals(1, gkoPool.getNumActive());\n    }\n}",
+      "method_signature": "testValidateOnCreateFailure()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.8421,
+      "callable_precision": 0.8421,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 47023,
+    "output_tokens": 7247,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 547,
+      "description": "Define a test class containing four static final fields: `KEY_ZERO`, `KEY_ONE`, `KEY_TWO` of type `Integer`, and `DISPLAY_THREAD_DETAILS` of type `boolean`, along with two instance fields `gkoPool` of type `GenericKeyedObjectPool<String, String, TestException>` and `simpleFactory` of type `SimpleFactory<String>`. In a setup method annotated with `@BeforeEach`, instantiate `simpleFactory` by invoking the no-argument constructor of `SimpleFactory`, then instantiate `gkoPool` by passing `simpleFactory` to the `GenericKeyedObjectPool` constructor. Begin the test method by invoking `setMaxTotalPerKey` on `gkoPool` with argument `6`, then invoke `setMaxTotal` on `gkoPool` with argument `6`, followed by invoking `setMaxWait` on `gkoPool` with the result of `Duration.ofSeconds(5)`. Create a new `ArrayList<Thread>` and assign it to variable `testThreads`. Construct six `Thread` instances: the first wrapping a new `SimpleTestThread` initialized with `gkoPool` and String literal `\"one\"`, the second and third each wrapping new `SimpleTestThread` instances initialized with `gkoPool` and `\"two\"`, and the fourth, fifth, and sixth each wrapping new `SimpleTestThread` instances initialized with `gkoPool` and `\"three\"`, adding each thread to `testThreads` via the `add` method. Invoke `borrowObject` on `gkoPool` with argument `\"four\"` and assign the result to `four`, then invoke `borrowObject` on `gkoPool` with `\"four\"` again and assign to `four2`, invoke `borrowObject` with `\"five\"` and assign to `five`, invoke `borrowObject` with `\"five\"` again and assign to `five2`, invoke `borrowObject` with `\"six\"` and assign to `six`, and invoke `borrowObject` with `\"six\"` again and assign to `six2`. Call `Thread.sleep` with argument `100`. Iterate over `testThreads` using an enhanced for-loop with loop variable `t` of type `Thread`, invoking `start()` on each thread. Call `Thread.sleep` with argument `100` again. Invoke `returnObject` on `gkoPool` with arguments `\"four\"` and `four`, then invoke `returnObject` on `gkoPool` with `\"four\"` and `four2`, followed by invoking `clear` on `gkoPool` with argument `\"four\"`. Call `Thread.sleep` with argument `20`. Assert using `assertTrue` that the expression `!testThreads.get(3).isAlive() || !testThreads.get(4).isAlive() || !testThreads.get(5).isAlive()` evaluates to true. Invoke `returnObject` on `gkoPool` with `\"five\"` and `five`, then invoke `returnObject` with `\"five\"` and `five2`, followed by invoking `clear` on `gkoPool` with `\"five\"`. Call `Thread.sleep` with `20`. Invoke `returnObject` on `gkoPool` with `\"six\"` and `six`, then invoke `returnObject` with `\"six\"` and `six2`, followed by invoking `clear` on `gkoPool` with `\"six\"`. Call `Thread.sleep` with `20`. Iterate over `testThreads` using an enhanced for-loop with loop variable `t` of type `Thread`, invoking `assertFalse` on `t.isAlive()` for each thread. In the teardown method annotated with `@AfterEach`, invoke the inherited `tearDown` method from the superclass, then invoke `getJmxName` on `gkoPool` and assign the result to `jmxName` of type `ObjectName`, invoke `Objects.toString` with `jmxName` and `null` and assign to `poolName` of type `String`, invoke `clear` on `gkoPool`, invoke `close` on `gkoPool`, assign `null` to `gkoPool`, and assign `null` to `simpleFactory`. Obtain the platform MBean server by calling `ManagementFactory.getPlatformMBeanServer()` and assign to `mbs` of type `MBeanServer`, then invoke `queryNames` on `mbs` with a new `ObjectName` constructed from String literal `\"org.apache.commoms.pool3:type=GenericKeyedObjectPool,*\"` and `null`, assigning the result to `result` of type `Set<ObjectName>`. Invoke `size` on `result` and assign to `registeredPoolCount` of type `int`. Construct a new `StringBuilder` with initial String `\"Current pool is: \"` and assign to `msg`, chain `append` with `poolName`, then chain `append` with `\" Still open pools are: \"`. Iterate over `result` using an enhanced for-loop with loop variable `name` of type `ObjectName`, and for each name, chain `append` on `msg` with `name.toString()`, chain `append` with `\" created via\\n\"`, chain `append` with the result of `mbs.getAttribute(name, \"CreationStackTrace\")`, chain `append` with character `'\\n'`, and invoke `unregisterMBean` on `mbs` with `name`. Finally, invoke `assertEquals` with arguments `0`, `registeredPoolCount`, and `msg.toString()`. The test uses class-level annotations none, method-level annotation `@Test`, assertion library JUnit 5 Assertions, and no mocking libraries.",
+      "project_name": "commons-pool",
+      "qualified_class_name": "org.apache.commons.pool3.impl.TestGenericKeyedObjectPool",
+      "method_signature": "testClearReuseCapacity()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.pool3.impl.GenericKeyedObjectPoolConcurrencyTest",
+      "code": "package org.apache.commons.pool3.impl;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.lang.management.ManagementFactory;\nimport java.time.Duration;\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Objects;\nimport java.util.Set;\nimport javax.management.AttributeNotFoundException;\nimport javax.management.InstanceNotFoundException;\nimport javax.management.MBeanException;\nimport javax.management.MBeanServer;\nimport javax.management.ObjectName;\nimport javax.management.ReflectionException;\nimport org.apache.commons.pool3.KeyedPooledObjectFactory;\nimport org.apache.commons.pool3.PooledObject;\n\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\npublic class GenericKeyedObjectPoolConcurrencyTest extends BaseJmxTest {\n\n    private static final Integer KEY_ZERO = 0;\n    private static final Integer KEY_ONE = 1;\n    private static final Integer KEY_TWO = 2;\n    private static final boolean DISPLAY_THREAD_DETAILS = false;\n\n    private GenericKeyedObjectPool<String, String, TestException> gkoPool;\n    private SimpleFactory<String> simpleFactory;\n\n    @BeforeEach\n    public void setUp() throws Exception {\n        super.setUp();\n        simpleFactory = new SimpleFactory<>();\n        gkoPool = new GenericKeyedObjectPool<>(simpleFactory, new GenericKeyedObjectPoolConfig());\n    }\n\n    @AfterEach\n    public void tearDown() throws Exception {\n        super.tearDown();\n        ObjectName jmxName = gkoPool.getJmxName();\n        String poolName = Objects.toString(jmxName, null);\n        gkoPool.clear();\n        gkoPool.close();\n        gkoPool = null;\n        simpleFactory = null;\n\n        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();\n        Set<ObjectName> result = mbs.queryNames(new ObjectName(\"org.apache.commons.pool3:type=GenericKeyedObjectPool,*\"), null);\n        int registeredPoolCount = result.size();\n        StringBuilder msg = new StringBuilder(\"Current pool is: \").append(poolName).append(\" Still open pools are: \");\n        for (ObjectName name : result) {\n            msg.append(name.toString()).append(\" created via\\n\");\n            try {\n                msg.append(mbs.getAttribute(name, \"CreationStackTrace\")).append('\\n');\n            } catch (MBeanException | AttributeNotFoundException | InstanceNotFoundException | ReflectionException e) {\n                msg.append(\"N/A (Error retrieving CreationStackTrace): \").append(e.getMessage()).append('\\n');\n            }\n            mbs.unregisterMBean(name);\n        }\n        assertEquals(0, registeredPoolCount, msg.toString());\n    }\n\n    @Test\n    public void testConcurrencyScenario() throws Exception {\n        gkoPool.setMaxTotalPerKey(6);\n        gkoPool.setMaxTotal(6);\n        gkoPool.setMaxWait(Duration.ofSeconds(5));\n\n        List<Thread> testThreads = new ArrayList<>();\n        testThreads.add(new Thread(new SimpleTestThread(gkoPool, \"one\")));\n        testThreads.add(new Thread(new SimpleTestThread(gkoPool, \"two\")));\n        testThreads.add(new Thread(new SimpleTestThread(gkoPool, \"two\")));\n        testThreads.add(new Thread(new SimpleTestThread(gkoPool, \"three\")));\n        testThreads.add(new Thread(new SimpleTestThread(gkoPool, \"three\")));\n        testThreads.add(new Thread(new SimpleTestThread(gkoPool, \"three\")));\n\n        String four = gkoPool.borrowObject(\"four\");\n        String four2 = gkoPool.borrowObject(\"four\");\n        String five = gkoPool.borrowObject(\"five\");\n        String five2 = gkoPool.borrowObject(\"five\");\n        String six = gkoPool.borrowObject(\"six\");\n        String six2 = gkoPool.borrowObject(\"six\");\n\n        Thread.sleep(100);\n\n        for (Thread t : testThreads) {\n            t.start();\n        }\n\n        Thread.sleep(100);\n\n        gkoPool.returnObject(\"four\", four);\n        gkoPool.returnObject(\"four\", four2);\n        gkoPool.clear(\"four\");\n        Thread.sleep(20);\n        assertTrue(!testThreads.get(3).isAlive() || !testThreads.get(4).isAlive() || !testThreads.get(5).isAlive());\n\n        gkoPool.returnObject(\"five\", five);\n        gkoPool.returnObject(\"five\", five2);\n        gkoPool.clear(\"five\");\n        Thread.sleep(20);\n\n        gkoPool.returnObject(\"six\", six);\n        gkoPool.returnObject(\"six\", six2);\n        gkoPool.clear(\"six\");\n        Thread.sleep(20);\n\n        for (Thread t : testThreads) {\n            t.join(1000); // Wait for thread to finish to ensure accurate isAlive check\n            assertFalse(t.isAlive(), \"Thread \" + t.getName() + \" should not be alive.\");\n        }\n    }\n\n    private static class TestException extends Exception {\n        public TestException(String message) {\n            super(message);\n        }\n    }\n\n    private static class SimpleFactory<T> implements KeyedPooledObjectFactory<String, String, TestException> {\n        @Override\n        public PooledObject<String> makeObject(String key) throws TestException {\n            return new DefaultPooledObject<>(key);\n        }\n\n        @Override\n        public void destroyObject(String key, PooledObject<String> p) throws TestException {\n            // No-op\n        }\n\n        @Override\n        public boolean validateObject(String key, PooledObject<String> p) {\n            return true;\n        }\n\n        @Override\n        public void activateObject(String key, PooledObject<String> p) throws TestException {\n            // No-op\n        }\n\n        @Override\n        public void passivateObject(String key, PooledObject<String> p) throws TestException {\n            // No-op\n        }\n    }\n\n    private static class SimpleTestThread implements Runnable {\n        private final GenericKeyedObjectPool<String, String, TestException> pool;\n        private final String key;\n\n        public SimpleTestThread(GenericKeyedObjectPool<String, String, TestException> pool, String key) {\n            this.pool = pool;\n            this.key = key;\n        }\n\n        @Override\n        public void run() {\n            String obj = null;\n            try {\n                obj = pool.borrowObject(key);\n            } catch (TestException | InterruptedException e) {\n                // Log or handle the exception\n                System.err.println(\"Failed to borrow object for key \" + key + \": \" + e.getMessage());\n                Thread.currentThread().interrupt(); // Restore interrupt status\n            } finally {\n                if (obj != null) {\n                    try {\n                        pool.returnObject(key, obj);\n                    } catch (Exception e) {\n                        System.err.println(\"Failed to return object for key \" + key + \": \" + e.getMessage());\n                    }\n                }\n            }\n        }\n    }\n}",
+      "method_signature": "testClearReuseCapacity()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6313,
+    "output_tokens": 6621,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  }
+]

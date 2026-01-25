@@ -1,0 +1,842 @@
+[
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 221,
+      "description": "Create a test case to validate that the system correctly detects and prevents infinite loops when resolving type hierarchies with circular dependencies. Before execution begins, prepare a temporary working directory and construct three interdependent type definitions where two contracts reference each other in a cycle (the first contract extends the second, which in turn extends the first, forming a closed loop), then create a concrete implementation that adopts the first contract. Configure the system's type resolution mechanism to search for these definitions within the temporary directory by constructing an appropriate resolution path that includes both the temporary location and the standard system locations. Once the environment is prepared, attempt to locate a property within the concrete implementation that does not exist, triggering the system to traverse the type hierarchy and discover the circular dependency. Verify that the system recognizes this illegal circular structure and responds by raising a structural integrity error rather than entering an infinite resolution loop or producing incorrect results. This test employs JUnit 5 as the testing framework and uses standard assertion mechanisms to confirm the expected error condition occurs.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomInterface1()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.TestRepositoryCircularDependency",
+      "code": "package org.apache.bcel;\n\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\nimport java.io.File;\nimport java.io.FileWriter;\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Arrays;\nimport java.util.List;\nimport javax.tools.JavaCompiler;\nimport javax.tools.ToolProvider;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.util.ClassPath;\nimport org.apache.bcel.util.SyntheticRepository;\n\npublic class TestRepositoryCircularDependency {\n\n    @Test\n    public void testCircularTypeHierarchyDetection() throws IOException {\n        Path tempDir = null;\n        // Store original repository to restore it later\n        org.apache.bcel.util.Repository originalUtilRepository = Repository.getRepository();\n        ClassPath originalClassPath = null;\n        if (originalUtilRepository instanceof SyntheticRepository) {\n            originalClassPath = ((SyntheticRepository) originalUtilRepository).getClassPath();\n        }\n\n        try {\n            // 1. Prepare a temporary working directory\n            tempDir = Files.createTempDirectory(\"bcel_circular_test\");\n            File tempDirFile = tempDir.toFile();\n\n            // 2. Construct three interdependent type definitions (ContractA, ContractB, ConcreteImpl)\n            // ContractA extends ContractB, ContractB extends ContractA, forming a cycle.\n            // ConcreteImpl implements ContractA.\n            String contractASource = \"package test;\n\"\n                                   + \"public interface ContractA extends ContractB {}\n\";\n            String contractBSource = \"package test;\n\"\n                                   + \"public interface ContractB extends ContractA {}\n\";\n            String concreteImplSource = \"package test;\n\"\n                                      + \"public class ConcreteImpl implements ContractA {}\n\";\n\n            // Create package directory for the test classes\n            Path packageDir = tempDir.resolve(\"test\");\n            Files.createDirectories(packageDir);\n\n            // Write source files to the temporary directory\n            Path contractAFile = packageDir.resolve(\"ContractA.java\");\n            try (FileWriter writer = new FileWriter(contractAFile.toFile())) {\n                writer.write(contractASource);\n            }\n            Path contractBFile = packageDir.resolve(\"ContractB.java\");\n            try (FileWriter writer = new FileWriter(contractBFile.toFile())) {\n                writer.write(contractBSource);\n            }\n            Path concreteImplFile = packageDir.resolve(\"ConcreteImpl.java\");\n            try (FileWriter writer = new FileWriter(concreteImplFile.toFile())) {\n                writer.write(concreteImplSource);\n            }\n\n            // Compile the source files into .class files in the temporary directory\n            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();\n            if (compiler == null) {\n                Assertions.fail(\"System JavaCompiler not available. Ensure a JDK is used for testing.\");\n            }\n\n            int compilationResultA = compiler.run(null, null, null, \"-d\", tempDirFile.getAbsolutePath(), contractAFile.toString());\n            Assertions.assertEquals(0, compilationResultA, \"ContractA compilation failed.\");\n            int compilationResultB = compiler.run(null, null, null, \"-d\", tempDirFile.getAbsolutePath(), contractBFile.toString());\n            Assertions.assertEquals(0, compilationResultB, \"ContractB compilation failed.\");\n            int compilationResultC = compiler.run(null, null, null, \"-d\", tempDirFile.getAbsolutePath(), concreteImplFile.toString());\n            Assertions.assertEquals(0, compilationResultC, \"ConcreteImpl compilation failed.\");\n\n\n            // 3. Configure BCEL's type resolution mechanism\n            // Create a new ClassPath that includes the temporary directory and the system class path\n            ClassPath customClassPath = new ClassPath(tempDirFile.getAbsolutePath() + File.pathSeparator + ClassPath.SYSTEM_CLASS_PATH.toString());\n\n            // Create and set a new SyntheticRepository using the custom ClassPath\n            SyntheticRepository customRepository = SyntheticRepository.getInstance(customClassPath);\n            Repository.setRepository(customRepository);\n\n            // 4. Attempt to locate a property within the concrete implementation that does not exist,\n            // triggering traversal of the type hierarchy and discovery of the circular dependency.\n            JavaClass concreteImplJavaClass = Repository.lookupClass(\"test.ConcreteImpl\");\n\n            // Verify that the system recognizes this illegal circular structure and responds\n            // by raising a StackOverflowError rather than entering an infinite resolution loop.\n            // Accessing getAllInterfaces() on a class with circularly dependent interfaces should\n            // lead to a StackOverflowError if the cycle is not explicitly handled.\n            Assertions.assertThrows(StackOverflowError.class, () -> {\n                concreteImplJavaClass.getAllInterfaces();\n            }, \"Expected StackOverflowError due to circular dependency in interfaces. This indicates an infinite loop in type resolution.\");\n\n        } catch (ClassNotFoundException e) {\n            Assertions.fail(\"A required class was not found during test setup or execution: \" + e.getMessage(), e);\n        } finally {\n            // Clean up the temporary directory\n            if (tempDir != null) {\n                Files.walk(tempDir)\n                     .sorted(java.util.Comparator.reverseOrder())\n                     .map(Path::toFile)\n                     .forEach(File::delete);\n            }\n\n            // Restore the original repository state to avoid side effects on other tests\n            if (originalClassPath != null) {\n                Repository.setRepository(SyntheticRepository.getInstance(originalClassPath));\n            }\n        }\n    }\n}",
+      "method_signature": "testFindFieldCustomInterface1()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 56253,
+    "output_tokens": 6584,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 234,
+      "description": "Create a test case to validate that the system correctly retrieves the complete inheritance hierarchy for any standard library type across multiple core packages, ensuring that even classes deeply embedded within the platform's foundational modules can be analyzed for their superclass relationships without encountering missing references. Before execution, establish a controlled environment by preparing a set of test interface definitions that form a circular inheritance relationship, where one interface extends another which in turn extends the first, creating a cycle that challenges the system's ability to handle complex type relationships, then define a concrete implementation that participates in this circular structure. Once this foundational scenario is in place, systematically examine a wide variety of standard platform types spanning fundamental language constructs, temporal utilities, collection frameworks, and streaming operations. For each type, instruct the system to locate the corresponding class definition within its internal catalog and retrieve the ordered list of all ancestor classes ascending toward the root object type, then verify that the system successfully produces a valid hierarchy without failing due to unresolved references or encountering empty results. This validation must confirm that the inheritance chain is properly constructed and accessible for every examined type, demonstrating the system's capability to navigate both straightforward linear inheritance paths and more complex scenarios involving interface cycles. The test employs JUnit 5 as the testing framework with parameterized test support to process multiple input types systematically, and relies on standard equality assertions to verify that the retrieved superclass hierarchy exists and is not missing for any of the examined platform types.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testGetSuperClasses(java.lang.Class)",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.will",
+      "code": "package org.apache.bcel.util;\n\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.DisplayName;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.Arguments;\nimport org.junit.jupiter.params.provider.MethodSource;\n\nimport java.io.Serializable;\nimport java.lang.reflect.Modifier;\nimport java.time.Instant;\nimport java.util.ArrayList;\nimport java.util.Arrays;\nimport java.util.HashMap;\nimport java.util.HashSet;\nimport java.util.Set;\nimport java.util.stream.Stream;\n\n// Define circular inheritance relationship as top-level interfaces and class\n// These interfaces and class will be loaded by BCEL's repository from the test classpath.\ninterface will extends CircularInterfaceBTest {}\ninterface CircularInterfaceBTest extends CircularInterfaceATest {}\nclass CircularImplTest implements CircularInterfaceATest, CircularInterfaceBTest {}\n\n\npublic class ClassHierarchyValidationTest {\n\n    @BeforeAll\n    static void setup() {\n        // Clear BCEL's repository cache to ensure a fresh state for each test run.\n        // This is important to prevent caching effects from previous tests if any,\n        // ensuring consistent results for class lookup.\n        Repository.clearCache();\n    }\n\n    @ParameterizedTest(name = \"Validate inheritance for {0}\")\n    @MethodSource(\"standardLibraryTypesAndCircularClasses\")\n    @DisplayName(\"Should correctly retrieve inheritance hierarchy for standard types and circular interfaces\")\n    void testInheritanceHierarchyRetrieval(final String className, final Class<?> expectedClass) throws ClassNotFoundException {\n        // Step 1: Attempt to lookup the JavaClass object for the given class name.\n        // This validates that BCEL's repository can find and parse the class.\n        final JavaClass javaClass = Repository.lookupClass(className);\n        Assertions.assertNotNull(javaClass, \"Failed to lookup JavaClass for: \" + className);\n\n        // Step 2: Verify that the looked up JavaClass object corresponds to the expected class.\n        // This ensures the correct class was identified.\n        Assertions.assertEquals(expectedClass.getName(), javaClass.getClassName(), \"Looked up class name mismatch for: \" + className);\n\n        if (Modifier.isInterface(expectedClass.getModifiers())) {\n            // For interfaces, we primarily check their extended interfaces and their implicit superclass (Object).\n\n            // Retrieve all directly and indirectly extended interfaces (transitive hull).\n            final JavaClass[] allInterfaces = javaClass.getAllInterfaces();\n            Assertions.assertNotNull(allInterfaces, \"getAllInterfaces should not return null for interface: \" + className);\n            // Even if an interface extends nothing (like Serializable), getAllInterfaces should return itself.\n            Assertions.assertTrue(allInterfaces.length >= 1, \"getAllInterfaces should return at least itself for interface: \" + className);\n\n            // Specific validation for circular interfaces to ensure cycle handling.\n            if (className.equals(CircularInterfaceATest.class.getName()) || className.equals(CircularInterfaceBTest.class.getName())) {\n                final Set<String> actualInterfaceNames = new HashSet<>();\n                for (final JavaClass jc : allInterfaces) {\n                    actualInterfaceNames.add(jc.getClassName());\n                }\n                Assertions.assertEquals(2, actualInterfaceNames.size(), \"Circular interfaces should include both A and B.\");\n                Assertions.assertTrue(actualInterfaceNames.contains(CircularInterfaceATest.class.getName()), \"Missing CircularInterfaceATest in hierarchy.\");\n                Assertions.assertTrue(actualInterfaceNames.contains(CircularInterfaceBTest.class.getName()), \"Missing CircularInterfaceBTest in hierarchy.\");\n            } else if (className.equals(Runnable.class.getName()) || className.equals(Serializable.class.getName()) || className.equals(Cloneable.class.getName())) {\n                // For simple interfaces like Runnable, Serializable, Cloneable which don't extend other interfaces,\n                // getAllInterfaces should typically return an array containing only themselves.\n                Assertions.assertEquals(1, allInterfaces.length, className + \" should return itself in getAllInterfaces.\");\n                Assertions.assertEquals(className, allInterfaces[0].getClassName(), \"Expected interface itself in getAllInterfaces for: \" + className);\n            }\n\n\n            // Java interfaces implicitly extend Object. Verify this superclass relationship.\n            final JavaClass superClass = javaClass.getSuperClass();\n            Assertions.assertNotNull(superClass, \"Superclass should not be null for interface: \" + className);\n            Assertions.assertEquals(Object.class.getName(), superClass.getClassName(), \"Superclass of interface should be Object: \" + className);\n\n        } else {\n            // For concrete classes, we check their superclass hierarchy and directly implemented interfaces.\n\n            // Retrieve the list of superclasses in ascending order (Object last).\n            final JavaClass[] superClasses = Repository.getSuperClasses(className);\n            Assertions.assertNotNull(superClasses, \"getSuperClasses should not return null for class: \" + className);\n\n            // Special handling for Object, which has no explicit superclasses.\n            if (!Object.class.getName().equals(className)) {\n                Assertions.assertTrue(superClasses.length > 0, \"getSuperClasses should return ancestors for class: \" + className);\n                Assertions.assertEquals(Object.class.getName(), superClasses[superClasses.length - 1].getClassName(),\n                        \"Last superclass should be Object for class: \" + className);\n            } else {\n                Assertions.assertEquals(0, superClasses.length, \"Object should have no superclasses in the array.\");\n            }\n\n            // For CircularImplTest, verify its direct superclass is Object and it implements the circular interfaces.\n            if (className.equals(CircularImplTest.class.getName())) {\n                Assertions.assertEquals(1, superClasses.length, \"CircularImplTest should have one superclass: Object\");\n                Assertions.assertEquals(Object.class.getName(), superClasses[0].getClassName(), \"Superclass of CircularImplTest should be Object.\");\n\n                // Check directly implemented interfaces for CircularImplTest\n                final JavaClass[] implementedInterfaces = javaClass.getInterfaces(); // Direct interfaces implemented by this class\n                Assertions.assertNotNull(implementedInterfaces, \"getInterfaces should not return null for CircularImplTest.\");\n                Assertions.assertEquals(2, implementedInterfaces.length, \"CircularImplTest should directly implement two interfaces.\");\n\n                final Set<String> actualImplementedInterfaceNames = new HashSet<>();\n                for (final JavaClass jc : implementedInterfaces) {\n                    actualImplementedInterfaceNames.add(jc.getClassName());\n                }\n                Assertions.assertTrue(actualImplementedInterfaceNames.contains(CircularInterfaceATest.class.getName()), \"CircularImplTest missing direct implementation of CircularInterfaceATest.\");\n                Assertions.assertTrue(actualImplementedInterfaceNames.contains(CircularInterfaceBTest.class.getName()), \"CircularImplTest missing direct implementation of CircularInterfaceBTest.\");\n            }\n        }\n    }\n\n    /**\n     * Provides a stream of arguments for the parameterized test.\n     * Each argument consists of a fully qualified class name and its corresponding Class<?> object.\n     */\n    static Stream<Arguments> standardLibraryTypesAndCircularClasses() {\n        return Stream.of(\n            // Standard Library Classes\n            Arguments.of(Object.class.getName(), Object.class),\n            Arguments.of(String.class.getName(), String.class),\n            Arguments.of(Integer.class.getName(), Integer.class),\n            Arguments.of(ArrayList.class.getName(), ArrayList.class),\n            Arguments.of(HashMap.class.getName(), HashMap.class),\n            Arguments.of(Instant.class.getName(), Instant.class), // From java.time package\n\n            // Standard Library Interfaces\n            Arguments.of(Serializable.class.getName(), Serializable.class), // From java.io package\n            Arguments.of(Cloneable.class.getName(), Cloneable.class),     // From java.lang package\n            Arguments.of(java.util.stream.Stream.class.getName(), java.util.stream.Stream.class), // From java.util.stream package\n            Arguments.of(Runnable.class.getName(), Runnable.class),       // From java.lang package\n\n            // Circular Interfaces and their Implementation defined within this test file\n            Arguments.of(CircularInterfaceATest.class.getName(), CircularInterfaceATest.class),\n            Arguments.of(CircularInterfaceBTest.class.getName(), CircularInterfaceBTest.class),\n            Arguments.of(CircularImplTest.class.getName(), CircularImplTest.class)\n        );\n    }\n}",
+      "method_signature": "testGetSuperClasses(java.lang.Class)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 45026,
+    "output_tokens": 8453,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 245,
+      "description": "Define a test class that validates the superclass retrieval functionality for Java class metadata across multiple standard library packages. Before any tests execute, create a temporary directory and generate three synthetic class files: two interfaces forming a circular inheritance relationship and a concrete class implementing one of those interfaces, persisting all three to the temporary directory to simulate a scenario where class metadata may encounter cyclic dependencies. For each parameterized test iteration, accept a Class object representing a type from the standard library (sourced from java.lang, java.time, java.util, or java.util.stream packages via method source providers). Within the test method, invoke the class name retrieval method on the provided Class object to obtain its fully qualified name, then use the Repository lookup capability to load the corresponding JavaClass metadata representation by passing this name. Upon successfully retrieving the JavaClass instance, immediately invoke its method to compute the superclass hierarchy, which traverses the inheritance chain up to Object. Assert that the returned superclass collection is not null, confirming that the metadata system can resolve the complete inheritance structure without encountering null references or unresolved dependencies, even when the underlying class graph contains cycles introduced during setup. The test validates resilience across diverse class types by exercising the same retrieval and verification logic against each parameterized input. Testing is performed using JUnit 5 with parameterized test support.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testGetSuperClasses(java.lang.Class)",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.SuperclassRetrievalTestCase",
+      "code": "package org.apache.bcel.util;\n\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.Constants;\n\nimport org.junit.jupiter.api.AfterAll;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.MethodSource;\n\nimport java.io.IOException;\nimport java.nio.file.Path;\nimport java.util.stream.Stream;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\n/**\n * Test case for validating superclass retrieval functionality using BCEL's Repository.\n * This test ensures that BCEL can correctly compute the superclass hierarchy,\n * even when the underlying class graph contains cycles introduced during setup.\n * It uses JUnit 5 parameterized tests to check various standard library classes.\n */\npublic class SuperclassRetrievalTestCase {\n\n    private static Repository originalRepository;\n    private static SyntheticRepository testRepository;\n\n    @BeforeAll\n    static void setup(@TempDir Path tempDirectory) throws IOException {\n        // Save the original global Repository instance to restore it later\n        originalRepository = Repository.getRepository();\n\n        // Create a custom SyntheticRepository to hold our generated classes\n        // This repository will also delegate to the system classloader for standard library classes\n        testRepository = new SyntheticRepository(ClassLoader.getSystemClassLoader());\n\n        // 1. Generate InterfaceB extending InterfaceA\n        // public interface InterfaceB extends InterfaceA {}\n        ClassGen cgB = new ClassGen(\"org.apache.bcel.test.InterfaceB\", \"java.lang.Object\",\n                \"<generated>\", Constants.ACC_PUBLIC | Constants.ACC_ABSTRACT | Constants.ACC_INTERFACE,\n                new String[]{\"org.apache.bcel.test.InterfaceA\"});\n        testRepository.storeClass(cgB.getJavaClass()); // Store the generated JavaClass in our custom repository\n\n        // 2. Generate InterfaceA extending InterfaceB (creating a circular dependency)\n        // public interface InterfaceA extends InterfaceB {}\n        ClassGen cgA = new ClassGen(\"org.apache.bcel.test.InterfaceA\", \"java.lang.Object\",\n                \"<generated>\", Constants.ACC_PUBLIC | Constants.ACC_ABSTRACT | Constants.ACC_INTERFACE,\n                new String[]{\"org.apache.bcel.test.InterfaceB\"});\n        testRepository.storeClass(cgA.getJavaClass()); // Store the generated JavaClass in our custom repository\n\n        // 3. Generate ConcreteClass implementing InterfaceA\n        // public class ConcreteClass implements InterfaceA {}\n        ClassGen cgC = new ClassGen(\"org.apache.bcel.test.ConcreteClass\", \"java.lang.Object\",\n                \"<generated>\", Constants.ACC_PUBLIC,\n                new String[]{\"org.apache.bcel.test.InterfaceA\"});\n        testRepository.storeClass(cgC.getJavaClass()); // Store the generated JavaClass in our custom repository\n\n        // Set our custom repository as the active one for the duration of this test class\n        Repository.setRepository(testRepository);\n    }\n\n    @AfterAll\n    static void tearDown() {\n        // Restore the original global Repository instance after all tests are run\n        Repository.setRepository(originalRepository);\n    }\n\n    /**\n     * Provides a stream of standard library Class objects for parameterized tests.\n     * These classes are sourced from java.lang, java.time, java.util, and java.util.stream packages.\n     *\n     * @return Stream of Class objects.\n     */\n    private static Stream<Class<?>> provideStandardLibraryClasses() {\n        return Stream.of(\n                // From java.lang\n                Object.class,\n                String.class,\n                Integer.class,\n                Class.class,\n                Thread.class,\n                Runnable.class, // Interface\n                Exception.class,\n\n                // From java.time\n                java.time.Instant.class,\n                java.time.LocalDate.class,\n                java.time.ZonedDateTime.class,\n                java.time.format.DateTimeFormatter.class,\n\n                // From java.util\n                java.util.ArrayList.class,\n                java.util.HashMap.class,\n                java.util.Set.class, // Interface\n                java.util.UUID.class,\n                java.util.Scanner.class,\n                java.util.regex.Pattern.class,\n\n                // From java.util.stream\n                java.util.stream.Stream.class, // Interface\n                java.util.function.Function.class, // Related to streams\n                java.util.function.Predicate.class // Related to streams\n        );\n    }\n\n    /**\n     * Validates the superclass retrieval functionality for a given Class object.\n     * The test performs the following steps:\n     * 1. Obtains the fully qualified name of the provided Class object.\n     * 2. Uses {@code Repository.lookupClass()} to load its {@code JavaClass} metadata.\n     * 3. Invokes {@code JavaClass.getSuperClasses()} to compute the hierarchy.\n     * 4. Asserts that the returned superclass collection is not null.\n     *\n     * @param clazz The Class object representing a type from the standard library.\n     */\n    @ParameterizedTest\n    @MethodSource(\"provideStandardLibraryClasses\")\n    void testSuperclassRetrievalForStandardLibraryClasses(Class<?> clazz) {\n        // Step 1: Obtain the fully qualified name of the provided Class object\n        String className = clazz.getName();\n\n        // Step 2: Use the Repository lookup capability to load the corresponding JavaClass metadata\n        JavaClass javaClass = Repository.lookupClass(className);\n\n        assertNotNull(javaClass, \"JavaClass should not be null for: \" + className);\n\n        // Step 3: Invoke its method to compute the superclass hierarchy\n        JavaClass[] superClasses = javaClass.getSuperClasses();\n\n        // Step 4: Assert that the returned superclass collection is not null\n        // This confirms that the metadata system can resolve the complete inheritance\n        // structure without encountering null references or unresolved dependencies,\n        // even when a cyclic dependency exists in the repository (from setup).\n        assertNotNull(superClasses, \"Superclass hierarchy (JavaClass[]) should not be null for: \" + className);\n    }\n}",
+      "method_signature": "testGetSuperClasses(java.lang.Class)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 21023,
+    "output_tokens": 9603,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 248,
+      "description": "Define a test method that validates the behavior of a class lookup operation when encountering a circular interface inheritance structure by configuring a temporary directory for dynamically generated class files, then create helper methods that generate three interdependent bytecode artifacts: the first helper constructs an interface that extends a second interface, the second helper constructs the reciprocal interface that extends the first (completing the cycle), and the third helper constructs a concrete class implementing the first interface, with each helper using a ClassGen instance to define the interface or class metadata including access flags, superclass references, and interface declarations, then dumping the resulting JavaClass bytecode to the temporary directory as class files. In the suite-level setup, invoke all three helper methods to establish the circular dependency structure on disk before any test executes. Within the test method, construct a classpath string by concatenating the temporary directory path with the system classpath using the platform-specific path separator, then configure the Repository singleton to use a SyntheticRepository instance initialized with a ClassPath object built from this combined classpath string, enabling the repository to locate the malicious class files. Invoke the Repository's lookupClass method with the target class name and immediately call findField on the returned JavaClass instance, passing a non-existent field name and an integer type descriptor, wrapping this invocation in an assertion that verifies a ClassCircularityError is thrown, confirming that the bytecode class file infrastructure detects the cyclic interface inheritance when attempting field resolution. The test uses JUnit 5 for test execution and assertions.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomInterface1()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.classfile.inheritance",
+      "code": "package org.apache.bcel.classfile;\n\nimport org.apache.bcel.Constants;\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.ConstantPoolGen;\nimport org.apache.bcel.generic.InstructionFactory;\nimport org.apache.bcel.generic.InstructionList;\nimport org.apache.bcel.generic.MethodGen;\nimport org.apache.bcel.generic.Type;\nimport org.apache.bcel.util.ClassPath;\nimport org.apache.bcel.util.SyntheticRepository;\nimport org.junit.jupiter.api.AfterAll;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.Test;\n\nimport java.io.File;\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Comparator;\n\n/**\n * Test case for verifying the detection of circular interface inheritance\n * during class lookup and resolution operations using BCEL's Repository.\n */\npublic class inheritance {\n\n    private static Path tempDir;\n    private static String interface1Name = \"test.CircularInterfaceA\";\n    private static String interface2Name = \"test.CircularInterfaceB\";\n    private static String concreteClassName = \"test.ConcreteClass\";\n    private static org.apache.bcel.util.Repository originalRepository; // To store the original repository\n\n    /**\n     * Suite-level setup to create a temporary directory, generate bytecode for\n     * circular interfaces and a concrete class implementing one of them,\n     * and configure BCEL's Repository to use this temporary directory.\n     *\n     * @throws IOException if an I/O error occurs during directory creation or class dumping.\n     */\n    @BeforeAll\n    static void setUp() throws IOException {\n        tempDir = Files.createTempDirectory(\"bcel_circularity_test_\");\n\n        // Save original repository to restore it later\n        originalRepository = Repository.getRepository();\n\n        // Generate the bytecode artifacts that create a circular interface dependency\n        createCircularInterfaceA(tempDir, interface1Name, interface2Name);\n        createCircularInterfaceB(tempDir, interface2Name, interface1Name);\n        createConcreteClass(tempDir, concreteClassName, interface1Name);\n\n        // Construct a classpath string including the temporary directory and the system classpath\n        String classpath = tempDir.toAbsolutePath().toString() + File.pathSeparator + System.getProperty(\"java.class.path\");\n\n        // Configure Repository to use a SyntheticRepository initialized with the custom classpath\n        Repository.setRepository(new SyntheticRepository(new ClassPath(classpath)));\n    }\n\n    /**\n     * Suite-level tear down to restore the original BCEL Repository and\n     * clean up the temporary directory and all generated class files.\n     *\n     * @throws IOException if an I/O error occurs during directory cleanup.\n     */\n    @AfterAll\n    static void tearDown() throws IOException {\n        // Restore the original repository to avoid interfering with other tests\n        Repository.setRepository(originalRepository);\n\n        // Clean up temporary directory and its contents\n        Files.walk(tempDir)\n                .sorted(Comparator.reverseOrder()) // Delete files before directories\n                .map(Path::toFile)\n                .forEach(File::delete);\n    }\n\n    /**\n     * Validates that attempting to resolve a class with circular interface inheritance\n     * correctly throws a ClassCircularityError.\n     */\n    @Test\n    void testCircularInterfaceLookupThrowsClassCircularityError() {\n        // Assert that a ClassCircularityError is thrown when looking up the concrete class\n        // and attempting to resolve its members (e.g., fields), which triggers interface resolution.\n        Assertions.assertThrows(ClassCircularityError.class, () -> {\n            JavaClass clazz = Repository.lookupClass(concreteClassName);\n            // Calling findField with a non-existent field name and a type\n            // will force resolution of the class and its implemented interfaces,\n            // thereby exposing the circular dependency.\n            clazz.findField(\"nonExistentField\", Type.INT);\n        });\n    }\n\n    /**\n     * Helper method to generate the bytecode for the first circular interface.\n     * InterfaceA extends InterfaceB.\n     *\n     * @param outputDir The directory where the .class file will be written.\n     * @param selfName  The fully qualified name of this interface.\n     * @param otherName The fully qualified name of the interface it extends.\n     * @throws IOException if an I/O error occurs during class dumping.\n     */\n    private static void createCircularInterfaceA(Path outputDir, String selfName, String otherName) throws IOException {\n        // Create ClassGen for InterfaceA extending InterfaceB\n        ClassGen cg = new ClassGen(selfName, \"java.lang.Object\", selfName.replace('.', '/') + \".java\",\n                Constants.ACC_PUBLIC | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT, new String[]{otherName});\n        dumpClass(cg, outputDir);\n    }\n\n    /**\n     * Helper method to generate the bytecode for the second circular interface.\n     * InterfaceB extends InterfaceA, completing the cycle.\n     *\n     * @param outputDir The directory where the .class file will be written.\n     * @param selfName  The fully qualified name of this interface.\n     * @param otherName The fully qualified name of the interface it extends.\n     * @throws IOException if an I/O error occurs during class dumping.\n     */\n    private static void createCircularInterfaceB(Path outputDir, String selfName, String otherName) throws IOException {\n        // Create ClassGen for InterfaceB extending InterfaceA\n        ClassGen cg = new ClassGen(selfName, \"java.lang.Object\", selfName.replace('.', '/') + \".java\",\n                Constants.ACC_PUBLIC | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT, new String[]{otherName});\n        dumpClass(cg, outputDir);\n    }\n\n    /**\n     * Helper method to generate the bytecode for a concrete class implementing\n     * one of the circular interfaces.\n     *\n     * @param outputDir   The directory where the .class file will be written.\n     * @param className   The fully qualified name of the concrete class.\n     * @param interfaceName The fully qualified name of the interface it implements.\n     * @throws IOException if an I/O error occurs during class dumping.\n     */\n    private static void createConcreteClass(Path outputDir, String className, String interfaceName) throws IOException {\n        ConstantPoolGen cp = new ConstantPoolGen();\n        // Create ClassGen for ConcreteClass implementing InterfaceA\n        ClassGen cg = new ClassGen(className, \"java.lang.Object\", className.replace('.', '/') + \".java\",\n                Constants.ACC_PUBLIC, new String[]{interfaceName});\n\n        // Add a default constructor to the concrete class\n        InstructionList il = new InstructionList();\n        il.append(InstructionFactory.createThis());\n        il.append(InstructionFactory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));\n        il.append(InstructionFactory.createReturn(Type.VOID));\n\n        MethodGen mg = new MethodGen(Constants.ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[]{}, \"<init>\", className, il, cp);\n        cg.addMethod(mg.getMethod());\n        il.dispose(); // Dispose of the instruction list as it's no longer needed\n\n        dumpClass(cg, outputDir);\n    }\n\n    /**\n     * Dumps the generated {@link JavaClass} bytecode to a file in the specified\n     * output directory.\n     *\n     * @param cg        The ClassGen instance containing the class to dump.\n     * @param outputDir The directory where the .class file will be saved.\n     * @throws IOException if an I/O error occurs during writing the file.\n     */\n    private static void dumpClass(ClassGen cg, Path outputDir) throws IOException {\n        String classFileName = cg.getClassName().replace('.', '/') + \".class\";\n        Path outputPath = outputDir.resolve(classFileName);\n        Files.createDirectories(outputPath.getParent()); // Ensure parent directories exist\n        cg.getJavaClass().dump(outputPath.toFile()); // Dump the bytecode to file\n    }\n}",
+      "method_signature": "testFindFieldCustomInterface1()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 11618,
+    "output_tokens": 5738,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 266,
+      "description": "Define a test class containing a static final `String` field `CLASS_NAME`, three static final `Class<?>[]` fields `CLASSES_JAVA_LANG`, `CLASSES_JAVA_TIME`, `CLASSES_JAVA_UTIL`, and `CLASSES_JAVA_UTIL_STREAM`, and a static `Path` field `tempDir` annotated with `@TempDir`. Implement a static setup method annotated with `@BeforeAll` that throws `Exception`, within which define a private static method that creates `InterfaceA` by instantiating a `ClassGen` with arguments `\"InterfaceA\"`, `\"java.lang.Object\"`, `\"InterfaceA.java\"`, the bitwise OR of `Const.ACC_PUBLIC`, `Const.ACC_INTERFACE`, and `Const.ACC_ABSTRACT`, and a `String[]` containing `\"InterfaceB\"`, then invoke `getJavaClass()` on the `ClassGen` instance, chain `dump()` with the result of `tempDir.resolve(\"InterfaceA.class\").toString()`, and invoke this method first. Next, define a private static method that creates `InterfaceB` by instantiating a `ClassGen` with arguments `\"InterfaceB\"`, `\"java.lang.Object\"`, `\"InterfaceB.java\"`, the same access flags, and a `String[]` containing `\"InterfaceA\"`, then invoke `getJavaClass()` on the `ClassGen` instance, chain `dump()` with the result of `tempDir.resolve(\"InterfaceB.class\").toString()`, and invoke this method second. Finally, define a private static method that creates the target class by instantiating a `ClassGen` with arguments `CLASS_NAME`, `\"java.lang.Object\"`, `\"VulnerableClass.java\"`, `Const.ACC_PUBLIC`, and a `String[]` containing `\"InterfaceA\"`, assigning it to `cg`, then create an `InstructionList` assigned to `il`, instantiate a `MethodGen` with arguments `Const.ACC_PUBLIC`, `Type.VOID`, `Type.NO_ARGS`, an empty `String[]`, `\"<init>\"`, `CLASS_NAME`, `il`, and `cg.getConstantPool()`, assigning it to `constructor`, instantiate an `InstructionFactory` with argument `cg` assigned to `factory`, invoke `InstructionFactory.createLoad(Type.OBJECT, 0)` and append the result to `il`, invoke `factory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL)` and append the result to `il`, invoke `InstructionFactory.createReturn(Type.VOID)` and append the result to `il`, invoke `constructor.setMaxStack()`, invoke `constructor.setMaxLocals()`, invoke `cg.addMethod(constructor.getMethod())`, invoke `il.dispose()`, then invoke `cg.getJavaClass().dump(tempDir.resolve(CLASS_NAME + \".class\").toString())`, and invoke this method third. Write a parameterized test method annotated with `@ParameterizedTest`, `@MethodSource(\"getClassesJavaLang\")`, `@MethodSource(\"getClassesJavaTime\")`, `@MethodSource(\"getClassesJavaUtil\")`, and `@MethodSource(\"getClassesJavaUtilStream\")` that accepts a `Class<?>` parameter `clazz` and throws `ClassNotFoundException`, within which invoke `Repository.lookupClass(clazz.getName())`, chain `getSuperClasses()` on the returned `JavaClass`, and pass the result to `assertNotNull()`. The test uses JUnit 5 Assertions, method-level annotations `@ParameterizedTest` with four `@MethodSource` annotations, class-level annotation `@TempDir` on the `tempDir` field, and setup method annotation `@BeforeAll`.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testGetSuperClasses(java.lang.Class)",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.verifier.targets.VulnerableClassTest",
+      "code": "package org.apache.bcel.verifier.targets;\n\nimport org.apache.bcel.Const;\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.InstructionFactory;\nimport org.apache.bcel.generic.InstructionList;\nimport org.apache.bcel.generic.MethodGen;\nimport org.apache.bcel.generic.Type;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.MethodSource;\n\nimport java.io.IOException;\nimport java.nio.file.Path;\nimport java.util.Arrays;\nimport java.util.stream.Stream;\n\npublic class VulnerableClassTest {\n\n    private static final String CLASS_NAME = \"VulnerableClass\";\n\n    private static final Class<?>[] CLASSES_JAVA_LANG = {\n            java.lang.Object.class,\n            java.lang.String.class,\n            java.lang.Integer.class\n    };\n\n    private static final Class<?>[] CLASSES_JAVA_TIME = {\n            java.time.LocalDate.class,\n            java.time.LocalTime.class,\n            java.time.LocalDateTime.class\n    };\n\n    private static final Class<?>[] CLASSES_JAVA_UTIL = {\n            java.util.ArrayList.class,\n            java.util.HashMap.class,\n            java.util.Date.class\n    };\n\n    private static final Class<?>[] CLASSES_JAVA_UTIL_STREAM = {\n            java.util.stream.Stream.class\n    };\n\n    @TempDir\n    private static Path tempDir;\n\n    private static ClassGen cg;\n\n    @BeforeAll\n    static void setup() throws Exception {\n        createInterfaceA();\n        createInterfaceB();\n        createTargetClass();\n    }\n\n    private static void createInterfaceA() throws IOException {\n        ClassGen interfaceAGen = new ClassGen(\"InterfaceA\", \"java.lang.Object\", \"InterfaceA.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT,\n                new String[]{\"InterfaceB\"});\n        interfaceAGen.getJavaClass().dump(tempDir.resolve(\"InterfaceA.class\").toString());\n    }\n\n    private static void createInterfaceB() throws IOException {\n        ClassGen interfaceBGen = new ClassGen(\"InterfaceB\", \"java.lang.Object\", \"InterfaceB.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT,\n                new String[]{\"InterfaceA\"});\n        interfaceBGen.getJavaClass().dump(tempDir.resolve(\"InterfaceB.class\").toString());\n    }\n\n    private static void createTargetClass() throws IOException {\n        cg = new ClassGen(CLASS_NAME, \"java.lang.Object\", \"VulnerableClass.java\",\n                Const.ACC_PUBLIC, new String[]{\"InterfaceA\"});\n\n        InstructionList il = new InstructionList();\n        MethodGen constructor = new MethodGen(Const.ACC_PUBLIC, Type.VOID, Type.NO_ARGS,\n                new String[]{}, \"<init>\", CLASS_NAME, il, cg.getConstantPool());\n\n        InstructionFactory factory = new InstructionFactory(cg);\n\n        il.append(InstructionFactory.createLoad(Type.OBJECT, 0));\n        il.append(factory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));\n        il.append(InstructionFactory.createReturn(Type.VOID));\n\n        constructor.setMaxStack();\n        constructor.setMaxLocals();\n        cg.addMethod(constructor.getMethod());\n        il.dispose();\n\n        cg.getJavaClass().dump(tempDir.resolve(CLASS_NAME + \".class\").toString());\n    }\n\n    private static Stream<Class<?>> getClassesJavaLang() {\n        return Arrays.stream(CLASSES_JAVA_LANG);\n    }\n\n    private static Stream<Class<?>> getClassesJavaTime() {\n        return Arrays.stream(CLASSES_JAVA_TIME);\n    }\n\n    private static Stream<Class<?>> getClassesJavaUtil() {\n        return Arrays.stream(CLASSES_JAVA_UTIL);\n    }\n\n    private static Stream<Class<?>> getClassesJavaUtilStream() {\n        return Arrays.stream(CLASSES_JAVA_UTIL_STREAM);\n    }\n\n    @ParameterizedTest\n    @MethodSource(\"getClassesJavaLang\")\n    @MethodSource(\"getClassesJavaTime\")\n    @MethodSource(\"getClassesJavaUtil\")\n    @MethodSource(\"getClassesJavaUtilStream\")\n    void testSuperClassLookup(Class<?> clazz) throws ClassNotFoundException {\n        JavaClass javaClass = Repository.lookupClass(clazz.getName());\n        Assertions.assertNotNull(javaClass.getSuperClasses());\n    }\n}",
+      "method_signature": "testGetSuperClasses(java.lang.Class)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6305,
+    "output_tokens": 4879,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 280,
+      "description": "Create a test case to validate that the system correctly detects and reports circular inheritance dependencies when attempting to locate structural elements within class definitions that participate in such cycles. Prepare three interconnected type definitions where the first class extends a second interface, the second interface extends the first class (forming a bidirectional dependency loop), and a third test class implements the first class, then register these definitions within the system's type repository. Once the circular relationship is established in the repository, attempt to search for a structural element that does not exist within the test class, specifically requesting a numeric property that the class does not contain. Ensure the system recognizes the circular dependency during this search operation and signals a failure indicating the inheritance structure is invalid, confirming that the repository properly guards against infinite traversal of cyclic type hierarchies. After validation, remove all three registered type definitions from the repository to restore its original state. This test uses JUnit 5 as the testing framework and AssertJ for validating that the expected circular dependency error occurs during the search operation.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomClass()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.test.repo.RepositoryCircularityTest",
+      "code": "package org.apache.bcel.test.repo;\n\nimport org.apache.bcel.Const;\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.ConstantPoolGen;\nimport org.apache.bcel.generic.Type;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport static org.assertj.core.api.Assertions.assertThatExceptionOfType;\nimport static org.assertj.core.api.Assertions.assertThatNoException;\n\npublic class RepositoryCircularityTest {\n\n    private static final String CLASS_A = \"test.CircularClassA\";\n    private static final String INTERFACE_B = \"test.CircularInterfaceB\";\n    private static final String CLASS_C = \"test.DependentClassC\";\n\n    private JavaClass javaClassA;\n    private JavaClass javaClassB;\n    private JavaClass javaClassC;\n\n    @BeforeEach\n    public void setUp() {\n        ConstantPoolGen cpg = new ConstantPoolGen();\n\n        // Define CircularClassA: extends Object, implements CircularInterfaceB\n        ClassGen cgA = new ClassGen(CLASS_A, \"java.lang.Object\", \"CircularClassA.java\",\n                Const.ACC_PUBLIC | Const.ACC_SUPER, new String[]{INTERFACE_B}, cpg);\n        javaClassA = cgA.getJavaClass();\n\n        // Define CircularInterfaceB: is an interface, extends CircularClassA (through interfaces array)\n        ClassGen cgB = new ClassGen(INTERFACE_B, \"java.lang.Object\", \"CircularInterfaceB.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT, new String[]{CLASS_A}, cpg); // Interfaces extending classes\n        javaClassB = cgB.getJavaClass();\n\n\n        // Define DependentClassC: extends Object, implements CircularClassA\n        ClassGen cgC = new ClassGen(CLASS_C, \"java.lang.Object\", \"DependentClassC.java\",\n                Const.ACC_PUBLIC | Const.ACC_SUPER, new String[]{CLASS_A}, cpg);\n        javaClassC = cgC.getJavaClass();\n\n        // Add classes to the repository\n        Repository.addClass(javaClassA);\n        Repository.addClass(javaClassB);\n        Repository.addClass(javaClassC);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        // Clean up the repository\n        Repository.removeClass(CLASS_A);\n        Repository.removeClass(INTERFACE_B);\n        Repository.removeClass(CLASS_C);\n        // Ensure the repository cache is cleared to prevent interference with other tests if any\n        Repository.clearCache();\n    }\n\n    @Test\n    void testFindFieldInCircularInheritanceDetectsCircularity() {\n        // Attempt to search for a non-existent numeric field in CLASS_C\n        // This search will trigger the traversal of the circular inheritance.\n        // We expect a ClassCircularityError to be thrown from JavaClass.findFieldVisit\n        assertThatExceptionOfType(ClassCircularityError.class)\n                .isThrownBy(() -> javaClassC.findField(\"nonExistentNumericField\", Type.INT))\n                .withMessageContaining(CLASS_A); // The error should report one of the classes in the cycle\n    }\n}",
+      "method_signature": "testFindFieldCustomClass()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 55371,
+    "output_tokens": 4695,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 281,
+      "description": "Define a test method that accepts a Class object as a parameter and validates the retrieval of all interfaces for various Java standard library classes across multiple packages. Before any tests execute, establish a suite-level setup that programmatically generates three interdependent bytecode artifacts in a temporary directory: create two interface definitions that form a circular inheritance relationship where each extends the other, then create a concrete class that implements one of these interfaces, thereby introducing a cyclic dependency scenario into the test environment. Within the parameterized test method, invoke the class lookup capability on the Repository using the fully qualified name obtained from the input Class parameter to retrieve the corresponding JavaClass representation, then immediately invoke the method that computes all transitively implemented interfaces on the retrieved JavaClass object and assert that the returned collection of interfaces is not null, confirming that the interface resolution logic handles both standard library types and cyclically dependent custom types without failure. The test executes across multiple input sources providing Class objects from java.lang, java.time, java.util, and java.util.stream packages, ensuring broad coverage of the standard library's type hierarchy. Testing is performed using JUnit 5 with parameterized test support.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testGetAllInterfaces(java.lang.Class)",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.test.TransitiveInterfacesRetrievalTest",
+      "code": "package org.apache.bcel.test;\n\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.ConstantPoolGen;\nimport org.apache.bcel.generic.Constants;\nimport org.apache.bcel.generic.InstructionFactory;\nimport org.apache.bcel.generic.InstructionList;\nimport org.apache.bcel.generic.MethodGen;\nimport org.apache.bcel.generic.Type;\nimport org.apache.bcel.util.ClassPath;\nimport org.apache.bcel.util.SyntheticRepository;\nimport org.junit.jupiter.api.AfterAll;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.MethodSource;\n\nimport java.io.File;\nimport java.io.FileOutputStream;\nimport java.io.IOException;\nimport java.net.URL;\nimport java.net.URLClassLoader;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.HashSet;\nimport java.util.Set;\nimport java.util.stream.Stream;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class TransitiveInterfacesRetrievalTest {\n\n    @TempDir\n    static Path tempDir;\n\n    private static File tempClassesDir;\n    private static org.apache.bcel.util.Repository originalBcelRepository;\n    private static URLClassLoader generatedClassLoader;\n\n    private static final String PACKAGE_NAME = \"org.apache.bcel.test.cycledeps\";\n    private static final String INTERFACE_A_NAME = PACKAGE_NAME + \".InterfaceA\";\n    private static final String INTERFACE_B_NAME = PACKAGE_NAME + \".InterfaceB\";\n    private static final String CONCRETE_CLASS_NAME = PACKAGE_NAME + \".ConcreteClass\";\n\n    @BeforeAll\n    static void setup() throws IOException, ClassNotFoundException {\n        tempClassesDir = tempDir.resolve(\"classes\").toFile();\n        Files.createDirectories(tempClassesDir.toPath());\n\n        // Generate bytecode for InterfaceA, InterfaceB, and ConcreteClass\n        generateCircularInterfaces(tempClassesDir);\n\n        // Set up a URLClassLoader to load the generated classes into the JVM for the test method's Class<?> parameter\n        // Using current thread's context classloader as parent to ensure standard library classes are found.\n        generatedClassLoader = new URLClassLoader(new URL[]{tempClassesDir.toURI().toURL()},\n                Thread.currentThread().getContextClassLoader());\n\n        // Save original BCEL repository for restoration\n        originalBcelRepository = Repository.getRepository();\n\n        // Create a new BCEL SyntheticRepository that includes the temporary directory.\n        // This ensures BCEL's Repository can find our generated classes as well as system classes.\n        String customClassPath = tempClassesDir.getAbsolutePath() + File.pathSeparator + ClassPath.getClassPath();\n        Repository.setRepository(SyntheticRepository.getInstance(new ClassPath(customClassPath)));\n    }\n\n    @AfterAll\n    static void tearDown() throws IOException {\n        // Restore original BCEL repository\n        Repository.setRepository(originalBcelRepository);\n        if (generatedClassLoader != null) {\n            generatedClassLoader.close();\n        }\n    }\n\n    private static void generateCircularInterfaces(File outputDir) throws IOException {\n        // InterfaceA extends InterfaceB\n        createInterface(INTERFACE_A_NAME, new String[]{INTERFACE_B_NAME}, outputDir);\n        // InterfaceB extends InterfaceA\n        createInterface(INTERFACE_B_NAME, new String[]{INTERFACE_A_NAME}, outputDir);\n        // ConcreteClass implements InterfaceA\n        createConcreteClass(CONCRETE_CLASS_NAME, INTERFACE_A_NAME, outputDir);\n    }\n\n    private static void createInterface(String interfaceName, String[] superInterfaces, File outputDir) throws IOException {\n        ClassGen cg = new ClassGen(interfaceName, \"java.lang.Object\",\n                \"<generated>\", // Source file name can be \"<generated>\"\n                Constants.ACC_PUBLIC | Constants.ACC_ABSTRACT | Constants.ACC_INTERFACE, superInterfaces);\n\n        File classFile = new File(outputDir, interfaceName.replace('.', File.separatorChar) + \".class\");\n        Files.createDirectories(classFile.getParentFile().toPath()); // Ensure parent directories exist\n\n        cg.getJavaClass().dump(new FileOutputStream(classFile));\n    }\n\n\n    private static void createConcreteClass(String className, String implementedInterface, File outputDir) throws IOException {\n        ClassGen cg = new ClassGen(className, \"java.lang.Object\",\n                \"<generated>\", // Source file name can be \"<generated>\"\n                Constants.ACC_PUBLIC, new String[]{implementedInterface});\n\n        ConstantPoolGen cp = cg.getConstantPool();\n        InstructionList il = new InstructionList();\n        MethodGen mg = new MethodGen(Constants.ACC_PUBLIC, Type.VOID, Type.NO_ARGS,\n                new String[]{}, \"<init>\", className, il, cp);\n\n        il.append(InstructionFactory.createLoad(Type.OBJECT, 0)); // Load \"this\"\n        il.append(InstructionFactory.createInvoke(\"java.lang.Object\", \"<init>\",\n                Type.VOID, Type.NO_ARGS, Constants.INVOKESPECIAL));\n        il.append(InstructionFactory.createReturn(Type.VOID));\n\n        mg.setMaxStack();\n        mg.setMaxLocals();\n        cg.addMethod(mg.getMethod());\n        il.dispose();\n\n        File classFile = new File(outputDir, className.replace('.', File.separatorChar) + \".class\");\n        Files.createDirectories(classFile.getParentFile().toPath()); // Ensure parent directories exist\n\n        cg.getJavaClass().dump(new FileOutputStream(classFile));\n    }\n\n\n    static Stream<Class<?>> classProvider() {\n        return Stream.of(\n                Object.class,\n                String.class,\n                Integer.class,\n                Comparable.class,\n                java.util.List.class,\n                java.util.ArrayList.class,\n                java.util.Map.class,\n                java.time.LocalDate.class,\n                java.util.stream.Stream.class,\n                java.util.function.Function.class,\n                tryLoadClass(INTERFACE_A_NAME), // Custom generated interface\n                tryLoadClass(INTERFACE_B_NAME), // Custom generated interface\n                tryLoadClass(CONCRETE_CLASS_NAME) // Custom generated class\n        ).filter(c -> c != null); // Filter out any classes that failed to load\n    }\n\n    private static Class<?> tryLoadClass(String className) {\n        try {\n            // Use the custom classloader for generated classes.\n            // For standard library classes, the parent classloader (context classloader) will handle it.\n            return generatedClassLoader.loadClass(className);\n        } catch (ClassNotFoundException e) {\n            System.err.println(\"Failed to load class: \" + className + \". Error: \" + e.getMessage());\n            return null;\n        }\n    }\n\n\n    @ParameterizedTest\n    @MethodSource(\"classProvider\")\n    void testTransitiveInterfacesRetrieval(Class<?> inputClass) throws ClassNotFoundException {\n        // Assert that the inputClass itself was loaded successfully (filtered nulls in classProvider already)\n        assertNotNull(inputClass, \"Input class should not be null after filtering\");\n\n        JavaClass javaClass = Repository.lookupClass(inputClass.getName());\n        assertNotNull(javaClass, \"JavaClass should not be null for \" + inputClass.getName());\n\n        JavaClass[] interfaces = Repository.getInterfaces(javaClass);\n        assertNotNull(interfaces, \"Interfaces array should not be null for \" + inputClass.getName());\n\n        // Verify specific conditions for cyclically dependent types\n        if (inputClass.getName().equals(CONCRETE_CLASS_NAME)) {\n            Set<String> interfaceNames = new HashSet<>();\n            for (JavaClass jc : interfaces) {\n                interfaceNames.add(jc.getClassName());\n            }\n            assertTrue(interfaceNames.contains(INTERFACE_A_NAME), \"ConcreteClass should implement InterfaceA\");\n            assertTrue(interfaceNames.contains(INTERFACE_B_NAME), \"ConcreteClass should implement InterfaceB transitively\");\n            assertTrue(interfaces.length >= 2, \"ConcreteClass should have at least InterfaceA and InterfaceB (actual: \" + interfaces.length + \")\");\n        } else if (inputClass.getName().equals(INTERFACE_A_NAME)) {\n            Set<String> interfaceNames = new HashSet<>();\n            for (JavaClass jc : interfaces) {\n                interfaceNames.add(jc.getClassName());\n            }\n            assertTrue(interfaceNames.contains(INTERFACE_B_NAME), \"InterfaceA should extend InterfaceB\");\n            assertTrue(interfaces.length >= 1, \"InterfaceA should have at least InterfaceB (actual: \" + interfaces.length + \")\");\n        } else if (inputClass.getName().equals(INTERFACE_B_NAME)) {\n            Set<String> interfaceNames = new HashSet<>();\n            for (JavaClass jc : interfaces) {\n                interfaceNames.add(jc.getClassName());\n            }\n            assertTrue(interfaceNames.contains(INTERFACE_A_NAME), \"InterfaceB should extend InterfaceA\");\n            assertTrue(interfaces.length >= 1, \"InterfaceB should have at least InterfaceA (actual: \" + interfaces.length + \")\");\n        }\n\n        // General assertion: if the input Class object reports interfaces, BCEL should find some.\n        // This provides basic coverage for standard library types.\n        if (inputClass.isInterface() || inputClass.getInterfaces().length > 0) {\n            // For Object.class, getInterfaces() is empty and it's not an interface.\n            // For other classes that genuinely implement or extend interfaces, this should hold.\n            assertTrue(interfaces.length > 0, \"BCEL interfaces array should not be empty for \" + inputClass.getName() + \" if it implements or extends interfaces.\");\n        }\n    }\n}",
+      "method_signature": "testGetAllInterfaces(java.lang.Class)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 50815,
+    "output_tokens": 10437,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 283,
+      "description": "Create a test case to validate that the bytecode analysis system correctly retrieves the complete interface hierarchy for various standard library types across multiple packages. Before executing the test, establish a controlled environment by generating three custom interface definitions that form a circular dependency chain, where the first interface extends the second, the second extends the first, and a concrete type implements the first interface, then compile these definitions into bytecode files within a temporary workspace to simulate complex inheritance scenarios that the system must navigate without entering infinite loops. Execute the validation across a comprehensive collection of fundamental types from the core language packages, time handling packages, utility collections, and stream processing packages, ensuring the system can query each type by its fully qualified name and successfully retrieve its complete interface ancestry without encountering missing references or null results. For each type variation provided through the test parameters, retrieve the corresponding bytecode representation from the system's class repository, invoke the interface hierarchy analysis capability, and verify that the system returns a valid collection of all implemented and inherited interfaces rather than an absent or incomplete result, confirming the analysis handles both simple types with no interfaces and complex types with deep inheritance trees equally well. Use JUnit 5 as the testing framework with parameterized test support to execute the same validation logic across all type variations, and employ AssertJ for fluent assertion syntax to verify the non-null condition of the interface collection returned by the analysis operation.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testGetAllInterfaces(java.lang.Class)",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.classfile.hierarchy",
+      "code": "package org.apache.bcel.classfile;\n\nimport org.apache.bcel.Repository;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.MethodSource;\n\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Arrays;\nimport java.util.Collections;\nimport java.util.HashSet;\nimport java.util.Set;\nimport java.util.stream.Stream;\nimport javax.tools.DiagnosticCollector;\nimport javax.tools.JavaCompiler;\nimport javax.tools.JavaFileObject;\nimport javax.tools.StandardJavaFileManager;\nimport javax.tools.ToolProvider;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\n/**\n * Test case to validate that the bytecode analysis system correctly retrieves the complete interface hierarchy for\n * various standard library types and custom interfaces, including scenarios with circular dependencies.\n */\npublic class hierarchy {\n\n    private static final String CUSTOM_PACKAGE = \"test.custom\";\n    @TempDir\n    static Path tempDir;\n\n    @BeforeAll\n    static void setup() throws IOException {\n        // Compile custom interfaces and class into a temporary directory\n        compileCustomInterfaces(tempDir);\n\n        // Add the temporary directory to BCEL's repository classpath\n        // This ensures that Repository.lookupClass can find our dynamically compiled classes.\n        Repository.addClassPath(tempDir.toAbsolutePath().toString());\n    }\n\n    /**\n     * Compiles custom Java source code into bytecode files within the specified output directory.\n     * These custom interfaces form a circular dependency chain for testing purposes.\n     *\n     * @param outputDir The directory where compiled .class files will be placed.\n     * @throws IOException If there is an error writing the source files.\n     * @throws RuntimeException If compilation fails.\n     */\n    private static void compileCustomInterfaces(Path outputDir) throws IOException {\n        String interfaceA = \"package \" + CUSTOM_PACKAGE + \"; public interface TestInterfaceA extends TestInterfaceB {}\";\n        String interfaceB = \"package \" + CUSTOM_PACKAGE + \"; public interface TestInterfaceB extends TestInterfaceC {}\";\n        String interfaceC = \"package \" + CUSTOM_PACKAGE + \"; public interface TestInterfaceC extends TestInterfaceA {}\";\n        String concreteClass = \"package \" + CUSTOM_PACKAGE + \"; public class ConcreteClass implements TestInterfaceA {}\";\n\n        Path packageDir = outputDir.resolve(CUSTOM_PACKAGE.replace('.', '/'));\n        Files.createDirectories(packageDir);\n\n        Path fileA = packageDir.resolve(\"TestInterfaceA.java\");\n        Path fileB = packageDir.resolve(\"TestInterfaceB.java\");\n        Path fileC = packageDir.resolve(\"TestInterfaceC.java\");\n        Path fileConcrete = packageDir.resolve(\"ConcreteClass.java\");\n\n        Files.writeString(fileA, interfaceA);\n        Files.writeString(fileB, interfaceB);\n        Files.writeString(fileC, interfaceC);\n        Files.writeString(fileConcrete, concreteClass);\n\n        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();\n        if (compiler == null) {\n            throw new IllegalStateException(\"No Java compiler found. Ensure you are running with a JDK.\");\n        }\n        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();\n        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);\n\n        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(\n                Arrays.asList(fileA, fileB, fileC, fileConcrete)\n        );\n\n        JavaCompiler.CompilationTask task = compiler.getTask(\n                null, // Use stderr for output\n                fileManager,\n                diagnostics,\n                Arrays.asList(\"-d\", outputDir.toAbsolutePath().toString()), // Output directory for compiled classes\n                null,\n                compilationUnits\n        );\n\n        if (!task.call()) {\n            fileManager.close();\n            throw new RuntimeException(\"Compilation failed: \" + diagnostics.getDiagnostics());\n        }\n        fileManager.close();\n    }\n\n    /**\n     * Provides a stream of class names for the parameterized test.\n     * Includes standard library types and the custom types defined for this test.\n     *\n     * @return A stream of fully qualified class names.\n     */\n    static Stream<String> classNamesProvider() {\n        return Stream.of(\n                \"java.lang.Object\",\n                \"java.lang.String\",\n                \"java.lang.Comparable\",\n                \"java.io.Serializable\",\n                \"java.util.List\",\n                \"java.util.ArrayList\",\n                \"java.util.Map\",\n                \"java.util.HashMap\",\n                \"java.time.temporal.Temporal\",\n                \"java.time.LocalDate\",\n                \"java.util.stream.Stream\",\n                \"java.util.function.Function\",\n                \"java.lang.Integer\", // Class with no direct interfaces\n                \"java.util.Collection\", // Interface extending another interface\n                CUSTOM_PACKAGE + \".ConcreteClass\", // Our custom concrete class\n                CUSTOM_PACKAGE + \".TestInterfaceA\", // Custom interface in circular dependency\n                CUSTOM_PACKAGE + \".TestInterfaceB\", // Custom interface in circular dependency\n                CUSTOM_PACKAGE + \".TestInterfaceC\"  // Custom interface in circular dependency\n        );\n    }\n\n    /**\n     * Validates that BCEL's bytecode analysis system correctly retrieves the complete interface hierarchy.\n     * This test uses a parameterized approach to cover various standard library types and custom types,\n     * including a complex circular interface inheritance scenario.\n     *\n     * @param className The fully qualified name of the class or interface to analyze.\n     * @throws ClassNotFoundException If the specified class cannot be found by BCEL's repository.\n     */\n    @ParameterizedTest\n    @MethodSource(\"classNamesProvider\")\n    void testCompleteInterfaceHierarchyRetrieval(String className) throws ClassNotFoundException {\n        JavaClass javaClass = Repository.lookupClass(className);\n\n        // Retrieve the complete interface hierarchy using our helper method.\n        Set<String> allInterfaces = getCompleteInterfaceHierarchy(javaClass);\n\n        // Verify that the collection of interfaces is not null, indicating a valid result.\n        assertThat(allInterfaces)\n                .as(\"Interface hierarchy for '%s' should not be null\", className)\n                .isNotNull();\n\n        // Perform specific assertions for known types and the custom circular dependencies.\n        if (className.equals(CUSTOM_PACKAGE + \".ConcreteClass\")) {\n            assertThat(allInterfaces)\n                    .as(\"ConcreteClass should implement all interfaces in the circular chain\", className)\n                    .containsExactlyInAnyOrder(\n                            CUSTOM_PACKAGE + \".TestInterfaceA\",\n                            CUSTOM_PACKAGE + \".TestInterfaceB\",\n                            CUSTOM_PACKAGE + \".TestInterfaceC\"\n                    );\n        } else if (className.startsWith(CUSTOM_PACKAGE + \".TestInterface\")) {\n            // For any of the custom interfaces in the cycle, the hierarchy should include all three.\n            assertThat(allInterfaces)\n                    .as(\"Custom interface '%s' should include all interfaces in the circular chain\", className)\n                    .containsExactlyInAnyOrder(\n                            CUSTOM_PACKAGE + \".TestInterfaceA\",\n                            CUSTOM_PACKAGE + \".TestInterfaceB\",\n                            CUSTOM_PACKAGE + \".TestInterfaceC\"\n                    );\n        } else if (className.equals(\"java.lang.Object\") || className.equals(\"java.lang.Integer\")) {\n            // Primitive wrappers and Object itself do not implement any interfaces directly or indirectly.\n            assertThat(allInterfaces)\n                    .as(\"'%s' should not have any interfaces in its hierarchy\", className)\n                    .isEmpty();\n        } else if (className.equals(\"java.util.Collection\")) {\n            // Collection extends Iterable\n            assertThat(allInterfaces)\n                    .as(\"Collection should include Iterable in its hierarchy\", className)\n                    .containsExactlyInAnyOrder(\"java.util.Collection\", \"java.lang.Iterable\");\n        } else if (className.equals(\"java.lang.String\")) {\n            // String implements Serializable, Comparable, CharSequence\n            assertThat(allInterfaces)\n                    .as(\"String should implement Serializable, Comparable, CharSequence\", className)\n                    .contains(\n                            \"java.io.Serializable\",\n                            \"java.lang.Comparable\",\n                            \"java.lang.CharSequence\"\n                    );\n        }\n        // Add more specific assertions for other types if needed, or rely on the non-null check for generality.\n    }\n\n    /**\n     * Recursively collects all interfaces implemented or extended by a given JavaClass,\n     * traversing both the class inheritance hierarchy and the interface inheritance hierarchy.\n     * This method handles cycles to prevent infinite recursion.\n     *\n     * @param javaClass The JavaClass object to analyze.\n     * @return A Set of fully qualified names of all unique interfaces in the hierarchy.\n     */\n    private Set<String> getCompleteInterfaceHierarchy(JavaClass javaClass) {\n        Set<String> collectedInterfaces = new HashSet<>();\n        Set<String> visited = new HashSet<>(); // Tracks visited classes/interfaces to prevent cycles\n\n        collectInterfacesRecursive(javaClass, collectedInterfaces, visited);\n        return collectedInterfaces;\n    }\n\n    /**\n     * Helper method for recursive collection of interfaces.\n     *\n     * @param currentClass      The current JavaClass (could be a class or an interface) being processed.\n     * @param collectedInterfaces The set to accumulate all unique interface names.\n     * @param visited           A set to keep track of fully qualified names of classes/interfaces already processed\n     *                          to prevent infinite loops in cyclic hierarchies.\n     */\n    private void collectInterfacesRecursive(JavaClass currentClass, Set<String> collectedInterfaces, Set<String> visited) {\n        if (currentClass == null || !visited.add(currentClass.getClassName())) {\n            // If currentClass is null or already visited, stop recursion.\n            return;\n        }\n\n        // Add interfaces directly implemented by the current class or extended by the current interface\n        String[] directInterfaces = currentClass.getInterfaceNames();\n        for (String interfaceName : directInterfaces) {\n            if (collectedInterfaces.add(interfaceName)) { // Add if not already present in the result set\n                try {\n                    JavaClass interfaceClass = Repository.lookupClass(interfaceName);\n                    collectInterfacesRecursive(interfaceClass, collectedInterfaces, visited); // Recurse for super-interfaces\n                } catch (ClassNotFoundException e) {\n                    System.err.println(\"Warning: Could not find interface '\" + interfaceName + \"' for class '\" + currentClass.getClassName() + \"'. This might indicate a classpath issue or a malformed class file.\");\n                }\n            }\n        }\n\n        // If the current JavaClass itself is an interface, add its name to the collected set.\n        if (currentClass.isInterface()) {\n            collectedInterfaces.add(currentClass.getClassName());\n        }\n\n        // Also traverse the superclass hierarchy, as a class inherits interfaces from its superclasses.\n        try {\n            JavaClass superClass = currentClass.getSuperClass();\n            if (superClass != null) {\n                // Do not add superclass name to collectedInterfaces, only its implemented interfaces.\n                // We pass currentClass's visited set to ensure consistent cycle detection across class and interface hierarchies.\n                collectInterfacesRecursive(superClass, collectedInterfaces, visited);\n            }\n        } catch (ClassNotFoundException e) {\n            System.err.println(\"Warning: Could not find superclass for '\" + currentClass.getClassName() + \"'. This might indicate a classpath issue.\");\n        }\n    }\n}",
+      "method_signature": "testGetAllInterfaces(java.lang.Class)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 18100,
+    "output_tokens": 7960,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 285,
+      "description": "Define a test class containing six static fields: `CLASS_NAME` of type `String`, `CLASSES_JAVA_LANG` of type `Class<?>[]`, `CLASSES_JAVA_TIME` of type `Class<?>[]`, `CLASSES_JAVA_UTIL` of type `Class<?>[]`, `CLASSES_JAVA_UTIL_STREAM` of type `Class<?>[]`, all declared as `private static final`, and a static field `tempDir` of type `Path` annotated with `@TempDir`. Implement a static setup method annotated with `@BeforeAll` that invokes three private helper methods in sequence: first invoke `createInterfaceA()`, which constructs a `ClassGen` instance by passing arguments `\"InterfaceA\"`, `\"java.lang.Object\"`, `\"InterfaceA.java\"`, the bitwise OR of `Const.ACC_PUBLIC`, `Const.ACC_INTERFACE`, and `Const.ACC_ABSTRACT`, and a `String[]` array containing the single element `\"InterfaceB\"`, then invoke `getJavaClass()` on the `ClassGen` instance, chain `dump()` with the result of calling `tempDir.resolve(\"InterfaceA.class\").toString()`, thereby writing the class file to the temporary directory; second invoke `createInterfaceB()`, which similarly constructs a `ClassGen` instance with arguments `\"InterfaceB\"`, `\"java.lang.Object\"`, `\"InterfaceB.java\"`, the same access flags, and a `String[]` array containing `\"InterfaceA\"`, then invoke `getJavaClass()` and `dump()` with `tempDir.resolve(\"InterfaceB.class\").toString()`; third invoke `createTargetClass()`, which constructs a `ClassGen` instance with arguments `CLASS_NAME`, `\"java.lang.Object\"`, `\"VulnerableClass.java\"`, `Const.ACC_PUBLIC`, and a `String[]` array containing `\"InterfaceA\"`, then create an `InstructionList` instance assigned to `il`, create a `MethodGen` instance assigned to `constructor` by passing `Const.ACC_PUBLIC`, `Type.VOID`, `Type.NO_ARGS`, an empty `String[]` array, `\"<init>\"`, `CLASS_NAME`, `il`, and the result of invoking `getConstantPool()` on the `ClassGen` instance, create an `InstructionFactory` instance assigned to `factory` by passing the `ClassGen` instance, invoke `il.append()` with the result of calling `InstructionFactory.createLoad(Type.OBJECT, 0)`, invoke `il.append()` with the result of calling `factory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL)`, invoke `il.append()` with the result of calling `InstructionFactory.createReturn(Type.VOID)`, invoke `constructor.setMaxStack()`, invoke `constructor.setMaxLocals()`, invoke `cg.addMethod()` with the result of calling `constructor.getMethod()`, invoke `il.dispose()`, then invoke `getJavaClass()` on the `ClassGen` instance and chain `dump()` with `tempDir.resolve(CLASS_NAME + \".class\").toString()`. Write a test method annotated with `@Test` and declared to throw `ClassNotFoundException` that constructs a `String` variable `classPath` by concatenating `tempDir.toString()`, the result of `System.getProperty(\"path.separator\")`, and the result of `System.getProperty(\"java.class.path\")`, then invoke `Repository.setRepository()` with the result of calling `SyntheticRepository.getInstance(new ClassPath(classPath))`, and finally invoke `assertThrows(ClassCircularityError.class, ...)` with a lambda expression that calls `Repository.lookupClass(CLASS_NAME).findField(\"nonExistentField\", Type.INT)`, verifying that a `ClassCircularityError` is thrown when attempting to find a field in a class whose interface hierarchy contains a circular dependency. The test uses class-level annotation `@Test`, method-level annotation `@Test`, JUnit 5 Assertions via `assertThrows`, and no mocking libraries.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomInterface1()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.ClassCircularityTest",
+      "code": "package org.apache.bcel.util;\n\nimport org.apache.bcel.Const;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.ConstantPoolGen;\nimport org.apache.bcel.generic.InstructionFactory;\nimport org.apache.bcel.generic.InstructionList;\nimport org.apache.bcel.generic.MethodGen;\nimport org.apache.bcel.generic.Type;\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.io.TempDir;\n\nimport java.io.IOException;\nimport java.lang.ClassNotFoundException;\nimport java.nio.file.Path;\nimport java.util.ArrayList;\nimport java.util.stream.Stream;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\npublic class ClassCircularityTest {\n\n    private static final String CLASS_NAME = \"VulnerableClass\";\n    private static final Class<?>[] CLASSES_JAVA_LANG = {\n        Object.class,\n        String.class,\n        Integer.class\n    };\n    private static final Class<?>[] CLASSES_JAVA_TIME = {\n        java.time.Instant.class,\n        java.time.LocalDate.class,\n        java.time.LocalDateTime.class\n    };\n    private static final Class<?>[] CLASSES_JAVA_UTIL = {\n        java.util.List.class,\n        java.util.Map.class,\n        ArrayList.class\n    };\n    private static final Class<?>[] CLASSES_JAVA_UTIL_STREAM = {\n        Stream.class\n    };\n\n    @TempDir\n    static Path tempDir;\n\n    @BeforeAll\n    static void setup() throws IOException {\n        createInterfaceA();\n        createInterfaceB();\n        createTargetClass();\n    }\n\n    private static void createInterfaceA() throws IOException {\n        ClassGen cg = new ClassGen(\"InterfaceA\", \"java.lang.Object\", \"InterfaceA.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT,\n                new String[]{\"InterfaceB\"});\n        cg.getJavaClass().dump(tempDir.resolve(\"InterfaceA.class\").toString());\n    }\n\n    private static void createInterfaceB() throws IOException {\n        ClassGen cg = new ClassGen(\"InterfaceB\", \"java.lang.Object\", \"InterfaceB.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT,\n                new String[]{\"InterfaceA\"});\n        cg.getJavaClass().dump(tempDir.resolve(\"InterfaceB.class\").toString());\n    }\n\n    private static void createTargetClass() throws IOException {\n        ClassGen cg = new ClassGen(CLASS_NAME, \"java.lang.Object\", \"VulnerableClass.java\",\n                Const.ACC_PUBLIC, new String[]{\"InterfaceA\"});\n\n        InstructionList il = new InstructionList();\n        ConstantPoolGen cp = cg.getConstantPool();\n\n        MethodGen constructor = new MethodGen(Const.ACC_PUBLIC, Type.VOID, Type.NO_ARGS,\n                new String[]{}, \"<init>\", CLASS_NAME, il, cp);\n\n        InstructionFactory factory = new InstructionFactory(cg);\n\n        il.append(InstructionFactory.createLoad(Type.OBJECT, 0));\n        il.append(factory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));\n        il.append(InstructionFactory.createReturn(Type.VOID));\n\n        constructor.setMaxStack();\n        constructor.setMaxLocals();\n        cg.addMethod(constructor.getMethod());\n        il.dispose();\n\n        cg.getJavaClass().dump(tempDir.resolve(CLASS_NAME + \".class\").toString());\n    }\n\n    @Test\n    void testClassCircularityError() throws ClassNotFoundException {\n        String classPath = tempDir.toString() + System.getProperty(\"path.separator\") + System.getProperty(\"java.class.path\");\n        Repository.setRepository(SyntheticRepository.getInstance(new ClassPath(classPath)));\n\n        assertThrows(ClassCircularityError.class, () ->\n            Repository.lookupClass(CLASS_NAME).findField(\"nonExistentField\", Type.INT)\n        );\n    }\n}",
+      "method_signature": "testFindFieldCustomInterface1()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6377,
+    "output_tokens": 4711,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 290,
+      "description": "Define a test method that validates the behavior of the JavaClass field lookup mechanism when encountering circular interface inheritance hierarchies. Create three private helper methods: one that generates bytecode for a class extending a specified superclass, another that generates bytecode for an interface extending a specified parent interface, and a third that wraps both to serialize the generated JavaClass to the temporary directory. Within the test method, invoke the class-generating helper to produce bytecode for a class named \"CyclicClassA\" extending \"CyclicClassB\", then invoke the interface-generating helper to produce bytecode for an interface named \"CyclicClassB\" extending \"CyclicClassA\", and finally invoke the class-generating helper again to produce bytecode for a test class named \"CyclicTestClass\" extending \"CyclicClassA\". Parse each bytecode array into a JavaClass instance using a ClassParser initialized with a ByteArrayInputStream wrapping the respective byte array and the corresponding class file name string. Retrieve the singleton SyntheticRepository instance, then store all three parsed JavaClass instances into this repository and set it as the active global repository. Within a try-finally block, assert that invoking the findField method on the test class JavaClass instance with a non-existent field name string and an integer type descriptor throws a ClassCircularityError, confirming that the circular dependency is detected during field resolution. In the finally block, remove all three JavaClass instances from the repository to restore the original state. The test uses JUnit 5 for assertions.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomClass()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.classfile.ClassCircularityTest",
+      "code": "package org.apache.bcel.classfile;\n\nimport org.apache.bcel.Constants;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.Type;\nimport org.apache.bcel.util.SyntheticRepository;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.nio.file.Paths;\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class ClassCircularityTest {\n\n    private static final String TEMP_DIR = \"/home/bmcginn/.gemini/tmp/be8c1469e50f4e3f8a9e942e7f2cbce4234c27ae2e578d02d7870d977aba4b6f\";\n\n    /**\n     * Generates bytecode for a class extending a specified superclass.\n     *\n     * @param className      The name of the class to generate.\n     * @param superclassName The name of the superclass.\n     * @return The bytecode array for the generated class.\n     */\n    private byte[] generateClassBytecode(String className, String superclassName) {\n        // ClassGen(String class_name, String super_class_name, String file_name, int access_flags, String[] interfaces)\n        ClassGen cg = new ClassGen(className, superclassName, \"<generated>\", Constants.ACC_PUBLIC, new String[0]);\n        return cg.getJavaClass().getBytes();\n    }\n\n    /**\n     * Generates bytecode for an interface extending a specified parent interface.\n     *\n     * @param interfaceName      The name of the interface to generate.\n     * @param parentInterfaceName The name of the parent interface.\n     * @return The bytecode array for the generated interface.\n     */\n    private byte[] generateInterfaceBytecode(String interfaceName, String parentInterfaceName) {\n        // Interfaces implicitly extend java.lang.Object and are abstract.\n        ClassGen cg = new ClassGen(interfaceName, \"java.lang.Object\", \"<generated>\", Constants.ACC_PUBLIC | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT, new String[]{parentInterfaceName});\n        return cg.getJavaClass().getBytes();\n    }\n\n    /**\n     * Serializes the generated JavaClass bytecode to a temporary directory.\n     * This method writes the bytecode to a file but does not parse it back.\n     * The parsing step will use a ByteArrayInputStream directly from the bytecode array.\n     *\n     * @param className The name of the class to serialize.\n     * @param bytecode  The bytecode array to write.\n     * @throws IOException If an I/O error occurs.\n     */\n    private void serializeJavaClassToTempDir(String className, byte[] bytecode) throws IOException {\n        Path tempDir = Paths.get(TEMP_DIR);\n        Files.createDirectories(tempDir); // Ensure the temporary directory exists\n        Path tempFile = tempDir.resolve(className + \".class\");\n        Files.write(tempFile, bytecode);\n    }\n\n    @Test\n    public void testCircularInterfaceInheritanceFieldLookup() throws IOException {\n        final String classA = \"CyclicClassA\";\n        final String classB = \"CyclicClassB\"; // This will be defined as an interface\n        final String testClass = \"CyclicTestClass\";\n        final String nonExistentFieldName = \"nonExistentField\";\n\n        // Generate bytecode for CyclicClassA extending CyclicClassB\n        byte[] bytecodeA = generateClassBytecode(classA, classB);\n\n        // Generate bytecode for interface CyclicClassB extending CyclicClassA\n        byte[] bytecodeB = generateInterfaceBytecode(classB, classA);\n\n        // Generate bytecode for CyclicTestClass extending CyclicClassA\n        byte[] bytecodeTest = generateClassBytecode(testClass, classA);\n\n        // Serialize generated JavaClass files to the temporary directory as requested.\n        // The parsing will happen from the byte arrays directly.\n        serializeJavaClassToTempDir(classA, bytecodeA);\n        serializeJavaClassToTempDir(classB, bytecodeB);\n        serializeJavaClassToTempDir(testClass, bytecodeTest);\n\n        // Parse each bytecode array into a JavaClass instance using a ClassParser\n        JavaClass javaClassA = new ClassParser(new ByteArrayInputStream(bytecodeA), classA + \".class\").parse();\n        JavaClass javaClassB = new ClassParser(new ByteArrayInputStream(bytecodeB), classB + \".class\").parse();\n        JavaClass javaClassTest = new ClassParser(new ByteArrayInputStream(bytecodeTest), testClass + \".class\").parse();\n\n        // Retrieve the singleton SyntheticRepository instance\n        SyntheticRepository repository = SyntheticRepository.getInstance();\n\n        // Keep track of class names to remove them in the finally block\n        List<String> classNamesForCleanup = new ArrayList<>();\n        classNamesForCleanup.add(classA);\n        classNamesForCleanup.add(classB);\n        classNamesForCleanup.add(testClass);\n\n        try {\n            // Store all three parsed JavaClass instances into this repository\n            repository.storeClass(javaClassA);\n            repository.storeClass(javaClassB);\n            repository.storeClass(javaClassTest);\n\n            // Assert that invoking the findField method on the test class JavaClass instance\n            // with a non-existent field name string and an integer type descriptor\n            // throws a ClassCircularityError.\n            Assertions.assertThrows(ClassCircularityError.class, () -> {\n                // The circular dependency should be detected when the BCEL library tries to\n                // resolve the inheritance hierarchy during field lookup.\n                javaClassTest.findField(nonExistentFieldName, Type.INT);\n            }, \"Expected ClassCircularityError due to circular interface inheritance during field lookup.\");\n\n        } finally {\n            // Remove all three JavaClass instances from the repository to restore the original state.\n            for (String className : classNamesForCleanup) {\n                repository.removeClass(className);\n            }\n            // Clean up temporary files created during serialization\n            for (String className : classNamesForCleanup) {\n                Files.deleteIfExists(Paths.get(TEMP_DIR, className + \".class\"));\n            }\n        }\n    }\n}",
+      "method_signature": "testFindFieldCustomClass()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5807,
+    "output_tokens": 8152,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 308,
+      "description": "Define a test method that verifies `JavaClass.findField` throws `ClassCircularityError` when encountering cyclic class inheritance by first invoking a private method that constructs a `ClassGen` instance with arguments String literal `\"CyclicClassA\"` as class name, String literal `\"CyclicClassB\"` as superclass name, concatenation `\"CyclicClassA\" + \".java\"` as source file, bitwise OR of `Const.ACC_PUBLIC`, `Const.ACC_INTERFACE`, and `Const.ACC_ABSTRACT` as access flags, and a new String array containing single element `\"InterfaceB\"` as interfaces, then invoke `getJavaClass()` on the `ClassGen` instance, chain `dump()` with a `ByteArrayOutputStream` instance, and finally invoke `toByteArray()` on the stream to produce a byte array assigned to `classABytes`. Next, invoke another private method that constructs a `ClassGen` with String literal `\"CyclicClassB\"` as class name, String literal `\"java.lang.Object\"` as superclass, concatenation `\"CyclicClassB\" + \".java\"` as source file, the same bitwise OR access flags, and a String array containing `\"CyclicClassA\"`, following the same `getJavaClass().dump(baos).toByteArray()` pattern to assign the result to `classBBytes`. Then invoke the first private method again with arguments `\"CyclicTestClass\"` and `\"CyclicClassA\"` (this time creating a class, not interface, so using `Const.ACC_PUBLIC` and an empty String array), producing `testClassBytes`. Instantiate a `ClassParser` by passing a new `ByteArrayInputStream` constructed with `classABytes` and String literal `\"CyclicClassA.class\"`, then immediately invoke `parse()` on the parser and assign the resulting `JavaClass` to `interfaceA`. Repeat this pattern: create a `ClassParser` with new `ByteArrayInputStream(classBBytes)` and `\"CyclicClassB.class\"`, invoke `parse()`, assign to `interfaceB`, then create a `ClassParser` with new `ByteArrayInputStream(testClassBytes)` and `\"CyclicTestClass.class\"`, invoke `parse()`, assign to `testClass`. Invoke `SyntheticRepository.getInstance()` and assign the returned `SyntheticRepository` to `repo`. Open a try block, then within it invoke `storeClass` on `repo` passing `interfaceA`, invoke `storeClass` again passing `interfaceB`, invoke `storeClass` a third time passing `testClass`, invoke `Repository.setRepository` passing `repo`, and then invoke `assertThrows` with `ClassCircularityError.class` as the expected exception type and a lambda expression that invokes `findField` on `testClass` with String literal `\"nonExistentField\"` and `Type.INT` as arguments. In the finally block, invoke `removeClass` on `repo` passing `interfaceA`, invoke `removeClass` passing `interfaceB`, and invoke `removeClass` passing `testClass`. The test uses JUnit 5 Assertions with method-level annotation `@Test` and no class-level annotations.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomClass()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.classfile.JavaClassCircularityErrorTest",
+      "code": "package org.apache.bcel.classfile;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\nimport java.lang.ClassCircularityError;\n\nimport org.apache.bcel.Const;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.Type;\nimport org.apache.bcel.util.MemorySensitiveRepository;\nimport org.apache.bcel.util.Repository;\nimport org.apache.bcel.util.SyntheticRepository;\n\npublic class JavaClassCircularityErrorTest {\n\n    /**\n     * Helper method to construct ClassGen, dump it, and return its byte array representation.\n     */\n    private byte[] createClassBytes(String className, String superClassName, String sourceFileName, int accessFlags, String[] interfaces) throws IOException {\n        ClassGen cg = new ClassGen(className, superClassName, sourceFileName, accessFlags, interfaces);\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\n        cg.getJavaClass().dump(baos);\n        return baos.toByteArray();\n    }\n\n    @Test\n    void testFindFieldThrowsClassCircularityError() throws IOException {\n        byte[] classABytes = null;\n        byte[] classBBytes = null;\n        byte[] testClassBytes = null;\n        JavaClass interfaceA = null;\n        JavaClass interfaceB = null;\n        JavaClass testClass = null;\n        SyntheticRepository repo = null;\n\n        try {\n            // 1. Construct CyclicClassA (interface extending InterfaceB, with CyclicClassB as superclass)\n            classABytes = createClassBytes(\"CyclicClassA\", \"CyclicClassB\", \"CyclicClassA.java\",\n                    Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT, new String[]{\"InterfaceB\"});\n\n            // 2. Construct CyclicClassB (interface extending CyclicClassA)\n            classBBytes = createClassBytes(\"CyclicClassB\", \"java.lang.Object\", \"CyclicClassB.java\",\n                    Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT, new String[]{\"CyclicClassA\"});\n\n            // 3. Construct CyclicTestClass (class extending CyclicClassA)\n            testClassBytes = createClassBytes(\"CyclicTestClass\", \"CyclicClassA\", \"CyclicTestClass.java\",\n                    Const.ACC_PUBLIC, new String[]{});\n\n            // Parse JavaClass instances from byte arrays\n            interfaceA = new ClassParser(new ByteArrayInputStream(classABytes), \"CyclicClassA.class\").parse();\n            interfaceB = new ClassParser(new ByteArrayInputStream(classBBytes), \"CyclicClassB.class\").parse();\n            testClass = new ClassParser(new ByteArrayInputStream(testClassBytes), \"CyclicTestClass.class\").parse();\n\n            // Set up SyntheticRepository and store generated classes\n            repo = SyntheticRepository.getInstance();\n            repo.storeClass(interfaceA);\n            repo.storeClass(interfaceB);\n            repo.storeClass(testClass);\n            Repository.setRepository(repo); // Set the custom repository for resolution\n\n            // Verify ClassCircularityError is thrown when resolving hierarchy\n            assertThrows(ClassCircularityError.class, () -> {\n                testClass.findField(\"nonExistentField\", Type.INT);\n            });\n\n        } finally {\n            // Clean up: remove classes from the repository and reset to default\n            if (repo != null) {\n                if (interfaceA != null) {\n                    repo.removeClass(interfaceA);\n                }\n                if (interfaceB != null) {\n                    repo.removeClass(interfaceB);\n                }\n                if (testClass != null) {\n                    repo.removeClass(testClass);\n                }\n                // Reset to MemorySensitiveRepository to avoid affecting other tests\n                Repository.setRepository(new MemorySensitiveRepository());\n            }\n        }\n    }\n}",
+      "method_signature": "testFindFieldCustomClass()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6165,
+    "output_tokens": 5170,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 317,
+      "description": "Define a test class containing a static final String field `CLASS_NAME`, three static final `Class<?>[]` fields named `CLASSES_JAVA_LANG`, `CLASSES_JAVA_TIME`, `CLASSES_JAVA_UTIL`, and `CLASSES_JAVA_UTIL_STREAM`, and a static `Path` field `tempDir` annotated with `@TempDir`. Implement a static setup method annotated with `@BeforeAll` that throws `Exception`, within which define a private static method that instantiates a `ClassGen` with arguments `\"InterfaceA\"`, `\"java.lang.Object\"`, `\"InterfaceA.java\"`, the bitwise OR of `Const.ACC_PUBLIC`, `Const.ACC_INTERFACE`, and `Const.ACC_ABSTRACT`, and a new `String[]` containing `\"InterfaceB\"`, assign this to variable `cg`, then invoke `getJavaClass()` on `cg`, chain `dump` with the result of calling `tempDir.resolve(\"InterfaceA.class\").toString()`, and invoke this private method first; define a second private static method that instantiates a `ClassGen` with arguments `\"InterfaceB\"`, `\"java.lang.Object\"`, `\"InterfaceB.java\"`, the bitwise OR of `Const.ACC_PUBLIC`, `Const.ACC_INTERFACE`, and `Const.ACC_ABSTRACT`, and a new `String[]` containing `\"InterfaceA\"`, assign this to variable `cg`, then invoke `getJavaClass()` on `cg`, chain `dump` with the result of calling `tempDir.resolve(\"InterfaceB.class\").toString()`, and invoke this private method second; define a third private static method that instantiates a `ClassGen` with arguments `CLASS_NAME`, `\"java.lang.Object\"`, `\"VulnerableClass.java\"`, `Const.ACC_PUBLIC`, and a new `String[]` containing `\"InterfaceA\"`, assign this to variable `cg`, then instantiate an `InstructionList` with no arguments and assign to `il`, instantiate a `MethodGen` with arguments `Const.ACC_PUBLIC`, `Type.VOID`, `Type.NO_ARGS`, a new empty `String[]`, `\"<init>\"`, `CLASS_NAME`, `il`, and the result of calling `cg.getConstantPool()`, assign to `constructor`, instantiate an `InstructionFactory` with argument `cg` and assign to `factory`, invoke `InstructionFactory.createLoad(Type.OBJECT, 0)` and pass the result to `il.append`, invoke `factory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL)` and pass the result to `il.append`, invoke `InstructionFactory.createReturn(Type.VOID)` and pass the result to `il.append`, invoke `constructor.setMaxStack()`, invoke `constructor.setMaxLocals()`, invoke `cg.addMethod(constructor.getMethod())`, invoke `il.dispose()`, invoke `getJavaClass()` on `cg`, chain `dump` with the result of calling `tempDir.resolve(CLASS_NAME + \".class\").toString()`, and invoke this private method third. Write a test method annotated with `@ParameterizedTest`, `@MethodSource(\"getClassesJavaLang\")`, `@MethodSource(\"getClassesJavaTime\")`, `@MethodSource(\"getClassesJavaUtil\")`, and `@MethodSource(\"getClassesJavaUtilStream\")` that accepts a single parameter `clazz` of type `Class<?>` and throws `ClassNotFoundException`, within which invoke `clazz.getName()` to obtain the class name, pass this String to `Repository.lookupClass`, invoke `getAllInterfaces()` on the returned `JavaClass`, and pass the result to `assertNotNull`. Class-level annotations: none. Method-level annotations: `@ParameterizedTest`, `@MethodSource(\"getClassesJavaLang\")`, `@MethodSource(\"getClassesJavaTime\")`, `@MethodSource(\"getClassesJavaUtil\")`, `@MethodSource(\"getClassesJavaUtilStream\")`. Assertion library: JUnit 5 Assertions. Mocking library: none.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testGetAllInterfaces(java.lang.Class)",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.InterfaceResolutionTest",
+      "code": "package org.apache.bcel;\n\nimport org.apache.bcel.Const;\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.InstructionFactory;\nimport org.apache.bcel.generic.InstructionList;\nimport org.apache.bcel.generic.MethodGen;\nimport org.apache.bcel.generic.Type;\n\nimport org.junit.jupiter.api.BeforeAll;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.MethodSource;\n\nimport java.io.IOException;\nimport java.nio.file.Path;\nimport java.util.stream.Stream;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class InterfaceResolutionTest {\n\n    private static final String CLASS_NAME = \"VulnerableClass\";\n    private static final Class<?>[] CLASSES_JAVA_LANG = {\n            Object.class, String.class, Integer.class\n    };\n    private static final Class<?>[] CLASSES_JAVA_TIME = {\n            java.time.LocalDate.class, java.time.LocalTime.class, java.time.LocalDateTime.class\n    };\n    private static final Class<?>[] CLASSES_JAVA_UTIL = {\n            java.util.List.class, java.util.ArrayList.class, java.util.Map.class\n    };\n    private static final Class<?>[] CLASSES_JAVA_UTIL_STREAM = {\n            Stream.class\n    };\n\n    @TempDir\n    static Path tempDir;\n\n    @BeforeAll\n    static void setup() throws Exception {\n        generateInterfaceA();\n        generateInterfaceB();\n        generateVulnerableClass();\n    }\n\n    private static void generateInterfaceA() throws IOException {\n        ClassGen cg = new ClassGen(\"InterfaceA\", \"java.lang.Object\", \"InterfaceA.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT, new String[]{\"InterfaceB\"});\n        cg.getJavaClass().dump(tempDir.resolve(\"InterfaceA.class\").toString());\n    }\n\n    private static void generateInterfaceB() throws IOException {\n        ClassGen cg = new ClassGen(\"InterfaceB\", \"java.lang.Object\", \"InterfaceB.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT, new String[]{\"InterfaceA\"});\n        cg.getJavaClass().dump(tempDir.resolve(\"InterfaceB.class\").toString());\n    }\n\n    private static void generateVulnerableClass() throws IOException {\n        ClassGen cg = new ClassGen(CLASS_NAME, \"java.lang.Object\", \"VulnerableClass.java\",\n                Const.ACC_PUBLIC, new String[]{\"InterfaceA\"});\n\n        InstructionList il = new InstructionList();\n        MethodGen constructor = new MethodGen(Const.ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[0],\n                \"<init>\", CLASS_NAME, il, cg.getConstantPool());\n\n        InstructionFactory factory = new InstructionFactory(cg);\n\n        il.append(factory.createLoad(Type.OBJECT, 0));\n        il.append(factory.createInvoke(\"java.lang.Object\", \"<init>\", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));\n        il.append(factory.createReturn(Type.VOID));\n\n        constructor.setMaxStack();\n        constructor.setMaxLocals();\n        cg.addMethod(constructor.getMethod());\n        il.dispose();\n\n        cg.getJavaClass().dump(tempDir.resolve(CLASS_NAME + \".class\").toString());\n    }\n\n    static Stream<Class<?>> getClassesJavaLang() {\n        return Stream.of(CLASSES_JAVA_LANG);\n    }\n\n    static Stream<Class<?>> getClassesJavaTime() {\n        return Stream.of(CLASSES_JAVA_TIME);\n    }\n\n    static Stream<Class<?>> getClassesJavaUtil() {\n        return Stream.of(CLASSES_JAVA_UTIL);\n    }\n\n    static Stream<Class<?>> getClassesJavaUtilStream() {\n        return Stream.of(CLASSES_JAVA_UTIL_STREAM);\n    }\n\n    @ParameterizedTest\n    @MethodSource(\"getClassesJavaLang\")\n    @MethodSource(\"getClassesJavaTime\")\n    @MethodSource(\"getClassesJavaUtil\")\n    @MethodSource(\"getClassesJavaUtilStream\")\n    void testInterfaceResolution(Class<?> clazz) throws ClassNotFoundException {\n        JavaClass javaClass = Repository.lookupClass(clazz.getName());\n        assertNotNull(javaClass.getAllInterfaces());\n    }\n}",
+      "method_signature": "testGetAllInterfaces(java.lang.Class)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6381,
+    "output_tokens": 5499,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 319,
+      "description": "Define a test method that verifies the JavaClass field lookup mechanism correctly detects circular interface inheritance by throwing a ClassCircularityError when searching for a non-existent field in a class hierarchy containing cyclic interface dependencies. Create helper methods that generate bytecode for two interfaces where the first interface extends the second and the second extends the first, forming a cycle, and a third helper that generates a class implementing the first interface, establishing the cyclic dependency chain. Within the test method, invoke the first helper to produce bytecode for an interface that extends a second interface, then invoke the second helper to produce bytecode for that second interface which extends the first, and invoke the third helper to generate bytecode for a class that implements the first interface. Parse each bytecode array using a ClassParser initialized with a ByteArrayInputStream wrapping the respective byte array and the corresponding class name string, invoking the parse method to obtain JavaClass instances for both interfaces and the implementing class. Retrieve the singleton SyntheticRepository instance and store all three JavaClass objects into the repository by calling storeClass for each, then configure the global Repository to use this SyntheticRepository instance. Assert that invoking the findField method on the test class JavaClass instance with a field name string and an integer type throws a ClassCircularityError, confirming the cyclic interface hierarchy is detected during field resolution. In a finally block, remove all three JavaClass instances from the repository by calling removeClass for each to restore the repository state. This test uses JUnit 5 for assertions.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomInterface2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.ClassCircularityErrorFieldLookupTest",
+      "code": "package org.apache.bcel.util;\n\nimport org.apache.bcel.classfile.ClassParser;\nimport org.apache.bcel.classfile.JavaClass;\nimport org.apache.bcel.generic.*;\nimport org.apache.bcel.Constants;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.IOException;\n\npublic class ClassCircularityErrorFieldLookupTest {\n\n    private static final String INTERFACE_I1_NAME = \"test.I1\";\n    private static final String INTERFACE_I2_NAME = \"test.I2\";\n    private static final String CLASS_C1_NAME = \"test.C1\";\n\n    /**\n     * Generates bytecode for an interface I1 that extends I2.\n     */\n    private byte[] createInterfaceI1() {\n        ClassGen cg = new ClassGen(INTERFACE_I1_NAME, \"java.lang.Object\",\n                \"<generated>\", Constants.ACC_PUBLIC | Constants.ACC_ABSTRACT | Constants.ACC_INTERFACE,\n                new String[]{INTERFACE_I2_NAME});\n        return cg.getJavaClass().getBytes();\n    }\n\n    /**\n     * Generates bytecode for an interface I2 that extends I1.\n     */\n    private byte[] createInterfaceI2() {\n        ClassGen cg = new ClassGen(INTERFACE_I2_NAME, \"java.lang.Object\",\n                \"<generated>\", Constants.ACC_PUBLIC | Constants.ACC_ABSTRACT | Constants.ACC_INTERFACE,\n                new String[]{INTERFACE_I1_NAME});\n        return cg.getJavaClass().getBytes();\n    }\n\n    /**\n     * Generates bytecode for a class C1 that implements I1.\n     */\n    private byte[] createClassC1() {\n        ClassGen cg = new ClassGen(CLASS_C1_NAME, \"java.lang.Object\",\n                \"<generated>\", Constants.ACC_PUBLIC,\n                new String[]{INTERFACE_I1_NAME});\n        ConstantPoolGen cp = cg.getConstantPool();\n\n        // Add a default constructor\n        InstructionList il = new InstructionList();\n        il.append(InstructionConstants.ALOAD_0);\n        il.append(new INVOKESPECIAL(cp.addMethodref(\"java.lang.Object\", \"<init>\", \"()V\")));\n        il.append(InstructionConstants.RETURN);\n\n        MethodGen mg = new MethodGen(Constants.ACC_PUBLIC, Type.VOID, Type.NO_ARGS,\n                new String[0], \"<init>\", CLASS_C1_NAME, il, cp);\n        cg.addMethod(mg.getMethod());\n\n        il.dispose();\n        return cg.getJavaClass().getBytes();\n    }\n\n\n    @Test\n    void testFieldLookupWithCircularInterfaceInheritanceThrowsClassCircularityError() throws IOException {\n        SyntheticRepository repo = SyntheticRepository.getInstance();\n        Repository originalRepository = Repository.getRepository(); // Store original to restore later\n\n        JavaClass i1 = null;\n        JavaClass i2 = null;\n        JavaClass c1 = null;\n\n        try {\n            // Generate bytecode for I1, I2, C1\n            byte[] i1Bytes = createInterfaceI1();\n            byte[] i2Bytes = createInterfaceI2();\n            byte[] c1Bytes = createClassC1();\n\n            // Parse bytecode to get JavaClass instances\n            i1 = new ClassParser(new ByteArrayInputStream(i1Bytes), INTERFACE_I1_NAME).parse();\n            i2 = new ClassParser(new ByteArrayInputStream(i2Bytes), INTERFACE_I2_NAME).parse();\n            c1 = new ClassParser(new ByteArrayInputStream(c1Bytes), CLASS_C1_NAME).parse();\n\n            // Store classes in the SyntheticRepository\n            repo.storeClass(i1);\n            repo.storeClass(i2);\n            repo.storeClass(c1);\n\n            // Configure global Repository to use this SyntheticRepository instance\n            Repository.setRepository(repo);\n\n            // Assert that invoking findField on C1 throws ClassCircularityError\n            Exception exception = assertThrows(ClassCircularityError.class, () -> {\n                // Search for a non-existent field to trigger hierarchy traversal\n                c1.findField(\"nonExistentField\", Type.INT);\n            });\n            \n            // The error message should indicate the circularity involving I1 or I2\n            String errorMessage = exception.getMessage();\n            assertTrue(errorMessage.contains(INTERFACE_I1_NAME) || errorMessage.contains(INTERFACE_I2_NAME),\n                    \"Error message should indicate the circularity involving \" + INTERFACE_I1_NAME + \" or \" + INTERFACE_I2_NAME + \", but was: \" + errorMessage);\n\n        } finally {\n            // Remove classes from the repository and restore original repository state\n            if (i1 != null) {\n                repo.removeClass(i1);\n            }\n            if (i2 != null) {\n                repo.removeClass(i2);\n            }\n            if (c1 != null) {\n                repo.removeClass(c1);\n            }\n            Repository.setRepository(originalRepository); // Restore the original repository\n        }\n    }\n}",
+      "method_signature": "testFindFieldCustomInterface2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5801,
+    "output_tokens": 4443,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 330,
+      "description": "Create a test case to validate that the system correctly detects and rejects circular inheritance structures when searching for properties within type definitions that reference each other in a loop. Construct three programmatic type definitions in memory where the first contract extends the second contract, the second contract extends the first contract (forming a circular dependency), and a concrete implementation adopts the first contract, then load these definitions into the system's type registry and designate it as the active type resolution context. Attempt to search for a non-existent property with numeric characteristics within the concrete implementation, which should trigger the system to traverse the circular contract hierarchy. Ensure the system recognizes this illegal circular relationship and signals a structural integrity violation rather than entering an infinite loop or producing an incorrect result. After the validation completes, remove all three type definitions from the registry to restore the system to a clean state. The test employs JUnit 5 as the testing framework and AssertJ for verifying that the expected structural integrity error occurs when the circular dependency is encountered during property resolution.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomInterface2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.analysis.CircularInheritancePropertyResolutionTest",
+      "code": "package org.apache.bcel.analysis;\n\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport static org.assertj.core.api.Assertions.assertThatExceptionOfType;\n\n/**\n * Test case for validating that the system correctly detects and rejects circular inheritance structures\n * when searching for properties within type definitions that reference each other in a loop.\n *\n * This test assumes the existence of the following classes and methods within the\n * {@code org.apache.bcel.analysis} package:\n * <ul>\n *     <li>{@code TypeDefinition}: Represents a programmatic type definition (e.g., class, interface).\n *         <ul>\n *             <li>Constructor: {@code TypeDefinition(String name)}</li>\n *             <li>Method: {@code void setSuperClass(TypeDefinition superClass)}</li>\n *             <li>Method: {@code void addInterface(TypeDefinition interfaceType)}</li>\n *             <li>Method: {@code String getName()}</li>\n *         </ul>\n *     </li>\n *     <li>{@code TypeRegistry}: Manages registered type definitions and provides a type resolution context.\n *         <ul>\n *             <li>Constructor: {@code TypeRegistry()}</li>\n *             <li>Static Method: {@code void setActiveRegistry(TypeRegistry registry)}</li>\n *             <li>Static Method: {@code TypeRegistry getActiveRegistry()}</li>\n *             <li>Static Method: {@code void clearActiveRegistry()}</li>\n *             <li>Method: {@code void registerType(TypeDefinition type)}</li>\n *             <li>Method: {@code void unregisterType(TypeDefinition type)}</li>\n *             <li>Method: {@code Object findProperty(String typeName, String propertyName, Class<?> expectedPropertyType)}:\n *                 This method is expected to traverse the type hierarchy and throw {@code CircularInheritanceException}\n *                 if a circular dependency is detected during traversal.</li>\n *         </ul>\n *     </li>\n *     <li>{@code CircularInheritanceException}: A specific runtime exception thrown when a circular inheritance\n *         is detected by the type resolution system.</li>\n * </ul>\n */\npublic class CircularInheritancePropertyResolutionTest {\n\n    private TypeRegistry registry;\n    private TypeDefinition contractA;\n    private TypeDefinition contractB;\n    private TypeDefinition concreteImpl;\n\n    @BeforeEach\n    void setUp() {\n        // Instantiate the assumed existing TypeRegistry\n        registry = new TypeRegistry();\n        // Designate it as the active type resolution context\n        TypeRegistry.setActiveRegistry(registry);\n\n        // Programmatically construct three type definitions in memory\n        contractA = new TypeDefinition(\"ContractA\");\n        contractB = new TypeDefinition(\"ContractB\");\n        concreteImpl = new TypeDefinition(\"ConcreteImpl\");\n\n        // The first contract extends the second contract\n        contractA.setSuperClass(contractB);\n        // The second contract extends the first contract (forming a circular dependency)\n        contractB.setSuperClass(contractA);\n        // A concrete implementation adopts the first contract\n        concreteImpl.addInterface(contractA);\n\n        // Load these definitions into the system's type registry\n        registry.registerType(contractA);\n        registry.registerType(contractB);\n        registry.registerType(concreteImpl);\n    }\n\n    @AfterEach\n    void tearDown() {\n        // Remove all three type definitions from the registry to restore the system to a clean state\n        registry.unregisterType(contractA);\n        registry.unregisterType(contractB);\n        registry.unregisterType(concreteImpl);\n        TypeRegistry.clearActiveRegistry(); // Clear the active registry context\n    }\n\n    @Test\n    void shouldDetectAndRejectCircularInheritanceDuringPropertySearch() {\n        String nonExistentPropertyName = \"nonExistentNumericProperty\";\n        String targetTypeName = concreteImpl.getName();\n\n        // Attempt to search for a non-existent property with numeric characteristics\n        // within the concrete implementation. This should trigger the system\n        // to traverse the circular contract hierarchy.\n        // We expect the system to recognize this illegal circular relationship\n        // and signal a structural integrity violation rather than entering an infinite loop.\n        assertThatExceptionOfType(CircularInheritanceException.class)\n            .isThrownBy(() -> TypeRegistry.getActiveRegistry().findProperty(targetTypeName, nonExistentPropertyName, Number.class))\n            .withMessageContaining(\"Circular inheritance detected involving\");\n    }\n}",
+      "method_signature": "testFindFieldCustomInterface2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5703,
+    "output_tokens": 6037,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 35,
+      "description": "Define a test method that validates the system class path's ability to locate and enumerate Java runtime resources by invoking the `getResources` method on the `SYSTEM_CLASS_PATH` constant with a resource path string representing a core Java class file, then immediately verify that the returned enumeration contains at least one element by asserting that `hasMoreElements` returns true, confirming the class path successfully resolves standard runtime resources using JUnit.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testGetResources()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.TestClassPathSystemResources",
+      "code": "package org.apache.bcel.util;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.util.Enumeration;\nimport org.junit.jupiter.api.Test;\n\npublic class TestClassPathSystemResources {\n\n    @Test\n    void testSystemClassPathCanLocateCoreJavaClassResource() {\n        // Define a resource path for a core Java class file, e.g., Object.class\n        // ClassPath.getResources expects a path like \"java/lang/Object.class\"\n        final String resourcePath = \"java/lang/Object.class\";\n\n        // Invoke getResources on the SYSTEM_CLASS_PATH constant\n        Enumeration<java.net.URL> resources = ClassPath.SYSTEM_CLASS_PATH.getResources(resourcePath);\n\n        // Verify that the returned enumeration contains at least one element\n        // This confirms the class path successfully resolves standard runtime resources.\n        assertTrue(resources.hasMoreElements(), \"SYSTEM_CLASS_PATH should find at least one resource for \" + resourcePath);\n    }\n}",
+      "method_signature": "testGetResources()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5,
+      "method_coverage": 0.0769,
+      "line_coverage": 0.1589,
+      "branch_coverage": 0.3182
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30040,
+    "output_tokens": 860,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 388,
+      "description": "Define a test method that verifies cyclic interface inheritance triggers a `ClassCircularityError` when searching for a non-existent field. Begin by invoking a private method that constructs a byte array representing an interface named `\"CyclicInterfaceA\"` extending `\"CyclicInterfaceB\"` by instantiating a `ClassGen` with arguments `\"CyclicInterfaceA\"`, `\"java.lang.Object\"`, `\"CyclicInterfaceA.java\"`, access flags `Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT`, and a single-element String array containing `\"CyclicInterfaceB\"`, then creating a `ByteArrayOutputStream`, calling `dump` on the `JavaClass` obtained from `getJavaClass()`, and returning the byte array via `toByteArray()`, assigning the result to `interfaceABytes`. Similarly, invoke the same private method to create an interface named `\"CyclicInterfaceB\"` extending `\"CyclicInterfaceA\"` using identical logic but swapping the names, assigning the result to `interfaceBBytes`. Next, invoke a private method that constructs a byte array representing a class named `\"CyclicTestClass\"` extending `\"java.lang.Object\"` and implementing `\"CyclicInterfaceA\"` by instantiating a `ClassGen` with arguments `\"CyclicTestClass\"`, `\"java.lang.Object\"`, `\"CyclicTestClass.java\"`, access flags `Const.ACC_PUBLIC`, and a single-element String array containing `\"CyclicInterfaceA\"`, then creating a `ByteArrayOutputStream`, calling `dump` on the `JavaClass` obtained from `getJavaClass()`, and returning the byte array via `toByteArray()`, assigning the result to `testClassBytes`. Parse `interfaceABytes` by instantiating a `ClassParser` with a new `ByteArrayInputStream` wrapping `interfaceABytes` and the filename `\"CyclicInterfaceA.class\"`, then invoke `parse()` to obtain a `JavaClass` and assign it to `interfaceA`. Parse `interfaceBBytes` by instantiating a `ClassParser` with a new `ByteArrayInputStream` wrapping `interfaceBBytes` and the filename `\"CyclicInterfaceB.class\"`, then invoke `parse()` to obtain a `JavaClass` and assign it to `interfaceB`. Parse `testClassBytes` by instantiating a `ClassParser` with a new `ByteArrayInputStream` wrapping `testClassBytes` and the filename `\"CyclicTestClass.class\"`, then invoke `parse()` to obtain a `JavaClass` and assign it to `testClass`. Retrieve the singleton `SyntheticRepository` instance by calling `SyntheticRepository.getInstance()` and assign it to `repo`. Enter a try block and invoke `storeClass` on `repo` with argument `interfaceA`, then invoke `storeClass` on `repo` with argument `interfaceB`, then invoke `storeClass` on `repo` with argument `testClass`, followed by calling `Repository.setRepository(repo)` to register the repository globally. Assert that invoking `findField` on `testClass` with arguments `\"nonExistentField\"` and `Type.INT` throws a `ClassCircularityError` using `assertThrows(ClassCircularityError.class, () -> testClass.findField(\"nonExistentField\", Type.INT))`. In the finally block, invoke `removeClass` on `repo` with argument `interfaceA`, then invoke `removeClass` on `repo` with argument `interfaceB`, and finally invoke `removeClass` on `repo` with argument `testClass` to clean up the repository state. The test uses method-level annotation `@Test`, assertion library JUnit 5 Assertions, and no mocking libraries.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+      "method_signature": "testFindFieldCustomInterface2()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.classfile.CyclicInterfaceInheritanceTest",
+      "code": "package org.apache.bcel.classfile;\n\nimport org.apache.bcel.Const;\nimport org.apache.bcel.Repository;\nimport org.apache.bcel.generic.ClassGen;\nimport org.apache.bcel.generic.Type;\nimport org.apache.bcel.util.SyntheticRepository;\nimport org.junit.jupiter.api.Test;\n\nimport java.io.ByteArrayInputStream;\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\npublic class CyclicInterfaceInheritanceTest {\n\n    /**\n     * Helper method to construct a byte array representing a class or interface.\n     *\n     * @param className The fully qualified name of the class or interface.\n     * @param superClassName The fully qualified name of the superclass. For interfaces, this should be \"java.lang.Object\".\n     * @param fileName The source file name, typically with a .java extension.\n     * @param accessFlags Access flags for the class/interface (e.g., Const.ACC_PUBLIC, Const.ACC_INTERFACE).\n     * @param interfaceNames An array of fully qualified interface names that this class/interface implements/extends.\n     * @return A byte array containing the bytecode of the generated class or interface.\n     * @throws IOException If an I/O error occurs during bytecode dumping.\n     */\n    private byte[] createClassByteArray(String className, String superClassName, String fileName, int accessFlags, String[] interfaceNames) throws IOException {\n        ClassGen cg = new ClassGen(className, superClassName, fileName, accessFlags, interfaceNames);\n        ByteArrayOutputStream bos = new ByteArrayOutputStream();\n        cg.getJavaClass().dump(bos);\n        return bos.toByteArray();\n    }\n\n    @Test\n    void testCyclicInterfaceInheritanceFindField() throws IOException, ClassFormatException {\n        // Construct byte arrays for CyclicInterfaceA and CyclicInterfaceB with cyclic inheritance\n        byte[] interfaceABytes = createClassByteArray(\n                \"CyclicInterfaceA\",\n                \"java.lang.Object\", // Interfaces implicitly extend Object\n                \"CyclicInterfaceA.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT,\n                new String[]{\"CyclicInterfaceB\"}\n        );\n\n        byte[] interfaceBBytes = createClassByteArray(\n                \"CyclicInterfaceB\",\n                \"java.lang.Object\", // Interfaces implicitly extend Object\n                \"CyclicInterfaceB.java\",\n                Const.ACC_PUBLIC | Const.ACC_INTERFACE | Const.ACC_ABSTRACT,\n                new String[]{\"CyclicInterfaceA\"}\n        );\n\n        // Construct byte array for CyclicTestClass implementing CyclicInterfaceA\n        byte[] testClassBytes = createClassByteArray(\n                \"CyclicTestClass\",\n                \"java.lang.Object\",\n                \"CyclicTestClass.java\",\n                Const.ACC_PUBLIC,\n                new String[]{\"CyclicInterfaceA\"}\n        );\n\n        // Parse byte arrays into JavaClass objects\n        JavaClass interfaceA = new ClassParser(new ByteArrayInputStream(interfaceABytes), \"CyclicInterfaceA.class\").parse();\n        JavaClass interfaceB = new ClassParser(new ByteArrayInputStream(interfaceBBytes), \"CyclicInterfaceB.class\").parse();\n        JavaClass testClass = new ClassParser(new ByteArrayInputStream(testClassBytes), \"CyclicTestClass.class\").parse();\n\n        // Retrieve the singleton SyntheticRepository instance\n        SyntheticRepository repo = SyntheticRepository.getInstance();\n\n        try {\n            // Store classes in the repository\n            repo.storeClass(interfaceA);\n            repo.storeClass(interfaceB);\n            repo.storeClass(testClass);\n\n            // Register the repository globally\n            Repository.setRepository(repo);\n\n            // Assert that invoking findField on testClass with cyclic inheritance throws ClassCircularityError\n            assertThrows(ClassCircularityError.class, () -> testClass.findField(\"nonExistentField\", Type.INT));\n        } finally {\n            // Clean up the repository by removing the stored classes\n            repo.removeClass(interfaceA);\n            repo.removeClass(interfaceB);\n            repo.removeClass(testClass);\n            // It's good practice to reset the repository if tests modify the global repository state,\n            // though SyntheticRepository.getInstance() always returns the same instance.\n            // For true isolation, a new repository instance would be created per test, but\n            // the description implies using the singleton.\n        }\n    }\n}",
+      "method_signature": "testFindFieldCustomInterface2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.9167,
+      "callable_precision": 0.9167,
+      "focal_recall": 0.875,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.4318,
+      "method_coverage": 0.5864,
+      "line_coverage": 0.574,
+      "branch_coverage": 0.697
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6266,
+    "output_tokens": 3967,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 42,
+      "description": "Define a test method annotated with `@Test` that invokes `getResources` on the static field `SYSTEM_CLASS_PATH` of type `org.apache.bcel.util.ClassPath`, passing the String literal `\"java/lang/String.class\"` as the argument, which returns an `Enumeration<java.net.URL>`, then immediately chain a call to `hasMoreElements()` on the returned enumeration and pass the boolean result to `assertTrue` to verify that the enumeration contains at least one element. The test uses JUnit 5 Assertions with the method-level annotation `@Test`.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testGetResources()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.ClassPathSystemClassPathTest",
+      "code": "package org.apache.bcel.util;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.net.URL;\nimport java.util.Enumeration;\n\nimport org.junit.jupiter.api.Test;\n\npublic class ClassPathSystemClassPathTest {\n\n    @Test\n    void testSystemClassPathGetResourcesStringClass() {\n        final Enumeration<URL> resources = ClassPath.SYSTEM_CLASS_PATH.getResources(\"java/lang/String.class\");\n        assertTrue(resources.hasMoreElements(), \"Expected at least one element in the enumeration for java/lang/String.class\");\n    }\n}",
+      "method_signature": "testGetResources()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 36027,
+    "output_tokens": 913,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 46,
+      "description": "Define a test method that validates the resource management behavior of the ClassPath utility by constructing a ClassPath instance within a try-with-resources block, passing the system classpath string obtained from the static getClassPath method to the constructor, then immediately assert that the constructed instance is not null to confirm successful initialization, allowing the try-with-resources mechanism to automatically invoke the close method upon block exit to verify proper resource cleanup without explicit teardown code, using a testing framework that supports standard Java exception handling for IOException.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testClose()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.ClassPathResourceManagementTest",
+      "code": "package org.apache.bcel.util;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.io.IOException;\n\npublic class ClassPathResourceManagementTest {\n\n    @Test\n    void testClassPathResourceManagement() throws IOException {\n        try (ClassPath classPath = new ClassPath(ClassPath.getClassPath())) {\n            assertNotNull(classPath, \"ClassPath instance should not be null after construction\");\n        }\n    }\n}",
+      "method_signature": "testClose()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29363,
+    "output_tokens": 893,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 47,
+      "description": "Create a test case to validate that the system's class resource locator can be properly initialized and released without resource leaks by configuring a new class resource locator using the system's current class search locations, verifying that the locator was successfully established and is ready for use, then allowing the locator to release any held resources automatically when no longer needed to ensure proper cleanup of system resources. The test should handle potential resource access failures gracefully and confirm the locator's availability before proceeding. Use JUnit 5 for the testing framework and verify the successful initialization using standard non-null assertions.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testClose()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.ClassResourceLocatorInitializationAndReleaseTest",
+      "code": "package org.apache.bcel.util;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertSame;\n\nimport java.io.IOException;\n\nimport org.apache.bcel.Repository;\nimport org.junit.jupiter.api.DisplayName;\nimport org.junit.jupiter.api.Test;\n\nclass ClassResourceLocatorInitializationAndReleaseTest {\n\n    @Test\n    @DisplayName(\"Tests that the class resource locator can be properly initialized and released without resource leaks.\")\n    void testClassResourceLocatorLifecycle() throws ClassNotFoundException, IOException {\n        // Save the original repository instance to restore it later, ensuring no side effects on other tests.\n        final org.apache.bcel.util.Repository originalRepository = Repository.getRepository();\n\n        try (ClassPath testClassPath = new ClassPath(ClassPath.SYSTEM_CLASS_PATH.toString())) {\n            // Configure a new class resource locator using the system's current class search locations.\n            // The ClassPath object (testClassPath) is designed to manage resources and is Closeable.\n            // When testClassPath is closed (automatically by try-with-resources), it will release its resources.\n            final SyntheticRepository newRepository = SyntheticRepository.getInstance(testClassPath);\n\n            // Set the newly created repository as the global one.\n            Repository.setRepository(newRepository);\n\n            // Verify that the locator was successfully established and is ready for use.\n            final org.apache.bcel.util.Repository currentRepository = Repository.getRepository();\n            assertNotNull(currentRepository, \"The repository should not be null after setting.\");\n            assertSame(newRepository, currentRepository, \"The current repository should be the newly set one.\");\n\n            // Verify functionality by attempting to load a common class.\n            // This implicitly confirms the locator's availability.\n            final String className = \"java.lang.Object\";\n            assertNotNull(currentRepository.loadClass(className), \"Should be able to load a common class like \" + className + \" via the new repository.\");\n\n            // The testClassPath will be automatically closed at the end of this try-with-resources block.\n            // This demonstrates the automatic release of resources held by the underlying ClassPath,\n            // fulfilling the requirement for proper cleanup. Potential resource access failures\n            // during ClassPath construction or class loading are propagated as exceptions,\n            // which JUnit handles as test failures, thus handling them gracefully in a testing context.\n\n        } finally {\n            // Restore the original repository instance to its state before the test.\n            Repository.setRepository(originalRepository);\n        }\n    }\n}",
+      "method_signature": "testClose()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.3333,
+      "callable_recall": 0.6667,
+      "callable_precision": 0.1818,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.5714,
+      "line_coverage": 0.6204,
+      "branch_coverage": 0.55
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 89395,
+    "output_tokens": 3573,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 50,
+      "description": "Create a test case to validate that the system's default class loading mechanism can successfully locate and retrieve standard platform resources that are known to exist in the runtime environment. Verify that when requesting information about a core system class resource, the system returns a collection of available resource locations, and confirm that this collection contains at least one valid entry, demonstrating that the resource discovery mechanism is functioning correctly and can access fundamental platform components. Use JUnit 5 for the testing framework and standard equality assertions to verify the presence of resource locations in the returned collection.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testGetResources()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.classloading.SystemResourceLoadingTest",
+      "code": "package org.apache.bcel.classloading;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.io.IOException;\nimport java.net.URL;\nimport java.util.Enumeration;\n\nimport org.junit.jupiter.api.Test;\n\npublic class SystemResourceLoadingTest {\n\n    @Test\n    public void testSystemClassLoaderFindsCoreClassResource() throws IOException {\n        // Get the ClassLoader for a core system class (e.g., String).\n        // This usually returns the bootstrap classloader or an application classloader,\n        // which should be capable of finding core system resources.\n        ClassLoader classLoader = String.class.getClassLoader();\n\n        // If String.class.getClassLoader() returns null (which can happen for bootstrap classloader),\n        // use the system class loader instead.\n        if (classLoader == null) {\n            classLoader = ClassLoader.getSystemClassLoader();\n        }\n        assertNotNull(classLoader, \"ClassLoader should not be null\");\n\n        // Request information about a known core system class resource.\n        // The path should be absolute within the classloader's search path.\n        // For java.lang.String, its class file would typically be \"java/lang/String.class\".\n        Enumeration<URL> resources = classLoader.getResources(\"java/lang/String.class\");\n\n        // Verify that the collection of available resource locations contains at least one entry.\n        assertNotNull(resources, \"Resources enumeration should not be null\");\n        assertTrue(resources.hasMoreElements(), \"System ClassLoader should find at least one resource for java/lang/String.class\");\n    }\n}",
+      "method_signature": "testGetResources()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.3333,
+      "callable_recall": 0.6667,
+      "callable_precision": 0.2857,
+      "focal_recall": 0.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30384,
+    "output_tokens": 2212,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 65,
+      "description": "Define a test method annotated with `@Test` that declares a thrown exception `java.io.IOException` in its signature, then use a try-with-resources statement to instantiate a `ClassPath` object by invoking the constructor `new ClassPath(ClassPath.getClassPath())` where `ClassPath.getClassPath()` is a static method call that returns a `String` representing the system class path, assigning the resulting instance to a variable named `cp` of type `org.apache.bcel.util.ClassPath`, and immediately within the try block invoke `assertNotNull(cp)` to verify that the `cp` instance is not null, allowing the try-with-resources construct to automatically close the `ClassPath` resource upon exiting the block. The test uses JUnit 5 Assertions with the method-level annotation `@Test`.",
+      "project_name": "commons-bcel",
+      "qualified_class_name": "org.apache.bcel.util.ClassPathTest",
+      "method_signature": "testClose()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.bcel.util.ClassPathTest1",
+      "code": "package org.apache.bcel.util;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.io.IOException;\n\nimport org.junit.jupiter.api.Test;\n\npublic class ClassPathTest1 {\n\n    @Test\n    public void testClassPathInstantiationWithSystemClassPath() throws IOException {\n        try (ClassPath cp = new ClassPath(ClassPath.getClassPath())) {\n            assertNotNull(cp);\n        }\n    }\n}",
+      "method_signature": "testClose()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29633,
+    "output_tokens": 824,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  }
+]

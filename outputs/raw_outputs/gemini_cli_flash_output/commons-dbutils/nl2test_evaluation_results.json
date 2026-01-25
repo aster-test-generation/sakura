@@ -1,0 +1,362 @@
+[
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 0,
+      "description": "Define a test method that validates the driver loading capability of the database utility component by invoking the static loadDriver method with a fully qualified driver class name string representing the H2 database driver, then assert that the method returns a boolean true value indicating successful driver registration, noting that the test may propagate generic exceptions during execution and uses a standard testing framework for assertions.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsDriverLoadingTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsDriverLoadingTest {\n\n    @Test\n    void testLoadDriverH2() throws Exception {\n        // Invoke the static loadDriver method with the H2 database driver class name\n        // and assert that it returns true, indicating successful driver registration.\n        final boolean driverLoaded = DbUtils.loadDriver(\"org.h2.Driver\");\n        Assertions.assertTrue(driverLoaded, \"H2 database driver should be loaded successfully\");\n    }\n}",
+      "method_signature": "testLoadDriverH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 18567,
+    "output_tokens": 980,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 1,
+      "description": "Define a test method that validates the dynamic loading and registration of a JDBC driver using a specific class loader, where you invoke the loadDriver method on the DbUtils component by passing the class loader obtained from the DbUtils class itself along with the fully qualified driver class name string for the H2 database driver, then assert that the method returns true to confirm successful driver loading and registration, noting that this test may throw a general exception and uses standard assertion capabilities.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsLoadDriverTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.lang.ClassLoader;\n\npublic class DbUtilsLoadDriverTest {\n\n    @Test\n    void testLoadDriverWithClassLoaderH2() throws Exception {\n        // Get the ClassLoader from DbUtils class\n        ClassLoader classLoader = DbUtils.class.getClassLoader();\n\n        // Fully qualified driver class name for H2 database driver\n        String driverClassName = \"org.h2.Driver\";\n\n        // Invoke the loadDriver method\n        boolean loaded = DbUtils.loadDriver(classLoader, driverClassName);\n\n        // Assert that the method returns true\n        assertTrue(loaded, \"H2 driver should be loaded successfully.\");\n    }\n}",
+      "method_signature": "testLoadDriverClassLoaderH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 42019,
+    "output_tokens": 1806,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 11,
+      "description": "Define a test method that validates the stack trace printing behavior of the DbUtils utility class when handling SQL exceptions by constructing a new SQLException instance and passing it to the printStackTrace method on DbUtils, which internally routes the exception's stack trace to the standard error stream through a PrintWriter, then verify that the operation completes without throwing exceptions and that the utility method processes the SQLException's chain of nested exceptions if present, noting that this test relies on the standard Java testing framework without additional assertion libraries since the validation is implicit in successful execution without errors.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsStackTraceTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport java.io.PrintWriter;\nimport java.io.StringWriter;\nimport java.sql.SQLException;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsStackTraceTest {\n\n    @Test\n    public void testPrintStackTraceWithSqlExceptionChain() {\n        // Create a nested SQLException chain\n        SQLException cause = new SQLException(\"Inner exception message\", \"SQLSTATE_INNER\", 1001);\n        SQLException mainException = new SQLException(\"Main exception message\", \"SQLSTATE_MAIN\", 2002, cause);\n\n        // Redirect System.err to capture output, though the test mainly validates no exceptions are thrown.\n        // This is primarily for demonstrating the output, not for assertion in this specific test as per description.\n        // For actual assertions on the output, a dedicated stream capture mechanism would be needed.\n        // The core requirement is that the method completes without errors.\n\n        // Call the printStackTrace method\n        DbUtils.printStackTrace(mainException);\n\n        // If no exceptions are thrown up to this point, the test passes.\n        // The description explicitly states \"validation is implicit in successful execution without errors.\"\n    }\n}",
+      "method_signature": "testPrintStackTraceSQLException()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.6667,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 28587,
+    "output_tokens": 921,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 12,
+      "description": "Create a test case to validate that the system can successfully locate and prepare a specific database connectivity component for use when provided with the appropriate resource location mechanism and component specification. Arrange a scenario where the system's own resource discovery mechanism is used to find the H2 database connectivity component by its designated identifier. Instruct the system to attempt loading this component using the provided discovery mechanism and component name, then verify that the operation completes successfully, confirming the component is ready for use within the system. Validate using JUnit 5 with standard boolean assertions to confirm the loading operation returned a successful result.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsLoadDriverTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsLoadDriverTest {\n\n    @Test\n    void testLoadH2DriverSuccessfully() {\n        // Arrange\n        // The H2 driver class name is org.h2.Driver, which is available in test scope via pom.xml\n        final String h2DriverClassName = \"org.h2.Driver\";\n\n        // Act\n        // Attempt to load the H2 driver using DbUtils's resource discovery mechanism\n        boolean loaded = DbUtils.loadDriver(h2DriverClassName);\n\n        // Assert\n        // Verify that the driver loading operation completed successfully\n        assertTrue(loaded, \"H2 driver should be loaded successfully by DbUtils.\");\n    }\n}",
+      "method_signature": "testLoadDriverClassLoaderH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.6667,
+      "callable_precision": 1.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 28620,
+    "output_tokens": 1631,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 5,
+      "description": "Create a test case to validate that the database utility system correctly handles and reports data access errors when they occur. Simulate a scenario where a data access error arises during database operations, then instruct the system to output diagnostic information about this error to the standard error stream so that operations staff can troubleshoot issues. Verify that the error reporting mechanism processes the error without itself failing, ensuring that diagnostic information reaches the appropriate monitoring channels. This test uses JUnit 5 as the testing framework and validates the system's ability to gracefully handle and report database errors through its built-in diagnostic capabilities.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.ErrorHandlingTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport static org.mockito.Mockito.doThrow;\nimport static org.mockito.Mockito.mock;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.PrintStream;\nimport java.sql.Connection;\nimport java.sql.SQLException;\n\nimport org.junit.jupiter.api.DisplayName;\nimport org.junit.jupiter.api.Test;\n\npublic class ErrorHandlingTest {\n\n    @Test\n    @DisplayName(\"Tests that the DbUtils system correctly handles and reports data access errors to stderr\")\n    void testDataAccessErrorHandlingAndReporting() throws SQLException {\n        // Setup: Redirect System.err to capture its output\n        ByteArrayOutputStream errContent = new ByteArrayOutputStream();\n        PrintStream originalErr = System.err;\n        System.setErr(new PrintStream(errContent));\n\n        Connection mockConnection = null;\n        try {\n            // Create a mock Connection that throws a SQLException when its close() method is called\n            mockConnection = mock(Connection.class);\n            doThrow(new SQLException(\"Simulated connection close error for diagnostic reporting\")).when(mockConnection).close();\n\n            // Call DbUtils.closeQuietly which is expected to catch the SQLException and print it to System.err\n            DbUtils.closeQuietly(mockConnection);\n\n            // Capture the output and verify that the diagnostic information was printed\n            String errorMessage = errContent.toString();\n\n            // Assert that the error message contains the specific SQLException message\n            assertTrue(errorMessage.contains(\"SQLException: Simulated connection close error for diagnostic reporting\"),\n                \"System.err output should contain the message of the simulated SQLException.\");\n\n            // Assert that the error message contains context from DbUtils.closeQuietly, indicating it was handled\n            assertTrue(errorMessage.contains(\"org.apache.commons.dbutils.DbUtils.closeQuietly\"),\n                \"System.err output should contain a stack trace element from DbUtils.closeQuietly, confirming handling.\");\n\n        } finally {\n            // Cleanup: Restore the original System.err to avoid interfering with other tests\n            System.setErr(originalErr);\n        }\n    }\n}",
+      "method_signature": "testPrintStackTraceSQLException()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.3333,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.5,
+      "callable_precision": 0.0667,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 5672,
+    "output_tokens": 2633,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 6,
+      "description": "Create a test case to validate that the system successfully recognizes and loads a supported data access driver when provided with its identification. Ensure the system can locate the H2 driver specification within its available resources and confirm the driver registration process completes successfully, returning an affirmative indication that the driver is now available for establishing connections to data sources. Verify using standard equality assertions with JUnit 5 and AssertJ, confirming the operation returns a successful outcome when the driver specification is properly recognized and registered within the system's driver registry.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsH2DriverTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\nimport java.sql.Driver;\nimport java.sql.DriverManager;\nimport java.sql.SQLException;\nimport java.util.Enumeration;\nimport org.junit.jupiter.api.Test;\n\nclass DbUtilsH2DriverTest {\n\n    @Test\n    void testLoadH2DriverSuccessfully() throws SQLException {\n        // Arrange\n        final String h2DriverClassName = \"org.h2.Driver\";\n        \n        // Ensure the driver is not already registered from previous tests if any, \n        // though each test run should ideally be isolated.\n        // This is a defensive measure to ensure deterministic behavior for this specific test.\n        final Enumeration<Driver> initialDrivers = DriverManager.getDrivers();\n        while (initialDrivers.hasMoreElements()) {\n            Driver driver = initialDrivers.nextElement();\n            if (driver.getClass().getName().equals(h2DriverClassName)) {\n                DriverManager.deregisterDriver(driver);\n            }\n        }\n\n        // Act\n        final boolean loaded = DbUtils.loadDriver(h2DriverClassName);\n\n        // Assert\n        assertThat(loaded)\n            .withFailMessage(\"Expected DbUtils.loadDriver() to return true for H2 driver\")\n            .isTrue();\n\n        // Verify that the H2 driver is indeed registered with DriverManager\n        boolean h2DriverFound = false;\n        final Enumeration<Driver> registeredDrivers = DriverManager.getDrivers();\n        while (registeredDrivers.hasMoreElements()) {\n            Driver driver = registeredDrivers.nextElement();\n            if (driver.getClass().getName().equals(h2DriverClassName)) {\n                h2DriverFound = true;\n                break;\n            }\n        }\n        assertThat(h2DriverFound)\n            .withFailMessage(\"Expected H2 driver to be found in DriverManager after loading\")\n            .isTrue();\n    }\n}",
+      "method_signature": "testLoadDriverH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 27306,
+    "output_tokens": 1779,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 7,
+      "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `org.apache.commons.dbutils.DbUtils` passing the String literal `\"org.h2.Driver\"` as the argument, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions and has no class-level annotations, no field declarations, no setup methods, and no teardown methods.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsLoadDriverTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class DbUtilsLoadDriverTest {\n\n    @Test\n    void testLoadDriver() throws Exception {\n        boolean driverLoaded = DbUtils.loadDriver(\"org.h2.Driver\");\n        assertTrue(driverLoaded);\n    }\n}",
+      "method_signature": "testLoadDriverH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 14370,
+    "output_tokens": 828,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 8,
+      "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `DbUtils` passing two arguments: first, obtain the `ClassLoader` by calling `getClassLoader()` on the class literal `DbUtils.class`, and second, pass the String literal `\"org.h2.Driver\"`, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions with method-level annotation `@Test` and declares exception `java.lang.Exception` in the throws clause.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsLoadDriverTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class DbUtilsLoadDriverTest {\n\n    @Test\n    void testLoadDriverReturnsTrueForH2Driver() throws Exception {\n        ClassLoader classLoader = DbUtils.class.getClassLoader();\n        String driverClassName = \"org.h2.Driver\";\n        boolean result = DbUtils.loadDriver(classLoader, driverClassName);\n        assertTrue(result, \"DbUtils.loadDriver should return true for a valid driver like H2.\");\n    }\n}",
+      "method_signature": "testLoadDriverClassLoaderH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 28659,
+    "output_tokens": 1189,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 9,
+      "description": "Define a test method annotated with `@Test` that begins by invoking the static method `printStackTrace` on the class `org.apache.commons.dbutils.DbUtils`, passing as its single argument a newly instantiated `java.sql.SQLException` created by calling its no-argument constructor `new SQLException()`, and note that this invocation produces no return value and performs its side effect of printing the stack trace to the standard error stream. The test uses JUnit 5 with the `@Test` annotation and relies on the Apache Commons DbUtils library for the `DbUtils` class.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsPrintStackTraceTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport java.sql.SQLException;\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsPrintStackTraceTest {\n\n    @Test\n    void testPrintStackTrace() {\n        // Instantiate a new SQLException with no arguments\n        SQLException sqlException = new SQLException();\n\n        // Invoke the static printStackTrace method, passing the SQLException\n        // Note: This method prints to System.err and has no return value to assert.\n        // The side effect (printing to stderr) is observed externally.\n        DbUtils.printStackTrace(sqlException);\n    }\n}",
+      "method_signature": "testPrintStackTraceSQLException()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 27372,
+    "output_tokens": 822,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  }
+]

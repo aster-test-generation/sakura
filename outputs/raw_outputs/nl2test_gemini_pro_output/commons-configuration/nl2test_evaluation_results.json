@@ -1,0 +1,635 @@
+[
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 43,
+            "description": "Define a test class that validates YAML configuration parsing behavior by establishing a temporary directory field for file storage, a string field containing YAML content with nested keys and list values, and a YAML Configuration instance field. In the setup phase, instantiate the YAML Configuration object and load the YAML content by reading from a file reader initialized with the YAML string. For the test method, retrieve the property value associated with the nested key path \"key5.example\" from the loaded configuration, storing the result as an object reference. Upon retrieval, assert that the returned property equals a list containing two empty string elements followed by a string value element, verifying that the configuration correctly parses YAML sequences with empty and non-empty string entries. This test uses JUnit 5 for the testing framework.",
+            "project_name": "commons-configuration",
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.configuration2.YamlConfigurationTest",
+            "code": "package org.apache.commons.configuration2;\n\nimport org.apache.commons.configuration2.YAMLConfiguration;\nimport org.apache.commons.configuration2.ex.ConfigurationException;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.io.TempDir;\n\nimport java.io.IOException;\nimport java.io.StringReader;\nimport java.nio.file.Path;\nimport java.util.Arrays;\n\npublic class YamlConfigurationTest {\n\n    @TempDir\n    private Path tempDir;\n\n    private final String yamlContent = \"key5:\\n  example:\\n    - \\\"\\\"\\n    - \\\"\\\"\\n    - \\\"value\\\"\\n\";\n\n    private YAMLConfiguration yamlConfiguration;\n\n    @BeforeEach\n    public void setUp() throws ConfigurationException, IOException {\n        yamlConfiguration = new YAMLConfiguration();\n        yamlConfiguration.read(new StringReader(yamlContent));\n    }\n\n    @Test\n    public void testGetProperty() {\n        Object retrievedProperty = yamlConfiguration.getProperty(\"key5.example\");\n        Assertions.assertEquals(Arrays.asList(\"\", \"\", \"value\"), retrievedProperty);\n    }\n}",
+            "method_signature": "testGetProperty()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.8871,
+            "line_coverage": 0.7956,
+            "branch_coverage": 0.9512
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "all_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 2,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 3,
+                    "get_method_details": 245,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 1,
+                    "get_method_details": 2,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 232403,
+        "output_tokens": 17970,
+        "llm_calls": 15
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 44,
+            "description": "Create a test case to validate that the configuration system correctly processes hierarchical settings containing multiple empty text entries followed by an actual value. Before executing the test, establish a temporary workspace and prepare the configuration system by loading a predefined settings document from a file source. Once the system has ingested the configuration, retrieve the setting located under the nested path designated as \"key5.example\" and capture the returned information. Verify that the system accurately preserves the structure of this setting as a sequence containing two empty text entries followed by the text \"value\", ensuring that the configuration parser maintains the exact order and presence of empty values rather than discarding or collapsing them. The test uses JUnit 5 for test execution and standard equality assertions to confirm the retrieved setting matches the expected sequence of values.",
+            "project_name": "commons-configuration",
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.configuration2.MultipleValuesTest",
+            "code": "package org.apache.commons.configuration2;\n\nimport org.apache.commons.io.FileUtils;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.apache.commons.configuration2.convert.LegacyListDelimiterHandler;\n\nimport java.io.File;\nimport java.io.FileReader;\nimport java.io.IOException;\nimport java.io.PrintWriter;\nimport java.io.Reader;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Arrays;\nimport java.util.List;\n\npublic class MultipleValuesTest {\n\n    private Path temporary_workspace;\n    private PropertiesConfiguration configuration_system;\n\n    @BeforeEach\n    public void setUp() throws IOException, org.apache.commons.configuration2.ex.ConfigurationException {\n        temporary_workspace = Files.createTempDirectory(\"test_workspace\");\n        File propertiesFile = temporary_workspace.resolve(\"config.properties\").toFile();\n        try (PrintWriter writer = new PrintWriter(propertiesFile)) {\n            writer.println(\"key5.example = ,,value\");\n        }\n\n        configuration_system = new PropertiesConfiguration();\n        configuration_system.setListDelimiterHandler(new LegacyListDelimiterHandler(','));\n        try (Reader reader = new FileReader(propertiesFile)) {\n            configuration_system.read(reader);\n        }\n    }\n\n    @AfterEach\n    public void tearDown() throws IOException {\n        FileUtils.deleteDirectory(temporary_workspace.toFile());\n    }\n\n    @Test\n    public void testGetListWithMultipleEmptyValues() {\n        List<Object> retrieved_setting = configuration_system.getList(\"key5.example\");\n        Assertions.assertIterableEquals(Arrays.asList(\"\", \"\", \"value\"), retrieved_setting);\n    }\n}",
+            "method_signature": "testGetListWithMultipleEmptyValues()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.6667,
+            "callable_precision": 0.6667,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.1667,
+            "method_coverage": 0.129,
+            "line_coverage": 0.0608,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "all_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "tp": 0,
+            "fn": 2,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 6,
+                    "query_class_db": 2,
+                    "search_reachable_methods_in_class": 3,
+                    "get_method_details": 6,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 2,
+                    "get_method_details": 4,
+                    "get_maven_dependencies": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "get_getters_and_setters": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_getters_and_setters",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 128880,
+        "output_tokens": 12567,
+        "llm_calls": 20
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 76,
+            "description": "Define a test class containing a public field `tempFolder` of type `java.io.File` annotated with `@TempDir`, a private final field `testYaml` of type `java.lang.String`, and a private field `yamlConfiguration` of type `org.apache.commons.configuration2.YAMLConfiguration`. In a setup method annotated with `@BeforeEach` that declares `throws Exception`, instantiate a new `YAMLConfiguration` object using its no-argument constructor and assign it to `yamlConfiguration`, then immediately invoke the `read` method on `yamlConfiguration` passing a newly constructed `FileReader` initialized with the `testYaml` string as its argument. Within the test method annotated with `@Test`, invoke `getProperty` on `yamlConfiguration` with the string literal `\"key5.example\"` as the argument and assign the returned `Object` to a local variable named `property`. Following this retrieval, assert equality by invoking `assertEquals` with two arguments: first, create a list by calling `Arrays.asList` with three string arguments in order\u2014an empty string `\"\"`, another empty string `\"\"`, and the string literal `\"value\"`\u2014and second, pass the `property` variable, thereby verifying that the retrieved property matches the expected list of three strings where the first two are empty and the third is `\"value\"`. The test uses JUnit 5 assertions and the `@TempDir` annotation from JUnit 5, with no teardown logic, no mocking libraries, and no additional class-level or method-level annotations beyond `@Test` on the test method and `@TempDir` on the field.",
+            "project_name": "commons-configuration",
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.configuration2.test.YAMLConfigurationTest",
+            "code": "package org.apache.commons.configuration2.test;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.io.File;\nimport java.io.FileReader;\nimport java.nio.file.Files;\nimport java.util.Arrays;\nimport java.util.List;\n\nimport org.apache.commons.configuration2.YAMLConfiguration;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.io.TempDir;\n\npublic class YAMLConfigurationTest {\n\n    @TempDir\n    public File tempFolder;\n\n    private final String testYaml = \"key5:\\n  example:\\n  - \\\"\\\"\\n  - \\\"\\\"\\n  - \\\"value\\\"\";\n\n    private YAMLConfiguration yamlConfiguration;\n\n    @BeforeEach\n    public void setUp() throws Exception {\n        File tempFile = File.createTempFile(\"test\", \".yaml\", tempFolder);\n        Files.write(tempFile.toPath(), testYaml.getBytes());\n\n        yamlConfiguration = new YAMLConfiguration();\n        yamlConfiguration.read(new FileReader(tempFile));\n    }\n\n    @Test\n    public void testGetList() {\n        List<Object> property = yamlConfiguration.getList(\"key5.example\");\n        List<String> expectedList = Arrays.asList(\"\", \"\", \"value\");\n        assertEquals(expectedList, property);\n    }\n}",
+            "method_signature": "testGetList()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.6667,
+            "callable_precision": 0.6667,
+            "focal_recall": 0.5,
+            "focal_precision": 0.5
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "all_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)"
+            ],
+            "tp": 1,
+            "fn": 1,
+            "localization_recall": 0.5
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 2,
+                    "call_composition_agent": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 4,
+                    "query_class_db": 1,
+                    "search_reachable_methods_in_class": 2,
+                    "get_method_details": 7,
+                    "finalize": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 2,
+                    "get_method_details": 4,
+                    "generate_test_code": 8,
+                    "compile_and_execute_test": 7,
+                    "modify_scenario_comment": 1,
+                    "get_maven_dependencies": 2,
+                    "get_getters_and_setters": 1,
+                    "extract_method_code": 1,
+                    "finalize": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "modify_scenario_comment",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_getters_and_setters",
+                        "extract_method_code",
+                        "generate_test_code",
+                        "finalize"
+                    ],
+                    [
+                        "get_maven_dependencies",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 236892,
+        "output_tokens": 21642,
+        "llm_calls": 35
+    }
+]

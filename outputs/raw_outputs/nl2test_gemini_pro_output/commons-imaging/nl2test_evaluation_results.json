@@ -1,0 +1,1652 @@
+[
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 120,
+            "description": "Define a parameterized test method that validates the default file extension property across all supported image format types by iterating through each enumeration constant in the ImageFormats enum, where for each format constant passed as a parameter, invoke the getDefaultExtension method to retrieve the associated file extension string, then immediately verify that the returned extension is not null to ensure every format provides a default extension value, and subsequently validate that the extension string is not empty to confirm it contains meaningful content, using the testing framework JUnit 5 with its parameterized test capabilities driven by an enum source.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.ImageFormatsTest1",
+            "code": "package org.apache.commons.imaging;\n\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.EnumSource;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class ImageFormatsTest1 {\n\n    @ParameterizedTest\n    @EnumSource(ImageFormats.class)\n    public void testDefaultExtension(ImageFormats imageFormat) {\n        String defaultExtension = imageFormat.getDefaultExtension();\n        assertNotNull(defaultExtension);\n        assertFalse(defaultExtension.isEmpty());\n    }\n}",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getDefaultExtension()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getDefaultExtension()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 1,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_maven_dependencies": 1,
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_maven_dependencies",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 33492,
+        "output_tokens": 4774,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 127,
+            "description": "Define a parameterized test method that accepts a single parameter of type `ImageFormats` and annotate it with `@ParameterizedTest` and `@EnumSource(ImageFormats.class)` to supply all enum constants of `ImageFormats` as test arguments. Within the method body, invoke `getDefaultExtension()` on the `imageFormats` parameter and immediately pass the returned `String` value to `assertNotNull` to verify the result is not null. Following this assertion, invoke `getDefaultExtension()` again on the same `imageFormats` parameter, chain the `isEmpty()` method on the returned `String`, and pass the boolean result to `assertFalse` to verify the default extension is not an empty string. The test uses JUnit 5 Assertions with method-level annotations `@ParameterizedTest` and `@EnumSource(ImageFormats.class)`.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.ImageFormatsTest1",
+            "code": "package org.apache.commons.imaging;\n\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.EnumSource;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class ImageFormatsTest1 {\n\n    @ParameterizedTest\n    @EnumSource(ImageFormats.class)\n    public void testDefaultExtension(ImageFormats imageFormats) {\n        String defaultExtension = imageFormats.getDefaultExtension();\n        assertNotNull(defaultExtension);\n\n        boolean isEmpty = defaultExtension.isEmpty();\n        assertFalse(isEmpty);\n    }\n}",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getDefaultExtension()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getDefaultExtension()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 1,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 38125,
+        "output_tokens": 6383,
+        "llm_calls": 10
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 134,
+            "description": "Create a test case to validate that every recognized image format type in the system maintains a properly defined default file extension for consistent file handling and format identification. Ensure the system handles all supported image format variations correctly by verifying each format type provides a valid extension designation. For each image format type recognized by the system, confirm that the format declares an associated default extension and verify this extension designation is not missing or empty, ensuring the system can reliably identify and process files of that format. After confirming each format type has a valid extension, validate that the extension value contains meaningful content rather than being blank, which would prevent proper file type recognition. Use JUnit 5 with standard equality and presence assertions to verify the extension configuration for each format type.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.ImageFormatsTest1",
+            "code": "package org.apache.commons.imaging;\n\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\npublic class ImageFormatsTest1 {\n\n    @Test\n    public void testDefaultExtensionIsNotNullAndNotBlankForAllFormats() {\n        for (ImageFormats imageFormat : ImageFormats.values()) {\n            String defaultExtension = imageFormat.getDefaultExtension();\n            Assertions.assertNotNull(defaultExtension, \"The default extension for \" + imageFormat.name() + \" should not be null.\");\n            // Pre-Java 11 equivalent of !isBlank()\n            Assertions.assertFalse(defaultExtension.trim().isEmpty(), \"The default extension for \" + imageFormat.name() + \" should not be blank.\");\n        }\n    }\n}",
+            "method_signature": "testDefaultExtensionIsNotNullAndNotBlankForAllFormats()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8,
+            "callable_precision": 0.5,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testDefaultExtension(org.apache.commons.imaging.ImageFormats)",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getDefaultExtension()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getDefaultExtension()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 4,
+                    "query_class_db": 1,
+                    "search_reachable_methods_in_class": 2,
+                    "get_method_details": 3,
+                    "get_inherited_library_classes": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_inherited_library_classes",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "modify_scenario_comment": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "modify_scenario_comment",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 61638,
+        "output_tokens": 8149,
+        "llm_calls": 15
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 131,
+            "description": "Define a parameterized test method that accepts each enumeration constant from the ImageFormats enumeration as input, iterating through all available image format types to validate their name properties. For each provided ImageFormats instance, invoke the getName method to retrieve the format's string identifier, then assert that the returned value is not null to confirm proper initialization of the enumeration constant. Following this, invoke isEmpty on the retrieved name string and assert that it returns false, thereby verifying that every image format enumeration constant maintains a non-empty name identifier. This test validates the completeness of metadata across all enumeration values without requiring any mocking or external dependencies, using JUnit 5 for parameterization and standard assertion methods.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.ImageFormatsTest1",
+            "code": "package org.apache.commons.imaging;\n\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.EnumSource;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nclass ImageFormatsTest1 {\n\n    @ParameterizedTest\n    @EnumSource(ImageFormats.class)\n    void testImageFormats(ImageFormats imageFormat) {\n        String formatName = imageFormat.getName();\n        assertNotNull(formatName);\n        assertFalse(formatName.isEmpty());\n    }\n}",
+            "method_signature": "testImageFormats(org.apache.commons.imaging.ImageFormats)"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getName()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getName()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 35560,
+        "output_tokens": 4730,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 133,
+            "description": "Define a test method annotated with `@ParameterizedTest` and `@EnumSource(ImageFormats.class)` that accepts a single parameter of type `ImageFormats` named `imageFormats`, which will be automatically populated with each constant from the `ImageFormats` enum during test execution. Within the method body, invoke `getName()` on the `imageFormats` parameter and immediately pass the returned `String` value to `assertNotNull`, verifying that the name is not null. Following this, invoke `getName()` again on the same `imageFormats` parameter, chain the `isEmpty()` method on the resulting `String`, and pass the boolean result to `assertFalse`, thereby confirming that the name is not an empty string. The test uses JUnit 5 Assertions for verification, specifically `assertNotNull` and `assertFalse`, and relies on the parameterized test mechanism provided by `@ParameterizedTest` with `@EnumSource` to iterate through all enum constants of `ImageFormats`.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.ImageFormatsTest1",
+            "code": "package org.apache.commons.imaging;\n\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.EnumSource;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class ImageFormatsTest1 {\n\n    @ParameterizedTest\n    @EnumSource(ImageFormats.class)\n    public void testGetName(ImageFormats imageFormats) {\n        String formatName = imageFormats.getName();\n        assertNotNull(formatName);\n        boolean nameIsEmpty = formatName.isEmpty();\n        assertFalse(nameIsEmpty);\n    }\n}",
+            "method_signature": "testGetName(org.apache.commons.imaging.ImageFormats)"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getName()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getName()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "search_reachable_methods_in_class": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "get_maven_dependencies": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 39877,
+        "output_tokens": 4861,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 135,
+            "description": "Create a test case to validate that every supported image format recognized by the system maintains a properly defined display name for user-facing identification purposes. Ensure the validation covers all available image format types by systematically examining each one to confirm its display name exists and contains meaningful content rather than being missing or empty. For each format variation, verify the system provides a non-empty textual representation that can be used for labeling, categorization, or presentation to end users. This comprehensive check ensures consistent naming conventions across all image format options supported by the platform, preventing any format from lacking proper identification. Use JUnit 5 for the testing framework with standard equality and boolean assertions to confirm each format's display name meets the required business criteria.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.ImageFormatsTest1",
+            "code": "package org.apache.commons.imaging;\n\nimport static org.junit.jupiter.api.Assertions.assertFalse;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.EnumSource;\n\npublic class ImageFormatsTest1 {\n\n    @ParameterizedTest\n    @EnumSource(ImageFormats.class)\n    public void testFormatDisplayName(ImageFormats format) {\n        String displayName = format.getName();\n        assertNotNull(displayName);\n        assertFalse(displayName.isEmpty());\n    }\n}",
+            "method_signature": "testFormatDisplayName(org.apache.commons.imaging.ImageFormats)"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.ImageFormatsTest",
+            "method_signature": "testName(org.apache.commons.imaging.ImageFormats)",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getName()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.ImageFormats.getName()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 1,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 2,
+                    "search_reachable_methods_in_class": 1,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 35925,
+        "output_tokens": 4621,
+        "llm_calls": 11
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 146,
+            "description": "Create a test case to validate that the image processing system correctly handles and preserves international character encoding within embedded metadata, specifically verifying support for non-Latin scripts. Obtain a sample image file that contains embedded metadata with text in Mandarin Chinese characters from the available test resources, then process this image through the system's metadata extraction capabilities to retrieve the complete metadata structure. Once the metadata is extracted, access the embedded descriptive information and locate the specific metadata entry containing the Mandarin text. After identifying this entry, verify that the system has correctly preserved the international characters by comparing the extracted text against the expected Mandarin phrase meaning \"thank you\" when both are represented in their Unicode byte form, ensuring the encoding matches UTF-8 standards throughout the comparison. This validation confirms the system's ability to maintain character encoding integrity for international content embedded within image metadata. Use JUnit 5 for the testing framework and standard array equality assertions to verify the byte-level accuracy of the encoded text.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.examples.ImageMetadataEncodingTest",
+            "code": "package org.apache.commons.imaging.examples;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\n\nimport java.io.File;\nimport java.net.URL;\nimport java.nio.charset.StandardCharsets;\nimport java.util.List;\n\nimport org.apache.commons.imaging.Imaging;\nimport org.apache.commons.imaging.common.ImageMetadata;\nimport org.apache.commons.imaging.common.GenericImageMetadata;\n\npublic class ImageMetadataEncodingTest {\n\n    @Test\n    public void testInternationalCharacterEncoding() throws Exception {\n        // Step 0: Obtain a sample image file.\n        // Note: The path is a placeholder and will likely cause the test to fail.\n        URL resourceUrl = getClass().getResource(\"/images/image_with_mandarin_metadata.png\");\n        Assertions.assertNotNull(resourceUrl, \"Test image not found. Please provide a valid image with Mandarin metadata.\");\n        File sampleImageFile = new File(resourceUrl.getFile());\n\n        // Step 1: Define the expected Mandarin phrase.\n        String expectedMandarinPhrase = \"\u8c22\u8c22\";\n\n        // Step 2: Encode the expected phrase into UTF-8 bytes.\n        byte[] expectedUtf8Bytes = expectedMandarinPhrase.getBytes(StandardCharsets.UTF_8);\n\n        // Step 3: Process the image to extract metadata.\n        ImageMetadata extractedMetadata = Imaging.getMetadata(sampleImageFile);\n        Assertions.assertNotNull(extractedMetadata, \"Extracted metadata should not be null.\");\n\n        // Steps 4 & 5: Access descriptive information and locate the Mandarin text.\n        String extractedMandarinText = null;\n        if (extractedMetadata instanceof GenericImageMetadata) {\n            GenericImageMetadata genericMetadata = (GenericImageMetadata) extractedMetadata;\n            List<? extends ImageMetadata.ImageMetadataItem> items = genericMetadata.getItems();\n\n            // Assumption: Iterate through metadata items and find the first non-empty text value.\n            // A more robust test would look for a specific metadata tag.\n            for (ImageMetadata.ImageMetadataItem item : items) {\n                 if (item instanceof GenericImageMetadata.GenericImageMetadataItem) {\n                    String text = ((GenericImageMetadata.GenericImageMetadataItem) item).getText();\n                    if (text != null && !text.trim().isEmpty()) {\n                        extractedMandarinText = text;\n                        break;\n                    }\n                }\n            }\n        }\n        Assertions.assertNotNull(extractedMandarinText, \"Could not find any text in the image metadata.\");\n\n\n        // Step 6: Encode the extracted text into its UTF-8 byte representation.\n        byte[] extractedUtf8Bytes = extractedMandarinText.getBytes(StandardCharsets.UTF_8);\n\n        // Step 7: Verify the extracted UTF-8 bytes match the expected UTF-8 bytes.\n        Assertions.assertArrayEquals(expectedUtf8Bytes, extractedUtf8Bytes, \"The UTF-8 byte representation of the metadata text does not match the expected value.\");\n    }\n}",
+            "method_signature": "testInternationalCharacterEncoding()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 0.0,
+            "obj_creation_precision": 0.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 0.25,
+            "callable_recall": 0.6,
+            "callable_precision": 0.4,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.formats.jpeg.JpegImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata.getItems()"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.imaging.formats.jpeg.JpegImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata.getItems()"
+            ],
+            "tp": 0,
+            "fn": 2,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 3,
+                    "call_composition_agent": 3,
+                    "view_test_code": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "view_test_code",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 18,
+                    "query_class_db": 11,
+                    "get_method_details": 9,
+                    "finalize": 3
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ],
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 9,
+                    "get_class_constructors_and_factories": 2,
+                    "get_getters_and_setters": 1,
+                    "generate_test_code": 7,
+                    "compile_and_execute_test": 6,
+                    "finalize": 3,
+                    "get_maven_dependencies": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "finalize"
+                    ],
+                    [
+                        "get_maven_dependencies",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "get_maven_dependencies",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 361449,
+        "output_tokens": 35557,
+        "llm_calls": 54
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 149,
+            "description": "Define a test method that validates the JPEG image parser's ability to correctly decode and preserve non-ASCII character encodings within IPTC metadata by first creating a utility that resolves a test resource path to a File object for the specific JPEG image containing Photoshop metadata with Mandarin characters, then instantiate a JPEG Image Parser and invoke its metadata extraction capability on the resolved file to obtain JPEG Image Metadata. From the retrieved metadata, access the Photoshop metadata component and extract its collection of metadata items, then retrieve the fourth item from this collection which contains the Mandarin text. To verify correct encoding preservation, convert the expected Unicode string representation of the Mandarin characters to UTF-8 byte representation and assert that this byte array matches the byte array obtained by converting the text value from the retrieved metadata item to UTF-8, confirming that the parser maintains character encoding integrity throughout the parsing pipeline. The test uses JUnit for test execution and standard assertion methods for byte array comparison.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.JpegIptcTest",
+            "code": "package org.apache.commons.imaging.formats.jpeg.iptc;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.io.InputStream;\nimport java.util.List;\n\nimport org.apache.commons.imaging.common.GenericImageMetadata;\nimport org.apache.commons.imaging.common.ImageMetadata;\nimport org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;\nimport org.apache.commons.imaging.formats.jpeg.JpegImageParser;\nimport org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata;\nimport org.apache.commons.io.IOUtils;\nimport org.junit.jupiter.api.Test;\n\npublic class JpegIptcTest {\n\n    @Test\n    public void testPhotoshopIrb() throws Exception {\n        final InputStream resourceInputStream = JpegImageParser.class.getResourceAsStream(\n                \"photoshop/photoshop_irb.jpg\");\n        assertNotNull(resourceInputStream, \"Could not find resource\");\n        final byte[] jpegBytes = IOUtils.toByteArray(resourceInputStream);\n\n        final String expected_mandarin_string = \"\\u4e2d\\u6587\"; // \"\u4e2d\u6587\"\n\n        final JpegImageParser jpeg_image_parser = new JpegImageParser();\n\n        final ImageMetadata jpeg_image_metadata = jpeg_image_parser.getMetadata(jpegBytes, null);\n\n        final JpegImageMetadata jpegImageMetadata = (JpegImageMetadata) jpeg_image_metadata;\n        final JpegPhotoshopMetadata photoshop_metadata = jpegImageMetadata.getPhotoshop();\n\n        final List<? extends ImageMetadata.ImageMetadataItem> photoshop_metadata_items = photoshop_metadata.getItems();\n\n        final ImageMetadata.ImageMetadataItem mandarin_metadata_item = photoshop_metadata_items.get(3);\n\n        final String actual_mandarin_string = ((GenericImageMetadata.GenericImageMetadataItem) mandarin_metadata_item)\n                .getText();\n\n        final byte[] expected_utf8_bytes = expected_mandarin_string.getBytes(\"UTF-8\");\n\n        final byte[] actual_utf8_bytes = actual_mandarin_string.getBytes(\"UTF-8\");\n\n        assertArrayEquals(expected_utf8_bytes, actual_utf8_bytes);\n    }\n}",
+            "method_signature": "testPhotoshopIrb()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 0.5,
+            "callable_recall": 0.9,
+            "callable_precision": 0.75,
+            "focal_recall": 0.5,
+            "focal_precision": 0.3333
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.formats.jpeg.JpegImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata.getItems()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.formats.jpeg.JpegImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata.getItems()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 2,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 3,
+                    "call_composition_agent": 3,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 15,
+                    "query_class_db": 14,
+                    "get_method_details": 7,
+                    "finalize": 3,
+                    "search_reachable_methods_in_class": 3
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ],
+                    [
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 4,
+                    "get_method_details": 11,
+                    "get_class_fields": 1,
+                    "generate_test_code": 16,
+                    "compile_and_execute_test": 15,
+                    "finalize": 3,
+                    "get_maven_dependencies": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_class_fields",
+                        "get_class_constructors_and_factories",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 706206,
+        "output_tokens": 57547,
+        "llm_calls": 76
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 180,
+            "description": "Define a test method annotated with `@Test` that declares it throws `IOException` and `ImagingException`, then begin by obtaining a `File` reference by invoking `TestResources.resourceToFile` with the String argument `\"/images/jpeg/iptc/IMAGING-168/111083453-c07f1880-851e-11eb-8b61-2757f7d934bf.jpg\"` and assigning the result to variable `file`, where the helper logic constructs a `File` by first calling `resourceToURI` with the path argument and passing the resulting `URI` to the `File` constructor. Next, instantiate a `JpegImageParser` using its no-argument constructor and assign it to variable `parser`, then invoke `getMetadata` on `parser` passing `file` as the argument, cast the returned value to `JpegImageMetadata`, and assign it to variable `metadata`. Having obtained the metadata, invoke `getPhotoshop()` on `metadata` to retrieve the `JpegPhotoshopMetadata` and assign it to variable `photoshopMetadata`, then call `getItems()` on `photoshopMetadata`, cast the result to `List<GenericImageMetadataItem>` with a `@SuppressWarnings(\"unchecked\")` annotation on the variable declaration, and assign it to variable `items`. With the items list populated, invoke `get(3)` on `items` to retrieve the fourth element and assign it to variable `thanksInMandarin` of type `GenericImageMetadataItem`. Finally, assert that the byte arrays are equal by calling `assertArrayEquals` with the first argument being the byte array obtained by invoking `getBytes(StandardCharsets.UTF_8)` on the Unicode escape String literal `\"\\u8c22\\u8c22\"` and the second argument being the byte array obtained by first calling `getText()` on `thanksInMandarin` to retrieve its text value, then invoking `getBytes(StandardCharsets.UTF_8)` on that result. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcAddIptcBlockTest",
+            "code": "package org.apache.commons.imaging.formats.jpeg.iptc;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\n\nimport java.io.File;\nimport java.io.IOException;\nimport java.net.URISyntaxException;\nimport java.nio.charset.StandardCharsets;\nimport java.util.List;\n\nimport org.apache.commons.imaging.ImagingException;\nimport org.apache.commons.imaging.common.GenericImageMetadata.GenericImageMetadataItem;\nimport org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;\nimport org.apache.commons.imaging.formats.jpeg.JpegImageParser;\nimport org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata;\nimport org.junit.jupiter.api.Test;\n\npublic class IptcAddIptcBlockTest {\n\n    @Test\n    public void testAddIptcBlock() throws IOException, ImagingException, URISyntaxException {\n        final File file = new File(getClass().getResource(\"/images/jpeg/iptc/IMAGING-168/111083453-c07f1880-851e-11eb-8b61-2757f7d934bf.jpg\").toURI());\n        final JpegImageParser parser = new JpegImageParser();\n        final JpegImageMetadata metadata = (JpegImageMetadata) parser.getMetadata(file);\n        final JpegPhotoshopMetadata photoshopMetadata = metadata.getPhotoshop();\n        @SuppressWarnings(\"unchecked\")\n        final List<GenericImageMetadataItem> items = (List<GenericImageMetadataItem>) photoshopMetadata.getItems();\n        final GenericImageMetadataItem thanksInMandarin = items.get(3);\n        assertArrayEquals(\"\\u8c22\\u8c22\".getBytes(StandardCharsets.UTF_8), thanksInMandarin.getText().getBytes(StandardCharsets.UTF_8));\n    }\n}",
+            "method_signature": "testAddIptcBlock()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 0.5,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.9,
+            "callable_precision": 0.6923,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.formats.jpeg.iptc.IptcParserTest",
+            "method_signature": "testEncodingSupport()",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.formats.jpeg.JpegImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata.getItems()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.formats.jpeg.JpegImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.jpeg.JpegPhotoshopMetadata.getItems()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 2,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 6,
+                    "query_class_db": 2,
+                    "search_reachable_methods_in_class": 3,
+                    "get_method_details": 3,
+                    "get_inherited_library_classes": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "query_class_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "get_inherited_library_classes",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 1,
+                    "get_method_details": 3,
+                    "get_getters_and_setters": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_getters_and_setters",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 103624,
+        "output_tokens": 12041,
+        "llm_calls": 16
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 178,
+            "description": "Create a test case to validate the system's capability to extract embedded technical metadata from image files that include supplementary descriptive information stored in a specialized format, specifically focusing on verifying that the image processing system correctly retrieves and interprets description text embedded within the image's technical metadata structure. Begin by locating a sample image file from the system's test resources that contains embedded descriptive metadata, then configure the image processing system to analyze this file and extract its technical metadata. Once the system has parsed the image, verify that the embedded description text matches the expected value by confirming the presence of the specific author or creator name stored in the root metadata section. Additionally, confirm that the image's textual annotation section remains empty, as this particular file stores its descriptive information exclusively in the technical metadata format rather than in standard text annotations. Repeat the metadata extraction process to ensure consistency, then verify once more that the description text retrieved from the technical metadata structure matches the expected value, confirming the system reliably accesses embedded metadata regardless of how many times the image is processed. Use JUnit 5 as the testing framework and AssertJ for standard equality assertions to validate both the presence of the expected description text and the absence of textual annotations.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.examples.ImagingMetadataTest",
+            "code": "package org.apache.commons.imaging.examples;\n\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.io.File;\nimport java.net.URL;\n\nimport org.apache.commons.imaging.Imaging;\nimport org.apache.commons.imaging.common.GenericImageMetadata;\nimport org.apache.commons.imaging.common.ImageMetadata;\nimport org.apache.commons.imaging.formats.png.PngImageMetadata;\nimport org.junit.jupiter.api.Test;\n\npublic class ImagingMetadataTest {\n\n    @Test\n    public void testExtractsEmbeddedDescriptionFromTechnicalMetadata() throws Exception {\n        final String sampleImagePath = \"/org/apache/commons/imaging/common/1x1.png\";\n        final String expectedAuthorName = null; // This is for clarity based on the scenario\n\n        final URL resource = Imaging.class.getResource(sampleImagePath);\n        assertNotNull(resource, \"Test image not found: \" + sampleImagePath);\n        final File sampleImageFile = new File(resource.toURI());\n\n        final ImageMetadata extractedMetadata = Imaging.getMetadata(sampleImageFile);\n        assertNotNull(extractedMetadata);\n\n        assertTrue(extractedMetadata instanceof GenericImageMetadata);\n        final GenericImageMetadata genericMetadata = (GenericImageMetadata) extractedMetadata;\n        assertTrue(genericMetadata.getItems().stream().noneMatch(item -> item.toString().startsWith(\"Author:\")));\n\n        assertTrue(extractedMetadata instanceof PngImageMetadata);\n        final PngImageMetadata pngMetadata = (PngImageMetadata) extractedMetadata;\n        final ImageMetadata textualInfo = pngMetadata.getTextualInformation();\n        assertTrue(textualInfo == null || textualInfo.getItems().isEmpty());\n\n        final ImageMetadata reExtractedMetadata = Imaging.getMetadata(sampleImageFile);\n        assertNotNull(reExtractedMetadata);\n\n        assertTrue(reExtractedMetadata instanceof GenericImageMetadata);\n        final GenericImageMetadata reExtractedGenericMetadata = (GenericImageMetadata) reExtractedMetadata;\n        assertTrue(reExtractedGenericMetadata.getItems().stream().noneMatch(item -> item.toString().startsWith(\"Author:\")));\n    }\n}",
+            "method_signature": "testExtractsEmbeddedDescriptionFromTechnicalMetadata()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 0.5,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.3333,
+            "assertion_precision": 0.1111,
+            "callable_recall": 0.4211,
+            "callable_precision": 0.32,
+            "focal_recall": 0.25,
+            "focal_precision": 0.5
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.common.ImageMetadata.getItems()",
+                "org.apache.commons.imaging.formats.png.PngImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.tiff.TiffDirectory.getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+                "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.findDirectory(int)"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.imaging.common.ImageMetadata.getItems()",
+                "org.apache.commons.imaging.formats.png.PngImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.tiff.TiffDirectory.getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+                "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.findDirectory(int)"
+            ],
+            "tp": 0,
+            "fn": 4,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 3,
+                    "call_composition_agent": 3,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 6,
+                    "query_class_db": 6,
+                    "get_method_details": 8,
+                    "search_reachable_methods_in_class": 7,
+                    "get_inherited_library_classes": 1,
+                    "finalize": 3
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "query_class_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "get_method_details",
+                        "query_class_db",
+                        "get_inherited_library_classes",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "finalize"
+                    ],
+                    [
+                        "finalize"
+                    ],
+                    [
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_maven_dependencies": 3,
+                    "get_class_fields": 5,
+                    "get_getters_and_setters": 4,
+                    "get_method_details": 15,
+                    "generate_test_code": 7,
+                    "compile_and_execute_test": 6,
+                    "finalize": 3,
+                    "extract_method_code": 4,
+                    "get_class_constructors_and_factories": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_maven_dependencies",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_method_details",
+                        "extract_method_code",
+                        "get_class_fields",
+                        "extract_method_code",
+                        "get_method_details",
+                        "extract_method_code",
+                        "get_method_details",
+                        "extract_method_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "finalize"
+                    ],
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_class_constructors_and_factories",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 441513,
+        "output_tokens": 56092,
+        "llm_calls": 52
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 179,
+            "description": "Define a test method that verifies the PNG Image Parser correctly extracts EXIF metadata embedded within the 'eXIf' chunk of a PNG file by resolving the test image resource path from the classpath, instantiating a PNG Image Parser, and invoking its metadata extraction capability on the resolved file to obtain PNG Image Metadata. From the retrieved PNG metadata, extract the embedded EXIF metadata as TIFF Image Metadata, then locate the root directory within the TIFF structure and retrieve the image description field value, asserting that it matches the expected author string. To confirm that textual metadata is stored exclusively in the EXIF chunk rather than as separate PNG text chunks, invoke the metadata extraction method a second time on the same file to obtain a fresh PNG Image Metadata instance, retrieve its textual information collection, and verify that the collection is empty. Having confirmed the absence of text chunks, extract the EXIF metadata from this second metadata instance, navigate to the root directory, retrieve the image description field value again, and assert that it still matches the expected author string, thereby confirming that EXIF data persists correctly across multiple reads and that the parser correctly segregates EXIF from textual metadata. The test relies on JUnit 5 for assertions.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.formats.png.PngImageParserTest1",
+            "code": "package org.apache.commons.imaging.formats.png;\n\nimport org.apache.commons.imaging.common.ImageMetadata;\nimport org.apache.commons.imaging.formats.tiff.TiffDirectory;\nimport org.apache.commons.imaging.formats.tiff.TiffImageMetadata;\nimport org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;\nimport org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;\nimport org.junit.jupiter.api.Test;\n\nimport java.io.File;\nimport java.net.URL;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.imaging.bytesource.ByteSource;\n\npublic class PngImageParserTest1 {\n\n    @Test\n    public void testPngImageParser() throws Exception {\n        String expected_author_string = \"act\";\n        URL resourceUrl = getClass().getResource(\"images/png/IMAGING-339/exif.png\");\n        assertNotNull(resourceUrl, \"Test image not found\");\n        File test_image_path = new File(resourceUrl.toURI());\n\n        PngImageParser png_image_parser = new PngImageParser();\n\n        // First read\n        ImageMetadata imageMetadata = png_image_parser.getMetadata(ByteSource.file(test_image_path), null);\n        assertNotNull(imageMetadata);\n        assertTrue(imageMetadata instanceof PngImageMetadata);\n        PngImageMetadata png_image_metadata = (PngImageMetadata) imageMetadata;\n\n        TiffImageMetadata tiff_image_metadata = png_image_metadata.getExif();\n        assertNotNull(tiff_image_metadata);\n\n        TiffDirectory tiff_root_directory = tiff_image_metadata.findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT);\n        assertNotNull(tiff_root_directory);\n\n        Object image_description_value = tiff_root_directory.getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION);\n        assertEquals(expected_author_string, image_description_value);\n\n        // Second read and checks\n        ImageMetadata second_image_metadata = png_image_parser.getMetadata(ByteSource.file(test_image_path), null);\n        assertNotNull(second_image_metadata);\n        assertTrue(second_image_metadata instanceof PngImageMetadata);\n        PngImageMetadata second_png_image_metadata = (PngImageMetadata) second_image_metadata;\n\n        ImageMetadata textual_info_collection = second_png_image_metadata.getTextualInformation();\n        assertTrue(textual_info_collection.getItems().isEmpty());\n\n        TiffImageMetadata second_tiff_image_metadata = second_png_image_metadata.getExif();\n        assertNotNull(second_tiff_image_metadata);\n\n        TiffDirectory second_tiff_root_directory = second_tiff_image_metadata.findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT);\n        assertNotNull(second_tiff_root_directory);\n\n        Object second_image_description_value = second_tiff_root_directory.getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION);\n        assertEquals(expected_author_string, second_image_description_value);\n    }\n}",
+            "method_signature": "testPngImageParser()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 0.25,
+            "callable_recall": 0.8947,
+            "callable_precision": 0.5667,
+            "focal_recall": 0.75,
+            "focal_precision": 0.6
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.common.ImageMetadata.getItems()",
+                "org.apache.commons.imaging.formats.png.PngImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.tiff.TiffDirectory.getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+                "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.findDirectory(int)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.formats.png.PngImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.tiff.TiffDirectory.getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+                "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.findDirectory(int)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.imaging.common.ImageMetadata.getItems()"
+            ],
+            "tp": 3,
+            "fn": 1,
+            "localization_recall": 0.75
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 3,
+                    "call_composition_agent": 3,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 17,
+                    "query_class_db": 23,
+                    "get_method_details": 9,
+                    "search_reachable_methods_in_class": 3,
+                    "finalize": 3
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_class_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "get_method_details",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "query_class_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "finalize"
+                    ],
+                    [
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 10,
+                    "get_class_constructors_and_factories": 2,
+                    "get_maven_dependencies": 2,
+                    "generate_test_code": 9,
+                    "compile_and_execute_test": 9,
+                    "finalize": 3,
+                    "view_test_code": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "get_maven_dependencies",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "view_test_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 508763,
+        "output_tokens": 44248,
+        "llm_calls": 52
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 210,
+            "description": "Define a test method that declares a `throws` clause for `IOException` and `ImagingException`, then assign the String literal `\"/images/png/IMAGING-340/image-with-exif.png\"` to variable `input`, invoke `getResource(input)` on the class literal `PngReadTest.class` to obtain a `URL`, immediately chain `getFile()` on that result and assign the returned String to variable `file`, instantiate a `PngImageParser` using its no-argument constructor and assign it to variable `parser`, construct a `File` instance by passing `file` as the argument, invoke `getMetadata` on `parser` with that `File` instance, cast the returned value to `PngImageMetadata` and assign it to variable `pngMetadata`, invoke `getExif()` on `pngMetadata` and assign the resulting `TiffImageMetadata` to variable `exifMetadata`, then invoke `findDirectory` on `exifMetadata` passing the constant `TiffDirectoryConstants.DIRECTORY_TYPE_ROOT` as the argument to obtain a `TiffDirectory`, immediately chain `getFieldValue` on that directory passing the constant `TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION` as the argument, and assert using `assertEquals` that the returned value equals the String literal `\"Glavo\"`, construct another `File` instance by passing `file` again, invoke `getMetadata` on `parser` with this second `File` instance, cast the result to `PngImageMetadata` and assign it to variable `metadata`, invoke `getTextualInformation()` on `metadata` to obtain an `ImageMetadata` instance, chain `getItems()` on that result to retrieve a `List`, invoke `isEmpty()` on the list and assert using `assertTrue` that it returns `true`, then invoke `getExif()` on `metadata` to obtain a `TiffImageMetadata`, chain `findDirectory` on that result passing `TiffDirectoryConstants.DIRECTORY_TYPE_ROOT`, chain `getFieldValue` on the returned `TiffDirectory` passing `TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION`, and assert using `assertEquals` that this final value equals the String literal `\"Glavo\"`. The test uses the `@Test` annotation and no class-level or method-level integration annotations, relies on JUnit 5 Assertions for `assertEquals` and `assertTrue`, and does not employ any mocking libraries.",
+            "project_name": "commons-imaging",
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.imaging.formats.png.PngReadTest1",
+            "code": "package org.apache.commons.imaging.formats.png;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.io.File;\nimport java.io.IOException;\nimport java.net.URL;\nimport java.util.List;\n\nimport org.apache.commons.imaging.ImagingException;\nimport org.apache.commons.imaging.common.ImageMetadata;\nimport org.apache.commons.imaging.formats.tiff.TiffDirectory;\nimport org.apache.commons.imaging.formats.tiff.TiffImageMetadata;\nimport org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;\nimport org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;\nimport org.junit.jupiter.api.Test;\n\npublic class PngReadTest1 {\n\n    @Test\n    public void testImageWithExif() throws IOException, ImagingException {\n        final String input = \"/images/png/IMAGING-340/image-with-exif.png\";\n        final URL resource = PngReadTest.class.getResource(input);\n        final String file = resource.getFile();\n        final PngImageParser parser = new PngImageParser();\n\n        final PngImageMetadata pngMetadata = (PngImageMetadata) parser.getMetadata(new File(file));\n        final TiffImageMetadata exifMetadata = pngMetadata.getExif();\n        final TiffDirectory tiffDirectory = exifMetadata.findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT);\n        final Object imageDescription = tiffDirectory.getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION);\n        assertEquals(\"Glavo\", imageDescription);\n\n        final PngImageMetadata metadata = (PngImageMetadata) parser.getMetadata(new File(file));\n        final ImageMetadata textualInformation = metadata.getTextualInformation();\n        final List<? extends ImageMetadata.ImageMetadataItem> items = textualInformation.getItems();\n        assertTrue(items.isEmpty());\n\n        final TiffImageMetadata exifMetadata2 = metadata.getExif();\n        final TiffDirectory tiffDirectory2 = exifMetadata2.findDirectory(TiffDirectoryConstants.DIRECTORY_TYPE_ROOT);\n        final Object imageDescription2 = tiffDirectory2.getFieldValue(TiffTagConstants.TIFF_TAG_IMAGE_DESCRIPTION);\n        assertEquals(\"Glavo\", imageDescription2);\n    }\n}",
+            "method_signature": "testImageWithExif()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.3483,
+            "method_coverage": 0.5381,
+            "line_coverage": 0.3627,
+            "branch_coverage": 0.9794
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.imaging.formats.png.PngReadTest",
+            "method_signature": "testReadExif()",
+            "all_focal_methods": [
+                "org.apache.commons.imaging.common.ImageMetadata.getItems()",
+                "org.apache.commons.imaging.formats.png.PngImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.tiff.TiffDirectory.getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+                "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.findDirectory(int)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.imaging.common.ImageMetadata.getItems()",
+                "org.apache.commons.imaging.formats.png.PngImageParser.getMetadata(java.io.File)",
+                "org.apache.commons.imaging.formats.tiff.TiffDirectory.getFieldValue(org.apache.commons.imaging.formats.tiff.taginfos.TagInfo)",
+                "org.apache.commons.imaging.formats.tiff.TiffImageMetadata.findDirectory(int)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 4,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 6,
+                    "get_method_details": 11,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 6,
+                    "get_class_constructors_and_factories": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 115538,
+        "output_tokens": 14180,
+        "llm_calls": 13
+    }
+]

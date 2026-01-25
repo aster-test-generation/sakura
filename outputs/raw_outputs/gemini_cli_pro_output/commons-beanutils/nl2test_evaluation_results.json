@@ -1,0 +1,1682 @@
+[
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 108,
+      "description": "Define a test class with a private field for an Instant Converter component, then create a setup method that initializes this converter field by instantiating a new Instant Converter using a helper method that constructs the converter instance. Within the test method, invoke the convert method on the converter component with the target type Instant and an invalid text string input that cannot be parsed as a temporal value, expecting this operation to throw a conversion exception. Validate that the conversion attempt raises the expected exception type to confirm proper error handling for non-temporal string inputs. After test execution, create a teardown method that nullifies the converter field reference to release resources. This test uses JUnit for test execution and assertion validation.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testText()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.time.Instant;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test Case for the InstantConverter class.\n */\npublic class InstantConverterTest1 {\n\n    private InstantConverter converter;\n\n    private InstantConverter createConverter() {\n        return new InstantConverter();\n    }\n\n    @BeforeEach\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testConvertInvalidTemporalString() {\n        assertThrows(ConversionException.class, () -> converter.convert(Instant.class, \"not-a-date\"));\n    }\n}",
+      "method_signature": "testText()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 44446,
+    "output_tokens": 2425,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 109,
+      "description": "Create a test case to validate that the timestamp conversion system correctly rejects invalid text input by ensuring the system fails gracefully when attempting to convert arbitrary textual content that does not represent a valid timestamp format. Configure the conversion mechanism to operate in strict mode where conversion failures result in business rule violations rather than silent defaults. Submit a clearly non-temporal text string such as a greeting phrase to the conversion system and verify that the system immediately recognizes the input as incompatible with timestamp requirements and raises a conversion failure. After confirming the expected rejection behavior, release the conversion mechanism to free system resources. Use JUnit 5 as the testing framework with standard exception assertion capabilities to verify the system produces the appropriate conversion failure signal when encountering invalid input.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testText()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.sql.converters.SqlTimestampConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.sql.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.sql.Timestamp;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.ConvertUtils;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for {@link SqlTimestampConverter}.\n */\npublic class SqlTimestampConverterTest1 {\n\n    @Test\n    public void testInvalidTextConversion() {\n        final SqlTimestampConverter converter = new SqlTimestampConverter();\n        assertThrows(ConversionException.class, () -> converter.convert(Timestamp.class, \"not a timestamp\"));\n        ConvertUtils.deregister();\n    }\n}",
+      "method_signature": "testText()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.3333,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9362,
+      "branch_coverage": 0.9643
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 47045,
+    "output_tokens": 2553,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 110,
+      "description": "Create a test case to validate that the timestamp conversion system properly rejects input formatted with locale-specific numeric grouping symbols. Before executing the validation, ensure the conversion system is configured to handle timestamp transformations with strict formatting requirements. Simulate a scenario where a user or external system attempts to convert a numeric string containing comma separators representing a large epoch value into a timestamp representation. Verify that the conversion system recognizes this localized number format as invalid for timestamp processing and responds by signaling a conversion failure rather than attempting to parse the malformed input. After completing the validation, release the conversion system resources to ensure a clean state for subsequent operations. Use JUnit 5 as the testing framework with standard exception assertion capabilities to confirm the system properly rejects the invalid input format.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testLocalizedNumber()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.TimestampConversionRejectionTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.sql.Timestamp;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests that the timestamp conversion system rejects inputs with locale-specific formatting.\n */\npublic class TimestampConversionRejectionTest {\n\n    /**\n     * Validates that attempting to convert a string with grouping separators to a Timestamp\n     * results in a ConversionException, as the default converters are not locale-aware.\n     */\n    @Test\n    public void testTimestampConversionRejectsLocaleFormattedNumber() {\n        // The test setup ensures a clean state by using a try-finally block to deregister\n        // converters after execution, as required by the test description. The system's\n        // default configuration is strict and does not handle localized number formats.\n        try {\n            // A numeric string with comma separators, representing an epoch timestamp.\n            final String localizedEpochTimestamp = \"1,672,532,400,000\"; // Corresponds to Jan 1, 2023 00:00:00 UTC\n\n            // Verify that the conversion to java.sql.Timestamp fails with a ConversionException\n            // because the input string contains locale-specific numeric grouping symbols (commas),\n            // which the default converter does not parse.\n            assertThrows(ConversionException.class, () -> {\n                ConvertUtils.convert(localizedEpochTimestamp, Timestamp.class);\n            });\n        } finally {\n            // As per the test requirements, release conversion system resources to ensure\n            // a clean state for any subsequent operations.\n            ConvertUtils.deregister();\n        }\n    }\n}",
+      "method_signature": "testLocalizedNumber()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.3333,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9362,
+      "branch_coverage": 0.9643
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 27590,
+    "output_tokens": 8455,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 113,
+      "description": "Define a test class containing a private field `converter` of type `org.apache.commons.beanutils2.Converter<java.time.Instant>`, and implement a setup method annotated with `@BeforeEach` that assigns to `converter` the result of instantiating a new `InstantConverter` using its no-argument constructor. Write a test method annotated with `@Test` that invokes `assertThrows` with arguments `ConversionException.class` and a lambda expression that calls `converter.convert(Instant.class, \"Hello, world!\")`, verifying that this invocation throws the expected exception type. Implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field. The test uses JUnit 5 Assertions with the `assertThrows` method, and the application class under test is `org.apache.commons.beanutils2.converters.InstantConverter`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testText()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 48213,
+    "output_tokens": 1650,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 115,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Instant>`, then implement a setup method annotated with `@BeforeEach` that assigns to `converter` the result of instantiating a new `InstantConverter` using its no-argument constructor. Write a test method annotated with `@Test` that invokes `assertThrows` with `ConversionException.class` as the first argument and a lambda expression as the second argument, where the lambda calls `convert` on `converter` passing `Instant.class` as the first argument and the String literal `\"200,000,000,000\"` as the second argument, thereby verifying that the conversion of this localized number format throws the expected exception. Implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field. The test uses JUnit 5 Assertions with the `@Test` annotation and relies on the `InstantConverter` class from the application code which extends `DateTimeConverter<Instant>`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testLocalizedNumber()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.time.Instant;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test Case for {@link InstantConverter}.\n */\npublic class InstantConverterTest1 {\n\n    private Converter<Instant> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new InstantConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testInvalidConversion() {\n        assertThrows(ConversionException.class, () -> converter.convert(Instant.class, \"200,000,000,000\"));\n    }\n}",
+      "method_signature": "testLocalizedNumber()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 31509,
+    "output_tokens": 1683,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 117,
+      "description": "Define a test class that validates conversion behavior for Instant objects and declare a field to hold a Converter instance parameterized to Instant. In the setup phase, initialize the converter field by creating a private helper method that instantiates and returns a new Instant Converter configured to throw exceptions on conversion errors rather than return default values. Within the test method, verify that the converter correctly rejects localized numeric input by invoking the convert method on the converter with the target type Instant and a string input containing comma-separated thousands grouping, then assert that this invocation throws a Conversion Exception to confirm the converter does not accept locale-formatted numbers as valid timestamp representations. After test execution completes, implement teardown logic that nullifies the converter field to release the reference. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testLocalizedNumber()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTestCase",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.time.Instant;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for {@link InstantConverter}.\n */\npublic class InstantConverterTestCase {\n\n    private Converter<Instant> converter;\n\n    /**\n     * Creates a new instance of the converter.\n     *\n     * @return a new converter\n     */\n    private InstantConverter createConverter() {\n        return new InstantConverter();\n    }\n\n    @BeforeEach\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testRejectLocalizedNumber() {\n        assertThrows(ConversionException.class, () -> converter.convert(Instant.class, \"1,000,000\"));\n    }\n}",
+      "method_signature": "testLocalizedNumber()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 68843,
+    "output_tokens": 2041,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 13,
+      "description": "Create a test case to validate that the conversion system properly rejects attempts to convert text into enumerated values when the target is not actually an enumerated business type. Begin by establishing a conversion utility configured to handle enumerated status values. Attempt to convert a text representation specifying a non-enumerated type (such as a standard text class paired with a status name) into an enumerated value, then ensure the system recognizes this as an invalid operation and signals a conversion failure. After validation, release the conversion utility to free system resources. Use JUnit 5 for the testing framework and verify the failure condition using standard exception assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testNonEnumClasses()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.EnumConverterMissingEnumTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport org.apache.commons.beanutils2.converters.EnumConverter;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test case for {@link EnumConverter} trying to convert to a non-enum type.\n */\npublic class EnumConverterMissingEnumTest {\n\n    /**\n     * Tests that a conversion to a non-enum type fails.\n     */\n    @Test\n    public void testNonEnumTarget() {\n        final ConvertUtilsBean bean = new ConvertUtilsBean();\n        bean.register(new EnumConverter(TestEnum.class), TestEnum.class);\n\n        assertThrows(ConversionException.class, () -> bean.convert(\"A\", String.class));\n        ConvertUtils.deregister();\n    }\n}",
+      "method_signature": "testNonEnumClasses()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29181,
+    "output_tokens": 1560,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 15,
+      "description": "Define a test method that validates the Enum Converter's error handling when attempting to convert a string referencing a non-existent class. Before the test executes, initialize the converter field by creating a helper method that instantiates an Enum Converter configured to throw exceptions on conversion failures. Within the test method, invoke the converter's convert method with the Enum base class as the target type and a string containing a fully qualified class name that does not exist in the classpath along with an enum constant identifier. Validate that this invocation throws a conversion exception, confirming the converter properly rejects invalid class references. After test execution completes, release the converter reference by nullifying the field to ensure clean state between test runs. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testNonExistingClasses()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterErrorTest",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link EnumConverter} error handling.\n */\npublic class EnumConverterErrorTest {\n\n    private EnumConverter converter;\n\n    /**\n     * Sets up the test environment by creating a new EnumConverter\n     * instance that throws exceptions for conversion errors.\n     */\n    private void setupConverter() {\n        converter = new EnumConverter(true);\n    }\n\n    @BeforeEach\n    public void setUp() {\n        setupConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    /**\n     * Tests that a ConversionException is thrown when attempting to convert\n     * a string that references a non-existent class.\n     */\n    @Test\n    public void testInvalidClassStringConversion() {\n        assertThrows(ConversionException.class, () -> {\n            converter.convert(Enum.class, \"com.non.existent.class.NON_EXISTENT_ENUM\");\n        });\n    }\n}",
+      "method_signature": "testNonExistingClasses()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 35811,
+    "output_tokens": 6290,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 17,
+      "description": "Define a test class that validates the Enum Converter's behavior when handling invalid target types. During setup, create a private helper method that instantiates the Enum Converter with its default constructor, then store the returned converter instance in a class field for use across test methods. Within the test method, invoke the converter's convert method passing the base Enum class type along with a string value representing a non-enum class qualified name with an enum constant format, and verify that this operation throws a conversion exception indicating the converter correctly rejects attempts to convert values to non-enum types. After test execution completes, perform teardown by nullifying the converter field reference to release resources. The test uses JUnit for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testNonEnumClasses()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\nimport static org.junit.Assert.assertThrows;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterTest1 {\n\n    private EnumConverter<?> converter;\n\n    private void setupConverter() {\n        converter = new EnumConverter<>();\n    }\n\n    @Before\n    public void setUp() {\n        setupConverter();\n    }\n\n    @After\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testInvalidTargetType() {\n        assertThrows(ConversionException.class, () -> converter.convert(Enum.class, \"java.lang.String.A\"));\n    }\n}",
+      "method_signature": "testNonEnumClasses()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 14101,
+    "output_tokens": 1183,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 18,
+      "description": "Create a test case to validate that the enumeration conversion system correctly rejects attempts to convert values when the requested enumeration category does not match the category specified in the input text. Before testing, establish a conversion capability configured to handle enumeration transformations. Once the system is ready, attempt to convert a text representation that explicitly references one enumeration category while requesting conversion to an entirely different, incompatible enumeration category. Verify that the system recognizes this category mismatch and refuses to perform the conversion by signaling a business rule violation. After validation completes, release the conversion capability to free system resources. Use JUnit 5 for the testing framework with standard exception assertion patterns to confirm the expected business rule enforcement occurs.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertMismatchingEnumType()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterInvalidCategoryTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.ConvertUtils;\nimport org.apache.commons.beanutils2.TestEnum;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for {@link EnumConverter} for mismatched enumeration categories.\n */\npublic class EnumConverterInvalidCategoryTest {\n\n    private enum AnotherEnum {\n        X, Y, Z\n    }\n\n    private EnumConverter converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new EnumConverter();\n        ConvertUtils.register(converter, Enum.class);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        ConvertUtils.deregister(Enum.class);\n        converter = null;\n    }\n\n    @Test\n    public void testMismatchedEnumCategory() {\n        final String valueToConvert = AnotherEnum.class.getName() + \".X\";\n        final ConversionException e = assertThrows(ConversionException.class, () -> {\n            converter.convert(TestEnum.class, valueToConvert);\n        });\n        final String expectedMessage = \"Class is not the required type\";\n        assertTrue(e.getCause().getMessage().contains(expectedMessage),\n                   \"Expected exception message to contain: '\" + expectedMessage + \"', but was: '\" + e.getCause().getMessage() + \"'\");\n    }\n}",
+      "method_signature": "testConvertMismatchingEnumType()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.5,
+      "callable_recall": 1.0,
+      "callable_precision": 0.1111,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 384491,
+    "output_tokens": 16432,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 19,
+      "description": "Create a test case to validate that the system correctly interprets and transforms a fully qualified textual representation of a weekday into its corresponding business enumeration value. Begin by establishing a conversion utility capable of handling enumerated type transformations. Once the utility is prepared, instruct it to process a text string that specifies both the enumeration category and the specific weekday constant using a qualified naming convention, then confirm the system produces the correct Monday weekday designation as the result of this transformation. After validating the conversion behavior, release the conversion utility to free any associated resources. Use JUnit 5 for the testing framework and standard equality assertions to verify the transformation produces the expected weekday enumeration value.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertDayOfWeek()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.EnumConverterFullyQualifiedNameTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport org.junit.jupiter.api.Test;\nimport java.time.DayOfWeek;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n/**\n * Tests whether the conversion utility can handle fully qualified enum names.\n */\npublic class EnumConverterFullyQualifiedNameTest {\n\n    /**\n     * Tests the conversion of a fully qualified enum string to its corresponding enum value.\n     */\n    @Test\n    public void testConvertFullyQualifiedEnum() {\n        // Establish a conversion utility for enum transformations.\n        final ConvertUtilsBean convertUtilsBean = new ConvertUtilsBean();\n\n        // The fully qualified textual representation of the weekday.\n        final String qualifiedEnumString = \"java.time.DayOfWeek.MONDAY\";\n\n        // Instruct the utility to process the string and produce the enumeration value.\n        final Object result = convertUtilsBean.convert(qualifiedEnumString, DayOfWeek.class);\n\n        // Confirm the transformation produces the correct weekday.\n        assertEquals(DayOfWeek.MONDAY, result,\n                \"The conversion should correctly interpret the fully qualified enum string.\");\n\n        // The conversion utility is automatically released when this method scope ends.\n    }\n}",
+      "method_signature": "testConvertDayOfWeek()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.5,
+      "callable_precision": 0.3333,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.6667,
+      "line_coverage": 0.5294,
+      "branch_coverage": 0.6875
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 32935,
+    "output_tokens": 10444,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 190,
+      "description": "Define a test method annotated with `@Test` that declares it throws `ReflectiveOperationException`, then instantiate a new `Fixture` object by invoking its no-argument constructor and assign it to variable `fixture`, followed by instantiating a new `PropertyUtilsBean` object using its no-argument constructor and assigning it to variable `propertyUtilsBean`, and immediately invoke `assertThrows` with arguments `NoSuchMethodException.class` and a lambda expression that calls `getNestedProperty` on `propertyUtilsBean` passing arguments `fixture` and the String literal `\"testEnum.declaringClass.classLoader\"`, verifying that this invocation throws `NoSuchMethodException` due to the default security configuration that suppresses access to the `declaringClass` property. The test uses class-level annotations: none. The test uses method-level annotations: `@Test`. The test uses assertion libraries: JUnit 5 Assertions. The test uses no mocking libraries.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.PropertyUtilsBeanGetNestedPropertyTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.lang.reflect.ReflectiveOperationException;\nimport org.junit.jupiter.api.Test;\n\npublic class PropertyUtilsBeanGetNestedPropertyTest {\n\n    public static class Fixture {\n        public TestEnum getTestEnum() {\n            return TestEnum.A;\n        }\n    }\n\n    @Test\n    public void testGetNestedPropertyWithSuppressedDeclaringClassProperty() throws ReflectiveOperationException {\n        final Fixture fixture = new Fixture();\n        final PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();\n        assertThrows(NoSuchMethodException.class, () -> propertyUtilsBean.getNestedProperty(fixture, \"testEnum.declaringClass.classLoader\"));\n    }\n}",
+      "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 31435,
+    "output_tokens": 1981,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 198,
+      "description": "Create a test case to validate that the property access system enforces security restrictions by default, preventing unauthorized navigation through sensitive object relationships. Begin by establishing a business entity within the system that contains enumerated type information, then configure a property access utility to operate under standard security constraints. Attempt to traverse a nested property path that would expose internal class loading mechanisms through the enumeration's declaring class reference, simulating a potential security vulnerability where users might try to access system-level metadata. Verify that the system correctly blocks this access attempt by refusing to resolve the property path, ensuring that the default security policy prevents exposure of internal implementation details. The test relies on JUnit 5 for execution and uses standard exception-based validation to confirm the system denies the unauthorized property traversal.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.DefaultPropertyAccessSecurityTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests that the property access system enforces security restrictions by default,\n * preventing unauthorized navigation through sensitive object relationships.\n */\npublic class DefaultPropertyAccessSecurityTest {\n\n    /**\n     * A simple business entity containing an enum property for testing.\n     * This bean is used as the root object for property navigation.\n     */\n    public static class BusinessEntity {\n        private TestEnum myEnum;\n\n        public TestEnum getMyEnum() {\n            return myEnum;\n        }\n\n        public void setMyEnum(final TestEnum myEnum) {\n            this.myEnum = myEnum;\n        }\n    }\n\n    /**\n     * Verifies that the system blocks attempts to access sensitive properties like\n     * class loaders through nested property paths, enforcing default security policies.\n     * This test simulates a potential vulnerability where a user might try to traverse\n     * from an enum to its declaring class and then to the class loader. The default\n     * configuration of PropertyUtils should prevent this.\n     */\n    @Test\n    public void testPreventUnauthorizedNavigationToClassLoader() {\n        final BusinessEntity entity = new BusinessEntity();\n        entity.setMyEnum(TestEnum.A);\n\n        // This path attempts to navigate from the enum to its declaring class, and then to the class loader.\n        // By default, PropertyUtilsBean is configured with SuppressPropertiesBeanIntrospector,\n        // which prevents resolution of the \"declaringClass\" property on enums to mitigate\n        // potential security vulnerabilities.\n        final String maliciousPath = \"myEnum.declaringClass.classLoader\";\n\n        // We expect a NoSuchMethodException because the \"declaringClass\" property should not be resolved.\n        // This confirms that the default security policy is in effect and blocks the traversal.\n        assertThrows(NoSuchMethodException.class, () -> {\n            PropertyUtils.getNestedProperty(entity, maliciousPath);\n        });\n    }\n}",
+      "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.3333,
+      "callable_precision": 0.25,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 17728,
+    "output_tokens": 4626,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 20,
+      "description": "Define a test class that validates the Enum Converter's ability to transform string representations into Java enum constants, beginning by declaring a field to hold the converter instance parameterized for enum types. During setup, initialize this converter field by invoking a helper method that instantiates the Enum Converter with its default no-argument constructor, establishing the component ready for conversion operations. Within the test method, invoke the converter's convert method with the target enum class type and a string input formatted as a fully-qualified enum constant reference including both the enum class name and the specific constant name separated by a hash symbol, then immediately assert that the returned value equals the expected enum constant from the standard Java time enumeration. After test execution completes, perform teardown by nullifying the converter field reference to release resources and ensure test isolation. This test uses JUnit and the Apache Commons BeanUtils EnumConverter component.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertDayOfWeek()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport java.time.Month;\n\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\nimport static org.junit.Assert.assertEquals;\n\n/**\n * Tests for {@link EnumConverter}.\n */\npublic class EnumConverterTest1 {\n\n    private EnumConverter<Month> converter;\n\n    @Before\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    private <E extends Enum<E>> EnumConverter<E> createConverter() {\n        return new EnumConverter<>();\n    }\n\n    @Test\n    public void testConvertToTypeWithFullyQualifiedEnumName() {\n        final String input = \"java.time.Month#JANUARY\";\n        final Month expected = Month.JANUARY;\n        assertEquals(expected, converter.convert(Month.class, input));\n    }\n\n    @After\n    public void tearDown() {\n        converter = null;\n    }\n}",
+      "method_signature": "testConvertDayOfWeek()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 28914,
+    "output_tokens": 1057,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 203,
+      "description": "Define a test method that validates the default security behavior of PropertyUtilsBean when attempting to access restricted nested properties on enum types, specifically ensuring that traversal to the declaringClass and classLoader properties is blocked by default. Instantiate a test fixture object that contains an enum property, then instantiate a PropertyUtilsBean without custom configuration to ensure it operates under default security settings. Invoke the getNestedProperty method on the PropertyUtilsBean instance, passing the fixture and a nested property path that attempts to traverse from the enum property through its declaring class to the class loader. Assert that this invocation throws a NoSuchMethodException, confirming that the PropertyUtilsBean correctly suppresses access to the class property chain by default, thereby preventing potential security vulnerabilities associated with reflective access to class metadata and class loaders. The test uses JUnit 5 for the test framework and its built-in assertion methods.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.PropertyUtilsBeanSecurityTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests the default security behavior of PropertyUtilsBean concerning access to restricted properties.\n */\npublic class PropertyUtilsBeanSecurityTest {\n\n    /**\n     * A simple bean with an enum property to be used in tests.\n     */\n    public static class BeanWithEnum {\n        private TestEnum testEnum = TestEnum.A;\n\n        public TestEnum getTestEnum() {\n            return testEnum;\n        }\n\n        public void setTestEnum(final TestEnum testEnum) {\n            this.testEnum = testEnum;\n        }\n    }\n\n    /**\n     * Validates that accessing the class loader through an enum property is blocked by default.\n     * This prevents potential security vulnerabilities related to reflective access to class metadata.\n     */\n    @Test\n    public void testGetNestedPropertyWithEnumRestrictedAccess() {\n        final PropertyUtilsBean pub = new PropertyUtilsBean();\n        final BeanWithEnum bean = new BeanWithEnum();\n        final String restrictedPath = \"testEnum.declaringClass.classLoader\";\n\n        assertThrows(NoSuchMethodException.class, () -> {\n            pub.getNestedProperty(bean, restrictedPath);\n        }, \"Should have thrown NoSuchMethodException due to restricted access to 'declaringClass'\");\n    }\n}",
+      "method_signature": "testSuppressClassPropertyByDefaultFromPropertyUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.6667,
+      "callable_precision": 0.5,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15390,
+    "output_tokens": 2329,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 21,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Enum<PizzaStatus>>`, where `PizzaStatus` is an enum type defined within the test class scope. Implement a setup method annotated with `@BeforeEach` that instantiates `converter` by creating a new `EnumConverter<>()` using the no-argument constructor. Write a test method annotated with `@Test` that verifies exception handling for mismatched enum types by invoking `assertThrows` with `ConversionException.class` as the first argument and a lambda expression as the second argument, where the lambda calls `converter.convert(TimeUnit.class, \"java.time.DayOfWeek#MONDAY\")` passing `TimeUnit.class` as the target type and the String literal `\"java.time.DayOfWeek#MONDAY\"` as the value to convert. Implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field. The test uses JUnit 5 Assertions with method-level annotation `@Test` and setup/teardown annotations `@BeforeEach` and `@AfterEach`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertMismatchingEnumType()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterMismatchedTypesTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.util.concurrent.TimeUnit;\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterMismatchedTypesTest {\n\n    private enum PizzaStatus {\n        ORDERED,\n        BAKING,\n        DELIVERING,\n        DELIVERED\n    }\n\n    private Converter<Enum<PizzaStatus>> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new EnumConverter<>();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testMismatchedEnumTypes() {\n        assertThrows(ConversionException.class, () -> {\n            converter.convert(TimeUnit.class, \"java.time.DayOfWeek#MONDAY\");\n        });\n    }\n}",
+      "method_signature": "testConvertMismatchingEnumType()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.5,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 22318,
+    "output_tokens": 1172,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 212,
+      "description": "Create a test case to validate that the system's property inspection utility can be configured to allow access to metadata about enumeration types that would otherwise be restricted for security reasons. Begin by configuring the property inspection system to explicitly remove the security restriction that normally prevents access to enumeration class information, then prepare a test record containing an enumeration value. With the restriction lifted, attempt to retrieve the class information from the enumeration property through the inspection system and verify that the system successfully returns the class metadata rather than blocking access. Once confirmed that the class information is accessible, extract the runtime environment loader associated with this class and ensure it is present and valid. Finally, perform an end-to-end verification by directly retrieving the loader information through a nested property path to confirm the inspection system can traverse from the enumeration value through its class metadata to the loader without encountering security blocks. Use JUnit 5 as the testing framework and verify outcomes using standard equality and type assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.PropertyUtilsBeanEnumAccessControlTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertInstanceOf;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.lang.reflect.InvocationTargetException;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Validates that the property inspection utility can be configured to allow access to metadata about enumeration\n * types that would otherwise be restricted for security reasons.\n */\npublic class PropertyUtilsBeanEnumAccessControlTest {\n\n    /**\n     * Test bean for holding an enum value.\n     */\n    public static class TestRecord {\n        private TestEnum enumValue = TestEnum.B;\n\n        public TestEnum getEnumValue() {\n            return enumValue;\n        }\n\n        public void setEnumValue(final TestEnum enumValue) {\n            this.enumValue = enumValue;\n        }\n    }\n\n    @Test\n    public void testEnumClassAndClassLoaderAccessWhenSecurityIsRelaxed()\n            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {\n        // 1. Configure the property inspection system to remove the 'class' property restriction.\n        final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();\n        propertyUtils.setBeanIntrospector(DefaultBeanIntrospector.INSTANCE);\n\n        // 2. Prepare a test record with an enumeration value.\n        final TestRecord record = new TestRecord();\n\n        // 3. Retrieve the class metadata from the enumeration property.\n        final Object enumClass = propertyUtils.getProperty(record, \"enumValue.class\");\n        assertEquals(TestEnum.class, enumClass,\n                \"Should return the enum's Class object when security restrictions are lifted.\");\n\n        // 4. Extract the class loader from the retrieved class metadata.\n        final Object classLoader = propertyUtils.getProperty(record, \"enumValue.class.classLoader\");\n        assertNotNull(classLoader, \"The class loader should be accessible.\");\n        assertInstanceOf(ClassLoader.class, classLoader, \"The returned object should be a ClassLoader instance.\");\n    }\n}",
+      "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19254,
+    "output_tokens": 6148,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 216,
+      "description": "Define a test method that validates access to class-level metadata properties through the Property Utils Bean after removing security restrictions on introspection. Instantiate a Property Utils Bean and invoke its method to remove the bean introspector that suppresses access to the declaring class property, thereby allowing retrieval of metadata that would otherwise be blocked for security reasons. Create a fixture object that contains an enum property, then use the Property Utils Bean to retrieve a nested property by navigating through the enum's declaring class using a property path expression. Upon retrieval, assert that the returned object is an instance of Class, capturing the typed reference for further validation. Extract the class loader from this Class instance and verify it is not null, confirming that the class metadata is accessible. Finally, retrieve a deeper nested property by extending the property path to include the class loader itself, and assert that the returned object is an instance of ClassLoader, demonstrating that the removal of the introspection suppressor enables full traversal of class metadata properties that expose internal Java runtime structures. This test uses JUnit 5 for the testing framework.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.PropertyUtilsBeanClassLoaderTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertInstanceOf;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests access to class-level metadata properties through the PropertyUtilsBean after removing security restrictions.\n */\npublic class PropertyUtilsBeanClassLoaderTest {\n\n    /**\n     * A simple fixture bean that holds an enum property.\n     */\n    public static class EnumHolder {\n        private TestEnum enumProperty = TestEnum.A;\n\n        public TestEnum getEnumProperty() {\n            return enumProperty;\n        }\n\n        public void setEnumProperty(final TestEnum enumProperty) {\n            this.enumProperty = enumProperty;\n        }\n    }\n\n    @Test\n    public void testGetNestedClassLoaderProperty() throws Exception {\n        // Instantiate a PropertyUtilsBean\n        final PropertyUtilsBean pub = new PropertyUtilsBean();\n\n        // Remove the introspector that suppresses access to 'class' and 'declaringClass'\n        pub.removeBeanIntrospector(SuppressPropertiesBeanIntrospector.SUPPRESS_CLASS);\n\n        // Create a fixture object\n        final EnumHolder bean = new EnumHolder();\n\n        // Retrieve the nested 'declaringClass' property from the enum\n        final Object declaringClassObject = pub.getNestedProperty(bean, \"enumProperty.declaringClass\");\n\n        // Assert that the returned object is an instance of Class\n        assertInstanceOf(Class.class, declaringClassObject, \"Expected to retrieve the declaring class of the enum.\");\n        final Class<?> declaringClass = (Class<?>) declaringClassObject;\n\n        // Verify that the class metadata is accessible by checking its ClassLoader\n        assertNotNull(declaringClass.getClassLoader(), \"ClassLoader should be accessible from the retrieved Class object.\");\n\n        // Retrieve the deeper nested 'classLoader' property\n        final Object classLoaderObject = pub.getNestedProperty(bean, \"enumProperty.declaringClass.classLoader\");\n\n        // Assert that the returned object is an instance of ClassLoader\n        assertInstanceOf(ClassLoader.class, classLoaderObject, \"Expected to retrieve the ClassLoader instance.\");\n    }\n}",
+      "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.8889,
+      "callable_precision": 0.8889,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9708,
+      "branch_coverage": 0.9375
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 17467,
+    "output_tokens": 4192,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 22,
+      "description": "Define a test class that validates enum conversion error handling by first establishing a converter instance through a helper method that constructs an Enum Converter configured to throw exceptions on conversion failures, then within the test method invoke the converter's convert method with a mismatched enum type where the target type parameter is a time unit class and the input string specifies a fully qualified enum constant from a different enum family, and upon invocation validate that a conversion exception is thrown to confirm the converter properly rejects type mismatches between the requested target enum and the provided enum constant string, finally in teardown nullify the converter instance to release the resource, using JUnit 5 for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertMismatchingEnumType()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterErrorTest",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.util.concurrent.TimeUnit;\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.TestEnum;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests error handling for {@link EnumConverter}.\n */\npublic class EnumConverterErrorTest {\n\n    private EnumConverter converter;\n\n    /**\n     * Helper to create a configured EnumConverter.\n     *\n     * @param throwExceptionOnFailure whether the converter should throw exceptions.\n     * @return a new EnumConverter.\n     */\n    private EnumConverter createConverter(final boolean throwExceptionOnFailure) {\n        return new EnumConverter(throwExceptionOnFailure);\n    }\n\n    @BeforeEach\n    public void setUp() {\n        // Establishes a converter instance that throws exceptions on failure.\n        this.converter = createConverter(true);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        // Nullify the converter instance to release the resource.\n        this.converter = null;\n    }\n\n    @Test\n    public void testMismatchedEnumTypeConversion() {\n        // The fully qualified enum constant from a different enum family.\n        final String mismatchedEnumConstant = TestEnum.class.getName() + \".A\";\n\n        // Validate that a ConversionException is thrown for the mismatched type.\n        assertThrows(ConversionException.class, () -> {\n            // Invoke convert with a mismatched enum type.\n            converter.convert(TimeUnit.class, mismatchedEnumConstant);\n        });\n    }\n}",
+      "method_signature": "testConvertMismatchingEnumType()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 21778,
+    "output_tokens": 5036,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 227,
+      "description": "Define a test method annotated with `@Test` that declares it throws `ReflectiveOperationException`, then instantiate a `PropertyUtilsBean` by invoking its no-argument constructor and assign the result to variable `propertyUtilsBean`, immediately invoke `removeBeanIntrospector` on `propertyUtilsBean` passing the static field `SuppressPropertiesBeanIntrospector.SUPPRESS_DECLARING_CLASS` as the argument to remove this specific bean introspector from the instance, next instantiate a `Fixture` object using its no-argument constructor and assign it to variable `fixture`, then invoke `getNestedProperty` on `propertyUtilsBean` with arguments `fixture` and the String literal `\"testEnum.declaringClass\"` and assign the returned `Object` to variable `cls`, immediately assert that `cls` is an instance of `Class.class` by invoking `assertInstanceOf(Class.class, cls)` and assign the returned value (which is the cast result) to variable `teClass` of type `Class<TestEnum>`, then invoke `getClassLoader()` on `teClass` and assign the returned `ClassLoader` to variable `classLoader`, assert that `classLoader` is not null by invoking `assertNotNull(classLoader)`, and finally assert that the result of invoking `getNestedProperty` on `propertyUtilsBean` with arguments `fixture` and the String literal `\"testEnum.declaringClass.classLoader\"` is an instance of `ClassLoader.class` by invoking `assertInstanceOf(ClassLoader.class, propertyUtilsBean.getNestedProperty(fixture, \"testEnum.declaringClass.classLoader\"))`. The test uses JUnit 5 Assertions with method-level annotation `@Test` and no class-level annotations.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.bugs.JiraBeanUtils533Test",
+      "code": "package org.apache.commons.beanutils2.bugs;\n\nimport static org.junit.jupiter.api.Assertions.assertInstanceOf;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport org.apache.commons.beanutils2.PropertyUtilsBean;\nimport org.apache.commons.beanutils2.SuppressPropertiesBeanIntrospector;\nimport org.apache.commons.beanutils2.TestEnum;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test class for accessing declaring class loader.\n * <p>\n * See https://issues.apache.org/jira/browse/BEANUTILS-533\n * </p>\n */\npublic class JiraBeanUtils533Test {\n\n    public static class Fixture {\n        public TestEnum getTestEnum() {\n            return TestEnum.A;\n        }\n    }\n\n    @Test\n    public void testGetNestedPropertyDeclaringClass() throws ReflectiveOperationException {\n        final PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();\n        propertyUtilsBean.removeBeanIntrospector(SuppressPropertiesBeanIntrospector.SUPPRESS_DECLARING_CLASS);\n        final Fixture fixture = new Fixture();\n        final Object cls = propertyUtilsBean.getNestedProperty(fixture, \"testEnum.declaringClass\");\n        @SuppressWarnings(\"unchecked\") // Right type, but AssertJ returns raw type\n        final Class<TestEnum> teClass = assertInstanceOf(Class.class, cls);\n        final ClassLoader classLoader = teClass.getClassLoader();\n        assertNotNull(classLoader);\n        assertInstanceOf(ClassLoader.class, propertyUtilsBean.getNestedProperty(fixture, \"testEnum.declaringClass.classLoader\"));\n    }\n}",
+      "method_signature": "testAllowAccessToClassPropertyFromPropertyUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9942,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19009,
+    "output_tokens": 5508,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 24,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Enum<PizzaStatus>>` where `PizzaStatus` is an enum type defined within the test class scope. In a setup method annotated with `@BeforeEach`, instantiate a new `EnumConverter` using its no-argument constructor and assign it to the `converter` field. Within the test method annotated with `@Test`, invoke the `convert` method on `converter` passing two arguments: the class literal `DayOfWeek.class` as the first argument and the string literal `\"java.time.DayOfWeek#MONDAY\"` as the second argument, then immediately assert using `assertEquals` that the returned value equals the enum constant `DayOfWeek.MONDAY` from the `java.time.DayOfWeek` enum. In a teardown method annotated with `@AfterEach`, assign `null` to the `converter` field to release the reference. The test method uses `@Test` annotation, the setup method throws `Exception`, the teardown method is declared public and throws `Exception`, and assertions are performed using JUnit 5 Assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertDayOfWeek()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport java.time.DayOfWeek;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\npublic class EnumConverterTest1 {\n\n    private enum PizzaStatus {\n        ORDERED,\n        BAKING,\n        DELIVERED\n    }\n\n    private Converter<Enum<PizzaStatus>> converter;\n\n    @BeforeEach\n    void setUp() throws Exception {\n        converter = new EnumConverter();\n    }\n\n    @AfterEach\n    public void tearDown() throws Exception {\n        converter = null;\n    }\n\n    @Test\n    void testConvert() {\n        assertEquals(DayOfWeek.MONDAY, converter.convert(DayOfWeek.class, \"java.time.DayOfWeek#MONDAY\"));\n    }\n}",
+      "method_signature": "testConvertDayOfWeek()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 40688,
+    "output_tokens": 7016,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 249,
+      "description": "Define a test method that validates the default security behavior of BeanUtilsBean when attempting to access nested class metadata properties through property path expressions. Instantiate a test fixture object that contains an enum property, then create a new BeanUtilsBean instance using its default constructor. Invoke the getProperty method on the BeanUtilsBean instance with the fixture object and a nested property path expression that traverses from the enum property through its declaring class to the class loader, and verify that this operation throws a NoSuchMethodException indicating the property path is blocked. Next, retrieve the PropertyUtilsBean from the BeanUtilsBean instance and invoke its getNestedProperty method with the same fixture object and identical nested property path expression, then verify that this invocation also throws a NoSuchMethodException, confirming that both the high-level and low-level property access mechanisms consistently suppress access to the declaring class metadata. This test validates that the framework prevents potentially unsafe reflective access to class loader information through property expressions by default, ensuring that property traversal operations cannot reach sensitive class metadata even when valid JavaBeans property paths would technically allow such navigation. The test uses JUnit 5 for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.BeanUtilsBeanSecurityTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Tests the default security behavior of BeanUtilsBean when accessing nested class metadata.\n */\npublic class BeanUtilsBeanSecurityTest {\n\n    /**\n     * A test fixture class with an enum property.\n     */\n    public static class Fixture {\n        private TestEnum enumProperty = TestEnum.A;\n\n        public TestEnum getEnumProperty() {\n            return enumProperty;\n        }\n\n        public void setEnumProperty(TestEnum value) {\n            this.enumProperty = value;\n        }\n    }\n\n    /**\n     * Tests that accessing the class loader through a nested property path on an enum is blocked by default.\n     * This validates that both BeanUtilsBean and PropertyUtilsBean prevent access to sensitive class metadata.\n     */\n    @Test\n    public void testGetPropertyDeclaringClass() {\n        final Fixture fixture = new Fixture();\n        final BeanUtilsBean beanUtilsBean = new BeanUtilsBean();\n        final String maliciousPropertyPath = \"enumProperty.declaringClass.classLoader\";\n\n        // Verify that BeanUtilsBean.getProperty() blocks the property access\n        assertThrows(NoSuchMethodException.class, () -> {\n            beanUtilsBean.getProperty(fixture, maliciousPropertyPath);\n        });\n\n        // Verify that PropertyUtilsBean.getNestedProperty() also blocks the property access\n        final PropertyUtilsBean propertyUtilsBean = beanUtilsBean.getPropertyUtilsBean();\n        assertThrows(NoSuchMethodException.class, () -> {\n            propertyUtilsBean.getNestedProperty(fixture, maliciousPropertyPath);\n        });\n    }\n}",
+      "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15091,
+    "output_tokens": 1866,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 251,
+      "description": "Create a test case to validate that the system can be configured to permit access to metadata about enumeration types that would normally be restricted for security purposes, specifically allowing retrieval of type information and runtime environment details from enumerated values. Begin by establishing a property access system and explicitly removing the security restriction that normally prevents access to enumeration type declarations. Prepare a business object containing an enumerated value, then retrieve the fully qualified name of the enumeration type through the property access system and confirm it matches the expected type designation. Next, access the type declaration itself through nested property navigation and verify it returns the correct enumeration type, then obtain the runtime environment loader associated with this type and confirm it exists. Finally, retrieve the runtime environment loader information through the property access system as a text representation, verify it is present, and confirm through nested property navigation that the loader can be accessed as its proper type. Use JUnit 5 for test execution and AssertJ-style assertions for validation, verifying outcomes through standard equality checks and type confirmations.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.AllowEnumMetadataAccessTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport static org.assertj.core.api.Assertions.assertThat;\n\nimport java.lang.reflect.InvocationTargetException;\nimport java.util.Collections;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests that the system can be configured to permit access to metadata about enumeration types\n * that would normally be restricted for security purposes.\n */\npublic class AllowEnumMetadataAccessTest {\n\n    /**\n     * A simple business object containing an enumerated value for testing.\n     */\n    public static class BusinessObject {\n        private TestEnum value = TestEnum.B;\n\n        public TestEnum getValue() {\n            return value;\n        }\n\n        public void setValue(final TestEnum value) {\n            this.value = value;\n        }\n    }\n\n    @Test\n    public void testEnumMetadataAccessWhenSuppressionIsRemoved()\n            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {\n        // Establish a property access system.\n        final PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();\n\n        // Explicitly remove the security restriction that normally prevents access to enumeration type declarations.\n        // This is done by replacing the default SuppressPropertiesBeanIntrospector with one that suppresses no properties.\n        propertyUtilsBean.addBeanIntrospector(new SuppressPropertiesBeanIntrospector(Collections.emptySet()));\n\n        // Prepare a business object containing an enumerated value.\n        final BusinessObject bean = new BusinessObject();\n\n        // Retrieve the fully qualified name of the enumeration type and confirm it matches.\n        final Object className = propertyUtilsBean.getProperty(bean, \"value.class.name\");\n        assertThat(className).isEqualTo(TestEnum.class.getName());\n\n        // Access the type declaration itself and verify it returns the correct enumeration type.\n        final Object typeDeclaration = propertyUtilsBean.getProperty(bean, \"value.class\");\n        assertThat(typeDeclaration).isEqualTo(TestEnum.class);\n\n        // Obtain the runtime environment loader associated with this type and confirm it exists.\n        final Object classLoader = propertyUtilsBean.getProperty(bean, \"value.class.classLoader\");\n        assertThat(classLoader).isNotNull().isInstanceOf(ClassLoader.class);\n\n        // Retrieve the runtime environment loader information as a text representation and verify it is present.\n        final Object classLoaderString = propertyUtilsBean.getProperty(bean, \"value.class.classLoader.toString\");\n        assertThat(classLoaderString).isInstanceOf(String.class).isNotBlank();\n\n        // Confirm through nested property navigation that the loader can be accessed as its proper type.\n        final Object classLoaderAgain = propertyUtilsBean.getProperty(bean, \"value.class.classLoader\");\n        assertThat(classLoaderAgain).isInstanceOf(ClassLoader.class);\n    }\n}",
+      "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 21079,
+    "output_tokens": 7921,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 252,
+      "description": "Define a test method annotated with `@Test` that declares it throws `ReflectiveOperationException`, then instantiate a new `Fixture` object using its no-argument constructor and assign it to a variable named `fixture`, followed by instantiating a new `BeanUtilsBean` object using its no-argument constructor and assigning it to a variable named `bub`. Immediately invoke `assertThrows` with `NoSuchMethodException.class` as the first argument and a lambda expression as the second argument that calls `getProperty` on `bub` with arguments `fixture` and the String literal `\"testEnum.declaringClass.classLoader\"`, verifying that this invocation throws the expected exception. Next, invoke `assertThrows` again with `NoSuchMethodException.class` as the first argument and a lambda expression as the second argument that chains method calls by first invoking `getPropertyUtils()` on `bub` to obtain a `PropertyUtilsBean` instance, then immediately calling `getNestedProperty` on that returned instance with arguments `fixture` and the String literal `\"testEnum.declaringClass.classLoader\"`, verifying that this chained invocation also throws the expected exception. The test uses JUnit 5 Assertions via `assertThrows` and validates that both direct property access through `BeanUtilsBean.getProperty` and nested property access through `PropertyUtilsBean.getNestedProperty` correctly suppress access to the class property path by throwing `NoSuchMethodException` when attempting to traverse the property expression `\"testEnum.declaringClass.classLoader\"` on the fixture object.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.SuppressClassLoaderPropertyTestCase",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests that access to class loader properties is suppressed.\n */\npublic class SuppressClassLoaderPropertyTestCase {\n\n    public static class Fixture {\n        private final TestEnum testEnum = TestEnum.A;\n\n        public TestEnum getTestEnum() {\n            return testEnum;\n        }\n    }\n\n    @Test\n    public void testSuppressClassLoaderProperty() throws ReflectiveOperationException {\n        final Fixture fixture = new Fixture();\n        final BeanUtilsBean bub = new BeanUtilsBean();\n        assertThrows(NoSuchMethodException.class, () -> bub.getProperty(fixture, \"testEnum.declaringClass.classLoader\"));\n        assertThrows(NoSuchMethodException.class, () -> bub.getPropertyUtils().getNestedProperty(fixture, \"testEnum.declaringClass.classLoader\"));\n    }\n}",
+      "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9983,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 14921,
+    "output_tokens": 1453,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 254,
+      "description": "Create a test case to validate that the system's property access mechanism enforces security restrictions by default, specifically preventing access to internal class metadata through nested property paths. Begin by establishing a test scenario with a business object that contains enumerated type information, then configure the system's property utility to operate under its default security settings. Verify that when attempting to retrieve deeply nested class loader information through the property path traversing from an enumeration value to its declaring class and then to the class loader, the system correctly rejects this access attempt by signaling that no such property retrieval method exists. Confirm this security behavior through two separate validation approaches: first by attempting direct property retrieval through the main utility interface, and second by attempting the same operation through the underlying property access mechanism. Both attempts must demonstrate that the system properly blocks access to sensitive internal class structures, ensuring that business applications cannot inadvertently expose or manipulate underlying framework internals through property navigation. This test employs JUnit 5 as the testing framework and uses standard assertion capabilities to verify that the expected security exceptions occur when attempting unauthorized property access.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.PropertyUtilsSecurityTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests that the system's property access mechanism enforces security restrictions by default,\n * specifically preventing access to internal class metadata through nested property paths. This\n * test verifies that attempts to access a class loader via a nested property path on an enum\n * are blocked, which is a critical security measure.\n */\npublic class PropertyUtilsSecurityTest {\n\n    /**\n     * A simple business object for testing that contains an enumerated type property.\n     */\n    public static class BusinessObject {\n        private final TestEnum myEnum = TestEnum.A;\n\n        public TestEnum getMyEnum() {\n            return myEnum;\n        }\n    }\n\n    /**\n     * This test validates that the default configuration of the property utilities\n     * blocks access to a ClassLoader through a nested property path starting from an\n     * enum. It confirms this behavior for both the main {@link PropertyUtils} utility\n     * and the underlying {@link PropertyUtilsBean} to ensure the security restriction\n     * is consistently applied. An expected {@link NoSuchMethodException} confirms\n     * that the 'classLoader' property is not exposed on the {@link Class} object\n     * returned by the enum's 'declaringClass' property.\n     */\n    @Test\n    public void testAccessToNestedClassLoaderIsBlocked() {\n        final BusinessObject bean = new BusinessObject();\n        final String maliciousPath = \"myEnum.declaringClass.classLoader\";\n\n        // First, verify that the main utility interface, PropertyUtils, blocks access.\n        assertThrows(NoSuchMethodException.class, () -> {\n            PropertyUtils.getProperty(bean, maliciousPath);\n        });\n\n        // Second, verify the same behavior on the underlying property access mechanism.\n        final PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();\n        assertThrows(NoSuchMethodException.class, () -> {\n            propertyUtilsBean.getProperty(bean, maliciousPath);\n        });\n    }\n}",
+      "method_signature": "testSuppressClassPropertyByDefaultFromBeanUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.4,
+      "callable_precision": 0.3333,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.9983,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19267,
+    "output_tokens": 6079,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 257,
+      "description": "Define a test method that throws `ReflectiveOperationException` and begins by instantiating a `BeanUtilsBean` using the no-argument constructor, assigning the result to variable `bub`. Invoke `getPropertyUtils()` on `bub` and assign the returned `PropertyUtilsBean` to variable `propertyUtilsBean`. On `propertyUtilsBean`, invoke `removeBeanIntrospector` passing the static field `SuppressPropertiesBeanIntrospector.SUPPRESS_DECLARING_CLASS` as the argument. Create a new instance of the nested test class `Fixture` using its no-argument constructor and assign it to variable `fixture`. Invoke `getProperty` on `bub` with arguments `fixture` and the String literal `\"testEnum.declaringClass\"`, assigning the returned String to variable `string`. Assert equality between `string` and the result of invoking `TestEnum.class.getName()` using `assertEquals`. Invoke `getNestedProperty` on `propertyUtilsBean` with arguments `fixture` and String literal `\"testEnum.declaringClass\"`, wrap this invocation in `assertInstanceOf(Class.class, ...)` to verify the returned object is of type `Class`, and assign the result (cast to `Class<TestEnum>`) to variable `teClass`. Invoke `getClassLoader()` on `teClass` and assign the returned `ClassLoader` to variable `classLoader`. Assert that `classLoader` is not null using `assertNotNull(classLoader)`. Invoke `getProperty` on `bub` with arguments `fixture` and String literal `\"testEnum.declaringClass.classLoader\"`, and assert that the returned value is not null using `assertNotNull`. Finally, invoke `getNestedProperty` on `propertyUtilsBean` with arguments `fixture` and String literal `\"testEnum.declaringClass.classLoader\"`, and assert that the returned object is an instance of `ClassLoader` using `assertInstanceOf(ClassLoader.class, ...)`. The test uses JUnit 5 Assertions and is annotated with `@Test` at the method level.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.SuppressDeclaringClassTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertInstanceOf;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport org.junit.jupiter.api.Test;\n\npublic class SuppressDeclaringClassTest {\n\n    public static class Fixture {\n        private TestEnum testEnum = TestEnum.A;\n\n        public TestEnum getTestEnum() {\n            return testEnum;\n        }\n\n        public void setTestEnum(final TestEnum testEnum) {\n            this.testEnum = testEnum;\n        }\n    }\n\n    @Test\n    public void testSuppressDeclaringClass() throws ReflectiveOperationException {\n        final BeanUtilsBean bub = new BeanUtilsBean();\n        final PropertyUtilsBean propertyUtilsBean = bub.getPropertyUtils();\n        propertyUtilsBean.removeBeanIntrospector(SuppressPropertiesBeanIntrospector.SUPPRESS_DECLARING_CLASS);\n\n        final Fixture fixture = new Fixture();\n        final String string = (String) bub.getProperty(fixture, \"testEnum.declaringClass\");\n        assertEquals(TestEnum.class.getName(), string);\n\n        final Class<TestEnum> teClass = assertInstanceOf(Class.class, propertyUtilsBean.getNestedProperty(fixture, \"testEnum.declaringClass\"));\n        final ClassLoader classLoader = teClass.getClassLoader();\n        assertNotNull(classLoader);\n\n        assertNotNull(bub.getProperty(fixture, \"testEnum.declaringClass.classLoader\"));\n        assertInstanceOf(ClassLoader.class, propertyUtilsBean.getNestedProperty(fixture, \"testEnum.declaringClass.classLoader\"));\n    }\n}",
+      "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.5,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15866,
+    "output_tokens": 2205,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 261,
+      "description": "Define a test method that validates property access to class-related metadata on enum types when the default introspection suppression is explicitly removed from the property utilities configuration. Instantiate a BeanUtilsBean to serve as the primary property access facade, then retrieve its PropertyUtilsBean component to configure introspection behavior. Remove the bean introspector that suppresses access to the declaring class property, allowing the test to access normally restricted class metadata. Create a test fixture object that holds an enum value, then invoke the property retrieval method on the BeanUtilsBean to access the nested property path targeting the enum's declaring class, obtaining this value as a string representation. Assert that the returned string matches the fully qualified name of the enum class. Next, invoke the nested property accessor on the PropertyUtilsBean to retrieve the same declaring class property, but this time as an object, and assert that the returned object is an instance of Class typed to the enum. Extract the class loader from the retrieved class object and validate that it is not null. Invoke the property retrieval method again on the BeanUtilsBean to access a deeper nested property path that traverses from the enum through its declaring class to the class loader, obtaining this as a string, and assert that the result is not null. Finally, invoke the nested property accessor on the PropertyUtilsBean to retrieve the same class loader property path as an object and assert that the returned object is an instance of ClassLoader, confirming that the removal of the introspection suppressor enables full traversal of class metadata properties that would otherwise be restricted for security reasons. This test uses JUnit 5 for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.bugs.EnumDeclaringClassTest",
+      "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.BeanUtilsBeanEnumTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\nimport static org.junit.jupiter.api.Assertions.assertInstanceOf;\n\n/**\n * Test class for {@link BeanUtilsBean} that validates property access to class-related metadata on enum types.\n */\npublic class BeanUtilsBeanEnumTest {\n\n    public static class EnumHolder {\n        private TestEnum enumProperty = TestEnum.A;\n\n        public TestEnum getEnumProperty() {\n            return enumProperty;\n        }\n\n        public void setEnumProperty(TestEnum enumProperty) {\n            this.enumProperty = enumProperty;\n        }\n    }\n\n    @Test\n    public void testGetEnumDeclaringClassPropertyWhenIntrospectionSuppressionIsRemoved() throws Exception {\n        final BeanUtilsBean beanUtilsBean = new BeanUtilsBean();\n        final PropertyUtilsBean propertyUtilsBean = beanUtilsBean.getPropertyUtils();\n        propertyUtilsBean.removeBeanIntrospector(SuppressPropertiesBeanIntrospector.SUPPRESS_CLASS_BEAN_INTROSPECTOR);\n\n        final EnumHolder bean = new EnumHolder();\n\n        // Test with BeanUtilsBean.getProperty (returns String)\n        final String declaringClassName = beanUtilsBean.getProperty(bean, \"enumProperty.declaringClass\");\n        assertEquals(TestEnum.class.getName(), declaringClassName,\n                \"Should be able to access the declaringClass property as a string.\");\n\n        // Test with PropertyUtilsBean.getNestedProperty (returns Object)\n        final Object declaringClassObject = propertyUtilsBean.getNestedProperty(bean, \"enumProperty.declaringClass\");\n        assertInstanceOf(Class.class, declaringClassObject,\n                \"The retrieved declaringClass property should be an instance of Class.\");\n        assertEquals(TestEnum.class, declaringClassObject,\n                \"The retrieved class object should be equal to the enum's class.\");\n\n        final Class<?> enumClass = (Class<?>) declaringClassObject;\n        final ClassLoader classLoader = enumClass.getClassLoader();\n        assertNotNull(classLoader, \"The class loader of the enum should not be null.\");\n\n        // Test deep nested property with BeanUtilsBean.getProperty (returns String)\n        final String classLoaderName = beanUtilsBean.getProperty(bean, \"enumProperty.declaringClass.classLoader\");\n        assertNotNull(classLoaderName, \"Should be able to access the class loader property as a string.\");\n\n        // Test deep nested property with PropertyUtilsBean.getNestedProperty (returns Object)\n        final Object classLoaderObject = propertyUtilsBean.getNestedProperty(bean, \"enumProperty.declaringClass.classLoader\");\n        assertInstanceOf(ClassLoader.class, classLoaderObject,\n                \"Should be able to access the class loader property as an object.\");\n    }\n}",
+      "method_signature": "testAllowAccessToClassPropertyFromBeanUtilsBean()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 23670,
+    "output_tokens": 1802,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 28,
+      "description": "Create a test case to validate that the conversion system properly rejects attempts to transform text references into enumerated values when the referenced business category does not exist in the system. Begin by establishing a conversion capability configured to handle enumerated business status values. Once the conversion mechanism is in place, attempt to convert a text reference that specifies a non-existent business category path, simulating a scenario where a user or external system provides an invalid category identifier. Ensure the system responds by rejecting this invalid conversion request with a clear failure indication, confirming that the conversion logic validates the existence of referenced categories before attempting transformation. After verifying the system's protective behavior against invalid category references, release the conversion resources to maintain a clean testing environment. Use JUnit 5 for the testing framework and standard assertion capabilities to verify that the system properly signals conversion failures when encountering references to non-existent business categories.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testNonExistingClasses()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.ConvertUtils;\nimport org.apache.commons.beanutils2.TestEnum;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterTest1 {\n\n    /**\n     * Tests that converting a non-existent enum value throws a ConversionException.\n     */\n    @Test\n    public void testInvalidEnumConversion() {\n        // Establish conversion capability for TestEnum\n        final EnumConverter<TestEnum> converter = new EnumConverter<>(TestEnum.class);\n        ConvertUtils.register(converter, TestEnum.class);\n\n        try {\n            // Attempt to convert a non-existent category, expecting a failure\n            assertThrows(ConversionException.class, () -> {\n                ConvertUtils.convert(\"NON_EXISTENT_CATEGORY\", TestEnum.class);\n            });\n        } finally {\n            // Release conversion resources\n            ConvertUtils.deregister(TestEnum.class);\n        }\n    }\n}",
+      "method_signature": "testNonExistingClasses()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15023,
+    "output_tokens": 1852,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 29,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Enum<PizzaStatus>>` where `PizzaStatus` is an enum type defined within the test class scope. Implement a setup method annotated with `@BeforeEach` that instantiates `converter` by creating a new `EnumConverter<>()` using the no-argument constructor and assigns it to the field. Write a test method annotated with `@Test` that verifies exception handling by invoking `assertThrows` with `ConversionException.class` as the first argument and a lambda expression as the second argument, where the lambda calls `converter.convert(Enum.class, \"java.lang.String#MONDAY\")` passing the raw `Enum.class` type as the first parameter and the String literal `\"java.lang.String#MONDAY\"` as the second parameter, expecting the conversion to throw a `ConversionException` due to the non-enum class reference. Implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field to release the resource. The test uses JUnit 5 Assertions with method-level annotation `@Test`, and the setup/teardown methods throw `Exception` in their signatures.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testNonEnumClasses()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterInvalidClassTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link EnumConverter} for invalid class references.\n */\npublic class EnumConverterInvalidClassTest {\n\n    private enum PizzaStatus {\n        ORDERED,\n        BAKING,\n        DELIVERING,\n        DELIVERED\n    }\n\n    private Converter<Enum<PizzaStatus>> converter;\n\n    @BeforeEach\n    public void setUp() throws Exception {\n        converter = new EnumConverter<>();\n    }\n\n    @AfterEach\n    public void tearDown() throws Exception {\n        converter = null;\n    }\n\n    @Test\n    public void testConversionExceptionForNonEnumClass() {\n        assertThrows(ConversionException.class, () -> converter.convert(Enum.class, \"java.lang.String#MONDAY\"));\n    }\n}",
+      "method_signature": "testNonEnumClasses()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29281,
+    "output_tokens": 4706,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 36,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Enum<PizzaStatus>>` where `PizzaStatus` is an enum type defined within the test class scope. Implement a setup method annotated with `@BeforeEach` that assigns to `converter` a new instance of `EnumConverter` constructed using the no-argument constructor `new EnumConverter<>()`, ensuring the generic type parameter matches `Enum<PizzaStatus>`. Write a test method annotated with `@Test` that verifies exception handling for non-existent class references by invoking `assertThrows` with `ConversionException.class` as the first argument and a lambda expression as the second argument, where the lambda calls `converter.convert(Enum.class, \"java.lang.does.not.exist#MONDAY\")` passing `Enum.class` as the target type and the String literal `\"java.lang.does.not.exist#MONDAY\"` as the value to convert, thereby asserting that this invocation throws a `ConversionException` due to the invalid class name in the string. Implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field to release the reference. The test uses JUnit 5 Assertions with method-level annotation `@Test` and relies on the `EnumConverter` class from the Apache Commons BeanUtils2 library.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testNonExistingClasses()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test Case for the EnumConverter class.\n *\n */\npublic class EnumConverterTest1 {\n\n    private enum PizzaStatus {\n        ORDERED,\n        BAKING,\n        DELIVERING,\n        DELIVERED\n    }\n\n    private Converter<Enum<PizzaStatus>> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new EnumConverter<>();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testConvertNonExistentClass() {\n        assertThrows(ConversionException.class, () -> {\n            converter.convert(Enum.class, \"java.lang.does.not.exist#MONDAY\");\n        });\n    }\n}",
+      "method_signature": "testNonExistingClasses()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.5,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 51282,
+    "output_tokens": 10459,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 75,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Enum<PizzaStatus>>`, then implement a setup method annotated with `@BeforeEach` that instantiates a new `EnumConverter<>` using its no-argument constructor and assigns it to the `converter` field. Within the test method annotated with `@Test`, invoke `convert` on the `converter` field passing two arguments: the class literal `Enum.class` and the String literal `\"java.util.concurrent.TimeUnit.NANOSECONDS\"`, then immediately assert using `assertEquals` that the returned value equals the enum constant `TimeUnit.NANOSECONDS`. After the test completes, implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertTimeUnit()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.util.concurrent.TimeUnit;\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterTest1 {\n\n    private Converter<Enum> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new EnumConverter<>();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testConvert() {\n        assertEquals(TimeUnit.NANOSECONDS, converter.convert(Enum.class, \"java.util.concurrent.TimeUnit.NANOSECONDS\"));\n    }\n}",
+      "method_signature": "testConvertTimeUnit()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 18525,
+    "output_tokens": 5445,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 77,
+      "description": "Create a test case to validate that the system's conversion capability can accurately transform a fully-qualified textual representation of a standard time measurement unit into its corresponding enumerated constant. Before executing the test, establish a conversion utility configured to handle enumerated type transformations without default fallback behavior. Once the converter is in place, instruct it to process the text value representing nanoseconds from the standard time unit enumeration and verify that the system correctly produces the nanosecond time unit constant as the result, confirming the converter properly interprets both the enumeration class context and the specific constant name. After validation completes, release the converter resource to ensure a clean test environment. Use JUnit 5 as the testing framework with standard equality assertions to verify the conversion outcome matches the expected time unit constant.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertTimeUnit()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTestCase",
+      "code": "package org.apache.commons.beanutils2.converters;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.util.concurrent.TimeUnit;\n\nimport org.apache.commons.beanutils2.ConvertUtils;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterTestCase {\n\n    private EnumConverter<TimeUnit> converter;\n\n    @BeforeEach\n    public void setUp() {\n        // Establish a conversion utility configured for enum transformations\n        converter = new EnumConverter<>(TimeUnit.class);\n        ConvertUtils.register(converter, TimeUnit.class);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        // Release the converter resource\n        ConvertUtils.deregister(TimeUnit.class);\n    }\n\n    @Test\n    public void testFromString() {\n        // Process the text value representing nanoseconds\n        final Object result = converter.convert(TimeUnit.class, \"java.util.concurrent.TimeUnit.NANOSECONDS\");\n\n        // Verify that the system correctly produces the nanosecond time unit constant\n        assertEquals(TimeUnit.NANOSECONDS, result);\n    }\n}",
+      "method_signature": "testConvertTimeUnit()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 37006,
+    "output_tokens": 5285,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 78,
+      "description": "Create a test case to validate that the system's time conversion capability correctly transforms textual timestamp representations into their corresponding point-in-time values. Begin by establishing a conversion service that handles timestamp transformations, ensuring it is ready to process incoming data. Define the expected outcome as a specific point in time representing early December 2007, calculated from a known millisecond offset. Submit a standardized timestamp string in ISO-8601 format to the conversion service, requesting transformation into the system's internal time representation. Verify that the converted result precisely matches the expected point in time, confirming the conversion service accurately interprets the textual format and produces the correct temporal value. After validation completes, release the conversion service resources to maintain a clean testing environment. Use JUnit 5 as the testing framework with standard equality assertions to confirm the conversion accuracy.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testConvertingInstantString()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTestCase",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.ConvertUtils;\nimport org.junit.jupiter.api.Test;\nimport java.time.Instant;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n/**\n * Test case for {@link InstantConverter}.\n */\npublic class InstantConverterTestCase {\n\n    @Test\n    public void testTimestampConversion() {\n        final InstantConverter converter = new InstantConverter();\n        ConvertUtils.register(converter, Instant.class);\n        try {\n            final String timestampString = \"2007-12-03T10:15:30.00Z\";\n            final Instant expected = Instant.parse(timestampString);\n            final Object result = ConvertUtils.convert(timestampString, Instant.class);\n            assertEquals(expected, result, \"The converted timestamp should match the expected Instant value.\");\n        } finally {\n            ConvertUtils.deregister(Instant.class);\n        }\n    }\n}",
+      "method_signature": "testConvertingInstantString()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.3333,
+      "callable_precision": 0.1667,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30010,
+    "output_tokens": 4667,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 79,
+      "description": "Define a test class that validates the Enum Converter's ability to convert fully qualified enum constant strings into their corresponding enum instances, beginning by declaring a field to hold the converter instance and creating a helper method that instantiates and returns a new Enum Converter configured for a specific enum type. In the setup phase, invoke this helper to initialize the converter field, establishing the component under test. Within the test method, invoke the converter's convert method with the Enum base class as the target type and provide a fully qualified string representation of a TimeUnit enum constant (package name, class name, and constant name concatenated), then immediately assert that the returned value equals the expected TimeUnit enum constant to verify the converter correctly parsed and resolved the string to the actual enum instance. After test execution completes, nullify the converter field in the teardown phase to release the reference and ensure test isolation. This test uses JUnit for test execution and standard assertion methods for validation.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testConvertTimeUnit()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTestCase",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport java.util.concurrent.TimeUnit;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterTestCase {\n\n    private Converter<Enum<?>> converter;\n\n    /**\n     * Creates a new {@link EnumConverter}.\n     *\n     * @param <E> The enum type\n     * @return a new {@link EnumConverter}\n     */\n    protected <E extends Enum<E>> EnumConverter<E> createConverter() {\n        return new EnumConverter<>(null);\n    }\n\n    @BeforeEach\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    /**\n     * Tests that the enum converter can convert a fully qualified enum string.\n     */\n    @Test\n    public void testConvertToEnum() throws Exception {\n        assertEquals(TimeUnit.SECONDS, converter.convert(Enum.class, \"java.util.concurrent.TimeUnit.SECONDS\"));\n    }\n}",
+      "method_signature": "testConvertTimeUnit()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 52071,
+    "output_tokens": 4870,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 81,
+      "description": "Define a test class that validates the Enum Converter's handling of malformed input strings that violate the expected naming convention format. Before each test execution, initialize a private Converter field by creating a helper method that instantiates an Enum Converter configured to throw exceptions on conversion failures. Within the test method, invoke the converter's convert method with the Enum base class as the target type and provide an input string that uses an invalid delimiter format (a hyphen-separated qualified enum name instead of the expected format). Assert that this conversion attempt throws a Conversion Exception, confirming that the converter properly rejects inputs that do not conform to the standard enum naming pattern. After test completion, release the converter reference by nullifying the field to ensure clean state between test executions. This test uses JUnit 5 for assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testBrokenNamingConvention()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterMalformedInputTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.apache.commons.beanutils2.Converter;\nimport org.apache.commons.beanutils2.TestEnum;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test case for {@link EnumConverter} for handling malformed input.\n */\npublic class EnumConverterMalformedInputTest {\n\n    private Converter<Enum<?>> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    private <E extends Enum<E>> Converter<E> createConverter() {\n        return new EnumConverter<>(TestEnum.class, true);\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testMalformedEnumString() {\n        assertThrows(ConversionException.class, () -> {\n            converter.convert(Enum.class, \"org.apache.commons.beanutils2.TestEnum-A\");\n        });\n    }\n}",
+      "method_signature": "testBrokenNamingConvention()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29709,
+    "output_tokens": 1435,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 82,
+      "description": "Define a test class that validates the conversion capability of an Instant Converter component by first establishing a converter field and creating a private helper method that instantiates the converter implementation, then invoking this helper during setup to initialize the field. Within the test method, construct a reference Instant object from a known epoch millisecond value representing a specific timestamp, then invoke the converter's conversion method with the Instant class type and an ISO-8601 formatted string representation of the same timestamp to obtain the converted result. Assert that the converted Instant matches the reference Instant created from the epoch value, confirming the converter correctly parses the string format into the temporal object. After test execution, release the converter reference by nullifying the field to ensure clean state between test runs. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testConvertingInstantString()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTestCase",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport static org.junit.Assert.assertEquals;\n\nimport java.time.Instant;\n\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\n\n/**\n * Test case for {@link InstantConverter}.\n */\npublic class InstantConverterTestCase {\n\n    private Converter<Instant> converter;\n\n    @Before\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    @After\n    public void tearDown() {\n        converter = null;\n    }\n\n    private Converter<Instant> createConverter() {\n        return new InstantConverter();\n    }\n\n    @Test\n    public void testConvertToInstant() {\n        final long epochMilli = 1468349312000L;\n        final Instant expected = Instant.ofEpochMilli(epochMilli);\n        final String isoTimestamp = \"2016-07-12T18:48:32Z\";\n\n        final Instant result = converter.convert(Instant.class, isoTimestamp);\n\n        assertEquals(expected, result);\n    }\n}",
+      "method_signature": "testConvertingInstantString()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15862,
+    "output_tokens": 2856,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 84,
+      "description": "Create a test case to validate that the system properly rejects conversion requests when presented with input that violates the expected naming format for enumeration values. Before executing the scenario, ensure a conversion utility is configured to handle enumeration transformations without any default fallback behavior, so that invalid inputs trigger immediate failures rather than silent substitutions. Once the utility is ready, attempt to convert a text value that deliberately uses an incorrect separator convention\u2014specifically a hyphen-based format instead of the standard dot-based package notation\u2014while requesting conversion to a generic enumeration type. Verify that the system recognizes this malformed input as invalid and responds by signaling a conversion failure, preventing any partial or incorrect transformation from proceeding. After confirming the rejection behavior, release the conversion utility to free any held resources. Use JUnit 5 as the testing framework and verify the expected failure condition using standard exception assertion capabilities.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testBrokenNamingConvention()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.EnumConverterMalformedInputTest",
+      "code": "package org.apache.commons.beanutils2;\n\nimport org.apache.commons.beanutils2.converters.EnumConverter;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test case for {@link EnumConverter} behavior with malformed input.\n */\npublic class EnumConverterMalformedInputTest {\n\n    /**\n     * Tests that the system rejects a conversion request with an input that violates the expected\n     * naming format for enumeration values.\n     */\n    @Test\n    public void testRejectsConversionForMalformedEnumName() {\n        final ConvertUtilsBean convertUtilsBean = new ConvertUtilsBean();\n\n        // Configure the utility for enum transformations without any default fallback.\n        convertUtilsBean.register(new EnumConverter(), Enum.class);\n\n        try {\n            // The input string uses a hyphen-based format instead of the standard dot-based notation.\n            final String malformedEnumValue = \"org-apache-commons-beanutils2-TestEnum.A\";\n\n            // Verify that the malformed input is recognized as invalid and a conversion failure is signaled.\n            assertThrows(ConversionException.class, () -> {\n                convertUtilsBean.convert(malformedEnumValue, TestEnum.class);\n            });\n        } finally {\n            // Release the conversion utility to free any held resources.\n            convertUtilsBean.deregister(Enum.class);\n        }\n    }\n}",
+      "method_signature": "testBrokenNamingConvention()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.1667,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.75,
+      "method_coverage": 0.4444,
+      "line_coverage": 0.383,
+      "branch_coverage": 0.55
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 16601,
+    "output_tokens": 3544,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 85,
+      "description": "Define a test class that validates the Instant Converter's ability to transform millisecond epoch values into Instant objects, beginning by declaring a field to hold the converter instance and implementing a setup method that creates a private helper to instantiate the converter implementation. Within the test method, construct an expected Instant by converting a specific millisecond epoch value using the standard Instant factory method, then invoke the converter's convert method with the target Instant class type and the same millisecond epoch value as a long integer to produce the actual result. Assert that the actual Instant matches the expected Instant to confirm the converter correctly interprets millisecond epoch inputs. After test execution, implement a teardown method that nullifies the converter field to release resources. The test uses JUnit for test execution and assertions.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testConvertingMilliseconds()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTestCase",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport java.time.Instant;\nimport junit.framework.TestCase;\nimport org.junit.After;\nimport org.junit.Before;\nimport org.junit.Test;\nimport static org.junit.Assert.assertEquals;\n\n/**\n * Test Case for the InstantConverter class.\n */\npublic class InstantConverterTestCase extends TestCase {\n\n    private InstantConverter converter;\n\n    @Before\n    public void setUp() {\n        converter = createConverter();\n    }\n\n    private InstantConverter createConverter() {\n        return new InstantConverter();\n    }\n\n    @After\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testConvertToInstantFromMilliseconds() {\n        final long epochMilli = 1679339318000L;\n        final Instant expected = Instant.ofEpochMilli(epochMilli);\n        final Instant actual = converter.convert(Instant.class, epochMilli);\n        assertEquals(expected, actual);\n    }\n}",
+      "method_signature": "testConvertingMilliseconds()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 131424,
+    "output_tokens": 1865,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 87,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Instant>`, then implement a setup method annotated with `@BeforeEach` that assigns to `converter` a new instance of `InstantConverter` created by invoking its no-argument constructor. Within the test method annotated with `@Test`, begin by creating a local variable `expected` of type `Instant` by invoking the static method `Instant.ofEpochMilli` with the long literal `1196676930000L`, then immediately invoke the `convert` method on the `converter` field passing two arguments: the class literal `Instant.class` and the string literal `\"2007-12-03T10:15:30.00Z\"`, assigning the returned `Instant` to a local variable `actual`. Following this conversion, assert equality by invoking `assertEquals` with `expected` as the first argument and `actual` as the second argument to verify that the converter produces the correct `Instant` representation of the ISO-8601 timestamp. After the test completes, implement a teardown method annotated with `@AfterEach` that explicitly assigns `null` to the `converter` field to release the resource. The test uses JUnit 5 assertions with method-level annotation `@Test`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testConvertingInstantString()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport java.time.Instant;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n/**\n * Test Case for the InstantConverter class.\n */\npublic class InstantConverterTest1 {\n\n    private Converter<Instant> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new InstantConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testConvert() {\n        final Instant expected = Instant.ofEpochMilli(1196676930000L);\n        final Instant actual = converter.convert(Instant.class, \"2007-12-03T10:15:30.00Z\");\n        assertEquals(expected, actual);\n    }\n}",
+      "method_signature": "testConvertingInstantString()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 44651,
+    "output_tokens": 2525,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 89,
+      "description": "Create a test case to validate that the time conversion system correctly transforms a numeric timestamp representing milliseconds since the epoch into a standardized point-in-time representation. Begin by establishing a conversion capability within the system that can handle temporal data transformations. Prepare a reference point-in-time corresponding to a specific millisecond timestamp to serve as the expected business outcome. Submit the numeric millisecond value to the conversion system and request transformation into a point-in-time format. Verify that the converted temporal result matches the expected reference point exactly, confirming the system accurately interprets millisecond timestamps and produces consistent temporal representations. After validation completes, release the conversion capability to ensure no resources remain allocated. Use JUnit 5 as the testing framework with standard equality assertions to confirm the temporal values align precisely.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testConvertingMilliseconds()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTestCase",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.time.Instant;\n\n/**\n * Test case for the {@link InstantConverter} class.\n */\npublic class InstantConverterTestCase {\n\n    /**\n     * Tests the conversion of a millisecond timestamp to an Instant.\n     */\n    @Test\n    public void testTimestampToInstantConversion() {\n        final InstantConverter converter = new InstantConverter();\n        final long timestamp = 1674198000000L;\n        final Instant expected = Instant.ofEpochMilli(timestamp);\n\n        final Instant result = converter.convert(Instant.class, timestamp);\n\n        assertEquals(expected, result, \"The converted Instant should match the expected Instant.\");\n    }\n}",
+      "method_signature": "testConvertingMilliseconds()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.6667,
+      "callable_precision": 0.5,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29202,
+    "output_tokens": 4337,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 91,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Enum<PizzaStatus>>`, where `PizzaStatus` is an enum type defined within the test class scope. In a setup method annotated with `@BeforeEach`, instantiate a new `EnumConverter<>` using its no-argument constructor and assign it to the `converter` field. Write a test method annotated with `@Test` that verifies exception handling for malformed enum naming conventions by invoking `assertThrows` with `ConversionException.class` as the first argument and a lambda expression as the second argument, where the lambda calls `converter.convert(Enum.class, \"JAVA-TIME-DAYOFWEEK#MONDAY\")` passing `Enum.class` as the target type and the String literal `\"JAVA-TIME-DAYOFWEEK#MONDAY\"` as the value to convert, expecting the conversion to fail and throw a `ConversionException` due to the invalid delimiter character. In a teardown method annotated with `@AfterEach` and throwing `Exception`, assign `null` to the `converter` field to release the reference. The test uses JUnit 5 Assertions with method-level annotation `@Test` and setup/teardown annotations `@BeforeEach` and `@AfterEach`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest",
+      "method_signature": "testBrokenNamingConvention()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.EnumConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.Converter;\nimport org.apache.commons.beanutils2.ConversionException;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Test case for {@link EnumConverter}.\n */\npublic class EnumConverterTest1 {\n\n    private enum PizzaStatus {\n        ORDERED,\n        BAKING,\n        DELIVERING,\n        DELIVERED\n    }\n\n    private Converter<Enum<PizzaStatus>> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new EnumConverter<>();\n    }\n\n    @AfterEach\n    public void tearDown() throws Exception {\n        converter = null;\n    }\n\n    @Test\n    public void testConvertMalformedEnum() {\n        assertThrows(ConversionException.class, () -> {\n            converter.convert(Enum.class, \"JAVA-TIME-DAYOFWEEK#MONDAY\");\n        });\n    }\n}",
+      "method_signature": "testBrokenNamingConvention()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.5,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 81951,
+    "output_tokens": 5987,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 92,
+      "description": "Define a test class containing a private field `converter` of type `Converter<Instant>`, then implement a setup method annotated with `@BeforeEach` that assigns to `converter` the result of instantiating a new `InstantConverter` using its no-argument constructor. Within the test method annotated with `@Test`, begin by creating an `Instant` named `expected` by invoking the static method `Instant.ofEpochMilli` with the long literal `1596500083605L`, then invoke the `convert` method on `converter` passing `Instant.class` as the first argument and the long literal `1596500083605L` as the second argument, assigning the returned `Instant` to a variable named `actual`. Immediately assert equality by calling `assertEquals` with `expected` as the first argument and `actual` as the second argument. Implement a teardown method annotated with `@AfterEach` that assigns `null` to the `converter` field. The test uses JUnit 5 Assertions with method-level annotation `@Test`, setup annotation `@BeforeEach`, and teardown annotation `@AfterEach`.",
+      "project_name": "commons-beanutils",
+      "qualified_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest",
+      "method_signature": "testConvertingMilliseconds()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.beanutils2.converters.InstantConverterTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.beanutils2.converters;\n\nimport org.apache.commons.beanutils2.Converter;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\n\nimport java.time.Instant;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\n/**\n * Test case for {@link InstantConverter}.\n */\npublic class InstantConverterTest1 {\n\n    private Converter<Instant> converter;\n\n    @BeforeEach\n    public void setUp() {\n        converter = new InstantConverter();\n    }\n\n    @AfterEach\n    public void tearDown() {\n        converter = null;\n    }\n\n    @Test\n    public void testConvert() {\n        final Instant expected = Instant.ofEpochMilli(1596500083605L);\n        final Instant actual = converter.convert(Instant.class, 1596500083605L);\n        assertEquals(expected, actual);\n    }\n}",
+      "method_signature": "testConvertingMilliseconds()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 91584,
+    "output_tokens": 2867,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  }
+]

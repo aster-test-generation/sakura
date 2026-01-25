@@ -1,0 +1,362 @@
+[
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 0,
+      "description": "Define a test method that validates the driver loading capability of the database utility component by invoking the static loadDriver method with a fully qualified driver class name string representing the H2 database driver, then assert that the method returns a boolean true value indicating successful driver registration, noting that the test may propagate generic exceptions during execution and uses a standard testing framework for assertions.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testLoadDriver() throws Exception {\n        assertTrue(DbUtils.loadDriver(\"org.h2.Driver\"));\n    }\n}",
+      "method_signature": "testLoadDriverH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 41677,
+    "output_tokens": 1558,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 1,
+      "description": "Define a test method that validates the dynamic loading and registration of a JDBC driver using a specific class loader, where you invoke the loadDriver method on the DbUtils component by passing the class loader obtained from the DbUtils class itself along with the fully qualified driver class name string for the H2 database driver, then assert that the method returns true to confirm successful driver loading and registration, noting that this test may throw a general exception and uses standard assertion capabilities.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "package org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for the {@link DbUtils} class.\n */\npublic class DbUtilsTest1 {\n\n    /**\n     * Tests that the {@code loadDriver} method can dynamically load a JDBC driver\n     * using a specific class loader.\n     *\n     * @throws Exception if any error occurs.\n     */\n    @Test\n    public void testLoadDriverWithClassLoader() throws Exception {\n        final boolean result = DbUtils.loadDriver(DbUtils.class.getClassLoader(), \"org.h2.Driver\");\n        assertTrue(result, \"Driver should be loaded successfully\");\n    }\n}",
+      "method_signature": "testLoadDriverClassLoaderH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 20998,
+    "output_tokens": 4503,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 11,
+      "description": "Define a test method that validates the stack trace printing behavior of the DbUtils utility class when handling SQL exceptions by constructing a new SQLException instance and passing it to the printStackTrace method on DbUtils, which internally routes the exception's stack trace to the standard error stream through a PrintWriter, then verify that the operation completes without throwing exceptions and that the utility method processes the SQLException's chain of nested exceptions if present, noting that this test relies on the standard Java testing framework without additional assertion libraries since the validation is implicit in successful execution without errors.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport java.sql.SQLException;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test cases for the {@link DbUtils} class.\n */\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testPrintStackTrace() {\n        final SQLException nested = new SQLException(\"Nested Exception\");\n        final SQLException sqlException = new SQLException(\"Top-level Exception\");\n        sqlException.setNextException(nested);\n        // This just prints to stderr, so we can't really assert anything.\n        // We're just making sure no exceptions are thrown.\n        DbUtils.printStackTrace(sqlException);\n    }\n}",
+      "method_signature": "testPrintStackTraceSQLException()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.5,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 40252,
+    "output_tokens": 8713,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 12,
+      "description": "Create a test case to validate that the system can successfully locate and prepare a specific database connectivity component for use when provided with the appropriate resource location mechanism and component specification. Arrange a scenario where the system's own resource discovery mechanism is used to find the H2 database connectivity component by its designated identifier. Instruct the system to attempt loading this component using the provided discovery mechanism and component name, then verify that the operation completes successfully, confirming the component is ready for use within the system. Validate using JUnit 5 with standard boolean assertions to confirm the loading operation returned a successful result.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsLoadDriverTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link DbUtils#loadDriver(String)}.\n */\npublic class DbUtilsLoadDriverTest {\n\n    @Test\n    public void testLoadDriver() {\n        assertTrue(DbUtils.loadDriver(\"org.h2.Driver\"));\n    }\n}",
+      "method_signature": "testLoadDriverClassLoaderH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.6667,
+      "callable_precision": 1.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 64607,
+    "output_tokens": 2776,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 5,
+      "description": "Create a test case to validate that the database utility system correctly handles and reports data access errors when they occur. Simulate a scenario where a data access error arises during database operations, then instruct the system to output diagnostic information about this error to the standard error stream so that operations staff can troubleshoot issues. Verify that the error reporting mechanism processes the error without itself failing, ensuring that diagnostic information reaches the appropriate monitoring channels. This test uses JUnit 5 as the testing framework and validates the system's ability to gracefully handle and report database errors through its built-in diagnostic capabilities.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DataAccessErrorHandlingTest",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.AfterEach;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport static org.mockito.Mockito.mock;\nimport static org.mockito.Mockito.doThrow;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.PrintStream;\nimport java.sql.Connection;\nimport java.sql.SQLException;\n\npublic class DataAccessErrorHandlingTest {\n\n    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();\n    private final PrintStream originalErr = System.err;\n\n    @BeforeEach\n    public void setUpStreams() {\n        System.setErr(new PrintStream(errContent));\n    }\n\n    @AfterEach\n    public void restoreStreams() {\n        System.setErr(originalErr);\n    }\n\n    @Test\n    public void testDatabaseErrorIsLoggedToStdErr() throws Exception {\n        final Connection mockConnection = mock(Connection.class);\n        doThrow(new SQLException(\"Simulated database error\")).when(mockConnection).close();\n\n        // This test assumes that the DbUtils class has a built-in diagnostic capability\n        // to log SQLExceptions to the standard error stream when a quiet close is performed.\n        DbUtils.closeQuietly(mockConnection);\n\n        // Verify that the error was indeed printed to System.err\n        final String errOutput = errContent.toString();\n        assertTrue(errOutput.contains(\"Simulated database error\"),\n                \"Expected the database error to be logged to the standard error stream, but it was not.\");\n    }\n}",
+      "method_signature": "testPrintStackTraceSQLException()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.5,
+      "callable_precision": 0.1111,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 16301,
+    "output_tokens": 5032,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 6,
+      "description": "Create a test case to validate that the system successfully recognizes and loads a supported data access driver when provided with its identification. Ensure the system can locate the H2 driver specification within its available resources and confirm the driver registration process completes successfully, returning an affirmative indication that the driver is now available for establishing connections to data sources. Verify using standard equality assertions with JUnit 5 and AssertJ, confirming the operation returns a successful outcome when the driver specification is properly recognized and registered within the system's driver registry.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\n/**\n * Test class for {@link DbUtils}.\n */\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testLoadDriver() {\n        assertTrue(DbUtils.loadDriver(\"org.h2.Driver\"));\n    }\n}",
+      "method_signature": "testLoadDriverH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 45808,
+    "output_tokens": 9394,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 7,
+      "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `org.apache.commons.dbutils.DbUtils` passing the String literal `\"org.h2.Driver\"` as the argument, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions and has no class-level annotations, no field declarations, no setup methods, and no teardown methods.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testLoadDriver() throws Exception {\n        assertTrue(DbUtils.loadDriver(\"org.h2.Driver\"));\n    }\n}",
+      "method_signature": "testLoadDriverH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 47475,
+    "output_tokens": 1721,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 8,
+      "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `DbUtils` passing two arguments: first, obtain the `ClassLoader` by calling `getClassLoader()` on the class literal `DbUtils.class`, and second, pass the String literal `\"org.h2.Driver\"`, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions with method-level annotation `@Test` and declares exception `java.lang.Exception` in the throws clause.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsLoadDriverTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport org.junit.jupiter.api.Test;\n\npublic class DbUtilsLoadDriverTest {\n\n    @Test\n    public void testLoadDriver() throws Exception {\n        assertTrue(DbUtils.loadDriver(DbUtils.class.getClassLoader(), \"org.h2.Driver\"));\n    }\n}",
+      "method_signature": "testLoadDriverClassLoaderH2()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 65351,
+    "output_tokens": 1571,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 9,
+      "description": "Define a test method annotated with `@Test` that begins by invoking the static method `printStackTrace` on the class `org.apache.commons.dbutils.DbUtils`, passing as its single argument a newly instantiated `java.sql.SQLException` created by calling its no-argument constructor `new SQLException()`, and note that this invocation produces no return value and performs its side effect of printing the stack trace to the standard error stream. The test uses JUnit 5 with the `@Test` annotation and relies on the Apache Commons DbUtils library for the `DbUtils` class.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.dbutils;\n\nimport java.sql.SQLException;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test cases for the {@link DbUtils} class.\n */\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testPrintStackTrace() {\n        DbUtils.printStackTrace(new SQLException());\n    }\n\n}",
+      "method_signature": "testPrintStackTraceSQLException()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 27174,
+    "output_tokens": 2137,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  }
+]

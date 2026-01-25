@@ -1,0 +1,2282 @@
+[
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 1454,
+      "description": "Define a test method annotated with `@Test` that begins by declaring a local variable `x` of type `double[]` initialized with the array literal `{ 1, 2, 3 }`, then invoke the static factory method `create()` on class `StorelessSumOfSquares` and assign the returned instance to a local variable `s` of type `StorelessSumOfSquares`. Immediately assert that invoking `incrementAll` on `s` with argument `x` throws `IllegalStateException` by calling `Assertions.assertThrows(IllegalStateException.class, () -> s.incrementAll(x))`. Next, assert that invoking `incrementAll` on `s` with arguments `x`, `0`, and `1` throws `IllegalStateException` using `Assertions.assertThrows(IllegalStateException.class, () -> s.incrementAll(x, 0, 1))`. Following that, assert that invoking the method `getN` on `s` throws `IllegalStateException` by calling `Assertions.assertThrows(IllegalStateException.class, s::getN)`. Then assert that invoking `evaluate` on `s` with argument `x` throws `IllegalStateException` using `Assertions.assertThrows(IllegalStateException.class, () -> s.evaluate(x))`. Finally, assert that invoking `evaluate` on `s` with arguments `x`, `0`, and `1` throws `IllegalStateException` by calling `Assertions.assertThrows(IllegalStateException.class, () -> s.evaluate(x, 0, 1))`. The test uses JUnit 5 Assertions and the method-level annotation `@Test`.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testUnsupportedStorelessMethods()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 96478,
+    "output_tokens": 2197,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 1457,
+      "description": "Create a test case to validate that the statistical analysis system correctly handles scenarios where no data observations have been recorded, ensuring all computed metrics return mathematically appropriate undefined values. Begin by establishing a fresh statistical analysis context with no prior observations, then simulate an empty data collection scenario by providing no numerical measurements to the system. Once the empty state is confirmed, systematically verify that the system reports undefined results for all statistical measures including the arithmetic average, geometric average, data spread, spread consistency, quadratic average, distribution shape characteristics (both asymmetry and peak concentration), boundary values (both highest and lowest observations), total accumulation, and squared total accumulation, comparing each computed result against the expected outcome when applying the same calculation to an empty data set. After confirming the system correctly produces undefined values for all metrics when no observations exist, verify the overall behavior using standard equality assertions provided by JUnit 5 and AssertJ without requiring any mocking capabilities.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest",
+      "method_signature": "testEmpty()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 12960,
+    "output_tokens": 4556,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 1462,
+      "description": "Define a test class containing two private static final double fields: `KNOT_TOL` and `COEF_TOL`, both initialized with appropriate tolerance values for knot and coefficient comparisons. Within this class, write a test method annotated with `@Test` that begins by declaring a double array `x` initialized to `{0, 0.5, 1}`, followed by a double array `y` initialized to `{1, Math.exp(0.5), Math.exp(1)}`, where the second element is computed by invoking `Math.exp` with argument `0.5` and the third by invoking `Math.exp` with argument `1`. Assign the double value `1` to variable `fpo` and assign the result of `Math.exp(1)` to variable `fpn`. Instantiate a new `ClampedSplineInterpolator` object and assign it to variable `i`, then invoke `interpolate` on `i` passing arguments `x`, `y`, `fpo`, and `fpn`, assigning the returned `PolynomialSplineFunction` to variable `f`. Define a private method that accepts a `PolynomialSplineFunction`, a double array of x-coordinates, and a double array of y-coordinates, then iterates from index `0` to `x.length - 1`, invoking `value` on the spline function with argument `x[i]` and asserting equality with `y[i]` using a tolerance of `KNOT_TOL` via `Assert.assertEquals`; invoke this method immediately after interpolation with arguments `f`, `x`, and `y`. Define a second private method that accepts a `PolynomialSplineFunction` and a double array of knot points, retrieves the polynomial array by invoking `getPolynomials()` on the spline function, then iterates from index `1` to `x.length - 2`, and for each iteration asserts three equalities: first, that `polynomials[i].value(x[i + 1] - x[i])` equals `polynomials[i + 1].value(0)` with tolerance `0.1`; second, that `polynomials[i].polynomialDerivative().value(x[i + 1] - x[i])` equals `polynomials[i + 1].polynomialDerivative().value(0)` with tolerance `0.5`; and third, that `polynomials[i].polynomialDerivative().polynomialDerivative().value(x[i + 1] - x[i])` equals `polynomials[i + 1].polynomialDerivative().polynomialDerivative().value(0)` with tolerance `0.5`, all using `Assert.assertEquals`; invoke this method with arguments `f` and `x`. Having completed the interpolation verification, retrieve the polynomial array from `f` by invoking `getPolynomials()` and assign it to variable `polynomials` of type `PolynomialFunction[]`. Declare a double array `target0` initialized to `{1, 1, 0.4889506772539256, 0.21186881109317435}` and a double array `target1` initialized to `{1.6487212707001282, 1.6478522855738063, 0.8067538938936871, 0.35156753198873575}`. Invoke `TestUtils.assertEquals` passing as the first argument the result of `polynomials[0].getCoefficients()`, as the second argument `target0`, and as the third argument `COEF_TOL`, then invoke `TestUtils.assertEquals` again passing `polynomials[1].getCoefficients()`, `target1`, and `COEF_TOL`. The test uses JUnit 4 assertions via `Assert.assertEquals` and a custom assertion utility `TestUtils.assertEquals`, with class-level annotation `@Test` and no integration test annotations.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInterpolateLinearDegenerateTwoSegment()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29289,
+    "output_tokens": 2944,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 344,
+      "description": "Define a test method that validates the Clamped Spline Interpolator's error handling when provided with input arrays of mismatched lengths by instantiating a new ClampedSplineInterpolator and immediately invoking its interpolate method with an x-coordinate array containing four double values and a y-coordinate array containing three double values, along with numeric slope parameters for the starting and ending derivatives. Configure the test to expect a DimensionMismatchException to be thrown during this interpolation attempt, thereby confirming that the interpolator correctly detects and rejects incompatible array dimensions before attempting to construct the spline function. The test uses JUnit 4 with its expected exception mechanism.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testArrayLengthMismatch()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 132573,
+    "output_tokens": 2853,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 346,
+      "description": "Define a test method that validates the behavior of the sparse iterator when invoked on an empty vector by first creating a helper method that constructs a concrete RealVector implementation from a provided array of doubles, then invoke this helper with an empty double array to obtain a zero-length vector instance. Upon obtaining the vector, invoke its sparseIterator method to retrieve an iterator over sparse entries, then immediately verify that the iterator's hasNext method returns false, confirming that no entries exist to iterate over in the empty vector. This test uses JUnit for the test framework and assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.RealVectorTest",
+      "method_signature": "testSparseIteratorEmptyVector()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 25572,
+    "output_tokens": 1843,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 347,
+      "description": "Define a test method that validates the Clamped Spline Interpolator's rejection of unsorted knot arrays by instantiating the interpolator and invoking its interpolate method with an array of knot values containing a non-monotonic sequence where the third element is smaller than the second, paired with a corresponding array of function values, along with boundary derivative values for the starting and ending slopes. Configure the test to expect a non-monotonic sequence exception to be thrown during the interpolation attempt, thereby confirming that the interpolator enforces strict increasing order on the input knot array before constructing the spline function. This test uses JUnit 4 with its exception expectation mechanism.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testUnsortedArray()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorNewTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math4.legacy.analysis.interpolation;\n\nimport org.apache.commons.math4.legacy.exception.NonMonotonicSequenceException;\nimport org.junit.Test;\n\n/**\n * Test for {@link ClampedSplineInterpolator}.\n */\npublic class ClampedSplineInterpolatorNewTest {\n\n    @Test(expected = NonMonotonicSequenceException.class)\n    public void testNonMonotonicKnotsRejection() {\n        // Data knot points\n        double[] x = new double[]{0, 1, 0.5};\n        double[] y = new double[]{0, 0.5, 1};\n\n        // Boundary conditions: first derivatives\n        double startSlope = 0;\n        double endSlope = 0;\n\n        // Create the interpolator\n        ClampedSplineInterpolator interpolator = new ClampedSplineInterpolator();\n\n        // Attempt to interpolate with a non-monotonic knot array\n        interpolator.interpolate(x, y, startSlope, endSlope);\n    }\n}",
+      "method_signature": "testUnsortedArray()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30362,
+    "output_tokens": 2550,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 349,
+      "description": "Define a test method that validates the Clamped Spline Interpolator rejects insufficient input data by instantiating the interpolator and immediately invoking its interpolate method with two arrays each containing exactly two numeric elements representing x and y coordinates, along with two numeric values for the starting and ending derivative constraints. Configure the test to expect a NumberIsTooSmallException to be thrown during this invocation, as the interpolator requires a minimum of three data points to construct a valid clamped cubic spline. The test verifies that the interpolator properly enforces its minimum data requirement by rejecting arrays that are too short to satisfy the mathematical constraints of cubic spline interpolation with clamped boundary conditions. This validation occurs using a testing framework that supports exception-based test expectations.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInsufficientData()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 33097,
+    "output_tokens": 1968,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 350,
+      "description": "Create a test case to validate that when the system handles a mathematical vector structure containing no elements, attempting to traverse its sparse representation correctly indicates emptiness by confirming no traversable elements exist. Begin by establishing an empty mathematical vector with zero dimensions in the system. Once the empty vector is prepared, initiate a sparse traversal mechanism designed to iterate only over significant values while potentially skipping zero entries. Immediately verify that the traversal reports no available elements to process, confirming the system correctly recognizes the absence of any data to iterate through. Use JUnit 5 for test execution and standard boolean assertions to verify the traversal state indicates no elements are present for processing.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.RealVectorTest",
+      "method_signature": "testSparseIteratorEmptyVector()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 114100,
+    "output_tokens": 2456,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 351,
+      "description": "Define a test method annotated with `@Test` that begins by creating a new `double` array of length `0` (an empty array), then instantiating a `RealVectorTestImpl` object by passing this empty array to its constructor, and assigning the resulting `RealVector` instance to variable `v`. Immediately invoke `sparseIterator()` on `v`, which returns an `Iterator<RealVector.Entry>`, then chain a call to `hasNext()` on this iterator, and pass the boolean result directly to `Assert.assertFalse` to verify that the iterator has no next element. The test uses JUnit 4 assertions (specifically `Assert.assertFalse`) and is annotated at the method level with `@Test`.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.linear.RealVectorTest",
+      "method_signature": "testSparseIteratorEmptyVector()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.linear.RealVectorSparseIteratorTest",
+      "code": "package org.apache.commons.math4.legacy.linear;\n\nimport java.io.Serializable;\nimport java.util.Iterator;\n\nimport org.apache.commons.math4.legacy.exception.MathUnsupportedOperationException;\nimport org.apache.commons.math4.legacy.exception.OutOfRangeException;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for the sparse iterator implementations.\n */\npublic class RealVectorSparseIteratorTest {\n\n    /**\n     * Minimal implementation of the {@link RealVector} abstract class.\n     */\n    public static class RealVectorTestImpl extends RealVector implements Serializable {\n\n        /** Serializable version identifier. */\n        private static final long serialVersionUID = 20240120L;\n\n        /** Entries of the vector. */\n        private final double[] data;\n\n        /**\n         * Build a vector with the given entries.\n         * @param d vector entries\n         */\n        public RealVectorTestImpl(double[] d) {\n            data = d.clone();\n        }\n\n        private UnsupportedOperationException unsupported() {\n            return new UnsupportedOperationException(\"Not supported, unneeded for test purposes\");\n        }\n\n        @Override\n        public int getDimension() {\n            return data.length;\n        }\n\n        @Override\n        public double getEntry(int index) throws OutOfRangeException {\n            checkIndex(index);\n            return data[index];\n        }\n\n        @Override\n        public void setEntry(int index, double value) throws OutOfRangeException {\n            checkIndex(index);\n            data[index] = value;\n        }\n\n        @Override\n        public RealVector append(RealVector v) {\n            throw unsupported();\n        }\n\n        @Override\n        public RealVector append(double d) {\n            throw unsupported();\n        }\n\n        @Override\n        public RealVector getSubVector(int index, int n) {\n            throw unsupported();\n        }\n\n        @Override\n        public void setSubVector(int index, RealVector v) {\n            throw unsupported();\n        }\n\n        @Override\n        public boolean isNaN() {\n            throw unsupported();\n        }\n\n        @Override\n        public boolean isInfinite() {\n            throw unsupported();\n        }\n\n        @Override\n        public RealVector copy() {\n            throw unsupported();\n        }\n\n        @Override\n        public RealVector ebeDivide(RealVector v) {\n            throw unsupported();\n        }\n\n        @Override\n        public RealVector ebeMultiply(RealVector v) {\n            throw unsupported();\n        }\n    }\n\n    @Test\n    public void testEmptyVectorHasNoNext() {\n        double[] data = new double[0];\n        RealVector v = new RealVectorTestImpl(data);\n        Iterator<RealVector.Entry> iter = v.sparseIterator();\n        Assert.assertFalse(iter.hasNext());\n    }\n}",
+      "method_signature": "testSparseIteratorEmptyVector()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.6,
+      "callable_precision": 0.75,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 168754,
+    "output_tokens": 3045,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 355,
+      "description": "Create a test case to validate that the interpolation system properly rejects mismatched data when attempting to generate a curve-fitting function. Provide two sequences of numerical observations where the independent variable sequence contains four values while the dependent variable sequence contains only three values, along with specified slope constraints at the boundaries. Attempt to construct an interpolating curve using these mismatched data sets. Ensure the system detects the dimensional inconsistency between the two sequences and fails the operation with a dimension mismatch error, preventing the creation of an invalid mathematical model. This test uses JUnit 4 with exception-based validation, verifying that the system enforces data integrity rules by checking that the expected error condition is raised when array lengths do not correspond.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testArrayLengthMismatch()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 38310,
+    "output_tokens": 6875,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 356,
+      "description": "Create a test case to validate that the interpolation system properly rejects data when the input sequence violates the fundamental requirement of strict ordering. Prepare a scenario where a user attempts to construct a smooth curve by providing a set of data points along with boundary slope specifications, but deliberately supply the independent variable values in a non-sequential arrangement where one value appears out of order relative to its neighbors. Submit this malformed configuration to the interpolation system and ensure the process fails immediately due to the invalid sequence, preventing any curve construction from proceeding. This validation confirms the system enforces data integrity requirements before attempting any mathematical operations. Use JUnit 4 with exception-based assertions to verify the system raises the appropriate business failure condition when encountering non-monotonic input sequences.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testUnsortedArray()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19186,
+    "output_tokens": 8181,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 367,
+      "description": "Create a test case to validate that the interpolation system correctly rejects insufficient data by ensuring that when attempting to construct a clamped spline curve with only two data points, the system recognizes this as inadequate for the mathematical requirements and fails the operation with an appropriate business rule violation, since clamped spline interpolation requires a minimum of three points to establish the necessary curve characteristics with specified boundary slopes. Configure a scenario where the interpolation request includes exactly two coordinate pairs along with starting and ending slope constraints, then attempt to process this request through the interpolation system, expecting the operation to be rejected due to the data quantity falling below the minimum threshold. Verify using JUnit 4 with exception-based validation to confirm the system enforces the minimum data requirement rule.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInsufficientData()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 119704,
+    "output_tokens": 2298,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 373,
+      "description": "Define a test class containing two private static final double fields: `KNOT_TOL` and `COEF_TOL`, though their exact values are not used in this test method. Write a test method annotated with `@Test(expected = DimensionMismatchException.class)` that verifies array length mismatch handling. Within the method body, instantiate a new `ClampedSplineInterpolator` object using its no-argument constructor, then immediately invoke the `interpolate` method on this instance, passing four arguments: a double array literal `new double[]{1, 2, 3, 4}` as the first argument representing x-coordinates, a double array literal `new double[]{2, 3, 5}` as the second argument representing y-coordinates (note this array has only three elements while the first has four), the double literal `2` as the third argument representing the starting slope, and the double literal `1` as the fourth argument representing the ending slope. The test expects that this invocation will throw a `DimensionMismatchException` due to the mismatched array lengths, which is verified by the method-level annotation rather than an explicit assertion statement. The test uses JUnit 4 annotations with the expected exception mechanism, and no mocking libraries are employed.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testArrayLengthMismatch()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math4.legacy.analysis.interpolation;\n\nimport org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolator;\nimport org.apache.commons.math4.legacy.exception.DimensionMismatchException;\nimport org.junit.Test;\n\n/**\n * Test for {@link ClampedSplineInterpolator}.\n */\npublic class ClampedSplineInterpolatorTest1 {\n\n    private static final double KNOT_TOL = 1e-12;\n    private static final double COEF_TOL = 1e-9;\n\n    @Test(expected = DimensionMismatchException.class)\n    public void testInterpolateDimensionMismatch() {\n        new ClampedSplineInterpolator().interpolate(new double[]{1, 2, 3, 4}, new double[]{2, 3, 5}, 2, 1);\n    }\n}",
+      "method_signature": "testArrayLengthMismatch()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 49727,
+    "output_tokens": 2037,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 376,
+      "description": "Define a test class containing two private static final double fields: `KNOT_TOL` and `COEF_TOL`, both initialized with appropriate tolerance values for numerical comparisons. Write a test method annotated with `@Test(expected = NumberIsTooSmallException.class)` that verifies the interpolator throws the expected exception when provided with insufficient data points. Within the test method body, instantiate a new `ClampedSplineInterpolator` object using its no-argument constructor, then immediately invoke the `interpolate` method on this instance, passing four arguments: a double array literal `new double[]{1, 2}` as the first argument representing x-coordinates, a double array literal `new double[]{2, 3}` as the second argument representing y-coordinates, the integer literal `2` as the third argument for the starting slope, and the integer literal `1` as the fourth argument for the ending slope. The test expects that this invocation will throw a `NumberIsTooSmallException` due to the arrays containing only two elements each, which is insufficient for clamped spline interpolation that requires at least three data points. No explicit assertion statements are needed since the exception expectation is declared at the method level via the annotation parameter. The test uses JUnit 4 annotations with `@Test(expected = NumberIsTooSmallException.class)` to verify exception behavior, and no mocking libraries are employed.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInsufficientData()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19625,
+    "output_tokens": 1396,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 380,
+      "description": "Define a test class containing two private static final double fields: `KNOT_TOL` and `COEF_TOL` (their values are not used in this test). Write a test method annotated with `@Test(expected = NonMonotonicSequenceException.class)` to verify that invoking the interpolation method with unsorted knot values throws the expected exception. Within the method body, instantiate a new `ClampedSplineInterpolator` object by calling its no-argument constructor, then immediately invoke the `interpolate` method on this instance, passing four arguments: a double array literal `{1, 3, 2}` for the x-coordinates (knot values), a double array literal `{2, 3, 5}` for the y-coordinates, the integer value `2` for the starting slope parameter `fpStart`, and the integer value `1` for the ending slope parameter `fpEnd`. The test expects the `interpolate` invocation to throw a `NonMonotonicSequenceException` due to the unsorted sequence in the first array (1, 3, 2), which violates the strict increasing order requirement enforced by the internal `checkOrder` call within the application method. No assertions are present in the method body since the exception expectation is declared at the method level via the `@Test` annotation's `expected` attribute. The test uses JUnit 4 annotations (`@Test` with `expected` parameter) and relies on the exception mechanism to validate behavior.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testUnsortedArray()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 12994,
+    "output_tokens": 6384,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 390,
+      "description": "Define a test method that validates the SumOfSquares statistic component correctly rejects unsupported operations by first initializing a double array containing three numeric values, then obtaining a singleton instance of the SumOfSquares statistic through its factory method, and subsequently invoking the evaluate method on this instance with the prepared array while asserting that this operation throws an IllegalStateException, thereby confirming the component enforces its operational constraints by rejecting direct array evaluation when configured in a mode that does not support this capability, using a standard testing framework with exception assertion capabilities.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testUnsupportedMethods()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 45828,
+    "output_tokens": 3522,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 394,
+      "description": "Create a test case to validate that the sum of squares calculation system properly enforces operational constraints by rejecting direct computation requests when the system is configured for incremental data accumulation mode. Begin by preparing a sample dataset containing three numerical observations, then obtain the sum of squares calculator configured for incremental operation. Attempt to perform a direct calculation on the entire dataset, which should fail because this operational mode does not support batch evaluation of complete datasets. Ensure the system responds with an appropriate failure indicating the operation cannot be performed in the current configuration state. Verify using JUnit 5 with standard exception assertions to confirm the system correctly prevents misuse of the incremental calculation mode.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testUnsupportedMethods()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 21051,
+    "output_tokens": 8791,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 397,
+      "description": "Define a test method annotated with `@Test(expected = IllegalArgumentException.class)` that begins by instantiating a `DoublePoint` object named `p` using the constructor that accepts a `double[]` array, passing the literal array `new double[] { 0.0, 0.0 }` as the argument. Next, create a `List<DoublePoint>` variable named `points` by invoking `Arrays.asList(p, p, p, p)`, which produces a list containing four references to the same `DoublePoint` instance `p`. Following this, instantiate an `ElkanKMeansPlusPlusClusterer<DoublePoint>` object named `clusterer` by calling the constructor with the integer argument `2`, specifying the desired number of clusters. Finally, invoke the `cluster` method on the `clusterer` object, passing `points` as the argument, which triggers the clustering algorithm and is expected to throw an `IllegalArgumentException` due to the inability to partition four identical points into two distinct clusters. The test uses JUnit 4's `expected` attribute on the `@Test` annotation to verify that the `IllegalArgumentException` is thrown during execution.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest",
+      "method_signature": "testAllPointsIdentical()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 26135,
+    "output_tokens": 1416,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 398,
+      "description": "Create a test case to validate that the clustering system properly rejects degenerate input scenarios where meaningful grouping is impossible. Begin by preparing a collection of four data points that all share identical coordinate values at the origin. With this uniform dataset in place, configure the clustering algorithm to organize the points into two distinct groups. Attempt to execute the clustering operation on this collection and ensure the system recognizes the impossibility of creating meaningful separations when all input data is identical, rejecting the operation with an appropriate business rule violation. This validation confirms the clustering service enforces prerequisites for viable group formation and prevents processing when input lacks the necessary variation for meaningful analysis. Use JUnit for test execution with the expected exception mechanism to verify the system raises an illegal argument condition when confronted with this degenerate scenario.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest",
+      "method_signature": "testAllPointsIdentical()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 277743,
+    "output_tokens": 6890,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 401,
+      "description": "Define a test method that validates the Elkan K-Means Plus Plus Clusterer's behavior when attempting to cluster a degenerate dataset where all points are identical, expecting an illegal argument exception to be thrown. Construct a single DoublePoint instance initialized with a two-dimensional coordinate array containing zero values for both dimensions, then create a collection containing four references to this identical point instance to simulate a dataset with no variance. Instantiate an ElkanKMeansPlusPlusClusterer configured to partition the data into two clusters, then invoke the cluster method on this clusterer with the degenerate point collection, which should trigger validation logic that detects the impossibility of forming distinct clusters from identical points and raises an illegal argument exception. The test framework should be configured to expect this exception type, confirming that the clusterer properly rejects invalid input conditions where the number of requested clusters exceeds the number of unique data points. This test uses JUnit 4.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.ml.clustering.ElkanKMeansPlusPlusClustererTest",
+      "method_signature": "testAllPointsIdentical()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 56667,
+    "output_tokens": 3052,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 402,
+      "description": "Define a test method annotated with `@Test` that begins by declaring a local variable `x` of type `double[]` and initializing it with the array literal `{ 1, 2, 3 }`, then invoke the static method `getInstance()` on the class `SumOfSquares` from package `org.apache.commons.math4.legacy.stat.descriptive.Statistics` and assign the returned instance to a local variable `s` of type `SumOfSquares`. Immediately after obtaining the instance, use `Assertions.assertThrows` from JUnit 5 to verify that invoking the method `evaluate` on `s` with argument `x` throws an `IllegalStateException`, passing the exception class `IllegalStateException.class` as the first argument and a lambda expression `() -> s.evaluate(x)` as the executable. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testUnsupportedMethods()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.stat.descriptive.summary.SumOfSquaresTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math4.legacy.stat.descriptive.summary;\n\nimport org.apache.commons.math4.legacy.stat.descriptive.StorelessUnivariateStatistic;\nimport org.apache.commons.math4.legacy.stat.descriptive.summary.SumOfSquares;\nimport org.apache.commons.math4.legacy.stat.descriptive.Statistics;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test cases for the {@link SumOfSquares} class.\n */\npublic final class SumOfSquaresTest {\n\n    @Test\n    public void testEvaluateWithInstance() {\n        double[] x = { 1, 2, 3 };\n        StorelessUnivariateStatistic s = Statistics.getInstance(Statistics.SumOfSquares.class);\n        Assertions.assertThrows(IllegalStateException.class, () -> s.evaluate(x));\n    }\n}",
+      "method_signature": "testUnsupportedMethods()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 12404,
+    "output_tokens": 2929,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 409,
+      "description": "Define a test method that validates the default configuration and mutability of the SemiVariance component's properties by first instantiating a SemiVariance object with its default constructor, then immediately verify that the variance direction property returns the downside direction constant, after which modify the variance direction to the upside direction constant and confirm the updated state reflects this change. Subsequently, verify that the bias correction property is enabled by default, then disable bias correction and validate that querying the property confirms it is now disabled. The test exercises the component's property accessors and mutators to ensure state transitions occur correctly without performing any statistical calculations. Assert each property retrieval against the expected enumeration constant or boolean value using standard equality and boolean assertion methods. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testProperties()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math4.legacy.stat.descriptive.moment;\n\nimport org.junit.Assert;\nimport org.junit.Test;\nimport org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVariance.Direction;\n\n/**\n * Test cases for the {@link SemiVariance} class.\n */\npublic class SemiVarianceTest1 {\n\n    /**\n     * This test validates the default configuration and mutability of the SemiVariance\n     * component's properties. It ensures that the variance direction and bias\n     * correction properties are correctly initialized and can be modified.\n     */\n    @Test\n    public void testSemiVarianceProperties() {\n        SemiVariance semiVariance = new SemiVariance();\n\n        // 1. Verify default variance direction\n        Assert.assertEquals(\"Default variance direction should be DOWNSIDE\",\n                Direction.DOWNSIDE, semiVariance.getVarianceDirection());\n\n        // 2. Modify and verify variance direction\n        semiVariance.setVarianceDirection(Direction.UPSIDE);\n        Assert.assertEquals(\"Variance direction should be updated to UPSIDE\",\n                Direction.UPSIDE, semiVariance.getVarianceDirection());\n\n        // 3. Verify default bias correction\n        Assert.assertTrue(\"Bias correction should be enabled by default\",\n                semiVariance.isBiasCorrected());\n\n        // 4. Disable and verify bias correction\n        semiVariance.setBiasCorrected(false);\n        Assert.assertFalse(\"Bias correction should be disabled\",\n                semiVariance.isBiasCorrected());\n    }\n}",
+      "method_signature": "testProperties()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 411,
+      "description": "Instantiate a `SemiVariance` object using the no-argument constructor and assign it to variable `sv`, then immediately invoke `getVarianceDirection()` on `sv` and assert using `Assert.assertEquals` that the returned value equals `Direction.DOWNSIDE`. Next, invoke `setVarianceDirection` on `sv` passing the argument `Direction.UPSIDE`, then call `getVarianceDirection()` again on `sv` and assert with `Assert.assertEquals` that the result now equals `Direction.UPSIDE`. Following this, invoke `isBiasCorrected()` on `sv` and assert using `Assert.assertTrue` that the returned boolean value is `true`. Subsequently, invoke `setBiasCorrected` on `sv` with the boolean argument `false`, then call `isBiasCorrected()` once more on `sv` and assert with `Assert.assertFalse` that the returned value is now `false`. The test uses JUnit 4 Assertions via the `Assert` class and is annotated with `@Test` at the method level, with no class-level annotations, no setup or teardown methods, and no mocking libraries.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testProperties()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30741,
+    "output_tokens": 2145,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 415,
+      "description": "Create a test case to validate that the statistical variance calculator properly manages its configuration settings for analysis direction and bias correction behavior. Establish a new variance calculation service with its default configuration, then verify the system initially operates in downside analysis mode, which focuses on values below a reference point. After confirming this default behavior, reconfigure the service to analyze upside variance instead, targeting values above the reference point, and verify the system reflects this new analysis direction. Next, confirm the service initially applies bias correction to improve statistical accuracy, then disable this correction mechanism and verify the system now operates without bias adjustment. This validation ensures users can reliably control whether the variance calculation focuses on downside or upside deviations and whether statistical bias correction is applied to the results. The test employs JUnit for execution and standard JUnit assertions to verify configuration state changes.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testProperties()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 23338,
+    "output_tokens": 2339,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 417,
+      "description": "Define a test method that validates the Percentile statistic component's behavior across multiple input scenarios by first creating a Percentile instance configured for the 50th percentile, then verify that invoking the evaluate method with a null array triggers a null argument error, after which confirm that evaluating an empty array returns NaN to handle the boundary case of no data, subsequently assert that a single-element array returns that element as the median, followed by verifying that a two-element array produces the arithmetic mean of both values, and finally validate that a three-element array correctly computes the median by returning the middle value, ensuring each evaluation call uses progressively larger arrays to demonstrate correct percentile calculation across varying dataset sizes. JUnit 5 and Assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testPercentile()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsPercentileTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math4.legacy.stat.descriptive;\n\nimport org.apache.commons.math4.legacy.exception.MathIllegalArgumentException;\nimport org.junit.Test;\nimport org.junit.Assert;\n\npublic class StatisticsPercentileTest {\n\n    @Test\n    public void testPercentileEvaluation() {\n        UnivariateStatistic percentile = Statistics.Percentile.create(50.0);\n\n        // Verify that invoking the evaluate method with a null array triggers a null argument error\n        try {\n            percentile.evaluate(null);\n            Assert.fail(\"Expected a MathIllegalArgumentException\");\n        } catch (MathIllegalArgumentException ex) {\n            // Expected\n        }\n\n        // Confirm that evaluating an empty array returns NaN\n        Assert.assertEquals(Double.NaN, percentile.evaluate(new double[0]), 0d);\n\n        // Assert that a single-element array returns that element\n        Assert.assertEquals(10.0, percentile.evaluate(new double[]{10.0}), 1e-9);\n\n        // Verify that a two-element array produces the arithmetic mean\n        Assert.assertEquals(15.0, percentile.evaluate(new double[]{10.0, 20.0}), 1e-9);\n\n        // Validate that a three-element array correctly computes the median\n        Assert.assertEquals(20.0, percentile.evaluate(new double[]{10.0, 20.0, 30.0}), 1e-9);\n    }\n}",
+      "method_signature": "testPercentile()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 0.2,
+      "assertion_precision": 0.2,
+      "callable_recall": 0.6,
+      "callable_precision": 0.5455,
+      "focal_recall": 1.0,
+      "focal_precision": 0.6667
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 1.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 55135,
+    "output_tokens": 3712,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 428,
+      "description": "Define a parameterized test method that validates the Percentile component's rejection of invalid percentile values across multiple boundary and exceptional inputs including negative values, values exceeding one hundred, and non-numeric representations. Initialize a Percentile instance with a valid mid-range percentile value to establish a baseline component. For each invalid parameter value provided to the test, verify that invoking the quantile modification method on the initialized instance throws a range validation error, then separately verify that attempting to create a new Percentile instance directly with the same invalid parameter also throws a range validation error. The test exercises both post-construction configuration and factory construction paths to ensure consistent validation behavior across the component's lifecycle. Use JUnit 5 for parameterized testing and assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testInvalidPercentileThrows(double)",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15985,
+    "output_tokens": 3693,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 430,
+      "description": "Create a test case to validate that the statistical calculation system correctly computes the median value across various data scenarios while maintaining data integrity safeguards. Begin by configuring the calculation system to determine the midpoint value of a dataset, then verify the system properly rejects attempts to process missing input by ensuring an appropriate failure occurs when no data is provided. Once this safeguard is confirmed, evaluate how the system handles an empty dataset and verify it indicates an undefined result since no midpoint can be determined from absent values. Next, assess the calculation behavior when only a single value is present and confirm the system correctly identifies that sole value as the midpoint. After establishing single-value handling, examine a two-value scenario and verify the system computes the average of both values as the midpoint. Finally, test the calculation with three values and ensure the system accurately identifies the middle value as the median result. Throughout these validations, confirm the system produces mathematically correct outcomes for each distinct data condition, demonstrating robust handling of edge cases from missing data through progressively larger datasets. Verify all outcomes using standard equality assertions with JUnit 5 and confirm error conditions trigger the expected business rule violations.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testPercentile()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 22115,
+    "output_tokens": 3817,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 431,
+      "description": "Create a test case to validate that the percentile calculation system correctly rejects invalid percentile values that fall outside the acceptable business range or represent undefined numerical states. Configure the test to examine multiple problematic percentile values including those below the minimum threshold, above the maximum threshold, and mathematically undefined values. For each invalid value, attempt to configure a percentile calculator with that value in two distinct scenarios: first by initializing a new calculator instance with a valid percentile and then attempting to update its configuration to the invalid value, and second by attempting to initialize a fresh calculator directly with the invalid value. In both scenarios, ensure the system refuses the operation and signals a business constraint violation indicating the value is out of acceptable range. Verify using standard equality assertions with JUnit 5 for test execution and parameterization across the invalid value set.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testInvalidPercentileThrows(double)",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsPercentileTest",
+      "code": "package org.apache.commons.math4.legacy.stat.descriptive;\n\nimport org.apache.commons.math4.legacy.exception.MathIllegalArgumentException;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.params.ParameterizedTest;\nimport org.junit.jupiter.params.provider.ValueSource;\n\n/**\n * Tests for {@link DescriptiveStatistics} validation of percentile values.\n */\npublic class DescriptiveStatisticsPercentileTest {\n\n    /**\n     * This test validates that the percentile calculation system correctly rejects\n     * invalid percentile values that fall outside the acceptable business range (0-100)\n     * or are mathematically undefined (NaN).\n     *\n     * <p>It examines multiple problematic percentile values, including those below the\n     * minimum threshold, above the maximum threshold, and NaN. For each invalid value,\n     * it confirms that attempting to calculate the percentile results in a\n     * {@link MathIllegalArgumentException}, indicating the value is out of the\n     * acceptable range.\n     *\n     * <p>The test covers two scenarios as per the requirements:\n     * <ol>\n     *   <li>Attempting to calculate an invalid percentile after a valid one has already been computed.</li>\n     *   <li>Attempting to calculate an invalid percentile on a fresh instance.</li>\n     * </ol>\n     * This ensures the validation logic is robust and not dependent on the object's prior state.\n     *\n     * @param invalidPercentile a value outside the accepted [0, 100] range to be tested.\n     */\n    @ParameterizedTest\n    @ValueSource(doubles = {-10.0, 110.0, Double.NaN})\n    void testInvalidPercentileValueIsRejected(double invalidPercentile) {\n        // Scenario 1: Initialize with a valid percentile, then attempt to update to an invalid one.\n        DescriptiveStatistics statsWithPriorState = new DescriptiveStatistics();\n        statsWithPriorState.addValue(1.0);\n        statsWithPriorState.addValue(2.0);\n        // Establish a valid state by calculating a correct percentile first.\n        Assertions.assertEquals(1.5, statsWithPriorState.getPercentile(50.0), 1e-9);\n\n        // Verify that attempting to get an invalid percentile throws the expected exception.\n        Assertions.assertThrows(MathIllegalArgumentException.class, () -> {\n            statsWithPriorState.getPercentile(invalidPercentile);\n        }, \"Should have rejected percentile \" + invalidPercentile + \" after valid computation.\");\n\n        // Scenario 2: Attempt to initialize a fresh calculator directly with the invalid value.\n        DescriptiveStatistics freshStats = new DescriptiveStatistics();\n        freshStats.addValue(1.0);\n        freshStats.addValue(2.0);\n\n        // Verify that a fresh instance also rejects the invalid percentile.\n        Assertions.assertThrows(MathIllegalArgumentException.class, () -> {\n            freshStats.getPercentile(invalidPercentile);\n        }, \"Should have rejected percentile \" + invalidPercentile + \" on a fresh instance.\");\n    }\n}",
+      "method_signature": "testInvalidPercentileThrows(double)"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.6667,
+      "callable_recall": 0.6667,
+      "callable_precision": 0.1667,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 98481,
+    "output_tokens": 6513,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 435,
+      "description": "Define a parameterized test method accepting a `double` parameter `p`, annotated with `@ParameterizedTest` and `@ValueSource(doubles = { -1, 101, Double.NaN })`, which will execute three times with each of these invalid percentile values. Begin by invoking the static factory method `Percentile.create` with the literal `double` argument `50`, assigning the returned `Percentile` instance to a local variable named `stat`. Immediately assert that invoking `setQuantile` on `stat` with the parameter `p` throws an `OutOfRangeException` by calling `Assertions.assertThrows(OutOfRangeException.class, () -> stat.setQuantile(p))`. Following this assertion, verify that the static factory method itself rejects invalid input by asserting that `Percentile.create(p)` also throws `OutOfRangeException` using `Assertions.assertThrows(OutOfRangeException.class, () -> Percentile.create(p))`. The test uses JUnit 5 Assertions and the `@ParameterizedTest` annotation with `@ValueSource` to supply test data.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testInvalidPercentileThrows(double)",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 117566,
+    "output_tokens": 3612,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 444,
+      "description": "Define a test method annotated with `@Test` that begins by invoking the static factory method `Percentile.create` with argument `50` and assigning the returned `Percentile` instance to a variable named `stat`. Immediately use `Assertions.assertThrows` to verify that invoking `stat.evaluate(null)` throws a `NullArgumentException` by passing the exception class as the first argument and a lambda expression `() -> stat.evaluate(null)` as the second argument. Following this, invoke `Assertions.assertEquals` with expected value `Double.NaN` and the result of calling `stat.evaluate` on an empty `double[]` array (created using `new double[]{}`) to confirm the method returns `NaN` for empty input. Next, assert that calling `stat.evaluate` with a single-element array `new double[]{1}` returns `1` by passing `1` as the expected value and the evaluation result to `Assertions.assertEquals`. Continue by invoking `Assertions.assertEquals` with expected value `1.5` and the result of `stat.evaluate(new double[]{1, 2})` to verify the 50th percentile of a two-element array. Finally, call `Assertions.assertEquals` with expected value `2` and the result of `stat.evaluate(new double[]{1, 2, 3})` to confirm the 50th percentile calculation for a three-element array. The test uses method-level annotation `@Test`, assertion library JUnit 5 Assertions, and no mocking libraries.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testPercentile()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 191081,
+    "output_tokens": 3178,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 459,
+      "description": "Create a test case to validate that the optimization system correctly maintains solution equivalence when constraint boundaries are systematically adjusted by applying a coordinate transformation across all problem parameters, ensuring the mathematical relationship between the original and transformed solutions remains consistent within acceptable numerical precision. Begin by establishing a complex linear optimization scenario involving forty-three decision variables, each subject to specific weighted coefficients representing business objectives, along with a comprehensive set of inequality constraints that define the feasible operating region, including both general operational limits expressed through weighted combinations of variables and explicit bounds restricting each individual variable to a defined range between negative ten and positive ten. Solve the original optimization problem to determine the baseline optimal value representing the best achievable outcome under the initial constraints. Transform the constraint system by shifting each constraint boundary using a predefined offset vector, effectively translating the feasible region in the solution space while preserving the geometric relationships between constraints, then solve this modified problem to obtain the transformed optimal value. Reconstruct what the original optimal value should be by reversing the transformation applied to the solution, subtracting the contribution of the offset vector from the transformed result. Verify that the reconstructed optimal value matches the original baseline optimal value within a tolerance of one ten-thousandth, confirming the system preserves the fundamental equivalence property required by the mathematical theory underlying linear programming, specifically that shifting the coordinate system does not alter the relative optimality of solutions when properly accounted for. This validation employs JUnit 5 as the testing framework with standard equality assertions to confirm the numerical agreement between the original and reconstructed optimal values.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest",
+      "method_signature": "testMath1674()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 13795,
+    "output_tokens": 4993,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 465,
+      "description": "Create a test case to validate that the system's summation utility correctly handles all edge cases and properly computes totals across various input scenarios. Begin by confirming the system rejects missing input data by attempting to calculate a sum without providing any values and verifying the operation fails with an appropriate error, then confirm the same failure occurs when attempting to calculate a partial sum with missing data. After establishing these safeguards, verify the system returns an undefined result when presented with an empty collection of values, and confirm this behavior applies both when calculating the full sum and when requesting a partial sum of zero elements. Once these boundary conditions are validated, test the system with a single-element collection and ensure the sum equals that single value, verifying this holds true both for the complete collection and when explicitly requesting just that one element. Finally, evaluate the system's behavior with a multi-element collection by confirming the total of all values matches the expected aggregate, then verify the system can correctly sum a specified subset of consecutive elements from within the larger collection, ensuring the partial calculation produces the anticipated subtotal. Testing is conducted using JUnit 5 with standard equality assertions that account for acceptable numerical precision tolerance.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.StatUtilsTest",
+      "method_signature": "testSum()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 128672,
+    "output_tokens": 3948,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 468,
+      "description": "Define a test method that validates the copy functionality of the SemiVariance statistical component by iterating across all possible Direction enumeration values and both boolean bias correction states to ensure configuration properties are preserved during the copy operation. For each combination of direction and bias correction flag, instantiate a new SemiVariance object, configure its variance direction property using the current Direction enumeration value, and set its bias correction property using the current boolean value. Invoke the copy method on the configured SemiVariance instance to produce a duplicate instance, then immediately validate that the copied instance's variance direction matches the original by retrieving and comparing the direction property, and verify that the copied instance's bias correction setting matches the original by checking the bias correction state. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testCopy()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30470,
+    "output_tokens": 1924,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 470,
+      "description": "Create a test case to validate that the statistical calculator correctly preserves all configuration settings when producing a duplicate instance for independent use, ensuring that organizations can maintain consistent calculation parameters across multiple analytical operations. For each available directional calculation mode (whether analyzing values above or below a threshold), configure a fresh calculator instance with that specific mode, then for each bias correction setting (enabled or disabled), apply that correction preference to the calculator, produce a duplicate of the configured calculator, and immediately verify that the duplicate retains the exact directional mode and bias correction setting that were applied to the original. This validation ensures that when analysts need to replicate statistical configurations across different datasets or workflows, the duplication mechanism faithfully transfers all analytical parameters without loss or corruption, allowing teams to trust that copied calculators will produce results using the same methodological assumptions as their source configurations. The test framework is JUnit 5 with standard equality assertions to confirm configuration preservation across all combinations of directional modes and correction settings.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testCopy()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19199,
+    "output_tokens": 8434,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 472,
+      "description": "Define a test method that validates the statistical sum utility's behavior across null inputs, empty arrays, single-element arrays, and multi-element arrays with both full-array and subrange computations. Begin by initializing a null double array reference, then invoke the sum method on the utility class with this null reference and verify that a null argument exception is thrown, followed by invoking the overloaded sum method that accepts begin and length parameters with the same null reference to confirm it also throws a null argument exception. Next, initialize an empty double array and invoke both the full-array sum method and the subrange sum method with zero length, validating through a custom assertion helper that both return NaN within a specified tolerance. Proceed by initializing a single-element array containing a predefined numeric constant, invoke the full-array sum method and verify the result equals the constant value within tolerance, then invoke the subrange sum method covering the single element and confirm the same expected result. Finally, initialize a multi-element array populated with several predefined numeric constants, invoke the full-array sum method and validate the result equals the total sum of all elements within tolerance, then invoke the subrange sum method specifying a starting index and element count that excludes the first element and limits the range, validating that the result equals the sum of only the included elements within tolerance. The test relies on JUnit for test execution, a custom assertion utility for floating-point comparisons, and predefined class-level constants representing test values and tolerance thresholds.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.StatUtilsTest",
+      "method_signature": "testSum()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.legacy.stat.StatUtilsSumTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.math4.legacy.stat;\n\nimport org.apache.commons.math4.legacy.TestUtils;\nimport org.apache.commons.math4.legacy.exception.NullArgumentException;\nimport org.junit.Assert;\nimport org.junit.Test;\n\n/**\n * Test cases for the {@link StatUtils} class.\n */\npublic final class StatUtilsSumTest {\n\n    private static final double TOLERANCE = 1E-14;\n    private static final double VAL1 = 1.2;\n    private static final double VAL2 = 2.3;\n    private static final double VAL3 = 3.4;\n    private static final double VAL4 = 4.5;\n\n    @Test\n    public void testSum() {\n        // Test null input\n        double[] nullArray = null;\n        try {\n            StatUtils.sum(nullArray);\n            Assert.fail(\"a NullArgumentException should have been thrown\");\n        } catch (NullArgumentException ex) {\n            // expected\n        }\n        try {\n            StatUtils.sum(nullArray, 0, 0);\n            Assert.fail(\"a NullArgumentException should have been thrown\");\n        } catch (NullArgumentException ex) {\n            // expected\n        }\n\n        // Test empty array\n        double[] emptyArray = new double[0];\n        TestUtils.assertEquals(\"sum of empty array\", Double.NaN, StatUtils.sum(emptyArray), TOLERANCE);\n        TestUtils.assertEquals(\"sum of empty array subrange\", Double.NaN, StatUtils.sum(emptyArray, 0, 0), TOLERANCE);\n\n        // Test single-element array\n        double[] singleElementArray = {VAL1};\n        TestUtils.assertEquals(\"sum of single-element array\", VAL1, StatUtils.sum(singleElementArray), TOLERANCE);\n        TestUtils.assertEquals(\"sum of single-element array subrange\", VAL1, StatUtils.sum(singleElementArray, 0, 1), TOLERANCE);\n\n        // Test multi-element array\n        double[] multiElementArray = {VAL1, VAL2, VAL3, VAL4};\n        double expectedFullSum = VAL1 + VAL2 + VAL3 + VAL4;\n        TestUtils.assertEquals(\"sum of multi-element array\", expectedFullSum, StatUtils.sum(multiElementArray), TOLERANCE);\n\n        // Test subrange sum\n        double expectedSubrangeSum = VAL2 + VAL3;\n        TestUtils.assertEquals(\"sum of multi-element array subrange\", expectedSubrangeSum, StatUtils.sum(multiElementArray, 1, 2), TOLERANCE);\n    }\n}",
+      "method_signature": "testSum()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 88974,
+    "output_tokens": 4979,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 478,
+      "description": "Begin by iterating over all enum constants of `Direction` obtained by invoking `Direction.values()`, assigning each constant to variable `d`, and for each `d` iterate over a boolean array containing the literal values `true` and `false`, assigning each boolean to variable `b`, then within the nested loop instantiate a new `SemiVariance` object using the no-argument constructor and assign it to variable `sv`, immediately invoke `setVarianceDirection` on `sv` passing argument `d`, then invoke `setBiasCorrected` on `sv` passing argument `b`, next invoke `copy()` on `sv` and assign the returned `SemiVariance` instance to variable `copy`, after which assert using `Assert.assertEquals` that the first argument `d` equals the result of invoking `getVarianceDirection()` on `copy`, and finally assert using `Assert.assertEquals` that the first argument `b` equals the result of invoking `isBiasCorrected()` on `copy`, repeating this sequence for all combinations of `Direction` values and boolean flags. The test uses method-level annotation `@Test`, assertion library JUnit 4 Assertions, and no mocking libraries.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.moment.SemiVarianceTest",
+      "method_signature": "testCopy()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 30773,
+    "output_tokens": 2022,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 479,
+      "description": "Define a test class containing private static final fields: `ONE` of type `double`, `TWO` of type `float`, `THREE` of type `int`, `MEAN` of type `double`, `SUMSQ` of type `double`, `SUM` of type `double`, `VAR` of type `double`, `MIN` of type `double`, `MAX` of type `double`, `TOLERANCE` of type `double`, and `NAN` of type `double`. Within the test method, declare a local variable `x` of type `double[]` and initialize it to `null`. Begin by invoking `StatUtils.sum(x)` within a try-catch block, expecting a `NullArgumentException` to be thrown; if no exception is caught, invoke `Assert.fail` with the message `\"null is not a valid data array.\"`, and if the exception is caught, allow execution to continue. Next, invoke `StatUtils.sum(x, 0, 4)` within another try-catch block, again expecting a `NullArgumentException`; if no exception is caught, invoke `Assert.fail` with the message `\"null is not a valid data array.\"`, and if the exception is caught, proceed. Reassign `x` to a new empty `double[]` array with zero elements, then invoke `TestUtils.assertEquals` with arguments `Double.NaN`, the result of `StatUtils.sum(x)`, and `TOLERANCE`, followed by invoking `TestUtils.assertEquals` with arguments `Double.NaN`, the result of `StatUtils.sum(x, 0, 0)`, and `TOLERANCE`. Reassign `x` to a new `double[]` array containing a single element `TWO`, then invoke `TestUtils.assertEquals` with arguments `2`, the result of `StatUtils.sum(x)`, and `TOLERANCE`, followed by invoking `TestUtils.assertEquals` with arguments `2`, the result of `StatUtils.sum(x, 0, 1)`, and `TOLERANCE`. Reassign `x` to a new `double[]` array containing four elements `{ONE, TWO, TWO, THREE}`, then invoke `TestUtils.assertEquals` with arguments `8`, the result of `StatUtils.sum(x)`, and `TOLERANCE`, followed by invoking `TestUtils.assertEquals` with arguments `4`, the result of `StatUtils.sum(x, 1, 2)`, and `TOLERANCE`. The test uses method-level annotation `@Test`, assertion libraries JUnit 4 Assertions (via `Assert.fail`) and a custom helper assertion `TestUtils.assertEquals`, and no mocking libraries.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.StatUtilsTest",
+      "method_signature": "testSum()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 57436,
+    "output_tokens": 3315,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 496,
+      "description": "Define a test method that validates the Monotonicity of Relaxation (MR) property in linear programming by solving the same optimization problem twice\u2014once with the original constraints and once with shifted constraints\u2014and confirming that the objective function values satisfy the expected mathematical relationship. Initialize two double arrays representing the objective function coefficients and the shift vector, then set an integer representing the number of coefficients. Construct a list of linear constraints by creating an anonymous inner class that populates itself with multiple LinearConstraint instances, each built from coefficient arrays, relationship types (less-than-or-equal), and right-hand-side values, followed by additional boundary constraints generated by invoking a helper method that parses constraint strings (such as \"x0 <= 10\" and \"x0 >= -10\") into LinearConstraint objects for each of the 43 variables. Invoke the solver helper method with the objective coefficients and the original constraint list, capturing the resulting PointValuePair and extracting its objective value as the baseline result. Create a new empty list for the shifted constraints, then iterate over the original constraints, extracting each constraint's coefficient array by calling getCoefficients and converting to a primitive array, computing the adjusted right-hand-side by adding the dot product of the coefficients and the shift vector to the original constraint's value, and constructing a new LinearConstraint with the same coefficients and relationship but the adjusted right-hand-side, adding each transformed constraint to the shifted list. Invoke the solver helper method again with the same objective coefficients but the shifted constraint list, capturing the new PointValuePair and extracting its objective value. Calculate the expected baseline value by subtracting the dot product of the objective coefficients and the shift vector from the shifted solution's objective value. Assert that the original objective value and the recalculated baseline value are equal within a tolerance of 1e-4, confirming that the MR property holds. The solver helper method constructs a LinearObjectiveFunction from the coefficient array with a constant term of zero, creates a SimplexSolver instance with a specified epsilon tolerance, and invokes its optimize method with a MaxIter limit, the objective function, a LinearConstraintSet wrapping the constraints, and a goal type of MAXIMIZE, returning the resulting PointValuePair. The constraint-parsing helper method determines the relationship type by checking for \">=\", \"<=\", or \"=\" in the input string, splits the string on the equality operator to separate left and right sides, parses the right-hand-side as a double, initializes a coefficient array of the specified size, processes the left-hand-side by removing variable markers and splitting on spaces, then iterates over the resulting tokens to extract the sign (positive or negative) and variable index, populating the coefficient array accordingly, and finally constructs and returns a LinearConstraint with the parsed coefficients, relationship, and right-hand-side value. JUnit 5 and Apache Commons Math.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest",
+      "method_signature": "testMath1674()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 20902,
+    "output_tokens": 7759,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 500,
+      "description": "Create a test case to validate the accuracy of different curve-fitting approaches when approximating an exponential growth pattern over a defined interval, specifically comparing how closely various interpolation strategies match the true mathematical function when calculating the total accumulated area beneath the curve. Begin by establishing a set of discrete observation points representing exponential growth values at regular intervals from zero to three, then configure three distinct curve-fitting scenarios: first, a constrained curve that enforces specific starting and ending slopes matching the true exponential rate of change at the boundaries; second, a constrained curve without explicit slope requirements that should naturally adopt unconstrained behavior; and third, a standard unconstrained curve for baseline comparison. Once these interpolation models are prepared, compute the accumulated area under each fitted curve across the entire observation range, and similarly calculate the exact accumulated area under the true exponential function over the same interval. After obtaining all four area measurements, verify that the constrained curve without specified slopes produces an identical result to the standard unconstrained curve, confirming they exhibit the same mathematical behavior, then confirm the constrained curve with enforced boundary slopes approximates the true exponential area to within approximately 0.026 units with a tolerance of 0.1, demonstrating superior accuracy, and finally ensure the unconstrained curve deviates from the true exponential area by approximately 0.467 units within the same tolerance threshold, establishing the relative precision difference between approaches. Validate these outcomes using JUnit 5 assertions with standard equality checks for exact matches and delta-based comparisons for approximate numerical agreement.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testIntegral()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.analysis.interpolation.CurveFittingApproximationTest",
+      "code": "package org.apache.commons.math4.analysis.interpolation;\n\nimport org.apache.commons.math4.analysis.UnivariateFunction;\nimport org.apache.commons.math4.analysis.integration.RombergIntegrator;\nimport org.apache.commons.math4.analysis.integration.UnivariateIntegrator;\nimport org.apache.commons.math4.exception.DimensionMismatchException;\nimport org.apache.commons.math4.exception.NoDataException;\nimport org.apache.commons.math4.exception.NonMonotonicSequenceException;\nimport org.apache.commons.math4.exception.NumberIsTooSmallException;\nimport org.junit.Assert;\nimport org.junit.Test;\n\nimport static java.lang.Math.exp;\n\n/**\n * Test case for validating the accuracy of different curve-fitting and interpolation approaches.\n */\npublic class CurveFittingApproximationTest {\n\n    /**\n     * This test validates the accuracy of different curve-fitting approaches against an exponential\n     * growth pattern. It compares a standard unconstrained spline interpolation with two forms of\n     * Hermite interpolation: one with boundary slope constraints and one without. The test measures\n     * the area under each curve and compares it to the true area under the exponential function,\n     * verifying the relative accuracy of each method.\n     */\n    @Test\n    public void testCurveFittingApproximationAccuracy()\n            throws DimensionMismatchException, NoDataException, NonMonotonicSequenceException, NumberIsTooSmallException {\n\n        // 1. Establish a set of discrete observation points representing exponential growth\n        // values at regular intervals from zero to three.\n        final double[] x = {0.0, 1.0, 2.0, 3.0};\n        final double[] y = new double[x.length];\n        for (int i = 0; i < x.length; i++) {\n            y[i] = exp(x[i]);\n        }\n\n        // Define the true exponential function and its derivative for slope calculations.\n        final UnivariateFunction trueExponential = v -> exp(v);\n        final UnivariateFunction trueExponentialDerivative = v -> exp(v);\n\n        // 2. Configure three distinct curve-fitting scenarios.\n\n        // Scenario 1: A constrained curve that enforces specific starting and ending slopes\n        // matching the true exponential rate of change at the boundaries.\n        final HermiteInterpolator constrainedInterpolatorWithSlopes = new HermiteInterpolator();\n        constrainedInterpolatorWithSlopes.addSamplePoint(x[0], new double[]{y[0]}, new double[]{trueExponentialDerivative.value(x[0])});\n        for (int i = 1; i < x.length - 1; i++) {\n            constrainedInterpolatorWithSlopes.addSamplePoint(x[i], new double[]{y[i]});\n        }\n        constrainedInterpolatorWithSlopes.addSamplePoint(x[x.length - 1], new double[]{y[x.length - 1]}, new double[]{trueExponentialDerivative.value(x[x.length - 1])});\n        final UnivariateFunction constrainedCurveWithSlopes = v -> {\n            try {\n                return constrainedInterpolatorWithSlopes.value(v)[0];\n            } catch (NoDataException | DimensionMismatchException e) {\n                throw new RuntimeException(e);\n            }\n        };\n\n        // Scenario 2: A constrained curve without explicit slope requirements, which should naturally\n        // adopt unconstrained behavior.\n        final HermiteInterpolator constrainedInterpolatorWithoutSlopes = new HermiteInterpolator();\n        for (int i = 0; i < x.length; i++) {\n            constrainedInterpolatorWithoutSlopes.addSamplePoint(x[i], new double[]{y[i]});\n        }\n        final UnivariateFunction constrainedCurveWithoutSlopes = v -> {\n            try {\n                return constrainedInterpolatorWithoutSlopes.value(v)[0];\n            } catch (NoDataException | DimensionMismatchException e) {\n                throw new RuntimeException(e);\n            }\n        };\n\n        // Scenario 3: A standard unconstrained curve for baseline comparison.\n        final SplineInterpolator unconstrainedInterpolator = new SplineInterpolator();\n        final UnivariateFunction unconstrainedCurve = unconstrainedInterpolator.interpolate(x, y);\n\n        // 3. Compute the accumulated area under each fitted curve and the true function.\n        final UnivariateIntegrator integrator = new RombergIntegrator();\n        final double integrationLowerBound = x[0];\n        final double integrationUpperBound = x[x.length - 1];\n        final int maxEval = 10000;\n\n        final double constrainedAreaWithSlopes = integrator.integrate(maxEval, constrainedCurveWithSlopes, integrationLowerBound, integrationUpperBound);\n        final double constrainedAreaWithoutSlopes = integrator.integrate(maxEval, constrainedCurveWithoutSlopes, integrationLowerBound, integrationUpperBound);\n        final double unconstrainedArea = integrator.integrate(maxEval, unconstrainedCurve, integrationLowerBound, integrationUpperBound);\n        final double trueArea = exp(integrationUpperBound) - exp(integrationLowerBound);\n\n        // 4. Validate the outcomes using JUnit assertions.\n\n        // Verify that the constrained curve without specified slopes produces an identical result\n        // to the standard unconstrained curve.\n        Assert.assertEquals(unconstrainedArea, constrainedAreaWithoutSlopes, 1e-9);\n\n        // Confirm the constrained curve with enforced boundary slopes approximates the true area\n        // to within approximately 0.026 units with a tolerance of 0.1.\n        final double constrainedDiff = Math.abs(constrainedAreaWithSlopes - trueArea);\n        Assert.assertEquals(0.026, constrainedDiff, 0.1);\n\n        // Ensure the unconstrained curve deviates from the true area by approximately 0.467 units\n        // within the same tolerance threshold.\n        final double unconstrainedDiff = Math.abs(unconstrainedArea - trueArea);\n        Assert.assertEquals(0.467, unconstrainedDiff, 0.1);\n    }\n}",
+      "method_signature": "testIntegral()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6309,
+    "output_tokens": 9535,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 503,
+      "description": "Define a test method that validates the integral accuracy of clamped spline interpolation by comparing it against natural spline interpolation and a known exponential function. Initialize two arrays representing x-coordinates and corresponding y-values derived from the exponential function e^x over the interval [0, 3], then compute the first derivative values at the endpoints using the exponential function's derivative. Instantiate a Clamped Spline Interpolator and invoke its interpolation method twice: first with the endpoint derivative constraints to produce a fully clamped spline, and second without derivative constraints to produce a clamped spline behaving as a natural spline. Separately, instantiate a Natural Spline Interpolator and invoke its interpolation method on the same data points to produce a true natural spline for comparison. Create a Simpson Integrator with a maximum iteration count and use it to compute four definite integrals over the interval [0, 3]: the integral of the fully clamped spline, the integral of the clamped-as-natural spline, the integral of the true natural spline, and the integral of the exponential function directly using a lambda expression. Upon obtaining these four integral results, assert that the absolute difference between the clamped-as-natural spline integral and the true natural spline integral equals zero, confirming that a clamped spline without boundary conditions behaves identically to a natural spline. Next, assert that the absolute difference between the exponential function integral and the fully clamped spline integral is approximately 0.02589 within a tolerance of 0.1, demonstrating the improved accuracy of clamped splines with boundary conditions. Finally, assert that the absolute difference between the exponential function integral and the natural spline integral is approximately 0.46675 within a tolerance of 0.1, illustrating the lower accuracy of natural splines compared to properly constrained clamped splines. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testIntegral()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 17322,
+    "output_tokens": 4535,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 525,
+      "description": "Create a test case to validate that the curve-fitting system accurately constructs a smooth mathematical representation through four data points following an exponential pattern, where the system is explicitly instructed on the desired slope at both the starting and ending positions. Begin by establishing a sequence of four input positions at evenly spaced intervals and their corresponding output values that follow an exponential growth curve, then specify the exact slope the fitted curve should exhibit at the initial position and the final position to ensure the curve enters and exits with the correct trajectory. Once these parameters are defined, invoke the curve-fitting system to construct the smooth representation based on these constraints, then confirm the resulting curve passes precisely through all four original data points by evaluating the fitted curve at each input position and verifying the output matches the expected value. After establishing the curve accurately reproduces the original points, verify the curve maintains mathematical smoothness by confirming that adjacent curve segments agree not only in their values but also in their first and second rates of change at the transition points between segments, ensuring no abrupt changes in direction or curvature occur. Having validated the curve's accuracy and smoothness, extract the underlying mathematical components that define each segment of the curve and compare the numerical parameters of each segment against analytically derived reference values to confirm the curve-fitting algorithm produced the mathematically correct solution, verifying the first segment's parameters match the expected reference set, the second segment's parameters align with their corresponding reference values, and the third segment's parameters conform to their analytical targets. Validate all numerical comparisons using standard equality assertions with appropriate tolerance thresholds for the curve evaluation points and the mathematical parameters, employing JUnit 5 as the testing framework and AssertJ or equivalent assertion libraries for verification.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 29129,
+    "output_tokens": 10504,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 526,
+      "description": "Define a test class containing two private static final double fields: `KNOT_TOL` and `COEF_TOL` (values not shown in context). Write a test method annotated with `@Test` that begins by declaring a double array `x` initialized to `{ 0, 1, 2, 3 }` and a double array `y` initialized to `{ 1, Math.exp(1), Math.exp(2), Math.exp(3) }`, where each `Math.exp` call computes the exponential of its argument. Declare a double variable `fpo` assigned the literal value `1`, then declare a double variable `fpn` assigned the result of `Math.exp(3)`. Instantiate a `ClampedSplineInterpolator` by invoking its no-argument constructor and assign it to variable `clampedSplineInterpolator`. Invoke `interpolate` on `clampedSplineInterpolator` with arguments `x`, `y`, `fpo`, and `fpn`, assigning the returned `PolynomialSplineFunction` to `clampedSpline`. Invoke `interpolate` again on `clampedSplineInterpolator` with only arguments `x` and `y`, assigning the returned `PolynomialSplineFunction` to `clampedSplineAsNaturalSpline`. Instantiate a `SplineInterpolator` by invoking its no-argument constructor and assign it to `naturalSplineInterpolator`. Invoke `interpolate` on `naturalSplineInterpolator` with arguments `x` and `y`, assigning the returned `PolynomialSplineFunction` to `naturalSpline`. Instantiate a `SimpsonIntegrator` by invoking its no-argument constructor and assign it to `integrator`. Invoke `integrate` on `integrator` with arguments `1000`, `clampedSpline`, `0`, and `3`, assigning the double result to `clampedSplineIntegral`. Invoke `integrate` on `integrator` with arguments `1000`, `clampedSplineAsNaturalSpline`, `0`, and `3`, assigning the double result to `clampedSplineAsNaturalSplineIntegral`. Invoke `integrate` on `integrator` with arguments `1000`, `naturalSpline`, `0`, and `3`, assigning the double result to `naturalSplineIntegral`. Invoke `integrate` on `integrator` with arguments `1000`, a lambda expression `arg -> Math.exp(arg)`, `0`, and `3`, assigning the double result to `exponentialFunctionIntegral`. Assert using `Assert.assertEquals` that the absolute value (computed via `Math.abs`) of the difference `clampedSplineAsNaturalSplineIntegral - naturalSplineIntegral` equals `0` with a delta of `0`. Assert using `Assert.assertEquals` that the absolute value of the difference `exponentialFunctionIntegral - clampedSplineIntegral` equals `0.02589` with a delta of `0.1`. Assert using `Assert.assertEquals` that the absolute value of the difference `exponentialFunctionIntegral - naturalSplineIntegral` equals `0.46675` with a delta of `0.1`. This test uses JUnit 4 assertions (`Assert.assertEquals`) and the `@Test` annotation, with no mocking libraries, no nested test classes, no parameterized test sources, and no teardown methods.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testIntegral()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 31630,
+    "output_tokens": 2369,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 528,
+      "description": "Create a test case to validate that the curve-fitting system correctly constructs a smooth mathematical curve through a minimal set of three data points while respecting specified boundary constraints at both endpoints. Begin by preparing a scenario with three horizontal positions evenly distributed between zero and one, and corresponding vertical values that follow an exponential growth pattern, then specify that the curve must have a slope of one at the starting position and a slope matching the exponential growth rate at the ending position. Instruct the curve-fitting system to generate a smooth interpolating curve using these positions, values, and boundary slope requirements. Once the curve is constructed, verify that it passes exactly through all three original data points by evaluating the curve at each horizontal position and confirming the computed vertical values match the provided exponential values within acceptable tolerance. After confirming the curve passes through the data points, validate that adjacent curve segments maintain mathematical continuity by checking that at each interior connection point, the curve segments agree in their values, first rates of change, and second rates of change within acceptable tolerances. Having verified the curve's structural properties, confirm the mathematical correctness of the underlying curve segments by retrieving the polynomial representations and comparing their mathematical coefficients against analytically derived expected values for both the first segment spanning from zero to one-half and the second segment spanning from one-half to one, ensuring each set of coefficients matches the theoretical values within a defined precision threshold. Use JUnit 5 as the testing framework with standard equality assertions to verify numerical agreement between computed and expected values throughout the validation process.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInterpolateLinearDegenerateTwoSegment()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19889,
+    "output_tokens": 7338,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 529,
+      "description": "Create a test case to validate that the system properly enforces operational constraints when attempting to use statistical computation capabilities that require accumulated state without having previously enabled state tracking. Begin by initializing a statistical calculator configured to operate without maintaining internal state history, then verify the system correctly prevents attempts to process multiple data points at once by rejecting both full dataset operations and partial range operations with appropriate failure notifications. Confirm the system also blocks requests to retrieve the count of processed observations since no state is being maintained, and ensure attempts to compute statistical results from external datasets are similarly rejected regardless of whether the entire dataset or a specific range is provided. Throughout this validation, confirm each prohibited operation triggers the expected business rule violation indicating the feature is unavailable in the current configuration. Use JUnit 5 for the testing framework with standard exception assertions to verify the system enforces these operational boundaries consistently across all unsupported capabilities.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testUnsupportedStorelessMethods()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.math4.core.descriptive.StreamingStatisticsStatelessTest",
+      "code": "package org.apache.commons.math4.core.descriptive;\n\nimport org.apache.commons.math4.core.descriptive.moment.Mean;\nimport org.apache.commons.math4.core.exception.MathIllegalStateException;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\n/**\n * Tests for {@link StreamingStatistics} to verify that state-dependent operations\n * are properly constrained when state tracking is not enabled.\n */\npublic class StreamingStatisticsStatelessTest {\n\n    private StreamingStatistics statelessStats;\n    private final double[] testData = {1.0, 2.0, 3.0, 4.0, 5.0};\n\n    @BeforeEach\n    void setUp() {\n        // Initialize a statistical calculator without any state-tracking capabilities configured.\n        statelessStats = StreamingStatistics.builder().build();\n    }\n\n    @Test\n    void testStatelessInstanceRejectsStatefulOperations() {\n        // Verify that attempting to process a full dataset is rejected because no stats are configured.\n        assertThrows(MathIllegalStateException.class, () -> {\n            statelessStats.addAll(testData);\n            statelessStats.getResult(Mean.class); // This will fail as no stats were computed.\n        }, \"Full dataset operations should be rejected without configured state.\");\n\n        // Verify that attempting to process a partial range of a dataset is also rejected.\n        assertThrows(MathIllegalStateException.class, () -> {\n            statelessStats.addAll(testData, 1, 3);\n            statelessStats.getResult(Mean.class); // This will fail as no stats were computed.\n        }, \"Partial dataset operations should be rejected without configured state.\");\n\n        // Confirm that requests to retrieve the count of processed observations are blocked.\n        assertThrows(MathIllegalStateException.class,\n            statelessStats::n,\n            \"Retrieving observation count should be blocked when state tracking is disabled.\");\n\n        // Ensure attempts to compute statistical results are rejected.\n        assertThrows(MathIllegalStateException.class, () ->\n            statelessStats.getResult(Mean.class),\n            \"Computing results should be rejected when no statistics are configured.\");\n    }\n}",
+      "method_signature": "testUnsupportedStorelessMethods()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6179,
+    "output_tokens": 8703,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 530,
+      "description": "Define a test method that validates the behavior of the Clamped Spline Interpolator when constructing a piecewise polynomial function across three segments with exponential data points. Declare two class-level tolerance constants for knot point verification and coefficient verification. Within the test method, initialize an array of four x-coordinates as sequential integers and a corresponding y-array containing exponential values computed from those coordinates, then define boundary derivative values as a positive integer for the starting slope and the exponential of the final x-coordinate for the ending slope. Instantiate the Clamped Spline Interpolator and invoke its interpolate method with the x-array, y-array, and both boundary derivatives to produce a Polynomial Spline Function. Create a private helper method that accepts the spline function along with the original x and y arrays, then iterates through each knot point to verify that evaluating the spline at each x-coordinate yields the corresponding y-value within the knot tolerance. Create a second private helper method that accepts the spline function and x-array, retrieves the array of polynomial functions from the spline, then iterates through interior knot points to verify continuity by asserting that adjacent polynomials produce equal values, equal first derivative values, and equal second derivative values at each shared boundary point. Invoke both helper methods immediately after interpolation to confirm the spline satisfies interpolation constraints and maintains derivative continuity across segment boundaries. Following these behavioral validations, retrieve the polynomial function array from the spline and define three target coefficient arrays containing the analytically derived coefficients for each of the three polynomial segments. Assert that the coefficients extracted from each polynomial function match their corresponding target arrays within the coefficient tolerance using a utility assertion method that compares arrays element-wise. The test relies on JUnit for test execution and a custom TestUtils class for array equality assertions with tolerance.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 41946,
+    "output_tokens": 15159,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 536,
+      "description": "Define a test method that validates the Clamped Spline Interpolator's ability to construct a cubic spline from a degenerate two-segment dataset where knot points are positioned at 0, 0.5, and 1, with corresponding y-values computed as 1, the exponential of 0.5, and the exponential of 1, while specifying boundary conditions with a starting derivative of 1 and an ending derivative equal to the exponential of 1. Instantiate the Clamped Spline Interpolator and invoke its interpolation method with these knot arrays and derivative constraints to produce a Polynomial Spline Function. Upon receiving the spline function, create a private helper method that validates interpolation accuracy by iterating through each knot point and asserting that the spline's evaluated value matches the corresponding y-value within a predefined knot tolerance. Invoke this interpolation verification helper with the spline function and the original coordinate arrays. Following interpolation validation, create a second private helper method that verifies continuity by retrieving the constituent polynomial functions from the spline and iterating through interior knot points to assert that adjacent polynomials agree in value, first derivative, and second derivative at each junction point within specified tolerances. Invoke this consistency verification helper with the spline function and knot array. To confirm the mathematical correctness of the computed spline coefficients, retrieve the array of polynomial functions from the spline and extract the coefficient arrays from the first and second polynomials. Define two target coefficient arrays containing analytically derived expected values for each segment's cubic polynomial coefficients. Assert that the coefficients extracted from the first polynomial match the first target array within a coefficient tolerance, then assert that the coefficients from the second polynomial match the second target array within the same tolerance, using a test utility's array equality assertion method. The test uses JUnit for test execution and a custom TestUtils assertion library for array comparisons.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInterpolateLinearDegenerateTwoSegment()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 60221,
+    "output_tokens": 2193,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 552,
+      "description": "Define a test method that validates the Storeless Sum of Squares component correctly rejects operations unsupported in its storeless mode by first preparing a sample array of double values containing three numeric elements, then obtaining a storeless instance of the Sum of Squares statistic through its factory method. With the instance created, verify that invoking the full-array increment operation triggers an illegal state error, followed by confirming that the ranged increment operation with specified start and end indices also produces the same error category. Next, validate that attempting to retrieve the sample count from the storeless instance results in an illegal state error, then confirm that both the full-array evaluation method and the ranged evaluation method with offset parameters each throw the same error type when invoked on the storeless instance. Each verification should assert that the expected error category is raised when the corresponding unsupported operation is attempted, demonstrating that the component enforces its operational constraints consistently across all methods that require internal state storage. The test uses JUnit 5 assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.StatisticsTest",
+      "method_signature": "testUnsupportedStorelessMethods()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 20175,
+    "output_tokens": 7827,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 555,
+      "description": "Define a test class containing two private static final double fields: `KNOT_TOL` and `COEF_TOL`, initialized with appropriate tolerance values for knot and coefficient comparisons. Write a test method annotated with `@Test` that begins by declaring a double array `x` initialized to `{0, 1, 2, 3}` and a double array `y` initialized to `{1, Math.exp(1), Math.exp(2), Math.exp(3)}`, where each `Math.exp` call computes the exponential of the integer argument. Declare a double variable `fpo` assigned the literal value `1`, representing the first derivative at the starting point, and declare a double variable `fpn` assigned the value `Math.exp(3)`, representing the first derivative at the ending point. Instantiate a new `ClampedSplineInterpolator` object and assign it to variable `i`, then invoke `interpolate` on `i` with arguments `x`, `y`, `fpo`, and `fpn`, assigning the returned `PolynomialSplineFunction` to variable `f`. Define a private method that accepts a `PolynomialSplineFunction`, a double array of x-values, and a double array of y-values, then iterates from index `0` to `x.length - 1`, invoking `value` on the spline function with argument `x[i]` and asserting equality with `y[i]` using a tolerance of `KNOT_TOL` via `Assert.assertEquals`, and invoke this method with arguments `f`, `x`, and `y`. Define a second private method that accepts a `PolynomialSplineFunction` and a double array of x-values, retrieves the polynomial array by calling `getPolynomials()` on the function, then iterates from index `1` to `x.length - 2`, and for each iteration, invokes `value` on `polynomials[i]` with argument `x[i + 1] - x[i]` and asserts equality with `polynomials[i + 1].value(0)` using tolerance `0.1`, then invokes `polynomialDerivative()` on `polynomials[i]` and calls `value` with argument `x[i + 1] - x[i]`, asserting equality with `polynomials[i + 1].polynomialDerivative().value(0)` using tolerance `0.5`, and finally invokes `polynomialDerivative()` twice on `polynomials[i]` and calls `value` with argument `x[i + 1] - x[i]`, asserting equality with `polynomials[i + 1].polynomialDerivative().polynomialDerivative().value(0)` using tolerance `0.5`, and invoke this method with arguments `f` and `x`. Retrieve the polynomial array from `f` by calling `getPolynomials()` and assign it to variable `polynomials` of type `PolynomialFunction[]`. Declare a double array `target0` initialized to `{1, 0.9999999999999999, 0.4446824969658283, 0.27359933149321697}`, a double array `target1` initialized to `{2.718281828459045, 2.710162988411307, 1.2654804914454791, 0.6951307906148195}`, and a double array `target2` initialized to `{7.38905609893065, 7.326516343146723, 3.3508728632899376, 2.019091617820356}`. Invoke `TestUtils.assertEquals` with arguments `polynomials[0].getCoefficients()`, `target0`, and `COEF_TOL` to verify the coefficients of the first polynomial segment, then invoke `TestUtils.assertEquals` with arguments `polynomials[1].getCoefficients()`, `target1`, and `COEF_TOL` to verify the second segment, and finally invoke `TestUtils.assertEquals` with arguments `polynomials[2].getCoefficients()`, `target2`, and `COEF_TOL` to verify the third segment. The test uses no class-level annotations, method-level annotation `@Test`, assertion libraries JUnit 4 Assertions (via `Assert.assertEquals`) and a custom `TestUtils.assertEquals` method, and no mocking libraries.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.analysis.interpolation.ClampedSplineInterpolatorTest",
+      "method_signature": "testInterpolateLinearDegenerateThreeSegment()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 42273,
+    "output_tokens": 6544,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 566,
+      "description": "Define a test class containing thirteen private final double fields: `one`, `twoF`, `twoL`, `three`, `mean`, `sumSq`, `sum`, `var`, `std`, `n`, `min`, `max`, and `tolerance`, though none are used in this test method. Begin by invoking a private method that instantiates a new `SummaryStatistics` object using its no-argument constructor and assign the result to variable `u`. Verify null-rejection behavior by invoking `Assertions.assertThrows` with `NullPointerException.class` and a lambda that calls `u.setSumImpl(null)`, then repeat this pattern for `setMinImpl(null)`, `setMaxImpl(null)`, `setMeanImpl(null)`, and `setVarianceImpl(null)`. Configure distinct implementations by instantiating a test-local stub class (define a private static class implementing `StorelessUnivariateStatistic` that stores an integer value in its constructor and returns that value plus one from `getResult()`) and invoke `u.setSumImpl(new SumStat(1))`, `u.setMinImpl(new SumStat(2))`, `u.setMaxImpl(new SumStat(3))`, `u.setMeanImpl(new SumStat(4))`, and `u.setVarianceImpl(new SumStat(5))`. Invoke `u.addValue(1)` to add a single value, then verify the overridden implementations by asserting `Assertions.assertEquals(2, u.getSum())`, `Assertions.assertEquals(3, u.getMin())`, `Assertions.assertEquals(4, u.getMax())`, `Assertions.assertEquals(5, u.getMean())`, and `Assertions.assertEquals(6, u.getVariance())`. Confirm that getters return the correct implementation instances by invoking `u.getSumImpl().getResult()` and asserting it equals `2`, then repeat for `getMinImpl().getResult()` expecting `3`, `getMaxImpl().getResult()` expecting `4`, `getMeanImpl().getResult()` expecting `5`, and `getVarianceImpl().getResult()` expecting `6`. Test the copy functionality by invoking `u.copy()` and assigning the result to variable `v`, then verify `v.getSum()` equals `2`, `v.getMin()` equals `3`, `v.getMax()` equals `4`, `v.getMean()` equals `5`, and `v.getVariance()` equals `6`. Invoke `u.clear()` to reset the statistics, then verify the NaN contract by asserting `u.getSum()`, `u.getMin()`, `u.getMax()`, `u.getMean()`, and `u.getVariance()` all equal `Double.NaN`. Test refilling by invoking `u.addValue(1)` again, then assert that `u.getSum()`, `u.getMin()`, `u.getMax()`, `u.getMean()`, and `u.getVariance()` all equal `1`. The test uses method-level annotation `@Test` and relies on JUnit 5 Assertions for verification.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+      "method_signature": "testSetterAll()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 49089,
+    "output_tokens": 3229,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 579,
+      "description": "Define a test method that validates the behavior of the Summary Statistics component when all default statistical implementations are replaced with custom implementations, then verifies that the component correctly delegates to these custom implementations, supports copying with the overridden implementations intact, and handles clearing and refilling operations appropriately. Initialize a Summary Statistics instance using a helper method that constructs the component, then verify that attempting to configure each statistical implementation setter (sum, minimum, maximum, mean, variance) with a null value triggers a null pointer exception. Having established the null-safety contract, configure the component by injecting distinct custom statistic implementations into each setter, using test stub implementations that return predetermined constant values to verify delegation rather than actual computation. With all implementations overridden, add a numeric value to the component to trigger the statistical computation pipeline, then assert that each statistical accessor (sum, minimum, maximum, mean, variance) returns the predetermined constant from its respective custom implementation rather than the mathematically computed value, confirming that the component delegates to the injected implementations. To verify that the component correctly exposes the injected implementations, retrieve each implementation via its corresponding getter and invoke its result method, asserting that the returned values match the predetermined constants. Create a copy of the configured component using its copy method, then validate that the copied instance preserves all custom implementations by asserting that its statistical accessors return the same predetermined constants as the original. Clear the original component to reset its internal state, then verify that all statistical accessors now return NaN to indicate an empty dataset, confirming the component honors the contract for empty state representation. Finally, add a numeric value to the cleared component to refill it, then assert that all statistical accessors return values consistent with a single-element dataset processed through the custom implementations, demonstrating that the component can be reused after clearing. JUnit 5 is used for test execution and assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+      "method_signature": "testSetterAll()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 19170,
+    "output_tokens": 6443,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 584,
+      "description": "Define a test class containing thirteen private final double fields: `one`, `twoF`, `twoL`, `three`, `mean`, `sumSq`, `sum`, `var`, `std`, `n`, `min`, `max`, and `tolerance`, though only the empty array logic is exercised in this test method. Begin the test method by invoking the no-argument constructor of `SummaryStatistics` and assigning the result to variable `stats`. Immediately after, declare a double array variable `x` and initialize it with an empty array literal `{}`. Invoke `StatUtils.sum(x)` passing the empty array `x`, then invoke `stats.getSum()` on the `stats` instance, and assert equality between these two values using `Assertions.assertEquals`. Next, invoke `StatUtils.mean(x)` with argument `x`, invoke `stats.getMean()` on `stats`, and assert their equality using `Assertions.assertEquals`. Invoke `StatUtils.variance(x)` with argument `x` and assign the result to variable `v` of type double. Pass `v` to `JdkMath.sqrt(v)`, invoke `stats.getStandardDeviation()` on `stats`, and assert equality between the square root result and the standard deviation using `Assertions.assertEquals`. Assert equality between `v` and the result of invoking `stats.getVariance()` using `Assertions.assertEquals`. Invoke `StatUtils.max(x)` with argument `x`, invoke `stats.getMax()` on `stats`, and assert their equality using `Assertions.assertEquals`. Finally, invoke `StatUtils.min(x)` with argument `x`, invoke `stats.getMin()` on `stats`, and assert their equality using `Assertions.assertEquals`. The test uses method-level annotation `@Test` and relies on JUnit 5 Assertions for verification.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+      "method_signature": "testEmpty()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 85588,
+    "output_tokens": 2819,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 590,
+      "description": "Create a test case to validate the statistical summary system's behavior when presented with an empty dataset, ensuring it correctly produces undefined results for all statistical measures. Initialize a new statistical summary tracker with no data points provided, then confirm the system accurately reports that the total sum is undefined, the average value is undefined, the spread of values (variance) is undefined, the typical deviation from the average (standard deviation) is undefined, the highest value is undefined, and the lowest value is undefined, all reflecting the absence of any input data. Verify these outcomes using standard equality assertions with JUnit 5 and AssertJ, confirming that each statistical measure returns the expected undefined state when no observations are available for analysis.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+      "method_signature": "testEmpty()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 54230,
+    "output_tokens": 9532,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 591,
+      "description": "Define a test class that validates the behavior of Summary Statistics when operating on an empty dataset by first creating a helper method that instantiates and returns a new Summary Statistics component, then within the test method invoke this helper to obtain a statistics instance and declare an empty double array as the input dataset. Using the Static Utilities component, compute the sum of the empty array and assert that the result equals the sum retrieved from the statistics instance, then similarly compute the mean through the Static Utilities and verify it matches the mean from the statistics instance. Next, calculate the variance of the empty array via the Static Utilities, store this variance value, and compute its square root using the Math Utilities component, asserting that this derived standard deviation equals the standard deviation reported by the statistics instance, followed by asserting that the stored variance value matches the variance from the statistics instance. Continue by computing the maximum value of the empty array through the Static Utilities and verifying it equals the maximum from the statistics instance, then compute the minimum value via the Static Utilities and assert it matches the minimum from the statistics instance. This test validates that the Summary Statistics component correctly handles edge cases where no data has been added, ensuring all statistical measures return the same values as the Static Utilities when applied to an empty dataset, using JUnit 5 and its Assertions library.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+      "method_signature": "testEmpty()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 119924,
+    "output_tokens": 3234,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 598,
+      "description": "Define a test class containing a private static field `random` of type `UniformRandomProvider`, then write a test method annotated with `@Test` that begins by defining a private method named `createDescriptiveStatistics` which instantiates and returns a new `DescriptiveStatistics` object by invoking its no-argument constructor, then invoke this helper method and assign the result to a local variable `stats` of type `DescriptiveStatistics`. Declare a local variable `x` of type `double[]` and initialize it with an empty array literal `{}`. Invoke `StatUtils.mean(x)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getMean()` and pass the result as the actual value to the same assertion. Invoke `StatUtils.geometricMean(x)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getGeometricMean()` and pass the result as the actual value to the same assertion. Invoke `StatUtils.variance(x)` and assign the result to a local variable `v` of type `double`. Pass `v` as the expected value to `Assertions.assertEquals`, then invoke `stats.getVariance()` and pass the result as the actual value to the same assertion. Invoke `JdkMath.sqrt(v)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getStandardDeviation()` and pass the result as the actual value to the same assertion. Pass the literal `Double.NaN` as the expected value to `Assertions.assertEquals`, then invoke `stats.getQuadraticMean()` and pass the result as the actual value to the same assertion. Pass the literal `Double.NaN` as the expected value to `Assertions.assertEquals`, then invoke `stats.getKurtosis()` and pass the result as the actual value to the same assertion. Pass the literal `Double.NaN` as the expected value to `Assertions.assertEquals`, then invoke `stats.getSkewness()` and pass the result as the actual value to the same assertion. Invoke `StatUtils.max(x)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getMax()` and pass the result as the actual value to the same assertion. Invoke `StatUtils.min(x)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getMin()` and pass the result as the actual value to the same assertion. Invoke `StatUtils.sum(x)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getSum()` and pass the result as the actual value to the same assertion. Invoke `StatUtils.sumSq(x)` and pass the result as the expected value to `Assertions.assertEquals`, then invoke `stats.getSumsq()` and pass the result as the actual value to the same assertion. The test uses method-level annotation `@Test`, assertion library JUnit 5 Assertions, and no mocking libraries.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest",
+      "method_signature": "testEmpty()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6,
+    "output_tokens": 1049,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 602,
+      "description": "Define a test method that validates the behavior of the Descriptive Statistics component when initialized with an empty dataset by creating a helper method that instantiates the statistics object, then constructing an empty double array to serve as the input data. With the statistics instance and empty array established, systematically verify that each statistical computation method on the Descriptive Statistics component produces results consistent with the corresponding static utility methods from Stat Utils when applied to the same empty array, beginning with the arithmetic mean retrieval and comparing it against the static mean calculation. Continue this pattern by invoking the geometric mean accessor on the statistics instance and asserting equality with the static geometric mean computation, then retrieve the variance from the statistics object, store this value in a local variable, and validate it matches the static variance calculation before using this stored variance to verify the standard deviation by asserting that the statistics instance's standard deviation equals the square root of the variance computed through the JDK Math utility. Proceed to validate the quadratic mean by asserting it equals NaN, followed by verifying that both kurtosis and skewness accessors return NaN when invoked on the statistics instance. Complete the verification sequence by comparing the maximum value from the statistics object against the static maximum utility method result, then validating the minimum value similarly, and finally asserting that both the sum and sum of squares retrieved from the statistics instance match their respective static utility method calculations when applied to the empty array. JUnit 5 and Assertions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.DescriptiveStatisticsTest",
+      "method_signature": "testEmpty()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 31585,
+    "output_tokens": 6271,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 627,
+      "description": "Create a test case to validate that the statistics summary system properly enforces configuration rules and maintains calculation integrity throughout its lifecycle by first confirming the system rejects missing calculation strategy configurations for all five core metrics (total, minimum value, maximum value, average, and spread measure), then configure the system with custom calculation strategies that produce predetermined outcomes for each metric, add a single data point to trigger the calculations, and verify each metric returns its expected configured outcome while also confirming the underlying calculation strategies are correctly installed and operational, after which duplicate the entire configured statistics summary to a separate instance and verify the duplicate independently produces identical metric outcomes, then reset the original summary to an empty state and confirm all metrics now report undefined results as required by the business contract for empty data sets, finally add a fresh data point to the cleared summary and verify the system successfully recalculates all metrics with the new single-value dataset, demonstrating the system properly handles the complete workflow from initial configuration through data processing, duplication, reset, and repopulation while maintaining calculation accuracy and state integrity at each stage, using JUnit 5 for test orchestration and standard equality assertions to verify numeric outcomes and error conditions.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.stat.descriptive.SummaryStatisticsTest",
+      "method_signature": "testSetterAll()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 22122,
+    "output_tokens": 9850,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 668,
+      "description": "Define a test method that validates the mathematical relationship (MR) property of a linear programming solver by comparing the optimal objective values of an original problem and a shifted version of that problem, verifying they differ by the expected offset. Begin by declaring a `double[]` array named `c` initialized with the 43-element array `{109.8416722130, 3995.2249004467, 4153.0918625648, 4205.9691060980, 6864.1761563995, 9985.9467230921, 6354.9344334526, 1460.7566224849, 9404.5575989194, 3074.9619692427, 6738.9813645788, 4251.4858953042, 3110.4876355988, 4790.6080441726, 8105.0878555759, 6994.9651570951, 6436.5681652562, 1938.6650475701, 1991.3366023235, 8807.6044972149, 1319.3678145792, 279.4114357595, 2406.8106667864, 721.4302264969, 8229.6476579561, 8081.4398910261, 1120.8874807145, 1027.1292710688, 9763.0697846171, 4736.8579838298, 1551.5944809986, 7117.2342065109, 7101.9720301735, 765.0876567377, 3266.2721870594, 9126.3837897194, 5682.7410411790, 737.5506525782, 640.9898129299, 6651.9205926265, 9967.7712540466, 9923.1032741511, 7320.8677028895}`, then declare a `double[]` array named `d` initialized with the 43-element array `{2443.4617219283173, 1173.9746798742185, 4392.083363038196, 1390.8295640100537, 304.54498814002363, 3945.528655298191, 3423.0368504289595, 4256.823613052879, 821.3597860392124, 2451.720430980302, 4458.615770028524, 4566.059436861297, 2823.6879242564887, 543.3702798436418, 1077.6404845531451, 4032.1898198315507, 2692.8144489810506, 3224.220920651318, 1027.2527158190137, 4185.736937549958, 3991.8068663807326, 3532.2224429213907, 4536.16351791805, 3366.741013973095, 2560.9821638572507, 4146.908647998803, 2658.8999476871754, 1330.2326236467416, 4790.506804753733, 1055.1687831958889, 1246.2962844738324, 2793.4186611618766, 556.4873527843156, 421.19883191270304, 4052.515015289009, 4832.5688332462805, 612.5756476062232, 4401.140676006083, 3435.1692062499455, 4897.945863909211, 1066.0243804705144, 2018.8939865481348, 4082.6606399739544}`, and assign `43` to an `int` variable named `nCoef`. Instantiate a `List<LinearConstraint>` named `constraints` using an anonymous `ArrayList` subclass with an instance initializer block that populates the list with 44 `LinearConstraint` objects followed by 86 additional constraints generated by invoking a private method `equationFromString` with `nCoef` and string patterns like `\"x0 <= 10\"`, `\"x0 >= -10\"`, continuing through `\"x42 <= 10\"` and `\"x42 >= -10\"`. For the first 44 constraints, each is constructed by calling `new LinearConstraint(double[], Relationship, double)` with a specific 43-element coefficient array, `Relationship.LEQ`, and a specific right-hand-side value (e.g., the first constraint uses coefficients starting with `-18.4721096232, -346.7827878415, ...` and RHS `634.5590200110`). Define a private method `equationFromString(int numCoefficients, String s)` that parses a string constraint specification by first determining the `Relationship` enum value based on whether the string contains `\">=\"` (yielding `Relationship.GEQ`), `\"<=\"` (yielding `Relationship.LEQ`), or `\"=\"` (yielding `Relationship.EQ`), throwing an `IllegalArgumentException` if none match, then splitting the string on the pattern `\"[>|<]?=\"` to extract the equation parts, parsing the second part trimmed as a `double` for `rhs`, creating a `double[]` array `lhs` of size `numCoefficients`, replacing all occurrences of ` ?x` with an empty string in the first equation part to get `left`, splitting `left` on `\" \"` to obtain `coefficients`, iterating over each `coefficient` string to compute `value` as `-1` if the first character is `'-'` otherwise `1`, parsing the `coefficient` after removing the leading `\"[+|-]\"` pattern and trimming to get the `index`, assigning `value` to `lhs[index]`, and finally returning `new LinearConstraint(lhs, relationship, rhs)`. Define a private static method `solve(double[] c, Collection<LinearConstraint> constraints)` that constructs a `LinearObjectiveFunction` named `f` by calling `new LinearObjectiveFunction(c, 0)`, assigns `1e-5` to a `double` variable `epsilon`, instantiates a `SimplexSolver` named `solver` by calling `new SimplexSolver(epsilon)`, and returns the result of invoking `solver.optimize(new MaxIter(1000), f, new LinearConstraintSet(constraints), GoalType.MAXIMIZE)`. Invoke `solve(c, constraints)` and assign the returned `PointValuePair` to `resultOriginal`, then invoke `getValue()` on `resultOriginal` and assign the result to a `double` variable `z1`. Instantiate a new `ArrayList<>()` and assign it to a `List<LinearConstraint>` variable named `shiftedConstraints`, then iterate over each `LinearConstraint` named `cons` in `constraints` by invoking `getCoefficients().toArray()` on `cons` to obtain a `double[]` array `coeffs`, computing `rhs` as `cons.getValue() + Sum.ofProducts(coeffs, d).getAsDouble()`, and adding `new LinearConstraint(coeffs, cons.getRelationship(), rhs)` to `shiftedConstraints`. Invoke `solve(c, shiftedConstraints)` and assign the returned `PointValuePair` to `resultShifted`, then invoke `getValue()` on `resultShifted` and assign the result to a `double` variable `z2`. Compute `z1New` as `z2 - Sum.ofProducts(c, d).getAsDouble()`, and finally assert using `Assert.assertEquals(\"MR violated\", z1, z1New, 1e-4)` that `z1` equals `z1New` within a delta of `1e-4`. The test uses the `@Test` annotation, JUnit 4 assertions via `Assert.assertEquals`, and the Apache Commons Math library classes `LinearConstraint`, `Relationship`, `LinearObjectiveFunction`, `SimplexSolver`, `MaxIter`, `LinearConstraintSet`, `GoalType`, `PointValuePair`, `RealVector`, and `Sum`.",
+      "project_name": "commons-math",
+      "qualified_class_name": "org.apache.commons.math4.legacy.optim.linear.SimplexSolverTest",
+      "method_signature": "testMath1674()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 28981,
+    "output_tokens": 12019,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  }
+]

@@ -1,0 +1,346 @@
+[
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 43,
+            "description": "Define a test class that validates YAML configuration parsing behavior by establishing a temporary directory field for file storage, a string field containing YAML content with nested keys and list values, and a YAML Configuration instance field. In the setup phase, instantiate the YAML Configuration object and load the YAML content by reading from a file reader initialized with the YAML string. For the test method, retrieve the property value associated with the nested key path \"key5.example\" from the loaded configuration, storing the result as an object reference. Upon retrieval, assert that the returned property equals a list containing two empty string elements followed by a string value element, verifying that the configuration correctly parses YAML sequences with empty and non-empty string entries. This test uses JUnit 5 for the testing framework.",
+            "project_name": "commons-configuration",
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "com.example.test.YamlConfigurationParsingTest",
+            "code": "package com.example.test;\n\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.api.Assertions;\n\nimport org.apache.commons.configuration2.YAMLConfiguration;\nimport org.apache.commons.configuration2.ex.ConfigurationException;\n\nimport java.io.FileReader;\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Arrays;\nimport java.util.List;\n\npublic class YamlConfigurationParsingTest {\n\n    @TempDir\n    Path temporaryDirectory;\n\n    String yamlContentString;\n    YAMLConfiguration yamlConfiguration;\n\n    @BeforeEach\n    void setUp() throws IOException, ConfigurationException {\n        // Step 1: Define YAML content with nested keys and list values\n        yamlContentString = \"key1: value1\\n\" +\n                            \"key2:\\n\" +\n                            \"  key3: value3\\n\" +\n                            \"key4:\\n\" +\n                            \"  - item1\\n\" +\n                            \"  - item2\\n\" +\n                            \"key5:\\n\" +\n                            \"  example:\\n\" +\n                            \"    - \\\"\\\"\\n\" +\n                            \"    - \\\"\\\"\\n\" +\n                            \"    - \\\"value\\\"\\n\";\n\n        // Step 2: Instantiate a YAML Configuration object\n        yamlConfiguration = new YAMLConfiguration();\n\n        // Step 3 & 4: Create a temporary YAML file and write content to it\n        Path yamlFilePath = temporaryDirectory.resolve(\"test_config.yaml\");\n        Files.write(yamlFilePath, yamlContentString.getBytes());\n\n        // Step 5: Create a FileReader for the temporary YAML file\n        FileReader fileReader = new FileReader(yamlFilePath.toFile());\n\n        // Step 6: Load YAML content into the configuration from the FileReader\n        yamlConfiguration.read(fileReader);\n        fileReader.close(); // Close the reader after use\n    }\n\n    @Test\n    void testYamlSequenceParsing() {\n        // Step 7: Retrieve the property value for the nested key path \\\"key5.example\\\" from the loaded configuration\n        Object retrievedPropertyValue = yamlConfiguration.getProperty(\"key5.example\");\n\n        // Step 8: Assert that the retrieved property value is a list containing two empty strings and one \\\"value\\\" string\n        List<String> expectedList = Arrays.asList(\"\", \"\", \"value\");\n        Assertions.assertEquals(expectedList, retrievedPropertyValue);\n    }\n}",
+            "method_signature": "testYamlSequenceParsing()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.8871,
+            "line_coverage": 0.7956,
+            "branch_coverage": 0.9512
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "all_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)"
+            ],
+            "tp": 1,
+            "fn": 1,
+            "localization_recall": 0.5
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 4,
+                    "get_method_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 3,
+                    "compile_and_execute_test": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 60630,
+        "output_tokens": 7713,
+        "llm_calls": 13
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 44,
+            "description": "Create a test case to validate that the configuration system correctly processes hierarchical settings containing multiple empty text entries followed by an actual value. Before executing the test, establish a temporary workspace and prepare the configuration system by loading a predefined settings document from a file source. Once the system has ingested the configuration, retrieve the setting located under the nested path designated as \"key5.example\" and capture the returned information. Verify that the system accurately preserves the structure of this setting as a sequence containing two empty text entries followed by the text \"value\", ensuring that the configuration parser maintains the exact order and presence of empty values rather than discarding or collapsing them. The test uses JUnit 5 for test execution and standard equality assertions to confirm the retrieved setting matches the expected sequence of values.",
+            "project_name": "commons-configuration",
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.configuration2.test.XMLConfigurationHierarchicalEmptyValuesTest",
+            "code": "package org.apache.commons.configuration2.test;\n\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\n\nimport org.apache.commons.configuration2.XMLConfiguration;\nimport org.apache.commons.configuration2.ex.ConfigurationException;\nimport org.apache.commons.configuration2.builder.fluent.Configurations;\n\nimport java.io.File;\nimport java.io.FileWriter;\nimport java.io.FileReader;\nimport java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\nimport java.util.Arrays;\nimport java.util.List;\n\npublic class XMLConfigurationHierarchicalEmptyValuesTest {\n\n    private Path temporaryWorkspacePath;\n    private Path settingsDocumentFile;\n    private XMLConfiguration xmlConfigToSave;\n\n    @BeforeEach\n    void setUp() throws IOException, ConfigurationException {\n        // Step 0: Establish a temporary workspace\n        temporaryWorkspacePath = Files.createTempDirectory(\"configtest\");\n\n        // Step 1: Create a new XML configuration.\n        xmlConfigToSave = new XMLConfiguration();\n\n        // Step 2: Add properties to the XML configuration.\n        // Adding the hierarchical property 'key5.example' with empty string values and then the final 'value'.\n        // This step needs to be repeated for each empty string and the final 'value'.\n        xmlConfigToSave.addProperty(\"key5.example\", \"\");\n        xmlConfigToSave.addProperty(\"key5.example\", \"\");\n        xmlConfigToSave.addProperty(\"key5.example\", \"value\");\n\n        // Step 3: Create a temporary file for the settings document.\n        settingsDocumentFile = Files.createTempFile(temporaryWorkspacePath, \"settings\", \".xml\");\n\n        // Step 4: Create a FileWriter for the temporary settings file.\n        FileWriter fileWriter = null;\n        try {\n            fileWriter = new FileWriter(settingsDocumentFile.toFile());\n\n            // Step 5: Write the XML configuration to the temporary file.\n            xmlConfigToSave.write(fileWriter);\n        } finally {\n            if (fileWriter != null) {\n                fileWriter.close();\n            }\n        }\n    }\n\n    @Test\n    void testHierarchicalEmptyValues() throws IOException, ConfigurationException {\n        // Revised Steps 6, 7, 8: Load XML configuration using Configurations builder\n        Configurations configs = new Configurations();\n        XMLConfiguration xmlConfigToLoad = configs.xml(settingsDocumentFile.toFile());\n\n        // Step 9: Retrieve the setting from the configured system at the nested path \"key5.example\"\n        List<Object> retrievedSetting = xmlConfigToLoad.getList(\"key5.example\");\n\n        // Step 10: Assert that the retrieved setting is a sequence containing two empty text entries followed by the text \"value\"\n        List<String> expected = Arrays.asList(\"\", \"\", \"value\");\n        Assertions.assertEquals(expected, retrievedSetting, \"The retrieved setting should match the expected sequence including empty values.\");\n    }\n\n    @AfterEach\n    void tearDown() throws IOException {\n        // Step 11: Clean up the temporary workspace\n        if (settingsDocumentFile != null) {\n            Files.deleteIfExists(settingsDocumentFile);\n        }\n        if (temporaryWorkspacePath != null) {\n            Files.deleteIfExists(temporaryWorkspacePath);\n        }\n    }\n}",
+            "method_signature": "testHierarchicalEmptyValues()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 0.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.6667,
+            "callable_precision": 0.3333,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "all_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "tp": 0,
+            "fn": 2,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 9,
+                    "query_class_db": 1,
+                    "get_method_details": 22,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_maven_dependencies": 1,
+                    "generate_test_code": 3,
+                    "compile_and_execute_test": 2,
+                    "modify_scenario_comment": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "modify_scenario_comment",
+                        "modify_scenario_comment",
+                        "modify_scenario_comment",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 229286,
+        "output_tokens": 21162,
+        "llm_calls": 23
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 76,
+            "description": "Define a test class containing a public field `tempFolder` of type `java.io.File` annotated with `@TempDir`, a private final field `testYaml` of type `java.lang.String`, and a private field `yamlConfiguration` of type `org.apache.commons.configuration2.YAMLConfiguration`. In a setup method annotated with `@BeforeEach` that declares `throws Exception`, instantiate a new `YAMLConfiguration` object using its no-argument constructor and assign it to `yamlConfiguration`, then immediately invoke the `read` method on `yamlConfiguration` passing a newly constructed `FileReader` initialized with the `testYaml` string as its argument. Within the test method annotated with `@Test`, invoke `getProperty` on `yamlConfiguration` with the string literal `\"key5.example\"` as the argument and assign the returned `Object` to a local variable named `property`. Following this retrieval, assert equality by invoking `assertEquals` with two arguments: first, create a list by calling `Arrays.asList` with three string arguments in order\u2014an empty string `\"\"`, another empty string `\"\"`, and the string literal `\"value\"`\u2014and second, pass the `property` variable, thereby verifying that the retrieved property matches the expected list of three strings where the first two are empty and the third is `\"value\"`. The test uses JUnit 5 assertions and the `@TempDir` annotation from JUnit 5, with no teardown logic, no mocking libraries, and no additional class-level or method-level annotations beyond `@Test` on the test method and `@TempDir` on the field.",
+            "project_name": "commons-configuration",
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "com.example.YamlConfigurationTest",
+            "code": "package com.example;\n\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.io.TempDir;\nimport org.junit.jupiter.api.Assertions;\n\nimport java.io.File;\nimport java.io.FileWriter;\nimport java.io.FileReader;\nimport java.util.Arrays;\nimport java.util.List;\n\nimport org.apache.commons.configuration2.YAMLConfiguration;\n\npublic class YamlConfigurationTest {\n\n    @TempDir\n    public File tempFolder;\n\n    private final String testYamlContent = \"key5:\\n  example:\\n    - \\\"\\\"\\n    - \\\"\\\"\\n    - \\\"value\\\"\";\n\n    private YAMLConfiguration yamlConfiguration;\n\n    @BeforeEach\n    void setUp() throws Exception {\n        File yamlFile = new File(tempFolder, \"test.yaml\");\n        try (FileWriter writer = new FileWriter(yamlFile)) {\n            writer.write(testYamlContent);\n        }\n\n        yamlConfiguration = new YAMLConfiguration();\n        yamlConfiguration.read(new FileReader(yamlFile));\n    }\n\n    @Test\n    void testGetPropertyForList() {\n        Object property = yamlConfiguration.getProperty(\"key5.example\");\n        List<String> expectedList = Arrays.asList(\"\", \"\", \"value\");\n        Assertions.assertEquals(expectedList, property);\n    }\n}",
+            "method_signature": "testGetPropertyForList()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.8871,
+            "line_coverage": 0.7956,
+            "branch_coverage": 0.9512
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.configuration2.TestYAMLConfiguration",
+            "method_signature": "testDoubleStringValues()",
+            "all_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.configuration2.YAMLConfiguration.getProperty(java.lang.String)",
+                "org.apache.commons.configuration2.YAMLConfiguration.read(java.io.Reader)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 2,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 4,
+                    "get_method_details": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 35729,
+        "output_tokens": 6552,
+        "llm_calls": 9
+    }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 570,
+      "description": "Create a test case to validate that the system's payment card validation capability can be initialized and invoked without encountering initialization failures caused by internal component dependencies. Begin by establishing a payment card validation service instance to ensure the system components load correctly, then submit a sample payment card number for validation to confirm the validation logic executes without errors stemming from circular initialization issues between the validation service and the underlying validation utilities. Verify that the system processes the validation request successfully, demonstrating that the payment card validation service and the generic validation utilities can coexist and operate without initialization conflicts. This test uses JUnit 5 as the testing framework and validates proper system initialization and execution flow without requiring explicit assertions beyond successful method completion.",
+      "project_name": "commons-validator",
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.validator.routines.CreditCardValidatorInitializationTest",
+      "code": "package org.apache.commons.validator.routines;\n\nimport org.apache.commons.validator.routines.CreditCardValidator;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Test case to validate that the system's payment card validation capability can be\n * initialized and invoked without encountering initialization failures caused by\n * internal component dependencies.\n */\npublic class CreditCardValidatorInitializationTest {\n\n    /**\n     * Validates that the payment card validation service and the generic validation\n     * utilities can coexist and operate without initialization conflicts. This test\n     * ensures proper system initialization and execution flow without requiring\n     * explicit assertions beyond successful method completion.\n     */\n    @Test\n    public void testPaymentCardValidationInitialization() {\n        // Establish a payment card validation service instance to ensure system components load correctly.\n        CreditCardValidator validator = new CreditCardValidator();\n\n        // Submit a sample payment card number for validation to confirm the validation logic executes\n        // without errors stemming from circular initialization issues.\n        validator.isValid(\"4111111111111111\");\n    }\n}",
+      "method_signature": "testGenericValidatorCircularDependency()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.5,
+      "callable_precision": 0.5,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.6,
+      "method_coverage": 0.2286,
+      "line_coverage": 0.2222,
+      "branch_coverage": 0.625
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 13268,
+    "output_tokens": 2562,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 574,
+      "description": "Define a test class containing a test method annotated with `@Test` that verifies the fix for VALIDATOR-502, a circular dependency issue causing NPE in `GenericValidator.isCreditCard()`. Begin by instantiating a new `CreditCardValidator` using the no-argument constructor `new CreditCardValidator()` and assign the result to a local variable `ccv` of type `org.apache.commons.validator.routines.CreditCardValidator`. Immediately following this instantiation, invoke the static method `isCreditCard` on `org.apache.commons.validator.GenericValidator`, passing the String literal `\"1234567890\"` as the argument. The test contains no assertions; its purpose is to ensure that the sequence of instantiating `CreditCardValidator` followed by calling `GenericValidator.isCreditCard` does not throw a `NullPointerException`, thereby confirming the circular dependency has been resolved. The test uses no class-level annotations, no setup or teardown methods, and relies solely on JUnit 5 with the `@Test` annotation at the method level.",
+      "project_name": "commons-validator",
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.validator.Validator502Test",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.validator;\n\nimport org.apache.commons.validator.routines.CreditCardValidator;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests the fix for VALIDATOR-502.\n */\npublic class Validator502Test {\n\n    /**\n     * Tests that instantiating a CreditCardValidator followed by a call to\n     * GenericValidator.isCreditCard() does not cause a NullPointerException.\n     */\n    @Test\n    public void testValidator502() {\n        // Instantiate the routines class first\n        final org.apache.commons.validator.routines.CreditCardValidator ccv = new CreditCardValidator();\n        // Call the static method which creates an instance of the non-routines class\n        GenericValidator.isCreditCard(\"1234567890\");\n    }\n}",
+      "method_signature": "testGenericValidatorCircularDependency()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.4,
+      "method_coverage": 0.2571,
+      "line_coverage": 0.2569,
+      "branch_coverage": 0.625
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 14341,
+    "output_tokens": 1257,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 593,
+      "description": "Define a test class that verifies the absence of circular dependency issues during static initialization between the Generic Validator and Credit Card Validator components. Within the test method, instantiate a Credit Card Validator to trigger its static initialization sequence, which internally references validation constants and code validators for various card types including American Express, Visa, Mastercard, Discover, Diners, and VPay. Following the instantiation, invoke the credit card validation method on the Generic Validator with a numeric string input to confirm that the method executes without encountering a null pointer exception that would indicate a circular dependency in the static initialization chain between the two validator classes. Assert that the validation call completes successfully, demonstrating that the Generic Validator can access the Credit Card Validator's static members after the Credit Card Validator instance has been created without triggering initialization order conflicts. This test addresses a defect where the Generic Validator's static reference to Credit Card Validator functionality would fail if invoked before explicit instantiation of a Credit Card Validator instance due to incomplete static initialization. JUnit 5.",
+      "project_name": "commons-validator",
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.validator.CircularDependencyTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.validator;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertDoesNotThrow;\n\n/**\n * This test verifies that there are no circular dependency issues between\n * GenericValidator and CreditCardValidator during static initialization.\n */\npublic class CircularDependencyTest {\n\n    /**\n     * This test addresses a potential defect where the GenericValidator's static\n     * reference to CreditCardValidator functionality would fail if invoked before\n     * an explicit instantiation of a CreditCardValidator, due to an incomplete\n     * static initialization chain.\n     */\n    @Test\n    public void testGenericValidatorCreditCardInitialization() {\n        // Instantiating CreditCardValidator is intended to trigger its static\n        // initialization sequence. This sequence involves referencing various validation\n        // constants and code validators for card types like AMEX, Visa, etc.\n        new CreditCardValidator();\n\n        // Following the instantiation, we call the credit card validation method\n        // on GenericValidator. This is to confirm that the method executes without\n        // a NullPointerException, which would indicate a circular dependency issue.\n        // The assertion confirms that the call completes, showing that GenericValidator\n        // can access CreditCardValidator's static members without initialization conflicts.\n        assertDoesNotThrow(() -> {\n            GenericValidator.isCreditCard(\"4111111111111111\");\n        }, \"GenericValidator.isCreditCard should execute successfully after CreditCardValidator instantiation.\");\n    }\n}",
+      "method_signature": "testGenericValidatorCircularDependency()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.6667,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.6,
+      "method_coverage": 0.1714,
+      "line_coverage": 0.1111,
+      "branch_coverage": 0.375
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 15816,
+    "output_tokens": 2820,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  }
+]

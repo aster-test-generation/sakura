@@ -1,0 +1,482 @@
+[
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 331,
+      "description": "Create a test case to validate that the file transfer system can properly adjust its internal communication buffer capacity to accommodate different data transmission requirements. Configure the system with a specific buffer capacity of 1024 data units, then verify the system correctly allocates the total packet capacity to 1028 units, accounting for the necessary protocol overhead of 4 units added to the requested data buffer size, ensuring the system can handle the expected packet dimensions for efficient file transfer operations. Use JUnit 5 for the testing framework and standard equality assertions to confirm the calculated packet capacity matches the expected total size.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testResizeBuffer()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPDataPacketTest1",
+      "code": "package org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\n\nimport org.junit.jupiter.api.Test;\n\npublic class TFTPDataPacketTest1 {\n\n    @Test\n    public void testPacketCapacity() throws UnknownHostException {\n        // Configure the system with a specific buffer capacity of 1024 data units.\n        final int dataCapacity = 1024;\n        final byte[] data = new byte[dataCapacity];\n        final int protocolOverhead = 4;\n        final int expectedPacketCapacity = dataCapacity + protocolOverhead;\n\n        // Create a TFTPDataPacket with the specified data buffer.\n        final TFTPDataPacket packet = new TFTPDataPacket(InetAddress.getByName(\"localhost\"), 69, 1, data, 0, dataCapacity);\n\n        // Generate the underlying DatagramPacket.\n        final DatagramPacket datagram = packet.newDatagram();\n\n        // Verify the system correctly allocates the total packet capacity,\n        // accounting for the necessary protocol overhead.\n        assertEquals(expectedPacketCapacity, datagram.getLength(),\n                \"The total packet capacity should be the data capacity plus the protocol overhead.\");\n    }\n\n}",
+      "method_signature": "testResizeBuffer()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.25,
+      "callable_precision": 0.2,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 6218,
+    "output_tokens": 4319,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 352,
+      "description": "Create a test case to validate that the file transfer request system correctly extracts and exposes negotiation parameters submitted by a client when requesting to read a file from the server. Begin by simulating an incoming network request that specifies a file to retrieve, the desired transfer format, and a custom block size preference for optimizing the data transfer. Once the system processes this incoming request, verify that it can produce a human-readable summary of the request details to support troubleshooting and logging activities. After confirming the summary is available, examine the negotiation parameters extracted from the request to ensure the system identified exactly one configuration option. Validate that the system correctly recognized the block size preference and captured its value as specified by the client, confirming the parameter name matches the expected negotiation key and the associated value reflects the client's requested transfer block size. Use JUnit 5 for the testing framework and standard equality assertions to verify the count and content of the extracted negotiation parameters.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+      "method_signature": "testGetOptions()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 158163,
+    "output_tokens": 5143,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 360,
+      "description": "Define a test method that validates the extraction of protocol options from a TFTP Read Request Packet by first creating a private helper method that constructs a DatagramPacket containing a properly formatted TFTP read request with embedded options, specifically encoding the packet header, file name, transfer mode, and a block size option set to \"1024\" as null-terminated byte sequences. Invoke this helper to obtain a DatagramPacket, then construct a TFTP Read Request Packet instance by passing the datagram to its constructor, which parses the raw network data into a structured packet representation. Immediately verify that invoking the string representation method on the request packet produces a non-null result to confirm basic packet integrity. Retrieve the options map from the request packet, then assert that the map contains exactly one entry to validate that the parser correctly identified the single option present in the raw data. Finally, confirm that querying the map for the \"blksize\" key returns the expected value \"1024\" to ensure the option name-value pair was accurately extracted from the datagram payload. This test uses JUnit for assertions and may throw UnknownHostException or TFTPPacketException during packet construction and parsing.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+      "method_signature": "testGetOptions()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPReadRequestPacketTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.util.Map;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for TFTPReadRequestPacket\n */\npublic class TFTPReadRequestPacketTest1 {\n\n    private DatagramPacket createReadRequestDatagram() throws UnknownHostException {\n        // TFTP RRQ packet contents with options\n        // Opcode (2) | Filename | 0 | Mode | 0 | \"blksize\" | 0 | \"1024\" | 0\n        byte[] data = new byte[] {\n            0, 1, // Opcode: RRQ\n            't', 'e', 's', 't', '.', 't', 'x', 't', 0, // Filename: test.txt\n            'o', 'c', 't', 'e', 't', 0, // Mode: octet\n            'b', 'l', 'k', 's', 'i', 'z', 'e', 0, // Option: blksize\n            '1', '0', '2', '4', 0 // Value: 1024\n        };\n        return new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 1234);\n    }\n\n    @Test\n    public void testOptionsExtraction() throws Exception {\n        DatagramPacket datagram = createReadRequestDatagram();\n        TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(datagram);\n\n        // Verify basic integrity\n        assertNotNull(requestPacket.toString());\n\n        Map<String, String> options = requestPacket.getOptions();\n\n        // Verify that exactly one option was parsed\n        assertEquals(1, options.size());\n\n        // Verify that the \"blksize\" option has the correct value\n        assertEquals(\"1024\", options.get(\"blksize\"));\n    }\n}",
+      "method_signature": "testGetOptions()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.3571,
+      "callable_precision": 0.9091,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 63714,
+    "output_tokens": 3023,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 364,
+      "description": "Define a test method that validates the datagram reconstruction capabilities of the TFTP Read Request Packet component by first creating a helper method that constructs a properly formatted TFTP read request datagram containing opcode bytes, filename, transfer mode, and block size option fields encoded according to the TFTP protocol specification. Invoke this helper to obtain an initial datagram packet, then construct a TFTP Read Request Packet instance by parsing this datagram. Call the parameterless newDatagram method on the request packet to generate a reconstructed datagram, and immediately verify that the reconstructed datagram is not null before asserting that its network address, port, length, and byte data match the original datagram's corresponding properties. Having validated the zero-argument reconstruction path, allocate a byte array sized to match the original datagram's length and construct a new datagram packet targeting localhost with this buffer. Invoke the two-parameter newDatagram method on the request packet, passing both the newly created datagram packet and the byte buffer to populate the datagram in-place. Verify that this second reconstructed datagram's address and port match the original datagram's network properties, and confirm that the byte buffer now contains identical data to the original datagram's payload. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+      "method_signature": "testNewDatagram()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 78758,
+    "output_tokens": 4324,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 368,
+      "description": "Define a test method that verifies the buffer resizing capability of the TFTP Client component by instantiating a new TFTP Client within a try-with-resources block to ensure automatic resource cleanup, then configure the client's internal buffer size by invoking the buffer reset method with a specific integer buffer size value representing the desired data octet capacity. Upon configuring the buffer, retrieve the total packet size from the client, which should reflect the data buffer size plus the four-octet TFTP header overhead, and assert that this retrieved packet size equals the expected combined value to confirm the client correctly allocated the internal buffers with the appropriate header space. The try-with-resources construct will automatically close the TFTP Client instance upon completion, releasing any network resources or internal state associated with the client connection. Note that the test suite maintains a static counter tracking remaining tests and conditionally performs cleanup in a teardown method that decrements this counter, and when all tests complete, shuts down the TFTP Server instance by invoking its close method which halts active transfers and releases network resources, then deletes temporary test files from the file system. This test uses JUnit for test execution and assertions.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testResizeBuffer()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPClientTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests the TFTP Client component.\n */\npublic class TFTPClientTest {\n\n    @Test\n    public void testBufferResize() {\n        final int dataOctetSize = 1024;\n        try (final TFTPClient client = new TFTPClient()) {\n            client.resetBuffersToSize(dataOctetSize);\n            // The packet size should be the data octet size plus 4 for the TFTP header\n            final int expectedPacketSize = dataOctetSize + 4;\n            assertEquals(expectedPacketSize, client.getPacketSize());\n        }\n    }\n}",
+      "method_signature": "testResizeBuffer()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 87029,
+    "output_tokens": 2441,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 372,
+      "description": "Create a test case to validate that the file transfer request system can accurately reproduce network transmission packets while preserving all routing and content information. Begin by establishing a file read request containing a specified resource name, transfer format preferences, and transmission parameters configured for a local network destination. Once the initial request message is prepared, instruct the system to generate a new transmission packet from this request and verify the newly created packet exists and maintains identical routing information including the destination address and communication port. Confirm the packet size matches the original specification and the complete message content remains unchanged byte-for-byte. After validating the first reproduction scenario, prepare a fresh packet structure with appropriate buffer space allocated based on the original message size and direct it to the local system address, then command the request to populate this prepared packet with its transmission data. Verify the reproduced packet retains the correct destination address and port information from the original request, and ensure the populated buffer contains an exact copy of the original message content without any data corruption or loss. This validation uses JUnit 5 for test execution with standard equality assertions to confirm address matching, port consistency, size accuracy, and content integrity across both packet reproduction scenarios.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+      "method_signature": "testNewDatagram()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 54622,
+    "output_tokens": 9419,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 375,
+      "description": "Define a test method annotated with `@Test` that validates the behavior of the static method `loadResourceProperties` on the `FTPClient` class by invoking it with various path arguments and asserting the expected return values. Begin by invoking `FTPClient.loadResourceProperties(null)` and immediately assert that the result is null using `assertNull`. Next, invoke `FTPClient.loadResourceProperties(\"this/does/not/exist.properties\")` and assert that the returned value is null with `assertNull`. Then invoke `FTPClient.loadResourceProperties(\"/this/does/not/exist.properties\")` and assert null using `assertNull`. Following this, invoke `FTPClient.loadResourceProperties(FTPClient.SYSTEM_TYPE_PROPERTIES)` where `SYSTEM_TYPE_PROPERTIES` is a public static final String field on `FTPClient`, and assert that the result is null using `assertNull`. After these null assertions, invoke `FTPClient.loadResourceProperties(\"\")` with an empty string literal and assert that the returned value is not null using `assertNotNull`. Subsequently, invoke `FTPClient.loadResourceProperties(\"/org/apache/commons/net/examples/examples.properties\")` and assert that the result is not null with `assertNotNull`. Finally, invoke `FTPClient.loadResourceProperties(\"/org/apache/commons/net/test.properties\")` and assert that the returned value is not null using `assertNotNull`. The test uses JUnit 4 assertions (`assertNull` and `assertNotNull`) and is annotated with `@Test` at the method level, with no class-level annotations, no setup or teardown methods, and no mocking libraries.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+      "method_signature": "testLoadResourceProperties()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 159928,
+    "output_tokens": 3215,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 377,
+      "description": "Create a test case to validate the system's ability to handle configuration resource loading across various scenarios, including missing resources, invalid paths, and valid configuration files. First, verify the system correctly handles attempts to load configuration when no resource path is provided, ensuring it returns an indication that no configuration was loaded. Next, confirm that when requesting a configuration file that does not exist in the system, whether using a relative or absolute path reference, the system appropriately signals the absence of the resource without error. Additionally, test the system's behavior when attempting to access a predefined system configuration resource that may not be available in the current environment, again expecting a graceful indication of unavailability. Then, validate that the system successfully loads configuration when provided with an empty path, which should resolve to a default configuration location. Finally, verify the system can successfully retrieve and load configuration data from known valid resource locations within the application structure, confirming that legitimate configuration files are properly recognized and loaded. Throughout these validations, ensure the system distinguishes between unavailable resources (returning no configuration) and successfully loaded resources (returning valid configuration data). Use JUnit 5 for test execution with standard equality and presence assertions to verify the expected outcomes for each scenario.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+      "method_signature": "testLoadResourceProperties()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.net.examples.nntp.NNTPUtilsTest",
+      "code": "package org.apache.commons.net.examples.nntp;\n\nimport static org.junit.Assert.assertEquals;\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\n\nimport java.util.Properties;\n\nimport org.junit.Test;\n\npublic class NNTPUtilsTest {\n\n    @Test\n    public void testGetProperties() {\n        // 1. Verify that a null resource path returns null.\n        assertNull(\"Expected null for a null resource path\", NNTPUtils.getProperties(null));\n\n        // 2. Verify that a non-existent resource path returns null.\n        assertNull(\"Expected null for a non-existent relative resource\", NNTPUtils.getProperties(\"non/existent/path.properties\"));\n        assertNull(\"Expected null for a non-existent absolute resource\", NNTPUtils.getProperties(\"/non/existent/path.properties\"));\n\n        // 3. Verify that a non-properties resource path returns null on load error\n        assertNull(\"Expected null for a resource that is not a properties file\", NNTPUtils.getProperties(\"/java/lang/String.class\"));\n        \n        // 4. Verify that an empty path returns null.\n        assertNull(\"Expected null for an empty resource path\", NNTPUtils.getProperties(\"\"));\n\n        // 5. Verify that a valid resource is loaded correctly.\n        final String validResourcePath = \"/org/apache/commons/net/test.properties\";\n        Properties result = NNTPUtils.getProperties(validResourcePath);\n        assertNotNull(\"Expected non-null for a valid resource path\", result);\n        assertEquals(\"Expected property 'a' to be '1'\", \"1\", result.getProperty(\"a\"));\n        assertEquals(\"Expected property 'b' to be '2'\", \"2\", result.getProperty(\"b\"));\n    }\n}",
+      "method_signature": "testLoadResourceProperties()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 13204,
+    "output_tokens": 5714,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 378,
+      "description": "Define a test method that validates the FTPClient's resource loading capability across multiple input scenarios by invoking the static loadResourceProperties method with various path arguments and verifying the returned Properties object state. Begin by calling loadResourceProperties with a null argument and assert that the result is null, confirming proper null handling. Next, invoke the method with a relative path string representing a non-existent properties file and verify the return value is null, demonstrating graceful failure for missing resources. Follow this by calling loadResourceProperties with an absolute path string to another non-existent file and assert null is returned, validating consistent behavior regardless of path format. Then invoke the method with the SYSTEM_TYPE_PROPERTIES constant value from the FTPClient class and confirm the result is null, as this particular resource is expected to be absent. After establishing the failure cases, call loadResourceProperties with an empty string argument and assert that the returned Properties object is not null, verifying successful loading of the default resource. Subsequently, invoke the method with an absolute path string pointing to an existing properties file in the examples package and validate that a non-null Properties object is returned, confirming successful resource resolution from the classpath. Finally, call loadResourceProperties with an absolute path string to a test properties file and assert the result is not null, completing the verification of successful resource loading across different valid paths. This test suite uses JUnit for test execution and assertions.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.ftp.FTPClientTest",
+      "method_signature": "testLoadResourceProperties()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.net.ftp.FTPClientResourceLoadingTest",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.net.ftp;\n\nimport org.junit.Test;\nimport java.util.Properties;\nimport static org.junit.Assert.assertNull;\nimport static org.junit.Assert.assertNotNull;\n\npublic class FTPClientResourceLoadingTest {\n\n    @Test\n    public void testLoadResourceProperties() {\n        // Test null input\n        assertNull(\"Loading with null should return null\", FTPClient.loadResourceProperties(null));\n\n        // Test relative path to a non-existent file\n        assertNull(\"Loading a non-existent relative resource should return null\", FTPClient.loadResourceProperties(\"non-existent.properties\"));\n\n        // Test absolute path to a non-existent file\n        assertNull(\"Loading a non-existent absolute resource should return null\", FTPClient.loadResourceProperties(\"/non-existent.properties\"));\n\n        // Test a specific non-existent resource from the class constants\n        assertNull(\"Loading a known-missing resource should return null\", FTPClient.loadResourceProperties(FTPClient.SYSTEM_TYPE_PROPERTIES));\n\n        // Test loading the default resource with an empty string\n        assertNotNull(\"Loading with an empty string should load the default resource\", FTPClient.loadResourceProperties(\"\"));\n\n        // The test description mentions a properties file in the 'examples' package, which does not exist.\n        // We will proceed with the test properties file that is confirmed to exist.\n\n        // Test loading an existing test resource file\n        assertNotNull(\"Loading an existing test properties file should succeed\", FTPClient.loadResourceProperties(\"/org/apache/commons/net/test.properties\"));\n    }\n}",
+      "method_signature": "testLoadResourceProperties()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 105014,
+    "output_tokens": 3081,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 381,
+      "description": "Define a test method annotated with `@Test` that declares it may throw `UnknownHostException` and `TFTPPacketException`, then begin by instantiating a `ByteArrayOutputStream` and assigning it to variable `byteStream`, immediately invoke `write(0)` on `byteStream` followed by `write(1)`, then within a try-catch block that catches `IOException` and rethrows it wrapped in a `RuntimeException` with message `\"Error creating TFTP request packet\"`, invoke `write` on `byteStream` passing the byte array obtained from calling `getBytes(StandardCharsets.US_ASCII)` on the String literal `\"fileName\"`, follow with `write(0)`, then `write` passing the byte array from `\"octet\".getBytes(StandardCharsets.US_ASCII)`, another `write(0)`, then `write` passing the byte array from `\"blksize\".getBytes(StandardCharsets.US_ASCII)`, another `write(0)`, then `write` passing the byte array from `\"1024\".getBytes(StandardCharsets.US_ASCII)`, and finally `write(0)`, after which invoke `toByteArray()` on `byteStream` and assign the result to variable `data` of type `byte[]`, then construct a new `DatagramPacket` by passing `data`, `data.length`, the result of `InetAddress.getLocalHost()`, and integer `0`, assigning this `DatagramPacket` to variable `datagramPacket`, next construct a new `TFTPReadRequestPacket` by passing `datagramPacket` to its constructor and assign the instance to variable `requestPacket`, immediately invoke `toString()` on `requestPacket` and pass the returned String to `assertNotNull` to verify it is not null, then invoke `getOptions()` on `requestPacket` and assign the returned `Map<String, String>` to variable `options`, assert that `options.size()` equals integer `1` using `assertEquals(1, options.size())`, and finally assert that `options.get(\"blksize\")` equals the String literal `\"1024\"` using `assertEquals(\"1024\", options.get(\"blksize\"))`, with the test using JUnit 5 Assertions and no mocking libraries.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+      "method_signature": "testGetOptions()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 16753,
+    "output_tokens": 3562,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 391,
+      "description": "Define a test method annotated with `@Test` that verifies buffer resizing behavior by instantiating a `TFTPClient` using a try-with-resources statement, assigning it to variable `tftp`, then declare an `int` variable `bufferSize` initialized to literal value `1024`, immediately invoke `resetBuffersToSize` on `tftp` passing `bufferSize` as the argument, and assert using `assertEquals` that the result of invoking `getPacketSize()` on `tftp` equals `bufferSize + 4` (which evaluates to `1028`) with the assertion message `\"Packet size should be 1028\"`, allowing the try-with-resources to automatically close `tftp` upon completion. The test class declares six static fields: `SERVER_PORT` of type `int`, `tftpS` of type `org.apache.commons.net.tftp.TFTPServer`, `SERVER_DIR` of type `java.io.File`, `FILE_PREFIX` of type `java.lang.String`, `FILES` of type `java.io.File[]`, and `testsLeftToRun` of type `int`, though only `tftpS` and `testsLeftToRun` are referenced in teardown logic. The test suite includes a teardown method `tearDown()` that decrements `testsLeftToRun`, checks if `testsLeftToRun` is less than or equal to `0`, and if true, verifies `tftpS` is not null before invoking `close()` on it (which internally sets a shutdown flag, iterates over active transfers invoking `shutdown()` on each via `forEach`, calls `close()` on the internal `serverTftp` object catching any `RuntimeException`, and attempts to join the `serverThread` catching `InterruptedException`), then iterates over the `FILES` array using an enhanced for-loop with loop variable `file` of type `java.io.File` and invokes `delete()` on each file. Method-level annotations: `@Test`. Assertion library: JUnit 5 Assertions (`assertEquals`). No mocking libraries are used.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPTest",
+      "method_signature": "testResizeBuffer()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPClientTest",
+      "code": "package org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\n\nimport java.io.File;\n\nimport org.junit.jupiter.api.Test;\n\npublic class TFTPClientTest {\n\n    private static int SERVER_PORT;\n    private static org.apache.commons.net.tftp.TFTPServer tftpS;\n    private static java.io.File SERVER_DIR;\n    private static java.lang.String FILE_PREFIX;\n    private static java.io.File[] FILES;\n    private static int testsLeftToRun;\n\n    public void tearDown() {\n        testsLeftToRun--;\n        if (testsLeftToRun <= 0) {\n            if (tftpS != null) {\n                tftpS.close();\n            }\n            for (File file : FILES) {\n                file.delete();\n            }\n        }\n    }\n\n    @Test\n    public void testResetBuffersToSize() {\n        try (TFTPClient tftp = new TFTPClient()) {\n            int bufferSize = 1024;\n            tftp.resetBuffersToSize(bufferSize);\n            assertEquals(bufferSize + 4, tftp.getPacketSize(), \"Packet size should be 1028\");\n        }\n    }\n}",
+      "method_signature": "testResizeBuffer()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 0.7778,
+      "line_coverage": 0.92,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 26238,
+    "output_tokens": 21564,
+    "llm_calls": 0,
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
+  },
+  {
+    "compiles": false,
+    "nl2test_input": {
+      "id": 393,
+      "description": "Define a test method annotated with `@Test` that declares it throws `TFTPPacketException` and `UnknownHostException`, then begin by instantiating a `ByteArrayOutputStream` assigned to `byteStream`, invoke `write(0)` on `byteStream`, invoke `write(1)` on `byteStream`, wrap the subsequent writes in a try-catch block catching `IOException` and rethrowing as `RuntimeException` with message `\"Error creating TFTP request packet\"` and the caught exception as cause, within the try block invoke `write` on `byteStream` passing `\"fileName\".getBytes(StandardCharsets.US_ASCII)`, then `write(0)`, then `write` passing `\"octet\".getBytes(StandardCharsets.US_ASCII)`, then `write(0)`, then `write` passing `\"blksize\".getBytes(StandardCharsets.US_ASCII)`, then `write(0)`, then `write` passing `\"1024\".getBytes(StandardCharsets.US_ASCII)`, and finally `write(0)`, after the try-catch block invoke `toByteArray()` on `byteStream` and assign the result to a byte array named `data`, construct a `DatagramPacket` passing `data`, `data.length`, `InetAddress.getLocalHost()`, and integer `0`, assign this to `datagramPacket`, construct a `TFTPReadRequestPacket` passing `datagramPacket` and assign it to `requestPacket`, invoke `newDatagram()` on `requestPacket` with no arguments and assign the returned `DatagramPacket` to `newDatagram`, assert that `newDatagram` is not null using `assertNotNull(newDatagram)`, assert equality between `datagramPacket.getAddress()` and `newDatagram.getAddress()` using `assertEquals`, assert equality between `datagramPacket.getPort()` and `newDatagram.getPort()` using `assertEquals`, assert equality between `datagramPacket.getLength()` and `newDatagram.getLength()` using `assertEquals`, assert array equality between `datagramPacket.getData()` and `newDatagram.getData()` using `assertArrayEquals`, create a new byte array named `data` with length `datagramPacket.getLength()`, construct a `DatagramPacket` passing `data`, `data.length`, `InetAddress.getLocalHost()`, and integer `0`, assign this to `newDatagram2`, invoke `newDatagram(newDatagram2, data)` on `requestPacket` passing both arguments, assert equality between `datagramPacket.getAddress()` and `newDatagram2.getAddress()` using `assertEquals`, assert equality between `datagramPacket.getPort()` and `newDatagram2.getPort()` using `assertEquals`, and assert array equality between `datagramPacket.getData()` and the `data` byte array using `assertArrayEquals`. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+      "project_name": "commons-net",
+      "qualified_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest",
+      "method_signature": "testNewDatagram()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "",
+      "code": "",
+      "method_signature": null
+    },
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 0.0,
+      "assertion_recall": 0.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.0,
+      "method_coverage": 0.0,
+      "line_coverage": 0.0,
+      "branch_coverage": 0.0
+    },
+    "localization_eval": null,
+    "tool_log": null,
+    "input_tokens": 44555,
+    "output_tokens": 6185,
+    "llm_calls": 0,
+    "failed_test_file_generation": false,
+    "failed_code_generation": true
+  }
+]

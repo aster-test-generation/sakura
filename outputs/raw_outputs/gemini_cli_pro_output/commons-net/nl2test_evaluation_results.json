@@ -40,7 +40,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 352,
       "description": "Create a test case to validate that the file transfer request system correctly extracts and exposes negotiation parameters submitted by a client when requesting to read a file from the server. Begin by simulating an incoming network request that specifies a file to retrieve, the desired transfer format, and a custom block size preference for optimizing the data transfer. Once the system processes this incoming request, verify that it can produce a human-readable summary of the request details to support troubleshooting and logging activities. After confirming the summary is available, examine the negotiation parameters extracted from the request to ensure the system identified exactly one configuration option. Validate that the system correctly recognized the block size preference and captured its value as specified by the client, confirming the parameter name matches the expected negotiation key and the associated value reflects the client's requested transfer block size. Use JUnit 5 for the testing framework and standard equality assertions to verify the count and content of the extracted negotiation parameters.",
@@ -51,33 +51,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPReadRequestPacketTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.net.tftp;\n\nimport org.junit.jupiter.api.Test;\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.nio.charset.StandardCharsets;\nimport java.util.Map;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\n/**\n * Test class for TFTPReadRequestPacket.\n */\npublic class TFTPReadRequestPacketTest1 {\n\n    @Test\n    public void testNegotiationParametersExtraction() throws TFTPPacketException, UnknownHostException {\n        // Simulating an incoming network request with negotiation parameters\n        String fileName = \"testfile.txt\";\n        String mode = \"octet\";\n        String optionName = \"blksize\";\n        String optionValue = \"1024\";\n\n        // Manually construct the byte array for the datagram packet\n        byte[] fileNameBytes = fileName.getBytes(StandardCharsets.UTF_8);\n        byte[] modeBytes = mode.getBytes(StandardCharsets.UTF_8);\n        byte[] optionNameBytes = optionName.getBytes(StandardCharsets.UTF_8);\n        byte[] optionValueBytes = optionValue.getBytes(StandardCharsets.UTF_8);\n\n        // Format: opcode (2) | filename | 0 | mode | 0 | opt1 | 0 | val1 | 0\n        int dataLength = 2 + fileNameBytes.length + 1 + modeBytes.length + 1 + optionNameBytes.length + 1 + optionValueBytes.length + 1;\n        byte[] data = new byte[dataLength];\n\n        int index = 0;\n        data[index++] = 0;\n        data[index++] = (byte) TFTPPacket.READ_REQUEST;\n        System.arraycopy(fileNameBytes, 0, data, index, fileNameBytes.length);\n        index += fileNameBytes.length;\n        data[index++] = 0;\n        System.arraycopy(modeBytes, 0, data, index, modeBytes.length);\n        index += modeBytes.length;\n        data[index++] = 0;\n        System.arraycopy(optionNameBytes, 0, data, index, optionNameBytes.length);\n        index += optionNameBytes.length;\n        data[index++] = 0;\n        System.arraycopy(optionValueBytes, 0, data, index, optionValueBytes.length);\n        data[index] = 0;\n        \n        DatagramPacket datagram = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 12345);\n        \n        // Process the incoming request\n        TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(datagram);\n        \n        // Verify human-readable summary\n        assertNotNull(requestPacket.toString(), \"The request summary should not be null.\");\n\n        // Examine extracted negotiation parameters\n        Map<String, String> options = requestPacket.getOptions();\n        \n        // Validate exactly one configuration option was identified\n        assertEquals(1, options.size(), \"There should be exactly one negotiation parameter.\");\n        \n        // Validate correct recognition of block size preference\n        assertEquals(optionValue, options.get(optionName), \"The block size value should match the client's request.\");\n    }\n}",
+      "method_signature": "testGetOptions()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.5,
+      "callable_precision": 0.7778,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 0.3333,
+      "method_coverage": 0.2308,
+      "line_coverage": 0.7627,
+      "branch_coverage": 0.9167
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 158163,
     "output_tokens": 5143,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -120,7 +120,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 364,
       "description": "Define a test method that validates the datagram reconstruction capabilities of the TFTP Read Request Packet component by first creating a helper method that constructs a properly formatted TFTP read request datagram containing opcode bytes, filename, transfer mode, and block size option fields encoded according to the TFTP protocol specification. Invoke this helper to obtain an initial datagram packet, then construct a TFTP Read Request Packet instance by parsing this datagram. Call the parameterless newDatagram method on the request packet to generate a reconstructed datagram, and immediately verify that the reconstructed datagram is not null before asserting that its network address, port, length, and byte data match the original datagram's corresponding properties. Having validated the zero-argument reconstruction path, allocate a byte array sized to match the original datagram's length and construct a new datagram packet targeting localhost with this buffer. Invoke the two-parameter newDatagram method on the request packet, passing both the newly created datagram packet and the byte buffer to populate the datagram in-place. Verify that this second reconstructed datagram's address and port match the original datagram's network properties, and confirm that the byte buffer now contains identical data to the original datagram's payload. This test uses JUnit for test execution and assertions.",
@@ -131,33 +131,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPReadRequestPacketTest1",
+      "code": "package org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.nio.charset.StandardCharsets;\n\nimport org.junit.jupiter.api.Test;\n\npublic class TFTPReadRequestPacketTest1 {\n\n    private DatagramPacket createReadRequestDatagram() throws UnknownHostException {\n        String fileName = \"test.txt\";\n        String mode = \"octet\";\n        String blksize = \"blksize\";\n        String blksizeValue = \"1024\";\n\n        // Manually construct the byte array for the request\n        // Opcode (2) + filename + 0 + mode + 0 + blksize + 0 + blksizeValue + 0\n        byte[] fileNameBytes = fileName.getBytes(StandardCharsets.US_ASCII);\n        byte[] modeBytes = mode.getBytes(StandardCharsets.US_ASCII);\n        byte[] blksizeBytes = blksize.getBytes(StandardCharsets.US_ASCII);\n        byte[] blksizeValueBytes = blksizeValue.getBytes(StandardCharsets.US_ASCII);\n\n        int len = 2 + fileNameBytes.length + 1 + modeBytes.length + 1 + blksizeBytes.length + 1 + blksizeValueBytes.length + 1;\n        byte[] data = new byte[len];\n\n        int offset = 0;\n        // Opcode\n        data[offset++] = 0;\n        data[offset++] = (byte) TFTPPacket.READ_REQUEST;\n\n        // Filename\n        System.arraycopy(fileNameBytes, 0, data, offset, fileNameBytes.length);\n        offset += fileNameBytes.length;\n        data[offset++] = 0;\n\n        // Mode\n        System.arraycopy(modeBytes, 0, data, offset, modeBytes.length);\n        offset += modeBytes.length;\n        data[offset++] = 0;\n\n        // Option: blksize\n        System.arraycopy(blksizeBytes, 0, data, offset, blksizeBytes.length);\n        offset += blksizeBytes.length;\n        data[offset++] = 0;\n\n        // Option value: 1024\n        System.arraycopy(blksizeValueBytes, 0, data, offset, blksizeValueBytes.length);\n        offset += blksizeValueBytes.length;\n        data[offset++] = 0;\n\n        return new DatagramPacket(data, len, InetAddress.getLocalHost(), 12345);\n    }\n\n    @Test\n    public void testNewDatagramReconstruction() throws Exception {\n        DatagramPacket originalDatagram = createReadRequestDatagram();\n\n        // 1. Create a TFTPReadRequestPacket by parsing the original datagram\n        TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(originalDatagram);\n\n        // 2. Test the parameterless newDatagram() method\n        DatagramPacket reconstructedDatagram1 = requestPacket.newDatagram();\n\n        assertNotNull(reconstructedDatagram1, \"The reconstructed datagram should not be null.\");\n        assertEquals(originalDatagram.getAddress(), reconstructedDatagram1.getAddress(), \"Addresses should match.\");\n        assertEquals(originalDatagram.getPort(), reconstructedDatagram1.getPort(), \"Ports should match.\");\n        assertEquals(originalDatagram.getLength(), reconstructedDatagram1.getLength(), \"Lengths should match.\");\n\n        byte[] originalData = java.util.Arrays.copyOf(originalDatagram.getData(), originalDatagram.getLength());\n        byte[] reconstructedData1 = java.util.Arrays.copyOf(reconstructedDatagram1.getData(), reconstructedDatagram1.getLength());\n        assertArrayEquals(originalData, reconstructedData1, \"Byte data should match for parameterless reconstruction.\");\n\n        // 3. Test the two-parameter newDatagram(DatagramPacket, byte[]) method\n        byte[] buffer = new byte[originalDatagram.getLength()];\n        DatagramPacket targetDatagram = new DatagramPacket(buffer, buffer.length, InetAddress.getLocalHost(), 54321);\n\n        requestPacket.newDatagram(targetDatagram, buffer);\n\n        assertEquals(originalDatagram.getAddress(), targetDatagram.getAddress(), \"Addresses should match for two-parameter reconstruction.\");\n        assertEquals(originalDatagram.getPort(), targetDatagram.getPort(), \"Ports should match for two-parameter reconstruction.\");\n        // The newDatagram method populates the provided buffer\n        assertArrayEquals(originalData, buffer, \"Byte data in the provided buffer should match the original datagram's data.\");\n    }\n}",
+      "method_signature": "testNewDatagram()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.6809,
+      "callable_precision": 0.7805,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 78758,
     "output_tokens": 4324,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -211,9 +211,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPRequestPacketTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.net.tftp;\n\nimport org.junit.jupiter.api.Test;\n\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.util.Arrays;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class TFTPRequestPacketTest1 {\n\n    @Test\n    public void testNewDatagram() throws UnknownHostException {\n        // Test data\n        final String resourceName = \"test-file.txt\";\n        final int transferMode = TFTP.OCTET_MODE;\n        final InetAddress localAddress = InetAddress.getLocalHost();\n        final int port = 12345;\n\n        // 1. Create the request\n        final TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(localAddress, port, resourceName, transferMode);\n\n        // 2. First reproduction scenario: generate a new packet\n        final DatagramPacket newPacket = requestPacket.newDatagram();\n\n        // 3. Verify new packet\n        assertNotNull(newPacket, \"The newly created packet should not be null.\");\n        assertEquals(localAddress, newPacket.getAddress(), \"The destination address should be identical.\");\n        assertEquals(port, newPacket.getPort(), \"The communication port should be identical.\");\n\n        // Manually create expected data for comparison\n        final byte[] expectedData = new byte[resourceName.length() + TFTP.getModeName(transferMode).length() + 4];\n        int dataLength = 0;\n        expectedData[dataLength++] = 0;\n        expectedData[dataLength++] = (byte) TFTPPacket.READ_REQUEST;\n        System.arraycopy(resourceName.getBytes(), 0, expectedData, dataLength, resourceName.length());\n        dataLength += resourceName.length();\n        expectedData[dataLength++] = 0;\n        System.arraycopy(TFTP.getModeName(transferMode).getBytes(), 0, expectedData, dataLength, TFTP.getModeName(transferMode).length());\n        dataLength += TFTP.getModeName(transferMode).length();\n        expectedData[dataLength++] = 0;\n\n        assertEquals(dataLength, newPacket.getLength(), \"The packet size should match the original specification.\");\n        assertArrayEquals(expectedData, Arrays.copyOf(newPacket.getData(), newPacket.getLength()), \"The message content should be unchanged byte-for-byte.\");\n\n        // 4. Second reproduction scenario: populate an existing packet\n        final byte[] buffer = new byte[dataLength];\n        final DatagramPacket preparedPacket = new DatagramPacket(buffer, buffer.length, localAddress, port);\n        requestPacket.newDatagram(preparedPacket);\n\n        // 5. Verify populated packet\n        assertEquals(localAddress, preparedPacket.getAddress(), \"The reproduced packet should retain the correct destination address.\");\n        assertEquals(port, preparedPacket.getPort(), \"The reproduced packet should retain the correct port information.\");\n        assertEquals(dataLength, preparedPacket.getLength(), \"The packet size should match the original specification.\");\n        assertArrayEquals(expectedData, Arrays.copyOf(preparedPacket.getData(), preparedPacket.getLength()), \"The populated buffer should contain an exact copy of the original message content.\");\n    }\n}",
+      "method_signature": "testNewDatagram()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -236,8 +236,8 @@
     "input_tokens": 54622,
     "output_tokens": 9419,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -251,9 +251,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.ftp.FTPClientTest1",
+      "code": "package org.apache.commons.net.ftp;\n\nimport static org.junit.Assert.assertNotNull;\nimport static org.junit.Assert.assertNull;\n\nimport org.junit.Test;\n\npublic class FTPClientTest1 {\n\n    @Test\n    public void testLoadResourceProperties() {\n        assertNull(FTPClient.loadResourceProperties(null));\n        assertNull(FTPClient.loadResourceProperties(\"this/does/not/exist.properties\"));\n        assertNull(FTPClient.loadResourceProperties(\"/this/does/not/exist.properties\"));\n        assertNull(FTPClient.loadResourceProperties(FTPClient.SYSTEM_TYPE_PROPERTIES));\n        assertNotNull(FTPClient.loadResourceProperties(\"\"));\n        assertNotNull(FTPClient.loadResourceProperties(\"/org/apache/commons/net/examples/examples.properties\"));\n        assertNotNull(FTPClient.loadResourceProperties(\"/org/apache/commons/net/test.properties\"));\n    }\n}",
+      "method_signature": "testLoadResourceProperties()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -276,8 +276,8 @@
     "input_tokens": 159928,
     "output_tokens": 3215,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -360,7 +360,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 381,
       "description": "Define a test method annotated with `@Test` that declares it may throw `UnknownHostException` and `TFTPPacketException`, then begin by instantiating a `ByteArrayOutputStream` and assigning it to variable `byteStream`, immediately invoke `write(0)` on `byteStream` followed by `write(1)`, then within a try-catch block that catches `IOException` and rethrows it wrapped in a `RuntimeException` with message `\"Error creating TFTP request packet\"`, invoke `write` on `byteStream` passing the byte array obtained from calling `getBytes(StandardCharsets.US_ASCII)` on the String literal `\"fileName\"`, follow with `write(0)`, then `write` passing the byte array from `\"octet\".getBytes(StandardCharsets.US_ASCII)`, another `write(0)`, then `write` passing the byte array from `\"blksize\".getBytes(StandardCharsets.US_ASCII)`, another `write(0)`, then `write` passing the byte array from `\"1024\".getBytes(StandardCharsets.US_ASCII)`, and finally `write(0)`, after which invoke `toByteArray()` on `byteStream` and assign the result to variable `data` of type `byte[]`, then construct a new `DatagramPacket` by passing `data`, `data.length`, the result of `InetAddress.getLocalHost()`, and integer `0`, assigning this `DatagramPacket` to variable `datagramPacket`, next construct a new `TFTPReadRequestPacket` by passing `datagramPacket` to its constructor and assign the instance to variable `requestPacket`, immediately invoke `toString()` on `requestPacket` and pass the returned String to `assertNotNull` to verify it is not null, then invoke `getOptions()` on `requestPacket` and assign the returned `Map<String, String>` to variable `options`, assert that `options.size()` equals integer `1` using `assertEquals(1, options.size())`, and finally assert that `options.get(\"blksize\")` equals the String literal `\"1024\"` using `assertEquals(\"1024\", options.get(\"blksize\"))`, with the test using JUnit 5 Assertions and no mocking libraries.",
@@ -371,33 +371,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPReadRequestPacketTest1",
+      "code": "package org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.nio.charset.StandardCharsets;\nimport java.util.Map;\nimport org.junit.jupiter.api.Test;\n\npublic class TFTPReadRequestPacketTest1 {\n\n    @Test\n    public void testGetOptions() throws UnknownHostException, TFTPPacketException {\n        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream();\n        try {\n            byteStream.write(0);\n            byteStream.write(1);\n            byteStream.write(\"fileName\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n            byteStream.write(\"octet\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n            byteStream.write(\"blksize\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n            byteStream.write(\"1024\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n        } catch (final IOException e) {\n            throw new RuntimeException(\"Error creating TFTP request packet\", e);\n        }\n        final byte[] data = byteStream.toByteArray();\n        final DatagramPacket datagramPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 0);\n        final TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(datagramPacket);\n        assertNotNull(requestPacket.toString());\n        final Map<String, String> options = requestPacket.getOptions();\n        assertEquals(1, options.size());\n        assertEquals(\"1024\", options.get(\"blksize\"));\n    }\n}",
+      "method_signature": "testGetOptions()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.25,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.9643,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 16753,
     "output_tokens": 3562,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -440,7 +440,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 393,
       "description": "Define a test method annotated with `@Test` that declares it throws `TFTPPacketException` and `UnknownHostException`, then begin by instantiating a `ByteArrayOutputStream` assigned to `byteStream`, invoke `write(0)` on `byteStream`, invoke `write(1)` on `byteStream`, wrap the subsequent writes in a try-catch block catching `IOException` and rethrowing as `RuntimeException` with message `\"Error creating TFTP request packet\"` and the caught exception as cause, within the try block invoke `write` on `byteStream` passing `\"fileName\".getBytes(StandardCharsets.US_ASCII)`, then `write(0)`, then `write` passing `\"octet\".getBytes(StandardCharsets.US_ASCII)`, then `write(0)`, then `write` passing `\"blksize\".getBytes(StandardCharsets.US_ASCII)`, then `write(0)`, then `write` passing `\"1024\".getBytes(StandardCharsets.US_ASCII)`, and finally `write(0)`, after the try-catch block invoke `toByteArray()` on `byteStream` and assign the result to a byte array named `data`, construct a `DatagramPacket` passing `data`, `data.length`, `InetAddress.getLocalHost()`, and integer `0`, assign this to `datagramPacket`, construct a `TFTPReadRequestPacket` passing `datagramPacket` and assign it to `requestPacket`, invoke `newDatagram()` on `requestPacket` with no arguments and assign the returned `DatagramPacket` to `newDatagram`, assert that `newDatagram` is not null using `assertNotNull(newDatagram)`, assert equality between `datagramPacket.getAddress()` and `newDatagram.getAddress()` using `assertEquals`, assert equality between `datagramPacket.getPort()` and `newDatagram.getPort()` using `assertEquals`, assert equality between `datagramPacket.getLength()` and `newDatagram.getLength()` using `assertEquals`, assert array equality between `datagramPacket.getData()` and `newDatagram.getData()` using `assertArrayEquals`, create a new byte array named `data` with length `datagramPacket.getLength()`, construct a `DatagramPacket` passing `data`, `data.length`, `InetAddress.getLocalHost()`, and integer `0`, assign this to `newDatagram2`, invoke `newDatagram(newDatagram2, data)` on `requestPacket` passing both arguments, assert equality between `datagramPacket.getAddress()` and `newDatagram2.getAddress()` using `assertEquals`, assert equality between `datagramPacket.getPort()` and `newDatagram2.getPort()` using `assertEquals`, and assert array equality between `datagramPacket.getData()` and the `data` byte array using `assertArrayEquals`. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
@@ -451,32 +451,32 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPReadRequestPacketTest1",
+      "code": "package org.apache.commons.net.tftp;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.nio.charset.StandardCharsets;\nimport org.junit.jupiter.api.Test;\n\npublic class TFTPReadRequestPacketTest1 {\n\n  @Test\n  public void testNewDatagram() throws TFTPPacketException, UnknownHostException {\n    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();\n    byteStream.write(0);\n    byteStream.write(1);\n    try {\n      byteStream.write(\"fileName\".getBytes(StandardCharsets.US_ASCII));\n      byteStream.write(0);\n      byteStream.write(\"octet\".getBytes(StandardCharsets.US_ASCII));\n      byteStream.write(0);\n      byteStream.write(\"blksize\".getBytes(StandardCharsets.US_ASCII));\n      byteStream.write(0);\n      byteStream.write(\"1024\".getBytes(StandardCharsets.US_ASCII));\n      byteStream.write(0);\n    } catch (IOException e) {\n      throw new RuntimeException(\"Error creating TFTP request packet\", e);\n    }\n    byte[] data = byteStream.toByteArray();\n    DatagramPacket datagramPacket =\n        new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 0);\n    TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(datagramPacket);\n    DatagramPacket newDatagram = requestPacket.newDatagram();\n    assertNotNull(newDatagram);\n    assertEquals(datagramPacket.getAddress(), newDatagram.getAddress());\n    assertEquals(datagramPacket.getPort(), newDatagram.getPort());\n    assertEquals(datagramPacket.getLength(), newDatagram.getLength());\n    assertArrayEquals(datagramPacket.getData(), newDatagram.getData());\n    byte[] data2 = new byte[datagramPacket.getLength()];\n    DatagramPacket newDatagram2 =\n        new DatagramPacket(data2, data2.length, InetAddress.getLocalHost(), 0);\n    requestPacket.newDatagram(newDatagram2, data2);\n    assertEquals(datagramPacket.getAddress(), newDatagram2.getAddress());\n    assertEquals(datagramPacket.getPort(), newDatagram2.getPort());\n    assertArrayEquals(datagramPacket.getData(), data2);\n  }\n}",
+      "method_signature": "testNewDatagram()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.9787,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 44555,
     "output_tokens": 6185,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   }
 ]

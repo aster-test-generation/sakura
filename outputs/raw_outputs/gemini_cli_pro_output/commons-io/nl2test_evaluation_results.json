@@ -7840,7 +7840,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 323,
       "description": "Create a test method annotated with `@Test` that declares a variable `channel` of type `NetworkChannel` by invoking `mock(NetworkChannel.class)` from Mockito, then stub `channel.isOpen()` to return `true` using `when(channel.isOpen()).thenReturn(true)`, and assign the result of `CloseShieldChannel.wrap(channel)` to a variable `shield` of type `NetworkChannel`. Stub the mock by calling `when(channel.getOption(null)).thenReturn(\"foo\")`, then `when(channel.setOption(null, null)).thenReturn(channel)`, then `when(channel.getLocalAddress()).thenReturn(null)`, and finally `when(channel.bind(null)).thenReturn(channel)`. Invoke `shield.getOption(null)` and assert the result equals the String literal `\"foo\"` using `assertEquals(\"foo\", shield.getOption(null))`, then invoke `shield.setOption(null, null)` and assert the result equals `shield` using `assertEquals(shield, shield.setOption(null, null))`, then invoke `shield.getLocalAddress()` and assert the result equals `null` using `assertEquals(null, shield.getLocalAddress())`, and invoke `shield.bind(null)` and assert the result equals `shield` using `assertEquals(shield, shield.bind(null))`. Verify the mock interactions by calling `verify(channel).getOption(null)`, then `verify(channel).setOption(null, null)`, then `verify(channel).getLocalAddress()`, and `verify(channel).bind(null)`. Invoke `shield.close()` to close the shield, then assert that invoking `shield.supportedOptions()` does not throw any exception using `assertDoesNotThrow(shield::supportedOptions)`, and verify that `channel.supportedOptions()` was called using `verify(channel).supportedOptions()`. Assert that invoking `shield.setOption(null, null)` throws `ClosedChannelException` using `assertThrows(ClosedChannelException.class, () -> shield.setOption(null, null))`, then assert that invoking `shield.getOption(null)` throws `ClosedChannelException` using `assertThrows(ClosedChannelException.class, () -> shield.getOption(null))`, then assert that invoking `shield.getLocalAddress()` throws `ClosedChannelException` using `assertThrows(ClosedChannelException.class, shield::getLocalAddress)`, and assert that invoking `shield.bind(null)` throws `ClosedChannelException` using `assertThrows(ClosedChannelException.class, () -> shield.bind(null))`. Finally, verify that no further interactions occurred on `channel` by calling `verifyNoMoreInteractions(channel)`. The test method declares `throws Exception` in its signature, uses the `@Test` annotation from JUnit 5, employs JUnit 5 Assertions (`assertEquals`, `assertDoesNotThrow`, `assertThrows`), and uses Mockito for mocking and verification (`mock`, `when`, `thenReturn`, `verify`, `verifyNoMoreInteractions`).",
@@ -7851,33 +7851,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.io.channels.CloseShieldChannelTest1",
+      "code": "package org.apache.commons.io.channels;\n\nimport static org.junit.jupiter.api.Assertions.assertDoesNotThrow;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\nimport static org.mockito.Mockito.mock;\nimport static org.mockito.Mockito.verify;\nimport static org.mockito.Mockito.verifyNoMoreInteractions;\nimport static org.mockito.Mockito.when;\n\nimport java.nio.channels.ClosedChannelException;\nimport java.nio.channels.NetworkChannel;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests {@link CloseShieldChannel}.\n */\npublic class CloseShieldChannelTest1 {\n\n    @Test\n    public void testShield() throws Exception {\n        final NetworkChannel channel = mock(NetworkChannel.class);\n        when(channel.isOpen()).thenReturn(true);\n        final NetworkChannel shield = CloseShieldChannel.wrap(channel);\n\n        when(channel.getOption(null)).thenReturn(\"foo\");\n        when(channel.setOption(null, null)).thenReturn(channel);\n        when(channel.getLocalAddress()).thenReturn(null);\n        when(channel.bind(null)).thenReturn(channel);\n\n        assertEquals(\"foo\", shield.getOption(null));\n        assertEquals(shield, shield.setOption(null, null));\n        assertEquals(null, shield.getLocalAddress());\n        assertEquals(shield, shield.bind(null));\n\n        verify(channel).getOption(null);\n        verify(channel).setOption(null, null);\n        verify(channel).getLocalAddress();\n        verify(channel).bind(null);\n\n        shield.close();\n\n        assertDoesNotThrow(shield::supportedOptions);\n        verify(channel).supportedOptions();\n\n        assertThrows(ClosedChannelException.class, () -> shield.setOption(null, null));\n        assertThrows(ClosedChannelException.class, () -> shield.getOption(null));\n        assertThrows(ClosedChannelException.class, shield::getLocalAddress);\n        assertThrows(ClosedChannelException.class, () -> shield.bind(null));\n\n        verifyNoMoreInteractions(channel);\n    }\n}",
+      "method_signature": "testNetworkChannelMethods()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 156687,
     "output_tokens": 8337,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -7891,9 +7891,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.io.channels.ByteArraySeekableByteChannelTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.io.channels;\n\nimport static org.junit.jupiter.api.Assertions.assertArrayEquals;\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport java.io.IOException;\nimport java.nio.channels.ClosedChannelException;\nimport java.nio.charset.StandardCharsets;\nimport java.util.Arrays;\n\nimport org.apache.commons.io.input.ByteArrayInputStream;\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests {@link ByteArraySeekableByteChannel}.\n */\npublic class ByteArraySeekableByteChannelTest1 {\n\n    private static final byte[] STATIC_TEST_DATA = \"test data\".getBytes(StandardCharsets.UTF_8);\n    private static final byte[] ORIGINAL_STATIC_TEST_DATA = Arrays.copyOf(STATIC_TEST_DATA, STATIC_TEST_DATA.length);\n\n    @AfterEach\n    public void tearDown() {\n        // Validates the integrity of the static test data byte array by asserting that it remains unchanged.\n        assertArrayEquals(ORIGINAL_STATIC_TEST_DATA, STATIC_TEST_DATA,\n            \"The shared static test data should not be modified by read operations.\");\n    }\n\n    @Test\n    public void testSizeOnClosedChannel() throws IOException {\n        try (final ByteArraySeekableByteChannel channel = new ByteArraySeekableByteChannel(STATIC_TEST_DATA)) {\n            channel.close();\n            assertThrows(ClosedChannelException.class, channel::size);\n        }\n    }\n}",
+      "method_signature": "throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -7916,8 +7916,8 @@
     "input_tokens": 162293,
     "output_tokens": 7468,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,

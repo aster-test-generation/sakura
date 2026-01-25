@@ -651,9 +651,9 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.csv.CSVFormatInvalidDelimiterTest",
+      "code": "package org.apache.commons.csv;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Validates that configuring a CSV format with a line-breaking character as a\n * delimiter is properly rejected.\n */\npublic class CSVFormatInvalidDelimiterTest {\n\n    /**\n     * Tests that an {@link IllegalArgumentException} is thrown when a carriage\n     * return character is specified as the delimiter, as this is an invalid\n     * configuration that would produce malformed CSV data.\n     */\n    @Test\n    public void testRejectCarriageReturnAsDelimiter() {\n        final CSVFormat format = CSVFormat.DEFAULT;\n\n        assertThrows(IllegalArgumentException.class, () -> {\n            format.withDelimiter('\n');\n        }, \"A carriage return is not a valid delimiter and should be rejected.\");\n    }\n}",
+      "method_signature": "testDelimiterStringLineBreakCrThrowsException1()"
     },
     "structured_eval": {
       "obj_creation_recall": 0.0,
@@ -676,8 +676,8 @@
     "input_tokens": 290284,
     "output_tokens": 5519,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,
@@ -720,7 +720,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 176,
       "description": "Define a test method annotated with `@Test` that verifies an `IllegalArgumentException` is thrown when attempting to configure a CSV format builder with a delimiter string containing a carriage return line break character, beginning by invoking `assertThrows` with `IllegalArgumentException.class` as the first argument and a lambda expression as the second argument, where the lambda executes the following chain: invoke the static method `builder()` on `CSVFormat.DEFAULT` to obtain a `CSVFormat.Builder` instance, then chain `setDelimiter` on that builder passing the result of `String.valueOf(Constants.CR)` as the argument (where `Constants.CR` represents the carriage return character `'\\r'`), and finally chain `get()` on the builder to trigger the format construction and validation, with the entire lambda expression serving as the executable that `assertThrows` will invoke to confirm the exception is raised during the `get()` call when the delimiter validation detects the line break character. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
@@ -731,33 +731,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.csv.CSVFormatBuilderTest",
+      "code": "package org.apache.commons.csv;\n\nimport static org.junit.jupiter.api.Assertions.assertThrows;\n\nimport org.junit.jupiter.api.Test;\n\n/**\n * Tests for {@link CSVFormat.Builder}.\n */\nclass CSVFormatBuilderTest {\n\n    @Test\n    void testSetDelimiterWithCarriageReturnThrowsIllegalArgumentException() {\n        assertThrows(IllegalArgumentException.class, () -> {\n            CSVFormat.DEFAULT.builder().setDelimiter(String.valueOf(Constants.CR)).get();\n        });\n    }\n\n}",
+      "method_signature": "testDelimiterStringLineBreakCrThrowsException1()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.8,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 76416,
     "output_tokens": 1621,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,

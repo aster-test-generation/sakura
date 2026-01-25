@@ -805,6 +805,13 @@ def run_nl2test(
             help="Provider names to exclude when routing through OpenRouter (can be repeated).",
         ),
     ] = [],
+    save_localized_scenarios: Annotated[
+        bool,
+        typer.Option(
+            help="Save localized scenarios to a separate JSON file per-project (GHERKIN mode only).",
+            show_default=True,
+        ),
+    ] = False,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -988,6 +995,7 @@ def run_nl2test(
                 openrouter_ignore_providers=openrouter_ignore_providers
                 if openrouter_ignore_providers
                 else None,
+                save_localized_scenarios=save_localized_scenarios,
             )
 
             payloads = [
@@ -1148,6 +1156,33 @@ def run_nl2test(
                     format="json",
                     mode="append",
                 )
+
+            # Save localized scenarios if enabled
+            if save_localized_scenarios:
+                localized_scenarios_to_save = []
+                for item in results or []:
+                    if item.get("success") and item.get("localized_scenario"):
+                        input_data = item.get("result")
+                        if isinstance(input_data, dict):
+                            input_id = (input_data.get("nl2test_input") or {}).get(
+                                "id", -1
+                            )
+                        else:
+                            nl2test_input = getattr(input_data, "nl2test_input", None)
+                            input_id = getattr(nl2test_input, "id", -1) if nl2test_input else -1
+                        localized_scenarios_to_save.append(
+                            {
+                                "input_id": input_id,
+                                "localized_scenario": item["localized_scenario"],
+                            }
+                        )
+                if localized_scenarios_to_save:
+                    project_manager.save(
+                        "nl2test_localized_scenarios.json",
+                        localized_scenarios_to_save,
+                        format="json",
+                        mode="append",
+                    )
 
             total_success += project_success
             total_failed += project_failed

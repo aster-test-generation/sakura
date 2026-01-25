@@ -54,6 +54,7 @@ class NL2TestActor:
         exclude_reasoning: bool = True,
         max_tokens: int = 16384,
         openrouter_ignore_providers: list[str] | None = None,
+        save_localized_scenarios: bool = False,
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -131,6 +132,7 @@ class NL2TestActor:
 
         self.compilation_failed = False
         self.compilation_failure_payload: dict[str, Any] | None = None
+        self.save_localized_scenarios = save_localized_scenarios
 
         self._ensure_clean_submodule()
 
@@ -185,8 +187,16 @@ class NL2TestActor:
 
         try:
             nl2_input = NL2TestInput(**input_payload)
-            result = self.pipeline.run_nl2test(nl2_input)
-            return {"success": True, "result": result}
+            pipeline_result = self.pipeline.run_nl2test(nl2_input)
+            response: dict[str, Any] = {"success": True, "result": pipeline_result.eval}
+            if (
+                self.save_localized_scenarios
+                and pipeline_result.localized_scenario is not None
+            ):
+                response["localized_scenario"] = (
+                    pipeline_result.localized_scenario.model_dump(mode="json")
+                )
+            return response
         except Exception as e:
             # Capture full traceback for easier debugging back on the driver.
             tb = traceback.format_exc()

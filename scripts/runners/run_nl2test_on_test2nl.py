@@ -19,6 +19,7 @@ CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 # CLI arguments
 MAX_ENTRIES = 1
 # Note: 0 = unlimited
+TARGET_IDS: list[int] = []  # Empty list processes all; non-empty filters to these IDs
 DEBUG = True
 USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
@@ -166,6 +167,9 @@ def main() -> None:
     # Optional caps
     if MAX_ENTRIES and MAX_ENTRIES > 0:
         cmd.extend(["--max-entries", str(MAX_ENTRIES)])
+    if TARGET_IDS:
+        for target_id in TARGET_IDS:
+            cmd.extend(["--target-ids", str(target_id)])
 
     # Optional iteration overrides
     if SUPERVISOR_MAX_ITERS is not None:

@@ -47,7 +47,10 @@ def main() -> None:
 
 
 def _load_nl2_inputs_by_project_from_csv(
-    test2nl_file: str | Path, max_entries: int, num_proj_parallel: int
+    test2nl_file: str | Path,
+    max_entries: int,
+    num_proj_parallel: int,
+    target_ids: list[int] | None = None,
 ) -> dict[str, list[NL2TestInput]]:
     """Load Test2NL CSV (explicit file path) and convert to NL2TestInput grouped by project."""
     if test2nl_file is None:
@@ -85,7 +88,16 @@ def _load_nl2_inputs_by_project_from_csv(
         RichLog.info(
             f"NL2TEST_DEBUG enabled: loaded {len(test2nl_entries)} entries from {debug_csv_path}"
         )
-    elif max_entries > 0:
+
+    # Filter by target IDs if specified
+    if target_ids:
+        target_id_set = set(target_ids)
+        test2nl_entries = [e for e in test2nl_entries if e.id in target_id_set]
+        RichLog.info(
+            f"Filtered to {len(test2nl_entries)} entries matching target_ids={target_ids}"
+        )
+
+    if not NL2TEST_DEBUG and max_entries > 0:
         test2nl_entries = test2nl_entries[:max_entries]
         RichLog.info(
             f"Processing subset of {len(test2nl_entries)} entries "
@@ -703,6 +715,13 @@ def run_nl2test(
             show_default=False,
         ),
     ] = 0,
+    target_ids: Annotated[
+        list[int] | None,
+        typer.Option(
+            help="Only process Test2NL entries with these IDs (omit to process all).",
+            show_default=False,
+        ),
+    ] = None,
     llm_provider: Annotated[
         str | None,
         typer.Option(
@@ -843,12 +862,18 @@ def run_nl2test(
         # Ensure output directory exists so results can be written.
         output_dir.mkdir(parents=True, exist_ok=True)
 
+    if target_ids and max_entries > 0:
+        raise ValueError(
+            "Cannot specify both --target-ids and --max-entries. "
+            "Use --target-ids to filter specific entries, or --max-entries to limit the count."
+        )
+
     RichLog.info(f"Resetting submodules under {base_project_dir}")
     GitUtilities.reset_submodules_in_dir(base_project_dir)
 
     # Load and prepare NL2Test inputs grouped by project
     nl2test_inputs_by_project = _load_nl2_inputs_by_project_from_csv(
-        test2nl_file, max_entries, num_proj_parallel
+        test2nl_file, max_entries, num_proj_parallel, target_ids
     )
 
     _clear_nl2test_output_artifacts(output_dir, reset_evaluation_results)

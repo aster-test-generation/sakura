@@ -51,11 +51,6 @@ def _is_retriable_error(exc: BaseException) -> bool:
     )
     if status in {429, 500, 502, 503, 504}:
         return True
-    # Handle provider validation errors that may be transient
-    if status == 400:
-        msg = str(exc).lower()
-        if "input validation error" in msg or "provider returned error" in msg:
-            return True
     if isinstance(exc, (ConnectionError, TimeoutError)):
         return True
     msg = str(exc).lower()

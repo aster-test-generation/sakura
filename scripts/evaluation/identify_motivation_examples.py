@@ -26,8 +26,8 @@ from nltest.utils.models.nl2test import (
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Input directories
-NL2TEST_EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "NL2TEST_DIR"  # for NL2Test
-OTHER_AGENT_EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "SECOND_DIR"  # for other agent
+NL2TEST_EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_pro_output" # for NL2Test
+OTHER_AGENT_EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"  # for other agent
 
 # Output directory
 OUTPUT_DIR = ROOT_DIR / "outputs" / "motivation"

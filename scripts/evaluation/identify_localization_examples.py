@@ -14,7 +14,7 @@ from nltest.nl2test.models.decomposition import LocalizationEval
 from nltest.utils.models.nl2test import NL2TestEval
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
-DEFAULT_EVAL_DIR = ROOT_DIR / "resources" / "outputs" / "NL2TEST_EVAL_DIR"
+DEFAULT_EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_flash_output"
 DEFAULT_OUTPUT_DIR = ROOT_DIR / "outputs" / "decomposition_examples"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 

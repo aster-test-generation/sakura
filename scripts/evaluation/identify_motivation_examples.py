@@ -15,6 +15,7 @@ from typing import Any, Dict, List, Tuple, Union
 
 from pydantic import ValidationError
 
+from nltest.dataset_creation.model import NL2TestDataset
 from nltest.utils.models.nl2test import (
     NL2TestCoverageEval,
     NL2TestEval,
@@ -38,8 +39,29 @@ EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 # Default threshold for "significant" average gap (NL2Test - other)
 DEFAULT_SIGNIFICANT_GAP_THRESHOLD = 0.2
 
+# Directory containing per-project bucketed datasets (nl2test.json files)
+BUCKETED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
+
+# Bucket names based on focal method count (last two original buckets merged)
+BUCKET_ONE_FOCAL = "one_focal"
+BUCKET_TWO_FOCAL = "two_focal"
+BUCKET_THREE_TO_FIVE_FOCAL = "three_to_five_focal"
+BUCKET_MORE_THAN_FIVE_FOCAL = "more_than_five_focal"
+BUCKET_UNKNOWN = "unknown"
+
+ALL_BUCKETS = [
+    BUCKET_ONE_FOCAL,
+    BUCKET_TWO_FOCAL,
+    BUCKET_THREE_TO_FIVE_FOCAL,
+    BUCKET_MORE_THAN_FIVE_FOCAL,
+    BUCKET_UNKNOWN,
+]
+
 # Type alias for evaluation entries (can be either NL2TestEval or OutOfBoxAgentEval)
 EvalEntry = Union[NL2TestEval, OutOfBoxAgentEval]
+
+# Type alias for bucket lookup key: (project_name, qualified_class_name, method_signature)
+BucketKey = Tuple[str, str, str]
 
 
 def load_evaluation_results(
@@ -93,6 +115,92 @@ def load_evaluation_results(
                 continue
 
     return entries_by_id
+
+
+def load_bucket_mappings(bucketed_dir: Path) -> Dict[BucketKey, str]:
+    """Load bucket mappings from per-project nl2test.json files.
+
+    Iterates through project directories and loads NL2TestDataset files to build
+    a lookup map from test identifiers to bucket names. The last two original
+    buckets (5-10 and >10 focal methods) are merged into 'more_than_five_focal'.
+
+    Args:
+        bucketed_dir: Directory containing project subdirectories with nl2test.json.
+
+    Returns:
+        Dict mapping (project_name, qualified_class_name, method_signature) to bucket name.
+    """
+    bucket_mappings: Dict[BucketKey, str] = {}
+
+    if not bucketed_dir.exists():
+        print(f"Warning: Bucketed dataset directory does not exist: {bucketed_dir}")
+        return bucket_mappings
+
+    # Map from NL2TestDataset attribute name to our bucket constant
+    attr_to_bucket = {
+        "tests_with_one_focal_methods": BUCKET_ONE_FOCAL,
+        "tests_with_two_focal_methods": BUCKET_TWO_FOCAL,
+        "tests_with_more_than_two_to_five_focal_methods": BUCKET_THREE_TO_FIVE_FOCAL,
+        "tests_with_more_than_five_to_ten_focal_methods": BUCKET_MORE_THAN_FIVE_FOCAL,
+        "tests_with_more_than_ten_focal_methods": BUCKET_MORE_THAN_FIVE_FOCAL,
+    }
+
+    for project_dir in sorted(bucketed_dir.iterdir()):
+        if not project_dir.is_dir():
+            continue
+
+        nl2test_file = project_dir / "nl2test.json"
+        if not nl2test_file.exists():
+            continue
+
+        try:
+            with nl2test_file.open("r", encoding="utf-8") as f:
+                data = json.load(f)
+            dataset = NL2TestDataset.model_validate(data)
+        except Exception as e:
+            print(f"Warning: Failed to load {nl2test_file}: {e}")
+            continue
+
+        project_name = dataset.dataset_name
+
+        for attr_name, bucket_name in attr_to_bucket.items():
+            tests = getattr(dataset, attr_name, [])
+            for test in tests:
+                key: BucketKey = (
+                    project_name,
+                    test.qualified_class_name,
+                    test.method_signature,
+                )
+                bucket_mappings[key] = bucket_name
+
+    print(f"Loaded bucket mappings for {len(bucket_mappings)} tests")
+    return bucket_mappings
+
+
+def get_bucket_for_entry(
+    entry: EvalEntry,
+    bucket_mappings: Dict[BucketKey, str],
+) -> str:
+    """Get the bucket name for an evaluation entry.
+
+    Args:
+        entry: Evaluation entry containing nl2test_input.
+        bucket_mappings: Lookup map from test identifiers to bucket names.
+
+    Returns:
+        Bucket name, or BUCKET_UNKNOWN if not found in mappings.
+    """
+    key: BucketKey = (
+        entry.nl2test_input.project_name,
+        entry.nl2test_input.qualified_class_name,
+        entry.nl2test_input.method_signature,
+    )
+    return bucket_mappings.get(key, BUCKET_UNKNOWN)
+
+
+def create_empty_bucket_dict() -> Dict[str, List[int]]:
+    """Create an empty dict with all bucket names initialized to empty lists."""
+    return {bucket: [] for bucket in ALL_BUCKETS}
 
 
 def check_structural_recall_above(
@@ -325,12 +433,37 @@ def compute_average_gap(
     return sum(gaps) / len(gaps)
 
 
+def _format_bucket_results(
+    bucket_dict: Dict[str, List[int]], description: str
+) -> Dict[str, Any]:
+    """Format a bucket dictionary into the output JSON structure.
+
+    Args:
+        bucket_dict: Dict mapping bucket names to lists of entry IDs.
+        description: Description of this category.
+
+    Returns:
+        Formatted dict with description, total_count, and by_bucket breakdown.
+    """
+    total_count = sum(len(ids) for ids in bucket_dict.values())
+    by_bucket = {
+        bucket: {"count": len(ids), "entry_ids": ids}
+        for bucket, ids in bucket_dict.items()
+    }
+    return {
+        "description": description,
+        "total_count": total_count,
+        "by_bucket": by_bucket,
+    }
+
+
 def find_motivation_examples(
     nl2test_dir: Path,
     other_agent_dir: Path,
+    bucketed_dataset_dir: Path,
     significant_gap_threshold: float = DEFAULT_SIGNIFICANT_GAP_THRESHOLD,
 ) -> Dict[str, Any]:
-    """Find entries where NL2Test outperforms other agent.
+    """Find entries where NL2Test outperforms other agent, organized by focal method bucket.
 
     Identifies two categories:
     1. Compile Gap: NL2Test compiles, other agent doesn't (with failed_code_generation=False)
@@ -340,15 +473,19 @@ def find_motivation_examples(
        - perfect: All NL2Test metrics = 1.0 while beating other
        - perfect_significant: Perfect scores AND average gap > significant_gap_threshold
 
+    Results are organized by focal method bucket (one_focal, two_focal,
+    three_to_five_focal, more_than_five_focal, unknown).
+
     Note: Entries without structural_eval or coverage_eval are skipped.
 
     Args:
         nl2test_dir: Directory with NL2Test evaluation results.
         other_agent_dir: Directory with other agent evaluation results.
+        bucketed_dataset_dir: Directory with per-project nl2test.json bucket files.
         significant_gap_threshold: Minimum average gap to be considered "significant".
 
     Returns:
-        Dictionary with summary and categorized entry IDs.
+        Dictionary with summary and categorized entry IDs organized by bucket.
     """
     print(f"Loading NL2Test entries from: {nl2test_dir}")
     nl2test_entries = load_evaluation_results(nl2test_dir, use_out_of_box=False)
@@ -358,19 +495,22 @@ def find_motivation_examples(
     other_entries = load_evaluation_results(other_agent_dir, use_out_of_box=True)
     print(f"Loaded {len(other_entries)} other agent entries")
 
+    print(f"Loading bucket mappings from: {bucketed_dataset_dir}")
+    bucket_mappings = load_bucket_mappings(bucketed_dataset_dir)
+
     # Find matching IDs
     matching_ids = set(nl2test_entries.keys()) & set(other_entries.keys())
     print(f"Found {len(matching_ids)} matching entries")
 
-    # Compile Gap buckets
-    compile_gap_high_quality: List[int] = []
-    compile_gap_perfect: List[int] = []
+    # Compile Gap buckets (organized by focal method bucket)
+    compile_gap_high_quality: Dict[str, List[int]] = create_empty_bucket_dict()
+    compile_gap_perfect: Dict[str, List[int]] = create_empty_bucket_dict()
 
-    # Quality Gap buckets
-    quality_gap_beats_other: List[int] = []
-    quality_gap_significant: List[int] = []
-    quality_gap_perfect: List[int] = []
-    quality_gap_perfect_significant: List[int] = []
+    # Quality Gap buckets (organized by focal method bucket)
+    quality_gap_beats_other: Dict[str, List[int]] = create_empty_bucket_dict()
+    quality_gap_significant: Dict[str, List[int]] = create_empty_bucket_dict()
+    quality_gap_perfect: Dict[str, List[int]] = create_empty_bucket_dict()
+    quality_gap_perfect_significant: Dict[str, List[int]] = create_empty_bucket_dict()
 
     for entry_id in sorted(matching_ids):
         nl2test_entry = nl2test_entries[entry_id]
@@ -379,6 +519,9 @@ def find_motivation_examples(
         # Skip entries without complete eval data for NL2Test
         if not has_complete_eval_data(nl2test_entry):
             continue
+
+        # Determine the focal method bucket for this entry
+        bucket = get_bucket_for_entry(nl2test_entry, bucket_mappings)
 
         # other_entries is loaded with use_out_of_box=True, so all are OutOfBoxAgentEval
         assert isinstance(other_entry, OutOfBoxAgentEval)
@@ -395,14 +538,14 @@ def find_motivation_examples(
                 check_structural_recall_above(nl2test_entry.structured_eval, 0.8)
                 and check_coverage_above(nl2test_entry.coverage_eval, 0.8)
             ):
-                compile_gap_high_quality.append(entry_id)
+                compile_gap_high_quality[bucket].append(entry_id)
 
                 # Check for perfect (== 1.0)
                 if (
                     check_structural_recall_equals(nl2test_entry.structured_eval, 1.0)
                     and check_coverage_equals(nl2test_entry.coverage_eval, 1.0)
                 ):
-                    compile_gap_perfect.append(entry_id)
+                    compile_gap_perfect[bucket].append(entry_id)
 
         # Quality Gap Analysis: Both compile, but quality difference
         elif nl2test_entry.compiles and other_entry.compiles:
@@ -424,7 +567,7 @@ def find_motivation_examples(
                 other_entry.coverage_eval,
                 min_gap=0.0,
             ):
-                quality_gap_beats_other.append(entry_id)
+                quality_gap_beats_other[bucket].append(entry_id)
 
                 # Compute average gap for significant checks
                 avg_gap = compute_average_gap(
@@ -437,7 +580,7 @@ def find_motivation_examples(
                 # significant: Average gap across all metrics > threshold
                 is_significant = avg_gap > significant_gap_threshold
                 if is_significant:
-                    quality_gap_significant.append(entry_id)
+                    quality_gap_significant[bucket].append(entry_id)
 
                 # perfect: NL2Test achieves perfect scores (1.0) while beating other
                 is_perfect = (
@@ -445,55 +588,51 @@ def find_motivation_examples(
                     and check_coverage_equals(nl2test_entry.coverage_eval, 1.0)
                 )
                 if is_perfect:
-                    quality_gap_perfect.append(entry_id)
+                    quality_gap_perfect[bucket].append(entry_id)
 
                     # perfect_significant: Perfect scores AND significant gap
                     if is_significant:
-                        quality_gap_perfect_significant.append(entry_id)
+                        quality_gap_perfect_significant[bucket].append(entry_id)
 
     return {
         "summary": {
             "nl2test_eval_dir": str(nl2test_dir),
             "other_agent_eval_dir": str(other_agent_dir),
+            "bucketed_dataset_dir": str(bucketed_dataset_dir),
             "total_nl2test_entries": len(nl2test_entries),
             "total_other_agent_entries": len(other_entries),
             "matched_entries": len(matching_ids),
+            "bucket_names": ALL_BUCKETS,
         },
         "compile_gap": {
             "description": "NL2Test compiles, other agent does not (with failed_code_generation=False)",
-            "high_quality": {
-                "description": "Structural recall > 0.8 and coverage > 0.8",
-                "count": len(compile_gap_high_quality),
-                "entry_ids": compile_gap_high_quality,
-            },
-            "perfect": {
-                "description": "Structural recall = 1.0 and coverage = 1.0",
-                "count": len(compile_gap_perfect),
-                "entry_ids": compile_gap_perfect,
-            },
+            "high_quality": _format_bucket_results(
+                compile_gap_high_quality,
+                "Structural recall > 0.8 and coverage > 0.8",
+            ),
+            "perfect": _format_bucket_results(
+                compile_gap_perfect,
+                "Structural recall = 1.0 and coverage = 1.0",
+            ),
         },
         "quality_gap": {
             "description": "Both compile, NL2Test beats other agent on all 8 metrics",
-            "beats_other": {
-                "description": "All NL2Test metrics >= other agent, at least one strictly greater",
-                "count": len(quality_gap_beats_other),
-                "entry_ids": quality_gap_beats_other,
-            },
-            "significant": {
-                "description": f"Average gap across all 8 metrics > {significant_gap_threshold}",
-                "count": len(quality_gap_significant),
-                "entry_ids": quality_gap_significant,
-            },
-            "perfect": {
-                "description": "All NL2Test metrics = 1.0 while beating other agent",
-                "count": len(quality_gap_perfect),
-                "entry_ids": quality_gap_perfect,
-            },
-            "perfect_significant": {
-                "description": f"All metrics = 1.0 AND average gap > {significant_gap_threshold}",
-                "count": len(quality_gap_perfect_significant),
-                "entry_ids": quality_gap_perfect_significant,
-            },
+            "beats_other": _format_bucket_results(
+                quality_gap_beats_other,
+                "All NL2Test metrics >= other agent, at least one strictly greater",
+            ),
+            "significant": _format_bucket_results(
+                quality_gap_significant,
+                f"Average gap across all 8 metrics > {significant_gap_threshold}",
+            ),
+            "perfect": _format_bucket_results(
+                quality_gap_perfect,
+                "All NL2Test metrics = 1.0 while beating other agent",
+            ),
+            "perfect_significant": _format_bucket_results(
+                quality_gap_perfect_significant,
+                f"All metrics = 1.0 AND average gap > {significant_gap_threshold}",
+            ),
         },
     }
 
@@ -522,6 +661,12 @@ def parse_args() -> argparse.Namespace:
         help="Directory to write output JSON",
     )
     parser.add_argument(
+        "--bucketed-dataset-dir",
+        type=Path,
+        default=BUCKETED_DATASET_DIR,
+        help="Directory containing per-project nl2test.json bucket files",
+    )
+    parser.add_argument(
         "--significant-gap-threshold",
         type=float,
         default=DEFAULT_SIGNIFICANT_GAP_THRESHOLD,
@@ -530,12 +675,24 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _print_bucket_summary(category_name: str, bucket_data: Dict[str, Any]) -> None:
+    """Print summary for a category with per-bucket breakdown."""
+    print(f"  {category_name}: {bucket_data['total_count']} total")
+    for bucket_name in ALL_BUCKETS:
+        count = bucket_data["by_bucket"][bucket_name]["count"]
+        if count > 0:
+            print(f"    - {bucket_name}: {count}")
+
+
 def main() -> None:
     """Main entry point."""
     args = parse_args()
 
     results = find_motivation_examples(
-        args.nl2test_dir, args.other_agent_dir, args.significant_gap_threshold
+        args.nl2test_dir,
+        args.other_agent_dir,
+        args.bucketed_dataset_dir,
+        args.significant_gap_threshold,
     )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -545,13 +702,15 @@ def main() -> None:
         json.dump(results, f, indent=2)
 
     print(f"\nResults written to: {output_file}")
-    print("\nSummary:")
-    print(f"  Compile Gap - High Quality: {results['compile_gap']['high_quality']['count']}")
-    print(f"  Compile Gap - Perfect: {results['compile_gap']['perfect']['count']}")
-    print(f"  Quality Gap - Beats Other: {results['quality_gap']['beats_other']['count']}")
-    print(f"  Quality Gap - Significant: {results['quality_gap']['significant']['count']}")
-    print(f"  Quality Gap - Perfect: {results['quality_gap']['perfect']['count']}")
-    print(f"  Quality Gap - Perfect Significant: {results['quality_gap']['perfect_significant']['count']}")
+    print("\nSummary (by focal method bucket):")
+    print("\nCompile Gap:")
+    _print_bucket_summary("High Quality", results["compile_gap"]["high_quality"])
+    _print_bucket_summary("Perfect", results["compile_gap"]["perfect"])
+    print("\nQuality Gap:")
+    _print_bucket_summary("Beats Other", results["quality_gap"]["beats_other"])
+    _print_bucket_summary("Significant", results["quality_gap"]["significant"])
+    _print_bucket_summary("Perfect", results["quality_gap"]["perfect"])
+    _print_bucket_summary("Perfect Significant", results["quality_gap"]["perfect_significant"])
 
 
 if __name__ == "__main__":

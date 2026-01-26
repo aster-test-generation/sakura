@@ -22,6 +22,8 @@ INPUT_FILES: dict[str, str] = {
     "gemini_cli_pro_eval.json": "Gemini CLI (Pro 2.5)",
     "nl2test_gemini_flash_eval.json": "NL2Test (Flash 2.5)",
     "nl2test_gemini_pro_eval.json": "NL2Test (Pro 2.5)",
+    "nl2test_qwen3_eval.json": "NL2Test (Qwen3 Coder)",
+    "nl2test_devstral_eval.json": "NL2Test (Devstral 2 Small)",
     # "gemini_cli_200_eval.json": "Gemini CLI (Pro 2.5)",
     # "nl2test_subset_40_gemini_flash_eval.json": "NL2Test (Gemini Flash 2.5)",
     # "nl2test_subset_40_gemini_pro_low_eval.json": "NL2Test (Gemini Pro 2.5)",

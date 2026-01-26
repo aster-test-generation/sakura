@@ -33,12 +33,12 @@ from nltest.utils.pretty.color_logger import RichLog
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 OLD_EVAL_DIR = (
-    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_flash_output"
 )
 NEW_EVAL_DIR = (
-    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output_updated"
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_flash_output_updated"
 )
-AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_pro_output"
+AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output"
 TEST2NL_DIR = ROOT_DIR / "resources" / "test2nl" / "filtered_dataset"
 TEST2NL_FILE_NAME = "test2nl.csv"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"

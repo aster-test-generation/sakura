@@ -19,15 +19,15 @@ from nltest.utils.statistics import (
 )
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"
+EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_devstral_output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 OUTPUT_DIR = ROOT_DIR / "outputs" / "evaluation_stats"
 BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
 BUCKETED_DATASET_FILE = "nl2test.json"
 
 # PRICING_MODEL = "minimax/minimax-m2.1"
-# PRICING_MODEL = "devstral-small-latest"
-PRICING_MODEL = "gemini-2.5-pro"
+PRICING_MODEL = "devstral-small-latest"
+# PRICING_MODEL = "gemini-2.5-pro"
 # PRICING_MODEL = "qwen/qwen3-coder"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
@@ -51,6 +51,8 @@ DIRS_TO_INCLUDE: List[Path] = [
     ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_flash_output",
     ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_flash_output",
     ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_pro_output",
+    ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_devstral_output",
+    ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_qwen3_output",
 ]
 
 # Pricing per million tokens (USD)

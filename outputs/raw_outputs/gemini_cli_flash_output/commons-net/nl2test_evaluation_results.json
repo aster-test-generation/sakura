@@ -360,7 +360,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 381,
       "description": "Define a test method annotated with `@Test` that declares it may throw `UnknownHostException` and `TFTPPacketException`, then begin by instantiating a `ByteArrayOutputStream` and assigning it to variable `byteStream`, immediately invoke `write(0)` on `byteStream` followed by `write(1)`, then within a try-catch block that catches `IOException` and rethrows it wrapped in a `RuntimeException` with message `\"Error creating TFTP request packet\"`, invoke `write` on `byteStream` passing the byte array obtained from calling `getBytes(StandardCharsets.US_ASCII)` on the String literal `\"fileName\"`, follow with `write(0)`, then `write` passing the byte array from `\"octet\".getBytes(StandardCharsets.US_ASCII)`, another `write(0)`, then `write` passing the byte array from `\"blksize\".getBytes(StandardCharsets.US_ASCII)`, another `write(0)`, then `write` passing the byte array from `\"1024\".getBytes(StandardCharsets.US_ASCII)`, and finally `write(0)`, after which invoke `toByteArray()` on `byteStream` and assign the result to variable `data` of type `byte[]`, then construct a new `DatagramPacket` by passing `data`, `data.length`, the result of `InetAddress.getLocalHost()`, and integer `0`, assigning this `DatagramPacket` to variable `datagramPacket`, next construct a new `TFTPReadRequestPacket` by passing `datagramPacket` to its constructor and assign the instance to variable `requestPacket`, immediately invoke `toString()` on `requestPacket` and pass the returned String to `assertNotNull` to verify it is not null, then invoke `getOptions()` on `requestPacket` and assign the returned `Map<String, String>` to variable `options`, assert that `options.size()` equals integer `1` using `assertEquals(1, options.size())`, and finally assert that `options.get(\"blksize\")` equals the String literal `\"1024\"` using `assertEquals(\"1024\", options.get(\"blksize\"))`, with the test using JUnit 5 Assertions and no mocking libraries.",
@@ -371,33 +371,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.net.tftp.TFTPReadRequestPacketTest1",
+      "code": "package org.apache.commons.net.tftp;\n\nimport java.io.ByteArrayOutputStream;\nimport java.io.IOException;\nimport java.net.DatagramPacket;\nimport java.net.InetAddress;\nimport java.net.UnknownHostException;\nimport java.nio.charset.StandardCharsets;\nimport java.util.Map;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNotNull;\n\npublic class TFTPReadRequestPacketTest1 {\n\n    @Test\n    void testReadRequestPacketWithOptions() throws UnknownHostException, TFTPPacketException {\n        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();\n        byteStream.write(0);\n        byteStream.write(1); // Read Request opcode\n\n        try {\n            byteStream.write(\"fileName\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n            byteStream.write(\"octet\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n            byteStream.write(\"blksize\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n            byteStream.write(\"1024\".getBytes(StandardCharsets.US_ASCII));\n            byteStream.write(0);\n        } catch (IOException e) {\n            throw new RuntimeException(\"Error creating TFTP request packet\", e);\n        }\n\n        byte[] data = byteStream.toByteArray();\n        DatagramPacket datagramPacket = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), 0);\n\n        TFTPReadRequestPacket requestPacket = new TFTPReadRequestPacket(datagramPacket);\n\n        assertNotNull(requestPacket.toString());\n\n        Map<String, String> options = requestPacket.getOptions();\n        assertEquals(1, options.size());\n        assertEquals(\"1024\", options.get(\"blksize\"));\n    }\n}",
+      "method_signature": "testGetOptions()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.25,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.9643,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 14302,
     "output_tokens": 1163,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,

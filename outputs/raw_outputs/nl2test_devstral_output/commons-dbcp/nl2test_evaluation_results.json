@@ -1,0 +1,1837 @@
+[
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 30,
+            "description": "Define a test method annotated with `@Test` that verifies the behavior of the `clear` method on instances of `CharArray`. Begin by instantiating a new `CharArray` with a null `String` argument by calling `new CharArray((String) null)`, then immediately chain `clear()` on this instance, followed by `get()` to retrieve the internal char array, and assert that the result is null using `assertNull`. Next, create a second `CharArray` instance by passing an empty `String` literal `\"\"` to the constructor, chain `clear()` on this instance, then invoke `get()` to obtain the char array, and use `assertArrayEquals` to verify that the result matches the char array produced by `\"\".toCharArray()`. Finally, instantiate a third `CharArray` with the `String` literal `\"foo\"`, chain `clear()` on this instance, invoke `get()` to retrieve the char array, and assert using `assertArrayEquals` that the result equals the char array produced by `\"\\\\0\\\\0\\\\0\".toCharArray()`, which represents three null characters. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest1",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.Test;\n\npublic class CharArrayTest1 {\n\n    @Test\n    public void testClearMethod() {\n        // Test case 1: CharArray with null String argument\n        CharArray charArrayNull = new CharArray((String) null);\n        charArrayNull.clear();\n        char[] retrievedCharArrayNull = charArrayNull.get();\n        Assertions.assertNull(retrievedCharArrayNull);\n\n        // Test case 2: CharArray with empty String literal\n        CharArray charArrayEmpty = new CharArray(\"\");\n        charArrayEmpty.clear();\n        char[] retrievedCharArrayEmpty = charArrayEmpty.get();\n        Assertions.assertArrayEquals(\"\".toCharArray(), retrievedCharArrayEmpty);\n\n        // Test case 3: CharArray with String literal \"foo\"\n        CharArray charArrayFoo = new CharArray(\"foo\");\n        charArrayFoo.clear();\n        char[] retrievedCharArrayFoo = charArrayFoo.get();\n        Assertions.assertArrayEquals(\"\\0\\0\\0\".toCharArray(), retrievedCharArrayFoo);\n    }\n}",
+            "method_signature": "testClearMethod()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.5556,
+            "line_coverage": 0.3333,
+            "branch_coverage": 0.75
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.clear()",
+                "org.apache.commons.dbcp2.datasources.CharArray.get()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.clear()",
+                "org.apache.commons.dbcp2.datasources.CharArray.get()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 2,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 9,
+                    "search_reachable_methods_in_class": 3,
+                    "get_method_details": 2,
+                    "extract_method_code": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "extract_method_code",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 2,
+                    "get_class_constructors_and_factories": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 91253,
+        "output_tokens": 4129,
+        "llm_calls": 16
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 40,
+            "description": "Define a test method that validates the clearing behavior of the CharArray component across three distinct initialization scenarios by constructing instances with varying input states and verifying the transformation applied by the clear operation. First, instantiate a CharArray with a null string input, invoke its clear method to obtain the modified instance, then retrieve the underlying character array and assert that the result is null, confirming that clearing a null-initialized array preserves the null state. Next, construct a CharArray with an empty string, apply the clear operation, retrieve the resulting character array, and validate that it matches an empty character array, demonstrating that clearing an empty array maintains its empty structure. Finally, create a CharArray initialized with a non-empty string containing three characters, invoke clear to sanitize the contents, retrieve the character array, and assert that it equals a character array of the same length filled with null characters, verifying that the clear operation zeroes out the content while preserving the original array length rather than deallocating the underlying storage. This test uses JUnit for assertions.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest1",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\nimport java.lang.reflect.Method;\n\npublic class CharArrayTest1 {\n\n    @Test\n    public void testClearBehavior() throws Exception {\n        // Test 1: Null-initialized CharArray\n        CharArray nullInitialized = new CharArray((String) null);\n        CharArray clearedNull = invokeClear(nullInitialized);\n        char[] retrievedNullArray = invokeGet(clearedNull);\n        assertNull(retrievedNullArray, \"Array should be null after clearing null-initialized CharArray\");\n\n        // Test 2: Empty string-initialized CharArray\n        CharArray emptyInitialized = new CharArray(\"\");\n        CharArray clearedEmpty = invokeClear(emptyInitialized);\n        char[] retrievedEmptyArray = invokeGet(clearedEmpty);\n        assertArrayEquals(new char[0], retrievedEmptyArray, \"Array should be empty after clearing empty-initialized CharArray\");\n\n        // Test 3: Non-empty string-initialized CharArray\n        CharArray nonEmptyInitialized = new CharArray(\"abc\");\n        CharArray clearedNonEmpty = invokeClear(nonEmptyInitialized);\n        char[] retrievedNonEmptyArray = invokeGet(clearedNonEmpty);\n        assertArrayEquals(new char[3], retrievedNonEmptyArray, \"Array should be null-filled after clearing non-empty CharArray\");\n    }\n\n    private CharArray invokeClear(CharArray instance) throws Exception {\n        Method clearMethod = CharArray.class.getDeclaredMethod(\"clear\");\n        clearMethod.setAccessible(true);\n        return (CharArray) clearMethod.invoke(instance);\n    }\n\n    private char[] invokeGet(CharArray instance) throws Exception {\n        Method getMethod = CharArray.class.getDeclaredMethod(\"get\");\n        getMethod.setAccessible(true);\n        return (char[]) getMethod.invoke(instance);\n    }\n}",
+            "method_signature": "testClearBehavior()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.4286,
+            "callable_precision": 0.2,
+            "focal_recall": 0.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.5556,
+            "line_coverage": 0.3333,
+            "branch_coverage": 0.75
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.clear()",
+                "org.apache.commons.dbcp2.datasources.CharArray.get()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.clear()",
+                "org.apache.commons.dbcp2.datasources.CharArray.get()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 2,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 2,
+                    "query_method_db": 3,
+                    "get_method_details": 2,
+                    "search_reachable_methods_in_class": 2,
+                    "get_inherited_library_classes": 1,
+                    "extract_method_code": 3,
+                    "get_call_site_details": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "query_class_db",
+                        "get_inherited_library_classes",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "search_reachable_methods_in_class",
+                        "extract_method_code",
+                        "get_call_site_details",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 3,
+                    "get_class_constructors_and_factories": 1,
+                    "get_class_fields": 1,
+                    "get_getters_and_setters": 1,
+                    "generate_test_code": 3,
+                    "compile_and_execute_test": 3,
+                    "get_maven_dependencies": 1,
+                    "view_test_code": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "view_test_code",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 137303,
+        "output_tokens": 5168,
+        "llm_calls": 24
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 51,
+            "description": "Create a test case to validate that the system correctly sanitizes sensitive character sequences when instructed to clear their contents for security purposes. Begin by establishing three distinct scenarios: first, configure a character sequence holder initialized with no content to verify clearing handles missing data appropriately, then prepare one with an empty sequence to confirm clearing preserves the empty state, and finally set up a holder containing actual sensitive data represented by a meaningful character sequence. For each scenario, instruct the system to perform the clearing operation and immediately verify the outcome\u2014confirm that clearing a holder with no content results in no content being returned, ensure that clearing an already empty sequence maintains the empty state without modification, and validate that clearing a holder with actual data replaces all characters with neutral placeholders while preserving the original length, effectively rendering the sensitive information unrecoverable. This verification ensures the system properly sanitizes character data across all initialization states, protecting sensitive information from inadvertent exposure. Validate these outcomes using JUnit 5 with standard equality assertions to confirm the clearing behavior produces the expected sanitized results for each input condition.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest1",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport static org.junit.jupiter.api.Assertions.assertNull;\n\npublic class CharArrayTest1 {\n    @Test\n    public void testClearMethod() {\n        // Initialize three character sequence holders\n        CharArray holder_no_content = CharArray.NULL;\n        CharArray holder_empty_sequence = new CharArray(\"\");\n        CharArray holder_sensitive_data = new CharArray(\"sensitive_data\");\n\n        // Test holder with no content\n        CharArray cleared_result_no_content = holder_no_content.clear();\n        assertNull(cleared_result_no_content.get(), \"Expected null for holder with no content\");\n\n        // Test holder with empty sequence\n        CharArray cleared_result_empty_sequence = holder_empty_sequence.clear();\n        assertEquals(\"\", new String(cleared_result_empty_sequence.get()), \"Expected empty string for holder with empty sequence\");\n\n        // Test holder with sensitive data\n        CharArray cleared_result_sensitive_data = holder_sensitive_data.clear();\n        String cleared_data = new String(cleared_result_sensitive_data.get());\n        assertEquals(\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\", cleared_data, \"Expected null characters for holder with sensitive data\");\n    }\n}",
+            "method_signature": "testClearMethod()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 0.5,
+            "assertion_recall": 0.3333,
+            "assertion_precision": 0.3333,
+            "callable_recall": 0.6429,
+            "callable_precision": 0.6923,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.5556,
+            "line_coverage": 0.3333,
+            "branch_coverage": 0.75
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.CharArrayTest",
+            "method_signature": "testClear()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.clear()",
+                "org.apache.commons.dbcp2.datasources.CharArray.get()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.clear()"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CharArray.get()"
+            ],
+            "tp": 1,
+            "fn": 1,
+            "localization_recall": 0.5
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 3,
+                    "query_method_db": 4,
+                    "get_method_details": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 3,
+                    "get_class_constructors_and_factories": 1,
+                    "get_class_fields": 1,
+                    "get_getters_and_setters": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 82495,
+        "output_tokens": 3623,
+        "llm_calls": 17
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 38,
+            "description": "Create a test case to validate that the connection management system correctly updates credential information when a new password is provided as text input. Begin by establishing a connection factory configured with an initial set of credentials including a username and password, along with connection parameters such as timeout settings and validation preferences. Once the factory is initialized with these baseline credentials, simulate a scenario where the system administrator needs to change the password by providing a new password value as a text string. After updating the password through the system's credential management interface, verify that the connection factory has properly stored and will use this new password for future authentication attempts by confirming the updated password matches the newly provided value when retrieved from the factory's configuration. Use JUnit 5 as the testing framework with standard equality assertions to confirm the password update was successful.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.BasicDataSourcePasswordUpdateTest",
+            "code": "package org.apache.commons.dbcp2;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\nimport org.junit.jupiter.api.AfterEach;\n\npublic class BasicDataSourcePasswordUpdateTest {\n\n    private BasicDataSource connectionFactory;\n    private String initialUsername = \"initialUser\";\n    private String initialPassword = \"initialPass\";\n    private String newPassword = \"newSecurePassword123\";\n\n    @Test\n    public void testPasswordUpdate() {\n        // Step 0: Configure connection factory with initial credentials, timeout settings, and validation preferences\n        connectionFactory = new BasicDataSource();\n        connectionFactory.setUsername(initialUsername);\n        connectionFactory.setPassword(initialPassword);\n        connectionFactory.setValidationQuery(\"SELECT 1\");\n        connectionFactory.setValidationQueryTimeout(5);\n\n        // Step 1: Provide new password value as text input to credential management interface\n        String newPassword = \"newSecurePassword123\";\n\n        // Step 2: Update password through credential management interface\n        connectionFactory.setPassword(newPassword);\n\n        // Step 3: Verify connection factory stores and uses updated password for future authentication\n        String retrievedPassword = connectionFactory.getPassword();\n\n        // Step 4: Confirm retrieved password matches newly provided value\n        Assertions.assertEquals(newPassword, retrievedPassword);\n    }\n\n    @AfterEach\n    public void cleanup() {\n        // Step 5: Clean up resources including connection factory and credentials\n        if (connectionFactory != null) {\n            try {\n                connectionFactory.close();\n            } catch (Exception e) {\n                // Ignore cleanup errors\n            }\n        }\n    }\n}",
+            "method_signature": "testPasswordUpdate()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 0.0,
+            "obj_creation_precision": 0.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.2857,
+            "callable_precision": 0.25,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.2,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setDriver(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setPassword(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUrl(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUser(java.lang.String)",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.setPassword(java.lang.String)"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setDriver(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setPassword(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUrl(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUser(java.lang.String)",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.setPassword(java.lang.String)"
+            ],
+            "tp": 0,
+            "fn": 6,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 2,
+                    "query_method_db": 7,
+                    "get_method_details": 6,
+                    "search_reachable_methods_in_class": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 6,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 94525,
+        "output_tokens": 2877,
+        "llm_calls": 19
+    },
+    {
+        "compiles": false,
+        "nl2test_input": {
+            "id": 62,
+            "description": "Define a test class that verifies password mutation behavior on a connection factory component, beginning with a setup method that constructs a connection pool data source proxy wrapping a driver adapter, retrieves the underlying delegate adapter, and configures it with JDBC driver class name, connection URL string, username string, and password character array to establish the data source foundation. Within the test method, instantiate a connection factory by providing the configured proxy, a null validation query, a negative millisecond duration, a false rollback flag, a username string, and a password character array, then assign a single-character password string to a variable and invoke the factory's string-based password setter with this value. Upon setting the new password, retrieve the factory's current password as a character array, convert it to a string representation, and assert that the resulting string matches the single-character value that was set, confirming that the factory correctly updates its internal password state when provided a string input. This test uses JUnit 5 for the testing framework and standard assertion methods for validation.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.ConnectionFactoryPasswordMutationTest",
+            "code": "package org.apache.commons.dbcp2;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\nimport java.sql.SQLException;\n\nimport org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS;\nimport org.apache.commons.dbcp2.BasicDataSource;\n\npublic class ConnectionFactoryPasswordMutationTest {\n\n    @Test\n    public void testPasswordMutation() {\n        // Setup: Construct a connection pool data source proxy wrapping a driver adapter\n        DriverAdapterCPDS proxy = new DriverAdapterCPDS();\n\n        // Retrieve the underlying delegate adapter from the proxy\n        DriverAdapterCPDS delegateAdapter = proxy;\n\n        // Configure the delegate adapter with JDBC driver class name, connection URL string, username string, and password character array\n        String driverClassName = \"org.h2.Driver\";\n        String connectionUrl = \"jdbc:h2:mem:testdb\";\n        String username = \"sa\";\n        char[] passwordArray = \"password\".toCharArray();\n\n        delegateAdapter.setDriver(driverClassName);\n        delegateAdapter.setUrl(connectionUrl);\n        delegateAdapter.setUser(username);\n        delegateAdapter.setPassword(new String(passwordArray));\n\n        // Create a BasicDataSource and configure it\n        BasicDataSource dataSource = new BasicDataSource();\n        dataSource.setDriverClassName(driverClassName);\n        dataSource.setUrl(connectionUrl);\n        dataSource.setUsername(username);\n        dataSource.setPassword(new String(passwordArray));\n\n        // Instantiate a connection factory with the configured proxy\n        ConnectionFactory factory = null;\n        try {\n            factory = ConnectionFactoryFactory.createConnectionFactory(dataSource, null);\n        } catch (SQLException e) {\n            // Handle SQLException if thrown by createConnectionFactory\n            Assertions.fail(\"Unexpected SQLException during createConnectionFactory: \" + e.getMessage());\n        }\n\n        // Assign a single-character password string to a variable\n        String singleCharPassword = \"x\";\n\n        // Invoke the factory's string-based password setter with the single-character password\n        if (factory instanceof DriverAdapterCPDS) {\n            try {\n                ((DriverAdapterCPDS) factory).setPassword(singleCharPassword);\n            } catch (SQLException e) {\n                // Handle SQLException if thrown by setPassword\n                Assertions.fail(\"Unexpected SQLException during setPassword: \" + e.getMessage());\n            }\n        }\n\n        // Retrieve the factory's current password as a character array\n        char[] currentPasswordArray = null;\n        if (factory instanceof DriverAdapterCPDS) {\n            currentPasswordArray = ((DriverAdapterCPDS) factory).getPasswordCharArray();\n        }\n\n        // Convert the current password array to a string representation\n        String currentPasswordString = new String(currentPasswordArray);\n\n        // Assert that the current password string matches the single-character value that was set\n        Assertions.assertEquals(singleCharPassword, currentPasswordString);\n    }\n}",
+            "method_signature": "testPasswordMutation()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 0.0,
+            "obj_creation_precision": 0.0,
+            "assertion_recall": 0.0,
+            "assertion_precision": 0.0,
+            "callable_recall": 0.0,
+            "callable_precision": 0.0,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setDriver(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setPassword(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUrl(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUser(java.lang.String)",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.setPassword(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setDriver(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setPassword(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUrl(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUser(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.setPassword(java.lang.String)"
+            ],
+            "tp": 4,
+            "fn": 2,
+            "localization_recall": 0.6667
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 3,
+                    "call_composition_agent": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 3,
+                    "query_method_db": 14,
+                    "search_reachable_methods_in_class": 5,
+                    "get_method_details": 13,
+                    "finalize": 3,
+                    "get_inherited_library_classes": 1,
+                    "get_call_site_details": 2,
+                    "extract_method_code": 4
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_inherited_library_classes",
+                        "search_reachable_methods_in_class",
+                        "get_call_site_details",
+                        "get_call_site_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "finalize"
+                    ],
+                    [
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 5,
+                    "get_method_details": 21,
+                    "generate_test_code": 8,
+                    "compile_and_execute_test": 5,
+                    "finalize": 2,
+                    "get_class_fields": 1,
+                    "get_getters_and_setters": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "finalize"
+                    ],
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_class_constructors_and_factories",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "generate_test_code",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 383469,
+        "output_tokens": 15596,
+        "llm_calls": 59
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 71,
+            "description": "Define a test class containing a protected field `cpds` of type `org.apache.commons.dbcp2.datasources.ConnectionPoolDataSourceProxy`, and implement a setup method annotated with `@BeforeEach` that instantiates `cpds` by passing a new `DriverAdapterCPDS` instance to the `ConnectionPoolDataSourceProxy` constructor, then invoke `getDelegate()` on `cpds`, cast the result to `DriverAdapterCPDS`, and assign it to a local variable `delegate`, after which invoke `setDriver` on `delegate` with argument `\"org.apache.commons.dbcp2.TesterDriver\"`, invoke `setUrl` with argument `\"jdbc:apache:commons:testdriver\"`, invoke `setUser` with argument `\"userName\"`, and invoke `setPassword` with argument `\"password\"`. In the test method annotated with `@Test`, instantiate a `CPDSConnectionFactory` by passing six arguments to its constructor: the field `cpds`, `null`, the result of calling `Duration.ofMillis(-1)`, the boolean literal `false`, the String literal `\"userName\"`, and the result of invoking `toCharArray()` on the String literal `\"password\"`, assigning the constructed factory to a local variable `factory`, then assign the String literal `\"a\"` to a local variable `pwd`, invoke `setPassword` on `factory` with argument `pwd`, and assert using `assertEquals` that the String literal `\"a\"` equals the result of calling `String.valueOf` on the char array returned by invoking `getPasswordCharArray()` on `factory`. The test uses the `@Test` annotation from JUnit 5, and assertions are performed using JUnit 5's `assertEquals` method.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.CPDSConnectionFactoryTest",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\nimport java.time.Duration;\n\npublic class CPDSConnectionFactoryTest {\n    protected ConnectionPoolDataSourceProxy cpds;\n\n    @BeforeEach\n    public void setup() throws ClassNotFoundException {\n        // Step 0: Instantiate DriverAdapterCPDS\n        DriverAdapterCPDS driverAdapterCPDS = new DriverAdapterCPDS();\n\n        // Step 1: Instantiate ConnectionPoolDataSourceProxy with DriverAdapterCPDS\n        cpds = new ConnectionPoolDataSourceProxy(driverAdapterCPDS);\n\n        // Step 2: Invoke getDelegate on cpds and cast to DriverAdapterCPDS\n        DriverAdapterCPDS delegate = (DriverAdapterCPDS) cpds.getDelegate();\n\n        // Step 3: Invoke setDriver on delegate with org.apache.commons.dbcp2.TesterDriver\n        delegate.setDriver(\"org.apache.commons.dbcp2.TesterDriver\");\n\n        // Step 4: Invoke setUrl on delegate with jdbc:apache:commons:testdriver\n        delegate.setUrl(\"jdbc:apache:commons:testdriver\");\n\n        // Step 5: Invoke setUser on delegate with userName\n        delegate.setUser(\"userName\");\n\n        // Step 6: Invoke setPassword on delegate with password\n        delegate.setPassword(\"password\".toCharArray());\n    }\n\n    @Test\n    public void testPasswordSetting() throws ClassNotFoundException {\n        // Step 7: Instantiate CPDSConnectionFactory with the specified arguments\n        CPDSConnectionFactory factory = new CPDSConnectionFactory(\n            cpds,\n            null,\n            Duration.ofMillis(-1),\n            false,\n            \"userName\",\n            \"password\".toCharArray()\n        );\n\n        // Step 8: Assign \"a\" to pwd\n        String pwd = \"a\";\n\n        // Step 9: Invoke setPassword on factory with pwd\n        factory.setPassword(pwd.toCharArray());\n\n        // Step 10: Assert that \"a\" equals String.valueOf(getPasswordCharArray on factory)\n        Assertions.assertEquals(\"a\", String.valueOf(factory.getPasswordCharArray()));\n    }\n}",
+            "method_signature": "testPasswordSetting()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 0.875,
+            "focal_recall": 0.6667,
+            "focal_precision": 0.6667
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.875,
+            "line_coverage": 0.8889,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestCPDSConnectionFactory",
+            "method_signature": "testSetPasswordString()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setDriver(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setPassword(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUrl(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUser(java.lang.String)",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.setPassword(java.lang.String)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setDriver(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setPassword(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUrl(java.lang.String)",
+                "org.apache.commons.dbcp2.cpdsadapter.DriverAdapterCPDS.setUser(java.lang.String)",
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.setPassword(java.lang.String)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.CPDSConnectionFactory.getPasswordCharArray()"
+            ],
+            "tp": 5,
+            "fn": 1,
+            "localization_recall": 0.8333
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 15,
+                    "query_class_db": 4,
+                    "search_reachable_methods_in_class": 7,
+                    "get_inherited_library_classes": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "get_inherited_library_classes",
+                        "get_inherited_library_classes",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 3,
+                    "get_method_details": 6,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_class_constructors_and_factories",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 101658,
+        "output_tokens": 5061,
+        "llm_calls": 17
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 39,
+            "description": "Create a test case to validate that the connection pooling system correctly manages the read-only configuration setting for the default user pool through its complete lifecycle of state transitions. Begin by establishing a fresh connection pooling system with no initial read-only preference configured. Verify that when no preference has been set, the system indicates the read-only setting is absent. Next, enable the read-only mode for the default user pool and confirm the system reflects this enabled state. Then disable the read-only mode and ensure the system accurately reports it as disabled. Re-enable the read-only mode once more to verify the system can toggle back to the enabled state successfully. Finally, clear the read-only preference entirely by removing any configured value and confirm the system returns to indicating no read-only setting is present. After completing these state transitions, release the connection pooling system resources. The test uses JUnit 5 as the testing framework with standard equality assertions to verify each configuration state matches the expected business outcome.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.BasicDataSourceReadOnlyTest",
+            "code": "package org.apache.commons.dbcp2;\n\nimport org.junit.jupiter.api.Test;\nimport org.junit.jupiter.api.Assertions;\nimport java.sql.SQLException;\n\npublic class BasicDataSourceReadOnlyTest {\n\n    @Test\n    public void testReadOnlyStateTransitions() throws SQLException {\n        // Step 0: Establish a fresh connection pooling system\n        BasicDataSource connectionPoolingSystem = new BasicDataSource();\n\n        // Step 1: Check the read-only setting when no preference has been set\n        Boolean initialReadOnlyState = connectionPoolingSystem.getDefaultReadOnly();\n\n        // Step 2: Verify the system indicates the read-only setting is absent\n        Assertions.assertNull(initialReadOnlyState);\n\n        // Step 3: Enable the read-only mode for the default user pool\n        connectionPoolingSystem.setDefaultReadOnly(true);\n        Boolean enabledReadOnlyState = connectionPoolingSystem.getDefaultReadOnly();\n\n        // Step 4: Confirm the system reflects the enabled state\n        Assertions.assertTrue(enabledReadOnlyState);\n\n        // Step 5: Disable the read-only mode\n        connectionPoolingSystem.setDefaultReadOnly(false);\n        Boolean disabledReadOnlyState = connectionPoolingSystem.getDefaultReadOnly();\n\n        // Step 6: Ensure the system accurately reports it as disabled\n        Assertions.assertFalse(disabledReadOnlyState);\n\n        // Step 7: Re-enable the read-only mode\n        connectionPoolingSystem.setDefaultReadOnly(true);\n        Boolean reEnabledReadOnlyState = connectionPoolingSystem.getDefaultReadOnly();\n\n        // Step 8: Verify the system can toggle back to the enabled state successfully\n        Assertions.assertTrue(reEnabledReadOnlyState);\n\n        // Step 9: Clear the read-only preference entirely by removing any configured value\n        connectionPoolingSystem.setDefaultReadOnly(null);\n        Boolean clearedReadOnlyState = connectionPoolingSystem.getDefaultReadOnly();\n\n        // Step 10: Confirm the system returns to indicating no read-only setting is present\n        Assertions.assertNull(clearedReadOnlyState);\n\n        // Step 11: Release the connection pooling system resources\n        connectionPoolingSystem.close();\n    }\n}",
+            "method_signature": "testReadOnlyStateTransitions()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 0.0,
+            "obj_creation_precision": 0.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.5,
+            "callable_precision": 0.5625,
+            "focal_recall": 0.0,
+            "focal_precision": 0.0
+        },
+        "coverage_eval": {
+            "class_coverage": 0.0,
+            "method_coverage": 0.0,
+            "line_coverage": 0.0,
+            "branch_coverage": 0.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.isDefaultReadOnly()",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultAutoCommit(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxTotal(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxWait(java.time.Duration)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultReadOnly(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultTransactionIsolation(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxWait(java.lang.String, java.time.Duration)"
+            ],
+            "covered_focal_methods": [],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.isDefaultReadOnly()",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultAutoCommit(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxTotal(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxWait(java.time.Duration)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultReadOnly(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultTransactionIsolation(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxWait(java.lang.String, java.time.Duration)"
+            ],
+            "tp": 0,
+            "fn": 9,
+            "localization_recall": 0.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 5,
+                    "query_method_db": 17,
+                    "get_method_details": 8,
+                    "search_reachable_methods_in_class": 4,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "query_method_db",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 4,
+                    "get_class_constructors_and_factories": 1,
+                    "generate_test_code": 3,
+                    "compile_and_execute_test": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 155886,
+        "output_tokens": 5881,
+        "llm_calls": 24
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 54,
+            "description": "Define a test class that validates the default read-only property lifecycle of the Per User Pool Data Source component by first instantiating a fresh data source instance within a try-with-resources block to ensure automatic cleanup. Upon creation, verify that the default read-only property returns null when queried, indicating no initial configuration. Configure the data source by setting the default read-only property to true, then retrieve the property value and assert that it evaluates to the boolean primitive true. Transition the state by setting the property to false, retrieve it again, and confirm it now evaluates to false. Reverse the configuration once more by setting the property back to true, query the value, and validate it returns true. Finally, reset the property by explicitly setting it to null, retrieve the value one last time, and assert that it has returned to the null state, demonstrating that the property correctly cycles through configured and unconfigured states. The try-with-resources construct automatically invokes the close method on the data source upon test completion, ensuring proper resource cleanup. This test uses JUnit for test execution and standard assertion methods for validation.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSourceReadOnlyPropertyTest",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertNull;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class PerUserPoolDataSourceReadOnlyPropertyTest {\n\n    @Test\n    public void testDefaultReadOnlyPropertyLifecycle() {\n        // Step 0: Instantiate a fresh data source instance within a try-with-resources block\n        try (PerUserPoolDataSource dataSource = new PerUserPoolDataSource()) {\n            // Step 1: Query the default read-only property and capture the initial value\n            Boolean initialPropertyValue = dataSource.isDefaultReadOnly();\n\n            // Step 2: Assert the property returns null when queried initially\n            assertNull(initialPropertyValue, \"Property should be null initially\");\n\n            // Step 3: Set the default read-only property to true\n            dataSource.setDefaultReadOnly(true);\n\n            // Step 4: Retrieve the property value after setting it to true\n            Boolean propertyValueTrue = dataSource.isDefaultReadOnly();\n\n            // Step 5: Assert the property value evaluates to true\n            assertTrue(propertyValueTrue != null && propertyValueTrue, \"Property should be true\");\n\n            // Step 15: Set the property to false\n            dataSource.setDefaultReadOnly(false);\n\n            // Additional step: Retrieve the property value after setting it to false\n            Boolean propertyValueFalse = dataSource.isDefaultReadOnly();\n\n            // Additional step: Assert the property value evaluates to false\n            assertFalse(propertyValueFalse != null && propertyValueFalse, \"Property should be false\");\n\n            // Step 3 again: Set the property back to true\n            dataSource.setDefaultReadOnly(true);\n\n            // Additional step: Retrieve the property value after setting it back to true\n            Boolean propertyValueTrueAgain = dataSource.isDefaultReadOnly();\n\n            // Additional step: Assert the property value evaluates to true again\n            assertTrue(propertyValueTrueAgain != null && propertyValueTrueAgain, \"Property should be true again\");\n\n            // Additional step: Reset the property to null\n            dataSource.setDefaultReadOnly(null);\n\n            // Additional step: Retrieve the property value after resetting it to null\n            Boolean propertyValueNullAgain = dataSource.isDefaultReadOnly();\n\n            // Additional step: Assert the property value is null again\n            assertNull(propertyValueNullAgain, \"Property should be null again\");\n        }\n    }\n}",
+            "method_signature": "testDefaultReadOnlyPropertyLifecycle()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 0.8333,
+            "callable_precision": 1.0,
+            "focal_recall": 0.2222,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.isDefaultReadOnly()",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultAutoCommit(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxTotal(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxWait(java.time.Duration)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultReadOnly(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultTransactionIsolation(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxWait(java.lang.String, java.time.Duration)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.isDefaultReadOnly()",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultReadOnly(java.lang.Boolean)"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultAutoCommit(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxTotal(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxWait(java.time.Duration)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultTransactionIsolation(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxWait(java.lang.String, java.time.Duration)"
+            ],
+            "tp": 2,
+            "fn": 7,
+            "localization_recall": 0.2222
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 2,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 1,
+                    "query_method_db": 16,
+                    "get_method_details": 11,
+                    "get_inherited_library_classes": 2,
+                    "search_reachable_methods_in_class": 2,
+                    "get_call_site_details": 2,
+                    "extract_method_code": 1,
+                    "finalize": 11
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_inherited_library_classes",
+                        "query_method_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_call_site_details",
+                        "get_call_site_details",
+                        "get_inherited_library_classes",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "extract_method_code",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 4,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 367441,
+        "output_tokens": 25004,
+        "llm_calls": 34
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 99,
+            "description": "Define a test class containing three private fields: a static final `Duration` named `DURATION_1_MILLISECOND`, a `DataSource` named `ds`, and a `String` named `user`. Implement a setup method that assigns the string literal `\"foo\"` to `user`, then instantiate a `DriverAdapterCPDS` object assigned to `pcds`, invoke `setDriver` on `pcds` with argument `\"org.apache.commons.dbcp2.TesterDriver\"`, invoke `setUrl` with `\"jdbc:apache:commons:testdriver\"`, invoke `setUser` passing the `user` variable, invoke `setPassword` with `\"bar\"`, and invoke `setAccessToUnderlyingConnectionAllowed` with boolean `true`. Next, instantiate a `PerUserPoolDataSource` object assigned to `tds`, invoke `setConnectionPoolDataSource` on `tds` passing `pcds`, invoke `setDefaultMaxTotal` passing the result of calling `getMaxTotal()`, invoke `setDefaultMaxWait` passing the result of calling `getMaxWaitDuration()`, invoke `setPerUserMaxTotal` with arguments `user` and the result of `getMaxTotal()`, invoke `setPerUserMaxWait` with `user` and the result of `getMaxWaitDuration()`, invoke `setDefaultTransactionIsolation` with the constant `Connection.TRANSACTION_READ_COMMITTED`, invoke `setDefaultAutoCommit` with `Boolean.TRUE`, and finally assign `tds` to the class field `ds`. In the test method, open a try-with-resources block by instantiating a new `PerUserPoolDataSource` assigned to local variable `ds`, then immediately invoke `isDefaultReadOnly()` on this `ds` instance and pass the result to `assertNull`. Following this assertion, invoke `setDefaultReadOnly` on `ds` with boolean `true`, then invoke `isDefaultReadOnly()` again, call `booleanValue()` on the returned `Boolean`, and pass the primitive result to `assertTrue`. Proceed by invoking `setDefaultReadOnly` with boolean `false`, invoke `isDefaultReadOnly()`, chain `booleanValue()`, and pass the result to `assertFalse`. Continue by invoking `setDefaultReadOnly` with boolean `true`, invoke `isDefaultReadOnly()`, chain `booleanValue()`, and pass to `assertTrue`. Then invoke `setDefaultReadOnly` with `null`, invoke `isDefaultReadOnly()`, and pass the result to `assertNull`, completing the try-with-resources block which automatically closes `ds`. Implement a teardown method that first defines a private method executing a loop: while a `connectionStack` (of type `Stack<Connection>`) is not empty, pop an element, cast it to `AutoCloseable`, and pass it to `Utils.closeQuietly`, then invoke this private method. After invoking the inherited teardown logic, cast the class field `ds` to `PerUserPoolDataSource` and invoke `close()` on it. The test uses the `@Test` annotation at the method level, JUnit 5 Assertions for `assertNull`, `assertTrue`, and `assertFalse`, and no mocking libraries.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.PerUserPoolDataSourceTest",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.AfterEach;\nimport org.junit.jupiter.api.BeforeEach;\nimport org.junit.jupiter.api.Test;\nimport javax.sql.DataSource;\nimport java.sql.Connection;\nimport java.time.Duration;\nimport java.util.Stack;\nimport static org.junit.jupiter.api.Assertions.assertNull;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport static org.junit.jupiter.api.Assertions.assertFalse;\n\npublic class PerUserPoolDataSourceTest {\n    private static final Duration DURATION_1_MILLISECOND = Duration.ofMillis(1);\n    private DataSource ds;\n    private String user;\n\n    @BeforeEach\n    public void setup() {\n        user = \"foo\";\n        PerUserPoolDataSource tds = new PerUserPoolDataSource();\n        tds.setDefaultMaxTotal(10);\n        tds.setDefaultMaxWait(Duration.ofMillis(1000));\n        tds.setPerUserMaxTotal(user, 10);\n        tds.setPerUserMaxWait(user, Duration.ofMillis(1000));\n        tds.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);\n        tds.setDefaultAutoCommit(Boolean.TRUE);\n\n        ds = tds;\n    }\n\n    @Test\n    public void testDefaultReadOnly() {\n        try (PerUserPoolDataSource ds = new PerUserPoolDataSource()) {\n            assertNull(ds.isDefaultReadOnly());\n\n            ds.setDefaultReadOnly(true);\n            assertTrue(ds.isDefaultReadOnly().booleanValue());\n\n            ds.setDefaultReadOnly(false);\n            assertFalse(ds.isDefaultReadOnly().booleanValue());\n\n            ds.setDefaultReadOnly(true);\n            assertTrue(ds.isDefaultReadOnly().booleanValue());\n\n            ds.setDefaultReadOnly(null);\n            assertNull(ds.isDefaultReadOnly());\n        }\n    }\n\n    @AfterEach\n    public void teardown() {\n        closeConnections(new Stack<Connection>());\n\n        if (ds instanceof PerUserPoolDataSource) {\n            ((PerUserPoolDataSource) ds).close();\n        }\n    }\n\n    private void closeConnections(Stack<Connection> connectionStack) {\n        while (!connectionStack.isEmpty()) {\n            Connection connection = connectionStack.pop();\n            try {\n                connection.close();\n            } catch (Exception e) {\n                e.printStackTrace();\n            }\n        }\n    }\n}",
+            "method_signature": "testDefaultReadOnly()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 1.0,
+            "focal_recall": 0.8889,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 1.0,
+            "line_coverage": 1.0,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.TestPerUserPoolDataSource",
+            "method_signature": "testDefaultReadOnly()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.isDefaultReadOnly()",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultAutoCommit(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxTotal(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxWait(java.time.Duration)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultReadOnly(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultTransactionIsolation(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxWait(java.lang.String, java.time.Duration)"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.isDefaultReadOnly()",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setConnectionPoolDataSource(javax.sql.ConnectionPoolDataSource)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultAutoCommit(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxTotal(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultMaxWait(java.time.Duration)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultReadOnly(java.lang.Boolean)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setDefaultTransactionIsolation(int)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxTotal(java.lang.String, java.lang.Integer)",
+                "org.apache.commons.dbcp2.datasources.PerUserPoolDataSource.setPerUserMaxWait(java.lang.String, java.time.Duration)"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 9,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_method_db": 16,
+                    "get_method_details": 15,
+                    "get_inherited_library_classes": 2,
+                    "finalize": 3
+                },
+                "tool_trajectories": [
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_inherited_library_classes",
+                        "get_inherited_library_classes",
+                        "finalize",
+                        "finalize",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_class_constructors_and_factories": 2,
+                    "get_method_details": 2,
+                    "generate_test_code": 4,
+                    "compile_and_execute_test": 3,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_class_constructors_and_factories",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 202389,
+        "output_tokens": 17301,
+        "llm_calls": 20
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 37,
+            "description": "Create a test case to validate that the credential clearing mechanism properly sanitizes authentication information across all possible initial states, ensuring sensitive data is securely removed from memory after use. Begin by establishing scenarios where credentials are configured with missing information, empty values, and populated data, then invoke the clearing operation on each credential set and verify the resulting state matches security requirements. When credentials were initially missing, confirm the cleared state remains absent; when credentials were initially empty, ensure they remain empty after clearing; when credentials contained actual values, verify they are overwritten with nullified characters to prevent memory exposure. Validate this behavior for both the account identifier and secret across all representation formats, confirming that the clearing operation consistently transforms sensitive information into a safe state regardless of how the credentials were originally stored. Use JUnit 5 for the testing framework and standard equality assertions to verify the expected outcomes after each clearing operation.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "abstraction_level": "high",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyClearTest",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class UserPassKeyClearTest {\n\n    @Test\n    public void testCredentialClearingMechanism() {\n        // Step 0: Prepare test environment with JUnit 5\n        // Step 1: Define credential clearing mechanism under test\n\n        // Step 2: Configure credentials with missing information\n        UserPassKey missingCredentials = new UserPassKey((String) null, (String) null);\n\n        // Step 3: Invoke clearing operation on missing credentials\n        UserPassKey clearedMissing = missingCredentials.clear();\n\n        // Step 4: Verify the cleared state remains absent\n        String missingUsername = clearedMissing.getUserName();\n        String missingPassword = clearedMissing.getPassword();\n        assertTrue((missingUsername == null || missingUsername.isEmpty()) && \n                   (missingPassword == null || missingPassword.isEmpty()), \n                   \"Cleared state should be null or empty\");\n\n        // Step 5: Configure credentials with empty values\n        UserPassKey emptyCredentials = new UserPassKey(\"\", \"\");\n\n        // Step 6: Invoke clearing operation on empty credentials\n        UserPassKey clearedEmpty = emptyCredentials.clear();\n\n        // Step 7: Ensure credentials remain empty after clearing\n        String emptyUsername = clearedEmpty.getUserName();\n        String emptyPassword = clearedEmpty.getPassword();\n        assertTrue((emptyUsername == null || emptyUsername.isEmpty()) && \n                   (emptyPassword == null || emptyPassword.isEmpty()), \n                   \"Credentials should remain empty after clearing\");\n\n        // Step 8: Configure credentials with actual values\n        UserPassKey populatedCredentials = new UserPassKey(\"testUser\", \"testPass\");\n\n        // Step 9: Invoke clearing operation on populated credentials\n        UserPassKey clearedPopulated = populatedCredentials.clear();\n\n        // Step 10: Verify account identifier is overwritten with nullified characters\n        String populatedUsername = clearedPopulated.getUserName();\n        assertTrue((populatedUsername == null || populatedUsername.isEmpty()), \n                   \"Account identifier should be null or empty after clearing\");\n\n        // Step 11: Verify secret is overwritten with nullified characters\n        String populatedPassword = clearedPopulated.getPassword();\n        assertTrue((populatedPassword == null || populatedPassword.isEmpty()), \n                   \"Secret should be null or empty after clearing\");\n\n        // Step 12: Clean up test environment\n    }\n}",
+            "method_signature": "testCredentialClearingMechanism()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.0,
+            "assertion_precision": 0.0,
+            "callable_recall": 0.3158,
+            "callable_precision": 0.5455,
+            "focal_recall": 0.6667,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.75,
+            "line_coverage": 0.8,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.clear()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getUserName()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.clear()"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getUserName()"
+            ],
+            "tp": 1,
+            "fn": 2,
+            "localization_recall": 0.3333
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 2,
+                    "call_composition_agent": 2,
+                    "compile_and_execute_test": 2,
+                    "view_test_code": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "view_test_code",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 4,
+                    "query_method_db": 13,
+                    "get_method_details": 8,
+                    "search_reachable_methods_in_class": 6,
+                    "get_call_site_details": 2,
+                    "extract_method_code": 3,
+                    "finalize": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_call_site_details",
+                        "get_call_site_details",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 12,
+                    "get_class_fields": 2,
+                    "get_class_constructors_and_factories": 4,
+                    "get_getters_and_setters": 2,
+                    "get_call_site_details": 1,
+                    "extract_method_code": 2,
+                    "get_maven_dependencies": 2,
+                    "generate_test_code": 5,
+                    "compile_and_execute_test": 4,
+                    "finalize": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_class_fields",
+                        "get_class_constructors_and_factories",
+                        "get_class_constructors_and_factories",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_call_site_details",
+                        "get_method_details",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ],
+                    [
+                        "get_method_details",
+                        "get_class_fields",
+                        "get_class_constructors_and_factories",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_method_details",
+                        "get_maven_dependencies",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 305742,
+        "output_tokens": 12384,
+        "llm_calls": 49
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 66,
+            "description": "Define a test method that validates the clear operation on the User Pass Key component across multiple initialization states and credential representations. Construct a User Pass Key instance initialized with a null username, invoke its clear method, and verify that retrieving the username returns null, then create another instance with an empty string username, clear it, and confirm the username retrieves as an empty string, followed by instantiating a key with a non-empty username string, clearing it, and asserting the username now contains null-character-filled content matching the original length. Repeat this validation pattern for password credentials by constructing instances with null username and null password, clearing them, and verifying the password retrieves as null, then with empty string credentials, clearing, and confirming an empty string password, and finally with non-empty username and password strings, clearing, and validating the password contains null-character-filled content. Extend the verification to cover password character array representation by creating instances with null username and null character array password, clearing them, and asserting the password character array is null, then with empty string credentials, clearing, and verifying the character array matches an empty string converted to characters, and lastly with non-empty credentials, clearing, and confirming the password character array equals null-character-filled content matching the original password length. This test uses JUnit and standard assertion utilities.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "abstraction_level": "medium",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyClearTest",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\npublic class UserPassKeyClearTest {\n\n    @Test\n    public void testClearOperationAcrossInitializationStates() {\n        // Test case 1: Null username and password\n        UserPassKey keyNullUsername = new UserPassKey(null, (String) null);\n        keyNullUsername.clear();\n        assertNull(keyNullUsername.getUserName(), \"Username should be null after clearing null username\");\n\n        // Test case 2: Empty string username\n        UserPassKey keyEmptyUsername = new UserPassKey(\"\", (String) null);\n        keyEmptyUsername.clear();\n        assertEquals(\"\", keyEmptyUsername.getUserName(), \"Username should be empty string after clearing empty string username\");\n\n        // Test case 3: Non-empty username string\n        String nonEmptyUsernameString = \"testUser\";\n        UserPassKey keyNonEmptyUsername = new UserPassKey(nonEmptyUsernameString, (String) null);\n        keyNonEmptyUsername.clear();\n        String clearedUsername = keyNonEmptyUsername.getUserName();\n        assertNotNull(clearedUsername, \"Username should not be null after clearing non-empty username\");\n        assertEquals(nonEmptyUsernameString.length(), clearedUsername.length(), \"Username length should match original after clearing\");\n        for (int i = 0; i < clearedUsername.length(); i++) {\n            assertEquals(0, clearedUsername.charAt(i), \"Username should be filled with null characters after clearing\");\n        }\n\n        // Test case 4: Null username and null password\n        UserPassKey keyNullCredentials = new UserPassKey(null, (String) null);\n        keyNullCredentials.clear();\n        assertNull(keyNullCredentials.getPassword(), \"Password should be null after clearing null password\");\n\n        // Test case 5: Empty string credentials\n        UserPassKey keyEmptyCredentials = new UserPassKey(\"\", \"\");\n        keyEmptyCredentials.clear();\n        assertEquals(\"\", keyEmptyCredentials.getPassword(), \"Password should be empty string after clearing empty string password\");\n\n        // Test case 6: Non-empty username and password strings\n        String nonEmptyUsername = \"testUser\";\n        String nonEmptyPassword = \"testPass\";\n        UserPassKey keyNonEmptyCredentials = new UserPassKey(nonEmptyUsername, nonEmptyPassword);\n        keyNonEmptyCredentials.clear();\n        String clearedPassword = keyNonEmptyCredentials.getPassword();\n        assertNotNull(clearedPassword, \"Password should not be null after clearing non-empty password\");\n        assertEquals(nonEmptyPassword.length(), clearedPassword.length(), \"Password length should match original after clearing\");\n        for (int i = 0; i < clearedPassword.length(); i++) {\n            assertEquals(0, clearedPassword.charAt(i), \"Password should be filled with null characters after clearing\");\n        }\n\n        // Test case 7: Null username and null character array password\n        UserPassKey keyNullCharArray = new UserPassKey(null, (char[]) null);\n        keyNullCharArray.clear();\n        assertNull(keyNullCharArray.getPasswordCharArray(), \"Password character array should be null after clearing null character array password\");\n\n        // Test case 8: Empty string credentials and character array password\n        char[] emptyCharArray = \"\".toCharArray();\n        UserPassKey keyEmptyCharArray = new UserPassKey(\"\", emptyCharArray);\n        keyEmptyCharArray.clear();\n        char[] clearedCharArray = keyEmptyCharArray.getPasswordCharArray();\n        assertNotNull(clearedCharArray, \"Password character array should not be null after clearing empty character array\");\n        assertEquals(0, clearedCharArray.length, \"Password character array length should be 0 after clearing empty character array\");\n\n        // Test case 9: Non-empty credentials and character array password\n        String nonEmptyUsernameForCharArray = \"testUser\";\n        char[] nonEmptyCharArray = \"testPass\".toCharArray();\n        UserPassKey keyNonEmptyCharArray = new UserPassKey(nonEmptyUsernameForCharArray, nonEmptyCharArray);\n        keyNonEmptyCharArray.clear();\n        char[] clearedNonEmptyCharArray = keyNonEmptyCharArray.getPasswordCharArray();\n        assertNotNull(clearedNonEmptyCharArray, \"Password character array should not be null after clearing non-empty character array\");\n        assertEquals(nonEmptyCharArray.length, clearedNonEmptyCharArray.length, \"Password character array length should match original after clearing\");\n        for (int i = 0; i < clearedNonEmptyCharArray.length; i++) {\n            assertEquals(0, clearedNonEmptyCharArray[i], \"Password character array should be filled with null characters after clearing\");\n        }\n    }\n}",
+            "method_signature": "testClearOperationAcrossInitializationStates()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 0.5556,
+            "assertion_precision": 0.3125,
+            "callable_recall": 0.8947,
+            "callable_precision": 0.6415,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.9375,
+            "line_coverage": 0.9333,
+            "branch_coverage": 1.0
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.clear()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getUserName()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.clear()"
+            ],
+            "uncovered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getUserName()"
+            ],
+            "tp": 1,
+            "fn": 2,
+            "localization_recall": 0.3333
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 1,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 2,
+                    "query_method_db": 8,
+                    "get_method_details": 5,
+                    "search_reachable_methods_in_class": 2,
+                    "get_inherited_library_classes": 1,
+                    "extract_method_code": 1,
+                    "get_call_site_details": 1,
+                    "finalize": 2
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_inherited_library_classes",
+                        "query_class_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "extract_method_code",
+                        "get_call_site_details",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "finalize",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 7,
+                    "get_class_constructors_and_factories": 1,
+                    "get_class_fields": 1,
+                    "get_getters_and_setters": 1,
+                    "generate_test_code": 2,
+                    "compile_and_execute_test": 2,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "get_class_fields",
+                        "get_getters_and_setters",
+                        "get_method_details",
+                        "get_method_details",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 176853,
+        "output_tokens": 7879,
+        "llm_calls": 24
+    },
+    {
+        "compiles": true,
+        "nl2test_input": {
+            "id": 73,
+            "description": "Define a test method annotated with `@Test` that verifies the behavior of the `clear()` method on `UserPassKey` instances across multiple scenarios involving null, empty, and non-empty username and password values. Begin by instantiating a `UserPassKey` with a single `String` argument cast to `null`, then chain a call to `clear()` followed by `getUserName()`, and assert the result is null using `assertNull`. Next, construct a `UserPassKey` with an empty string `\"\"` as the single argument, chain `clear()` and `getUserName()`, and assert the result equals `\"\"` using `assertEquals`. Following this, create a `UserPassKey` with the string literal `\"foo\"`, chain `clear()` and `getUserName()`, and assert the result equals the string `\"\\0\\0\\0\"` using `assertEquals`. Transition to password validation by instantiating a `UserPassKey` with two `String` arguments both cast to `null`, chain `clear()` and `getPassword()`, and assert the result is null using `assertNull`. Then construct a `UserPassKey` with two empty strings `\"\"` and `\"\"`, chain `clear()` and `getPassword()`, and assert the result equals `\"\"` using `assertEquals`. Subsequently, create a `UserPassKey` with string literals `\"foo\"` and `\"bar\"`, chain `clear()` and `getPassword()`, and assert the result equals `\"\\0\\0\\0\"` using `assertEquals`. Proceed to password character array verification by instantiating a `UserPassKey` with a `String` argument cast to `null` and a `char[]` argument cast to `null`, chain `clear()` and `getPasswordCharArray()`, and assert the result is null using `assertNull`. Next, construct a `UserPassKey` with two empty strings `\"\"` and `\"\"`, chain `clear()` and `getPasswordCharArray()`, convert the expected empty string `\"\"` to a character array using `toCharArray()`, and assert array equality using `assertArrayEquals`. Finally, create a `UserPassKey` with string literals `\"foo\"` and `\"bar\"`, chain `clear()` and `getPasswordCharArray()`, convert the string `\"\\0\\0\\0\"` to a character array using `toCharArray()`, and assert array equality using `assertArrayEquals`. The test uses JUnit 5 Assertions with method-level annotation `@Test`.",
+            "project_name": "commons-dbcp",
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "abstraction_level": "low",
+            "is_bdd": false
+        },
+        "nl2test_metadata": {
+            "qualified_test_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest1",
+            "code": "package org.apache.commons.dbcp2.datasources;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\npublic class UserPassKeyTest1 {\n\n    @Test\n    public void testClearMethod() {\n        // Test 1: Username null\n        UserPassKey userPassKeyNull = new UserPassKey((String) null);\n        userPassKeyNull.clear();\n        String usernameResultNull = userPassKeyNull.getUserName();\n        assertNull(usernameResultNull);\n\n        // Test 2: Username empty string\n        UserPassKey userPassKeyEmpty = new UserPassKey(\"\");\n        userPassKeyEmpty.clear();\n        String usernameResultEmpty = userPassKeyEmpty.getUserName();\n        assertEquals(\"\", usernameResultEmpty);\n\n        // Test 3: Username \"foo\"\n        UserPassKey userPassKeyFoo = new UserPassKey(\"foo\");\n        userPassKeyFoo.clear();\n        String usernameResultFoo = userPassKeyFoo.getUserName();\n        assertEquals(\"\\0\\0\\0\", usernameResultFoo);\n\n        // Test 4: Username null and password null\n        UserPassKey userPassKeyNullNull = new UserPassKey((String) null, (String) null);\n        userPassKeyNullNull.clear();\n        String passwordResultNullNull = userPassKeyNullNull.getPassword();\n        assertNull(passwordResultNullNull);\n\n        // Test 5: Username empty string and password empty string\n        UserPassKey userPassKeyEmptyEmpty = new UserPassKey(\"\", \"\");\n        userPassKeyEmptyEmpty.clear();\n        String passwordResultEmptyEmpty = userPassKeyEmptyEmpty.getPassword();\n        assertEquals(\"\", passwordResultEmptyEmpty);\n\n        // Test 6: Username \"foo\" and password \"bar\"\n        UserPassKey userPassKeyFooBar = new UserPassKey(\"foo\", \"bar\");\n        userPassKeyFooBar.clear();\n        String passwordResultFooBar = userPassKeyFooBar.getPassword();\n        assertEquals(\"\\0\\0\\0\", passwordResultFooBar);\n\n        // Test 7: Username null and password char array null\n        UserPassKey userPassKeyNullNullCharArray = new UserPassKey((String) null, (char[]) null);\n        userPassKeyNullNullCharArray.clear();\n        char[] passwordCharArrayResultNullNull = userPassKeyNullNullCharArray.getPasswordCharArray();\n        assertNull(passwordCharArrayResultNullNull);\n\n        // Test 8: Username empty string and password empty string (char array)\n        UserPassKey userPassKeyEmptyEmptyCharArray = new UserPassKey(\"\", \"\".toCharArray());\n        userPassKeyEmptyEmptyCharArray.clear();\n        char[] passwordCharArrayResultEmptyEmpty = userPassKeyEmptyEmptyCharArray.getPasswordCharArray();\n        char[] expectedEmptyCharArray = \"\".toCharArray();\n        assertArrayEquals(expectedEmptyCharArray, passwordCharArrayResultEmptyEmpty);\n\n        // Test 9: Username \"foo\" and password \"bar\" (char array)\n        UserPassKey userPassKeyFooBarCharArray = new UserPassKey(\"foo\", \"bar\".toCharArray());\n        userPassKeyFooBarCharArray.clear();\n        char[] passwordCharArrayResultFooBar = userPassKeyFooBarCharArray.getPasswordCharArray();\n        char[] expectedNullCharsCharArray = \"\\0\\0\\0\".toCharArray();\n        assertArrayEquals(expectedNullCharsCharArray, passwordCharArrayResultFooBar);\n    }\n}",
+            "method_signature": "testClearMethod()"
+        },
+        "structured_eval": {
+            "obj_creation_recall": 1.0,
+            "obj_creation_precision": 1.0,
+            "assertion_recall": 1.0,
+            "assertion_precision": 1.0,
+            "callable_recall": 1.0,
+            "callable_precision": 0.95,
+            "focal_recall": 1.0,
+            "focal_precision": 1.0
+        },
+        "coverage_eval": {
+            "class_coverage": 1.0,
+            "method_coverage": 0.8421,
+            "line_coverage": 0.6667,
+            "branch_coverage": 0.8
+        },
+        "localization_eval": {
+            "qualified_class_name": "org.apache.commons.dbcp2.datasources.UserPassKeyTest",
+            "method_signature": "testClear()",
+            "all_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.clear()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getUserName()"
+            ],
+            "covered_focal_methods": [
+                "org.apache.commons.dbcp2.datasources.UserPassKey.clear()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getPasswordCharArray()",
+                "org.apache.commons.dbcp2.datasources.UserPassKey.getUserName()"
+            ],
+            "uncovered_focal_methods": [],
+            "tp": 3,
+            "fn": 0,
+            "localization_recall": 1.0
+        },
+        "tool_log": {
+            "supervisor_tool_log": {
+                "tool_counts": {
+                    "call_localization_agent": 2,
+                    "call_composition_agent": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "call_localization_agent",
+                        "call_localization_agent",
+                        "call_composition_agent",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            },
+            "localization_tool_log": {
+                "tool_counts": {
+                    "query_class_db": 2,
+                    "query_method_db": 18,
+                    "get_method_details": 11,
+                    "search_reachable_methods_in_class": 4,
+                    "get_inherited_library_classes": 2,
+                    "extract_method_code": 4,
+                    "get_call_site_details": 1,
+                    "finalize": 4
+                },
+                "tool_trajectories": [
+                    [
+                        "query_class_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_inherited_library_classes",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "extract_method_code",
+                        "get_call_site_details",
+                        "extract_method_code",
+                        "finalize",
+                        "finalize"
+                    ],
+                    [
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_class_db",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "search_reachable_methods_in_class",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_inherited_library_classes",
+                        "query_method_db",
+                        "query_method_db",
+                        "query_method_db",
+                        "finalize",
+                        "finalize"
+                    ]
+                ]
+            },
+            "composition_tool_log": {
+                "tool_counts": {
+                    "get_method_details": 7,
+                    "get_class_constructors_and_factories": 1,
+                    "generate_test_code": 1,
+                    "compile_and_execute_test": 1,
+                    "finalize": 1
+                },
+                "tool_trajectories": [
+                    [
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_method_details",
+                        "get_class_constructors_and_factories",
+                        "generate_test_code",
+                        "compile_and_execute_test",
+                        "finalize"
+                    ]
+                ]
+            }
+        },
+        "input_tokens": 256698,
+        "output_tokens": 20781,
+        "llm_calls": 30
+    }
+]

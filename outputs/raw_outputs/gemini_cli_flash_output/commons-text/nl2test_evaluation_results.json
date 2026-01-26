@@ -1840,7 +1840,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 651,
       "description": "Define a test method that instantiates an `OctalUnescaper` object using the no-argument constructor and assigns it to a variable named `oue`, then declare a `String` variable named `input` initialized with the literal value `\"\\\\377\\uD800and\"` (containing an escaped octal sequence followed by a high surrogate character and text), invoke the `translate` method on `oue` passing `input` as the argument and assign the returned `String` to a variable named `result`, and immediately assert using `assertEquals` that `result` equals the expected `String` literal `\"\\377\\uD800and\"` with the failure message `\"Failed to unescape octal characters via the between method\"`. Following this first assertion, reassign `input` to the `String` literal `\"\\\\377\\uD83D\\uDE80and\"` (containing an escaped octal sequence followed by a rocket emoji represented as a surrogate pair and text), invoke `translate` on `oue` with this new `input` value and assign the result back to `result`, then assert using `assertEquals` that `result` equals `\"\\377\\uD83D\\uDE80and\"` with the same failure message `\"Failed to unescape octal characters via the between method\"`. Continue by reassigning `input` to `\"\\\\377\\uD83D\\uDC00and\"` (containing an escaped octal sequence followed by a different emoji surrogate pair and text), invoke `translate` on `oue` passing this `input` and store the returned value in `result`, then assert using `assertEquals` that `result` equals `\"\\377\\uD83D\\uDC00and\"` with the identical failure message. Finally, reassign `input` to `\"\\\\377\\uD83D\"` (containing an escaped octal sequence followed by an unpaired high surrogate), invoke `translate` on `oue` with this `input` and assign the outcome to `result`, and assert using `assertEquals` that `result` equals `\"\\377\\uD83D\"` with the failure message `\"Failed to unescape octal characters via the between method\"`. The test uses the `@Test` annotation from JUnit 5 and employs JUnit 5 Assertions for verification.",
@@ -1851,33 +1851,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.text.translate.OctalUnescaperTest1",
+      "code": "/*\n * Licensed to the Apache Software Foundation (ASF) under one or more\n * contributor license agreements.  See the NOTICE file distributed with\n * this work for additional information regarding copyright ownership.\n * The ASF licenses this file to You under the Apache License, Version 2.0\n * (the \"License\"); you may not use this file except in compliance with\n * the License.  You may obtain a copy of the License at\n *\n *      https://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an \"AS IS\" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\npackage org.apache.commons.text.translate;\n\nimport static org.junit.jupiter.api.Assertions.assertEquals;\nimport org.junit.jupiter.api.Test;\n\nclass OctalUnescaperTest1 {\n\n    @Test\n    void testOctalUnescaperWithVariousInputs() {\n        final OctalUnescaper oue = new OctalUnescaper();\n\n        String input = \"\\\\377\\uD800and\";\n        String result = oue.translate(input);\n        assertEquals(\"\\u00FF\\uD800and\", result, \"Failed to unescape octal characters via the between method\");\n\n        input = \"\\\\377\\uD83D\\uDE80and\";\n        result = oue.translate(input);\n        assertEquals(\"\\u00FF\\uD83D\\uDE80and\", result, \"Failed to unescape octal characters via the between method\");\n\n        input = \"\\\\377\\uD83D\\uDC00and\";\n        result = oue.translate(input);\n        assertEquals(\"\\u00FF\\uD83D\\uDC00and\", result, \"Failed to unescape octal characters via the between method\");\n\n        input = \"\\\\377\\uD83D\";\n        result = oue.translate(input);\n        assertEquals(\"\\u00FF\\uD83D\", result, \"Failed to unescape octal characters via the between method\");\n    }\n}",
+      "method_signature": "testHighLowSurrogate()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 0,
     "output_tokens": 0,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": false,
@@ -3120,7 +3120,7 @@
     "failed_code_generation": false
   },
   {
-    "compiles": false,
+    "compiles": true,
     "nl2test_input": {
       "id": 755,
       "description": "Define a test method that begins by obtaining the singleton instance `StringLookupFactory.INSTANCE` and assigning it to a variable `stringLookupFactory` of type `StringLookupFactory`, then instantiate a new `HashMap<>()` and assign it to a variable `stringLookupMap` of type `Map<String, StringLookup>`. Invoke `addDefaultStringLookups` on `stringLookupFactory` passing `stringLookupMap` as the argument to populate the map with default string lookups. Following this invocation, verify the presence of specific keys in `stringLookupMap` by invoking `containsKey` with the exact string literal `\"base64\"` and wrapping the result in `assertTrue`, then invoke `containsKey` with the result of calling `StringLookupFactory.KEY_BASE64_ENCODER.toLowerCase(Locale.ROOT)` and assert true, followed by invoking `containsKey` with `StringLookupFactory.KEY_CONST.toLowerCase(Locale.ROOT)` and asserting true. Continue by invoking `containsKey` with `StringLookupFactory.KEY_DATE` and asserting true, then invoke `containsKey` with `StringLookupFactory.KEY_ENV.toLowerCase(Locale.ROOT)` and assert true, followed by `containsKey` with `StringLookupFactory.KEY_FILE.toLowerCase(Locale.ROOT)` and asserting true. Proceed by invoking `containsKey` with `StringLookupFactory.KEY_JAVA.toLowerCase(Locale.ROOT)` and asserting true, then `containsKey` with `StringLookupFactory.KEY_LOCALHOST.toLowerCase(Locale.ROOT)` and asserting true, followed by `containsKey` with `StringLookupFactory.KEY_LOOPBACK_ADDRESS.toLowerCase(Locale.ROOT)` and asserting true. Next, invoke `containsKey` with `StringLookupFactory.KEY_PROPERTIES.toLowerCase(Locale.ROOT)` and assert true, then `containsKey` with `StringLookupFactory.KEY_RESOURCE_BUNDLE.toLowerCase(Locale.ROOT)` and assert true, followed by `containsKey` with `StringLookupFactory.KEY_SYS.toLowerCase(Locale.ROOT)` and asserting true. Continue by invoking `containsKey` with `StringLookupFactory.KEY_URL_DECODER.toLowerCase(Locale.ROOT)` and asserting true, then `containsKey` with `StringLookupFactory.KEY_URL_ENCODER.toLowerCase(Locale.ROOT)` and asserting true, followed by `containsKey` with `StringLookupFactory.KEY_XML.toLowerCase(Locale.ROOT)` and asserting true. Finally, invoke `containsKey` with `StringLookupFactory.KEY_XML_DECODER.toLowerCase(Locale.ROOT)` and assert true, then invoke `containsKey` with `StringLookupFactory.KEY_XML_ENCODER.toLowerCase(Locale.ROOT)` and assert true to complete the verification sequence. The test uses method-level annotation `@Test` and relies on JUnit 5 Assertions via `assertTrue`.",
@@ -3131,33 +3131,33 @@
       "is_bdd": false
     },
     "nl2test_metadata": {
-      "qualified_test_class_name": "",
-      "code": "",
-      "method_signature": null
+      "qualified_test_class_name": "org.apache.commons.text.lookup.StringLookupFactoryTest1",
+      "code": "package org.apache.commons.text.lookup;\n\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\nimport java.util.HashMap;\nimport java.util.Locale;\nimport java.util.Map;\n\nimport org.junit.jupiter.api.Test;\n\npublic class StringLookupFactoryTest1 {\n\n    @Test\n    void testAddDefaultStringLookups() {\n        final StringLookupFactory stringLookupFactory = StringLookupFactory.INSTANCE;\n        final Map<String, StringLookup> stringLookupMap = new HashMap<>();\n\n        stringLookupFactory.addDefaultStringLookups(stringLookupMap);\n\n        assertTrue(stringLookupMap.containsKey(\"base64\"));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_BASE64_ENCODER.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_CONST.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_DATE));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_ENV.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_FILE.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_JAVA.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_LOCALHOST.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_LOOPBACK_ADDRESS.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_PROPERTIES.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_RESOURCE_BUNDLE.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_SYS.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_URL_DECODER.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_URL_ENCODER.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_XML.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_XML_DECODER.toLowerCase(Locale.ROOT)));\n        assertTrue(stringLookupMap.containsKey(StringLookupFactory.KEY_XML_ENCODER.toLowerCase(Locale.ROOT)));\n    }\n}",
+      "method_signature": "testDefault()"
     },
     "structured_eval": {
-      "obj_creation_recall": 0.0,
-      "obj_creation_precision": 0.0,
-      "assertion_recall": 0.0,
-      "assertion_precision": 0.0,
-      "callable_recall": 0.0,
-      "callable_precision": 0.0,
-      "focal_recall": 0.0,
-      "focal_precision": 0.0
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
     "coverage_eval": {
-      "class_coverage": 0.0,
-      "method_coverage": 0.0,
-      "line_coverage": 0.0,
-      "branch_coverage": 0.0
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
     "localization_eval": null,
     "tool_log": null,
     "input_tokens": 35222,
     "output_tokens": 2397,
     "llm_calls": 0,
-    "failed_test_file_generation": false,
-    "failed_code_generation": true
+    "failed_test_file_generation": true,
+    "failed_code_generation": false
   },
   {
     "compiles": true,

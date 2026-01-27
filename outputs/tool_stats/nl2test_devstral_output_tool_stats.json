@@ -1,0 +1,774 @@
+{
+  "summary": {
+    "output_directory": "/Users/tylerstennett/Documents/repos/nltest/outputs/raw_outputs/nl2test_devstral_output",
+    "total_entries": 1464,
+    "entries_with_tool_data": 1464
+  },
+  "overall": {
+    "total_tool_calls": 75865,
+    "unique_tools": 18,
+    "calls_per_entry": {
+      "mean": 51.82035519125683,
+      "std": 31.240624313929946,
+      "min": 11.0,
+      "p10": 22.0,
+      "p25": 28.0,
+      "p50": 41.0,
+      "p75": 69.0,
+      "p90": 97.0,
+      "max": 210.0,
+      "count": 1464,
+      "total": 75865.0
+    }
+  },
+  "by_agent": {
+    "supervisor": {
+      "total_calls": 8013,
+      "tools": {
+        "call_composition_agent": {
+          "total": 2127,
+          "entries_using": 1463,
+          "distribution": {
+            "mean": 1.453861927546138,
+            "std": 0.6343093725586705,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 6.0,
+            "count": 1463,
+            "total": 2127.0
+          }
+        },
+        "call_localization_agent": {
+          "total": 2306,
+          "entries_using": 1464,
+          "distribution": {
+            "mean": 1.575136612021858,
+            "std": 0.8105077393491121,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 3.0,
+            "max": 6.0,
+            "count": 1464,
+            "total": 2306.0
+          }
+        },
+        "compile_and_execute_test": {
+          "total": 1810,
+          "entries_using": 1443,
+          "distribution": {
+            "mean": 1.2543312543312544,
+            "std": 0.4418041115081994,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 3.0,
+            "count": 1443,
+            "total": 1810.0
+          }
+        },
+        "finalize": {
+          "total": 1464,
+          "entries_using": 1464,
+          "distribution": {
+            "mean": 1.0,
+            "std": 0.0,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "count": 1464,
+            "total": 1464.0
+          }
+        },
+        "view_test_code": {
+          "total": 306,
+          "entries_using": 233,
+          "distribution": {
+            "mean": 1.3133047210300428,
+            "std": 0.5716055070089401,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 5.0,
+            "count": 233,
+            "total": 306.0
+          }
+        }
+      }
+    },
+    "localization": {
+      "total_calls": 37771,
+      "tools": {
+        "extract_method_code": {
+          "total": 116,
+          "entries_using": 64,
+          "distribution": {
+            "mean": 1.8125,
+            "std": 1.0734727523323542,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 3.0,
+            "p90": 3.0,
+            "max": 5.0,
+            "count": 64,
+            "total": 116.0
+          }
+        },
+        "finalize": {
+          "total": 3303,
+          "entries_using": 1462,
+          "distribution": {
+            "mean": 2.2592339261285908,
+            "std": 2.353033136147193,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 3.0,
+            "p90": 4.0,
+            "max": 22.0,
+            "count": 1462,
+            "total": 3303.0
+          }
+        },
+        "get_call_site_details": {
+          "total": 96,
+          "entries_using": 76,
+          "distribution": {
+            "mean": 1.263157894736842,
+            "std": 0.5469634129164872,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 2.0,
+            "max": 4.0,
+            "count": 76,
+            "total": 96.0
+          }
+        },
+        "get_inherited_library_classes": {
+          "total": 547,
+          "entries_using": 357,
+          "distribution": {
+            "mean": 1.5322128851540617,
+            "std": 0.9568850488416655,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 3.0,
+            "max": 8.0,
+            "count": 357,
+            "total": 547.0
+          }
+        },
+        "get_method_details": {
+          "total": 7337,
+          "entries_using": 1203,
+          "distribution": {
+            "mean": 6.098919368246052,
+            "std": 4.704680872001893,
+            "min": 1.0,
+            "p10": 2.0,
+            "p25": 3.0,
+            "p50": 5.0,
+            "p75": 8.0,
+            "p90": 12.0,
+            "max": 36.0,
+            "count": 1203,
+            "total": 7337.0
+          }
+        },
+        "query_class_db": {
+          "total": 5728,
+          "entries_using": 1292,
+          "distribution": {
+            "mean": 4.43343653250774,
+            "std": 3.4237916832882624,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 2.0,
+            "p50": 4.0,
+            "p75": 6.0,
+            "p90": 9.0,
+            "max": 26.0,
+            "count": 1292,
+            "total": 5728.0
+          }
+        },
+        "query_method_db": {
+          "total": 16379,
+          "entries_using": 1455,
+          "distribution": {
+            "mean": 11.25704467353952,
+            "std": 8.505420357541736,
+            "min": 1.0,
+            "p10": 4.0,
+            "p25": 6.0,
+            "p50": 9.0,
+            "p75": 14.0,
+            "p90": 22.0,
+            "max": 109.0,
+            "count": 1455,
+            "total": 16379.0
+          }
+        },
+        "search_reachable_methods_in_class": {
+          "total": 4265,
+          "entries_using": 889,
+          "distribution": {
+            "mean": 4.797525309336333,
+            "std": 4.074331092757335,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 2.0,
+            "p50": 4.0,
+            "p75": 6.0,
+            "p90": 10.0,
+            "max": 29.0,
+            "count": 889,
+            "total": 4265.0
+          }
+        }
+      }
+    },
+    "composition": {
+      "total_calls": 30081,
+      "tools": {
+        "compile_and_execute_test": {
+          "total": 5266,
+          "entries_using": 1463,
+          "distribution": {
+            "mean": 3.599453178400547,
+            "std": 2.7581086026367823,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 3.0,
+            "p75": 5.0,
+            "p90": 8.0,
+            "max": 27.0,
+            "count": 1463,
+            "total": 5266.0
+          }
+        },
+        "extract_method_code": {
+          "total": 192,
+          "entries_using": 88,
+          "distribution": {
+            "mean": 2.1818181818181817,
+            "std": 1.5633985019927124,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 2.0,
+            "p75": 3.0,
+            "p90": 4.299999999999997,
+            "max": 8.0,
+            "count": 88,
+            "total": 192.0
+          }
+        },
+        "finalize": {
+          "total": 2116,
+          "entries_using": 1463,
+          "distribution": {
+            "mean": 1.446343130553657,
+            "std": 0.6184329278312026,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 5.0,
+            "count": 1463,
+            "total": 2116.0
+          }
+        },
+        "generate_test_code": {
+          "total": 6829,
+          "entries_using": 1463,
+          "distribution": {
+            "mean": 4.667805878332194,
+            "std": 4.222822610243857,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 2.0,
+            "p50": 3.0,
+            "p75": 7.0,
+            "p90": 11.0,
+            "max": 28.0,
+            "count": 1463,
+            "total": 6829.0
+          }
+        },
+        "get_call_site_details": {
+          "total": 192,
+          "entries_using": 144,
+          "distribution": {
+            "mean": 1.3333333333333333,
+            "std": 0.7728015412913087,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 8.0,
+            "count": 144,
+            "total": 192.0
+          }
+        },
+        "get_class_constructors_and_factories": {
+          "total": 3238,
+          "entries_using": 1020,
+          "distribution": {
+            "mean": 3.1745098039215685,
+            "std": 3.1462609702694992,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 2.0,
+            "p75": 4.0,
+            "p90": 7.0,
+            "max": 22.0,
+            "count": 1020,
+            "total": 3238.0
+          }
+        },
+        "get_class_fields": {
+          "total": 649,
+          "entries_using": 392,
+          "distribution": {
+            "mean": 1.655612244897959,
+            "std": 1.0978964732489618,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 3.0,
+            "max": 11.0,
+            "count": 392,
+            "total": 649.0
+          }
+        },
+        "get_getters_and_setters": {
+          "total": 411,
+          "entries_using": 258,
+          "distribution": {
+            "mean": 1.5930232558139534,
+            "std": 1.0043846545735784,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 3.0,
+            "max": 7.0,
+            "count": 258,
+            "total": 411.0
+          }
+        },
+        "get_maven_dependencies": {
+          "total": 1036,
+          "entries_using": 786,
+          "distribution": {
+            "mean": 1.3180661577608141,
+            "std": 0.6884021590021537,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 2.0,
+            "max": 7.0,
+            "count": 786,
+            "total": 1036.0
+          }
+        },
+        "get_method_details": {
+          "total": 9485,
+          "entries_using": 1271,
+          "distribution": {
+            "mean": 7.462627852084973,
+            "std": 7.796081992380727,
+            "min": 1.0,
+            "p10": 2.0,
+            "p25": 3.0,
+            "p50": 5.0,
+            "p75": 9.0,
+            "p90": 16.0,
+            "max": 88.0,
+            "count": 1271,
+            "total": 9485.0
+          }
+        },
+        "modify_scenario_comment": {
+          "total": 407,
+          "entries_using": 123,
+          "distribution": {
+            "mean": 3.3089430894308944,
+            "std": 2.8772448466076535,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 2.0,
+            "p75": 5.0,
+            "p90": 6.799999999999997,
+            "max": 15.0,
+            "count": 123,
+            "total": 407.0
+          }
+        },
+        "view_test_code": {
+          "total": 260,
+          "entries_using": 197,
+          "distribution": {
+            "mean": 1.3197969543147208,
+            "std": 0.7832406709435895,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 2.0,
+            "max": 6.0,
+            "count": 197,
+            "total": 260.0
+          }
+        }
+      }
+    }
+  },
+  "by_tool": {
+    "call_composition_agent": {
+      "total": 2127,
+      "entries_using": 1463,
+      "distribution": {
+        "mean": 1.453861927546138,
+        "std": 0.6343093725586705,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 2.0,
+        "max": 6.0,
+        "count": 1463,
+        "total": 2127.0
+      }
+    },
+    "call_localization_agent": {
+      "total": 2306,
+      "entries_using": 1464,
+      "distribution": {
+        "mean": 1.575136612021858,
+        "std": 0.8105077393491121,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 3.0,
+        "max": 6.0,
+        "count": 1464,
+        "total": 2306.0
+      }
+    },
+    "compile_and_execute_test": {
+      "total": 7076,
+      "entries_using": 2906,
+      "distribution": {
+        "mean": 2.4349621472814866,
+        "std": 2.3025022928578043,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 2.0,
+        "p75": 3.0,
+        "p90": 6.0,
+        "max": 27.0,
+        "count": 2906,
+        "total": 7076.0
+      }
+    },
+    "extract_method_code": {
+      "total": 308,
+      "entries_using": 152,
+      "distribution": {
+        "mean": 2.026315789473684,
+        "std": 1.3905099803813592,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.5,
+        "p75": 3.0,
+        "p90": 4.0,
+        "max": 8.0,
+        "count": 152,
+        "total": 308.0
+      }
+    },
+    "finalize": {
+      "total": 6883,
+      "entries_using": 4389,
+      "distribution": {
+        "mean": 1.5682387787650947,
+        "std": 1.4978386863770747,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 3.0,
+        "max": 22.0,
+        "count": 4389,
+        "total": 6883.0
+      }
+    },
+    "generate_test_code": {
+      "total": 6829,
+      "entries_using": 1463,
+      "distribution": {
+        "mean": 4.667805878332194,
+        "std": 4.222822610243857,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 2.0,
+        "p50": 3.0,
+        "p75": 7.0,
+        "p90": 11.0,
+        "max": 28.0,
+        "count": 1463,
+        "total": 6829.0
+      }
+    },
+    "get_call_site_details": {
+      "total": 288,
+      "entries_using": 220,
+      "distribution": {
+        "mean": 1.309090909090909,
+        "std": 0.7038266127580326,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 2.0,
+        "max": 8.0,
+        "count": 220,
+        "total": 288.0
+      }
+    },
+    "get_class_constructors_and_factories": {
+      "total": 3238,
+      "entries_using": 1020,
+      "distribution": {
+        "mean": 3.1745098039215685,
+        "std": 3.1462609702694992,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 2.0,
+        "p75": 4.0,
+        "p90": 7.0,
+        "max": 22.0,
+        "count": 1020,
+        "total": 3238.0
+      }
+    },
+    "get_class_fields": {
+      "total": 649,
+      "entries_using": 392,
+      "distribution": {
+        "mean": 1.655612244897959,
+        "std": 1.0978964732489618,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 3.0,
+        "max": 11.0,
+        "count": 392,
+        "total": 649.0
+      }
+    },
+    "get_getters_and_setters": {
+      "total": 411,
+      "entries_using": 258,
+      "distribution": {
+        "mean": 1.5930232558139534,
+        "std": 1.0043846545735784,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 3.0,
+        "max": 7.0,
+        "count": 258,
+        "total": 411.0
+      }
+    },
+    "get_inherited_library_classes": {
+      "total": 547,
+      "entries_using": 357,
+      "distribution": {
+        "mean": 1.5322128851540617,
+        "std": 0.9568850488416655,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 3.0,
+        "max": 8.0,
+        "count": 357,
+        "total": 547.0
+      }
+    },
+    "get_maven_dependencies": {
+      "total": 1036,
+      "entries_using": 786,
+      "distribution": {
+        "mean": 1.3180661577608141,
+        "std": 0.6884021590021537,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 2.0,
+        "max": 7.0,
+        "count": 786,
+        "total": 1036.0
+      }
+    },
+    "get_method_details": {
+      "total": 16822,
+      "entries_using": 2474,
+      "distribution": {
+        "mean": 6.799514955537591,
+        "std": 6.515529592925832,
+        "min": 1.0,
+        "p10": 2.0,
+        "p25": 3.0,
+        "p50": 5.0,
+        "p75": 9.0,
+        "p90": 14.0,
+        "max": 88.0,
+        "count": 2474,
+        "total": 16822.0
+      }
+    },
+    "modify_scenario_comment": {
+      "total": 407,
+      "entries_using": 123,
+      "distribution": {
+        "mean": 3.3089430894308944,
+        "std": 2.8772448466076535,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 2.0,
+        "p75": 5.0,
+        "p90": 6.799999999999997,
+        "max": 15.0,
+        "count": 123,
+        "total": 407.0
+      }
+    },
+    "query_class_db": {
+      "total": 5728,
+      "entries_using": 1292,
+      "distribution": {
+        "mean": 4.43343653250774,
+        "std": 3.4237916832882624,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 2.0,
+        "p50": 4.0,
+        "p75": 6.0,
+        "p90": 9.0,
+        "max": 26.0,
+        "count": 1292,
+        "total": 5728.0
+      }
+    },
+    "query_method_db": {
+      "total": 16379,
+      "entries_using": 1455,
+      "distribution": {
+        "mean": 11.25704467353952,
+        "std": 8.505420357541736,
+        "min": 1.0,
+        "p10": 4.0,
+        "p25": 6.0,
+        "p50": 9.0,
+        "p75": 14.0,
+        "p90": 22.0,
+        "max": 109.0,
+        "count": 1455,
+        "total": 16379.0
+      }
+    },
+    "search_reachable_methods_in_class": {
+      "total": 4265,
+      "entries_using": 889,
+      "distribution": {
+        "mean": 4.797525309336333,
+        "std": 4.074331092757335,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 2.0,
+        "p50": 4.0,
+        "p75": 6.0,
+        "p90": 10.0,
+        "max": 29.0,
+        "count": 889,
+        "total": 4265.0
+      }
+    },
+    "view_test_code": {
+      "total": 566,
+      "entries_using": 430,
+      "distribution": {
+        "mean": 1.3162790697674418,
+        "std": 0.676836084226278,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 2.0,
+        "max": 6.0,
+        "count": 430,
+        "total": 566.0
+      }
+    }
+  }
+}

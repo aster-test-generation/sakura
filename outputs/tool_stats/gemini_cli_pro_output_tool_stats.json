@@ -1,0 +1,381 @@
+{
+  "summary": {
+    "output_directory": "/Users/tylerstennett/Documents/repos/nltest/outputs/raw_outputs/gemini_cli_pro_output",
+    "total_entries": 1464,
+    "entries_with_tool_data": 1464
+  },
+  "overall": {
+    "total_tool_calls": 3014,
+    "unique_tools": 10,
+    "calls_per_entry": {
+      "mean": 2.058743169398907,
+      "std": 3.0175882518221897,
+      "min": 0.0,
+      "p10": 1.0,
+      "p25": 1.0,
+      "p50": 1.0,
+      "p75": 2.0,
+      "p90": 5.0,
+      "max": 41.0,
+      "count": 1464,
+      "total": 3014.0
+    }
+  },
+  "by_agent": {
+    "supervisor": {
+      "total_calls": 3014,
+      "tools": {
+        "delegate_to_agent": {
+          "total": 1,
+          "entries_using": 1,
+          "distribution": {
+            "mean": 1.0,
+            "std": 0.0,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "count": 1,
+            "total": 1.0
+          }
+        },
+        "glob": {
+          "total": 179,
+          "entries_using": 112,
+          "distribution": {
+            "mean": 1.5982142857142858,
+            "std": 0.8910249057422921,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 3.0,
+            "max": 5.0,
+            "count": 112,
+            "total": 179.0
+          }
+        },
+        "google_web_search": {
+          "total": 2,
+          "entries_using": 2,
+          "distribution": {
+            "mean": 1.0,
+            "std": 0.0,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 1.0,
+            "count": 2,
+            "total": 2.0
+          }
+        },
+        "list_directory": {
+          "total": 100,
+          "entries_using": 71,
+          "distribution": {
+            "mean": 1.408450704225352,
+            "std": 1.082218180974565,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 2.0,
+            "max": 7.0,
+            "count": 71,
+            "total": 100.0
+          }
+        },
+        "read_file": {
+          "total": 786,
+          "entries_using": 347,
+          "distribution": {
+            "mean": 2.2651296829971184,
+            "std": 1.2493318896523073,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 2.0,
+            "p75": 3.0,
+            "p90": 4.0,
+            "max": 8.0,
+            "count": 347,
+            "total": 786.0
+          }
+        },
+        "replace": {
+          "total": 85,
+          "entries_using": 27,
+          "distribution": {
+            "mean": 3.1481481481481484,
+            "std": 2.8114014391627182,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 2.0,
+            "p75": 5.0,
+            "p90": 6.400000000000002,
+            "max": 13.0,
+            "count": 27,
+            "total": 85.0
+          }
+        },
+        "run_shell_command": {
+          "total": 350,
+          "entries_using": 105,
+          "distribution": {
+            "mean": 3.3333333333333335,
+            "std": 3.944053188733073,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 3.0,
+            "p75": 4.0,
+            "p90": 6.0,
+            "max": 36.0,
+            "count": 105,
+            "total": 350.0
+          }
+        },
+        "search_file_content": {
+          "total": 91,
+          "entries_using": 61,
+          "distribution": {
+            "mean": 1.4918032786885247,
+            "std": 1.0020135599958113,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 2.0,
+            "p90": 2.0,
+            "max": 7.0,
+            "count": 61,
+            "total": 91.0
+          }
+        },
+        "write_file": {
+          "total": 1413,
+          "entries_using": 1322,
+          "distribution": {
+            "mean": 1.0688350983358548,
+            "std": 0.393533208024472,
+            "min": 1.0,
+            "p10": 1.0,
+            "p25": 1.0,
+            "p50": 1.0,
+            "p75": 1.0,
+            "p90": 1.0,
+            "max": 7.0,
+            "count": 1322,
+            "total": 1413.0
+          }
+        },
+        "write_todos": {
+          "total": 7,
+          "entries_using": 1,
+          "distribution": {
+            "mean": 7.0,
+            "std": 0.0,
+            "min": 7.0,
+            "p10": 7.0,
+            "p25": 7.0,
+            "p50": 7.0,
+            "p75": 7.0,
+            "p90": 7.0,
+            "max": 7.0,
+            "count": 1,
+            "total": 7.0
+          }
+        }
+      }
+    },
+    "localization": {
+      "total_calls": 0,
+      "tools": {}
+    },
+    "composition": {
+      "total_calls": 0,
+      "tools": {}
+    }
+  },
+  "by_tool": {
+    "delegate_to_agent": {
+      "total": 1,
+      "entries_using": 1,
+      "distribution": {
+        "mean": 1.0,
+        "std": 0.0,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 1.0,
+        "max": 1.0,
+        "count": 1,
+        "total": 1.0
+      }
+    },
+    "glob": {
+      "total": 179,
+      "entries_using": 112,
+      "distribution": {
+        "mean": 1.5982142857142858,
+        "std": 0.8910249057422921,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 3.0,
+        "max": 5.0,
+        "count": 112,
+        "total": 179.0
+      }
+    },
+    "google_web_search": {
+      "total": 2,
+      "entries_using": 2,
+      "distribution": {
+        "mean": 1.0,
+        "std": 0.0,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 1.0,
+        "max": 1.0,
+        "count": 2,
+        "total": 2.0
+      }
+    },
+    "list_directory": {
+      "total": 100,
+      "entries_using": 71,
+      "distribution": {
+        "mean": 1.408450704225352,
+        "std": 1.082218180974565,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 2.0,
+        "max": 7.0,
+        "count": 71,
+        "total": 100.0
+      }
+    },
+    "read_file": {
+      "total": 786,
+      "entries_using": 347,
+      "distribution": {
+        "mean": 2.2651296829971184,
+        "std": 1.2493318896523073,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 2.0,
+        "p75": 3.0,
+        "p90": 4.0,
+        "max": 8.0,
+        "count": 347,
+        "total": 786.0
+      }
+    },
+    "replace": {
+      "total": 85,
+      "entries_using": 27,
+      "distribution": {
+        "mean": 3.1481481481481484,
+        "std": 2.8114014391627182,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 2.0,
+        "p75": 5.0,
+        "p90": 6.400000000000002,
+        "max": 13.0,
+        "count": 27,
+        "total": 85.0
+      }
+    },
+    "run_shell_command": {
+      "total": 350,
+      "entries_using": 105,
+      "distribution": {
+        "mean": 3.3333333333333335,
+        "std": 3.944053188733073,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 3.0,
+        "p75": 4.0,
+        "p90": 6.0,
+        "max": 36.0,
+        "count": 105,
+        "total": 350.0
+      }
+    },
+    "search_file_content": {
+      "total": 91,
+      "entries_using": 61,
+      "distribution": {
+        "mean": 1.4918032786885247,
+        "std": 1.0020135599958113,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 2.0,
+        "p90": 2.0,
+        "max": 7.0,
+        "count": 61,
+        "total": 91.0
+      }
+    },
+    "write_file": {
+      "total": 1413,
+      "entries_using": 1322,
+      "distribution": {
+        "mean": 1.0688350983358548,
+        "std": 0.393533208024472,
+        "min": 1.0,
+        "p10": 1.0,
+        "p25": 1.0,
+        "p50": 1.0,
+        "p75": 1.0,
+        "p90": 1.0,
+        "max": 7.0,
+        "count": 1322,
+        "total": 1413.0
+      }
+    },
+    "write_todos": {
+      "total": 7,
+      "entries_using": 1,
+      "distribution": {
+        "mean": 7.0,
+        "std": 0.0,
+        "min": 7.0,
+        "p10": 7.0,
+        "p25": 7.0,
+        "p50": 7.0,
+        "p75": 7.0,
+        "p90": 7.0,
+        "max": 7.0,
+        "count": 1,
+        "total": 7.0
+      }
+    }
+  }
+}

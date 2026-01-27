@@ -1,318 +1,318 @@
 [
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 570,
-            "description": "Create a test case to validate that the system's payment card validation capability can be initialized and invoked without encountering initialization failures caused by internal component dependencies. Begin by establishing a payment card validation service instance to ensure the system components load correctly, then submit a sample payment card number for validation to confirm the validation logic executes without errors stemming from circular initialization issues between the validation service and the underlying validation utilities. Verify that the system processes the validation request successfully, demonstrating that the payment card validation service and the generic validation utilities can coexist and operate without initialization conflicts. This test uses JUnit 5 as the testing framework and validates proper system initialization and execution flow without requiring explicit assertions beyond successful method completion.",
-            "project_name": "commons-validator",
-            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
-            "method_signature": "testGenericValidatorCircularDependency()",
-            "abstraction_level": "high",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.apache.commons.validator.routines.CreditCardValidationTest",
-            "code": "package org.apache.commons.validator.routines;\n\nimport org.junit.jupiter.api.Test;\n\npublic class CreditCardValidationTest {\n\n    @Test\n    void testCreditCardValidationInitializationAndExecution() {\n        // Step 0: Prepare a sample payment card number\n        String sampleCardNumber = \"4111111111111111\"; // A valid Visa test card number\n\n        // Step 1: Establish a payment card validation service instance\n        CreditCardValidator paymentCardValidationService = CreditCardValidator.genericCreditCardValidator();\n\n        // Step 2: Invoke validation on the sample payment card number using the service\n        boolean validationResponse = paymentCardValidationService.isValid(sampleCardNumber);\n\n        // Steps 3, 4, 5: Confirm success implicitly.\n        // The test passes if no exceptions are thrown during instantiation and method invocation.\n        // The 'validationResponse' being true for a valid card number implicitly confirms\n        // the validation logic executed successfully without initialization or circular dependency issues.\n        // As per instructions, no explicit assertions are used.\n        // If validationResponse is false for a known valid card, it would indicate a logical error,\n        // but not necessarily an initialization error or circular dependency, which are the primary\n        // focus of this test as per the description.\n    }\n}",
-            "method_signature": "testCreditCardValidationInitializationAndExecution()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 0.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 0.0,
-            "callable_precision": 0.0,
-            "focal_recall": 0.0,
-            "focal_precision": 0.0
-        },
-        "coverage_eval": {
-            "class_coverage": 0.5714,
-            "method_coverage": 0.2917,
-            "line_coverage": 0.2453,
-            "branch_coverage": 0.4839
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
-            "method_signature": "testGenericValidatorCircularDependency()",
-            "all_focal_methods": [
-                "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
-            ],
-            "covered_focal_methods": [],
-            "uncovered_focal_methods": [
-                "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
-            ],
-            "tp": 0,
-            "fn": 1,
-            "localization_recall": 0.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_class_db": 1,
-                    "query_method_db": 2,
-                    "get_method_details": 6,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_class_db",
-                        "query_method_db",
-                        "get_method_details",
-                        "get_method_details",
-                        "get_method_details",
-                        "query_method_db",
-                        "get_method_details",
-                        "get_method_details",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_maven_dependencies": 1,
-                    "get_method_details": 3,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_maven_dependencies",
-                        "get_method_details",
-                        "get_method_details",
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 92857,
-        "output_tokens": 6492,
-        "llm_calls": 16
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 570,
+      "description": "Create a test case to validate that the system's payment card validation capability can be initialized and invoked without encountering initialization failures caused by internal component dependencies. Begin by establishing a payment card validation service instance to ensure the system components load correctly, then submit a sample payment card number for validation to confirm the validation logic executes without errors stemming from circular initialization issues between the validation service and the underlying validation utilities. Verify that the system processes the validation request successfully, demonstrating that the payment card validation service and the generic validation utilities can coexist and operate without initialization conflicts. This test uses JUnit 5 as the testing framework and validates proper system initialization and execution flow without requiring explicit assertions beyond successful method completion.",
+      "project_name": "commons-validator",
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "abstraction_level": "high",
+      "is_bdd": false
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 574,
-            "description": "Define a test class containing a test method annotated with `@Test` that verifies the fix for VALIDATOR-502, a circular dependency issue causing NPE in `GenericValidator.isCreditCard()`. Begin by instantiating a new `CreditCardValidator` using the no-argument constructor `new CreditCardValidator()` and assign the result to a local variable `ccv` of type `org.apache.commons.validator.routines.CreditCardValidator`. Immediately following this instantiation, invoke the static method `isCreditCard` on `org.apache.commons.validator.GenericValidator`, passing the String literal `\"1234567890\"` as the argument. The test contains no assertions; its purpose is to ensure that the sequence of instantiating `CreditCardValidator` followed by calling `GenericValidator.isCreditCard` does not throw a `NullPointerException`, thereby confirming the circular dependency has been resolved. The test uses no class-level annotations, no setup or teardown methods, and relies solely on JUnit 5 with the `@Test` annotation at the method level.",
-            "project_name": "commons-validator",
-            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
-            "method_signature": "testGenericValidatorCircularDependency()",
-            "abstraction_level": "low",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.apache.commons.validator.CreditCardValidatorTest1",
-            "code": "package org.apache.commons.validator;\n\nimport org.junit.jupiter.api.Test;\nimport org.apache.commons.validator.routines.CreditCardValidator;\n\npublic class CreditCardValidatorTest1 {\n\n    @Test\n    void testNoNPEOnIsCreditCardAfterInstantiation() {\n        CreditCardValidator ccv = new CreditCardValidator();\n        GenericValidator.isCreditCard(\"1234567890\");\n    }\n}",
-            "method_signature": "testNoNPEOnIsCreditCardAfterInstantiation()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 1.0,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
-        },
-        "coverage_eval": {
-            "class_coverage": 0.4,
-            "method_coverage": 0.2571,
-            "line_coverage": 0.2569,
-            "branch_coverage": 0.625
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
-            "method_signature": "testGenericValidatorCircularDependency()",
-            "all_focal_methods": [
-                "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 2,
-                    "query_class_db": 2,
-                    "search_reachable_methods_in_class": 2,
-                    "get_method_details": 2,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "query_method_db",
-                        "query_class_db",
-                        "query_class_db",
-                        "search_reachable_methods_in_class",
-                        "search_reachable_methods_in_class",
-                        "get_method_details",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_class_constructors_and_factories": 1,
-                    "get_method_details": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_class_constructors_and_factories",
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 43164,
-        "output_tokens": 3232,
-        "llm_calls": 13
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.validator.routines.CreditCardValidationTest",
+      "code": "package org.apache.commons.validator.routines;\n\nimport org.junit.jupiter.api.Test;\n\npublic class CreditCardValidationTest {\n\n    @Test\n    void testCreditCardValidationInitializationAndExecution() {\n        // Step 0: Prepare a sample payment card number\n        String sampleCardNumber = \"4111111111111111\"; // A valid Visa test card number\n\n        // Step 1: Establish a payment card validation service instance\n        CreditCardValidator paymentCardValidationService = CreditCardValidator.genericCreditCardValidator();\n\n        // Step 2: Invoke validation on the sample payment card number using the service\n        boolean validationResponse = paymentCardValidationService.isValid(sampleCardNumber);\n\n        // Steps 3, 4, 5: Confirm success implicitly.\n        // The test passes if no exceptions are thrown during instantiation and method invocation.\n        // The 'validationResponse' being true for a valid card number implicitly confirms\n        // the validation logic executed successfully without initialization or circular dependency issues.\n        // As per instructions, no explicit assertions are used.\n        // If validationResponse is false for a known valid card, it would indicate a logical error,\n        // but not necessarily an initialization error or circular dependency, which are the primary\n        // focus of this test as per the description.\n    }\n}",
+      "method_signature": "testCreditCardValidationInitializationAndExecution()"
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 593,
-            "description": "Define a test class that verifies the absence of circular dependency issues during static initialization between the Generic Validator and Credit Card Validator components. Within the test method, instantiate a Credit Card Validator to trigger its static initialization sequence, which internally references validation constants and code validators for various card types including American Express, Visa, Mastercard, Discover, Diners, and VPay. Following the instantiation, invoke the credit card validation method on the Generic Validator with a numeric string input to confirm that the method executes without encountering a null pointer exception that would indicate a circular dependency in the static initialization chain between the two validator classes. Assert that the validation call completes successfully, demonstrating that the Generic Validator can access the Credit Card Validator's static members after the Credit Card Validator instance has been created without triggering initialization order conflicts. This test addresses a defect where the Generic Validator's static reference to Credit Card Validator functionality would fail if invoked before explicit instantiation of a Credit Card Validator instance due to incomplete static initialization. JUnit 5.",
-            "project_name": "commons-validator",
-            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
-            "method_signature": "testGenericValidatorCircularDependency()",
-            "abstraction_level": "medium",
-            "is_bdd": false
+    "structured_eval": {
+      "obj_creation_recall": 0.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 0.0,
+      "callable_precision": 0.0,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.5714,
+      "method_coverage": 0.2917,
+      "line_coverage": 0.2453,
+      "branch_coverage": 0.4839
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "all_focal_methods": [
+        "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
+      ],
+      "covered_focal_methods": [],
+      "uncovered_focal_methods": [
+        "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
+      ],
+      "tp": 0,
+      "fn": 1,
+      "localization_recall": 0.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
         },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.apache.commons.validator.StaticInitializationTest",
-            "code": "package org.apache.commons.validator;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.validator.routines.CreditCardValidator;\n\npublic class StaticInitializationTest {\n\n    @Test\n    public void testCreditCardValidatorStaticInitialization() {\n        // Step 0: Prepare a numeric string input for validation\n        String numeric_string_input = \"4111111111111111\";\n\n        // Step 1: Instantiate Credit Card Validator to trigger its static initialization sequence\n        CreditCardValidator credit_card_validator_instance = new CreditCardValidator();\n\n        // Step 2: Invoke the credit card validation method on the Generic Validator with the numeric string input\n        boolean validation_result = GenericValidator.isCreditCard(numeric_string_input);\n\n        // Step 4: Assert that the validation call completes successfully\n        assertTrue(validation_result);\n    }\n}",
-            "method_signature": "testCreditCardValidatorStaticInitialization()"
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_class_db": 1,
+          "query_method_db": 2,
+          "get_method_details": 6,
+          "finalize": 1
         },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 0.0,
-            "callable_recall": 1.0,
-            "callable_precision": 0.6667,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
+        "tool_trajectories": [
+          [
+            "query_class_db",
+            "query_method_db",
+            "get_method_details",
+            "get_method_details",
+            "get_method_details",
+            "query_method_db",
+            "get_method_details",
+            "get_method_details",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_maven_dependencies": 1,
+          "get_method_details": 3,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
         },
-        "coverage_eval": {
-            "class_coverage": 0.6,
-            "method_coverage": 0.2571,
-            "line_coverage": 0.2292,
-            "branch_coverage": 0.625
+        "tool_trajectories": [
+          [
+            "get_maven_dependencies",
+            "get_method_details",
+            "get_method_details",
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 92857,
+    "output_tokens": 6492,
+    "llm_calls": 16
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 574,
+      "description": "Define a test class containing a test method annotated with `@Test` that verifies the fix for VALIDATOR-502, a circular dependency issue causing NPE in `GenericValidator.isCreditCard()`. Begin by instantiating a new `CreditCardValidator` using the no-argument constructor `new CreditCardValidator()` and assign the result to a local variable `ccv` of type `org.apache.commons.validator.routines.CreditCardValidator`. Immediately following this instantiation, invoke the static method `isCreditCard` on `org.apache.commons.validator.GenericValidator`, passing the String literal `\"1234567890\"` as the argument. The test contains no assertions; its purpose is to ensure that the sequence of instantiating `CreditCardValidator` followed by calling `GenericValidator.isCreditCard` does not throw a `NullPointerException`, thereby confirming the circular dependency has been resolved. The test uses no class-level annotations, no setup or teardown methods, and relies solely on JUnit 5 with the `@Test` annotation at the method level.",
+      "project_name": "commons-validator",
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.validator.CreditCardValidatorTest1",
+      "code": "package org.apache.commons.validator;\n\nimport org.junit.jupiter.api.Test;\nimport org.apache.commons.validator.routines.CreditCardValidator;\n\npublic class CreditCardValidatorTest1 {\n\n    @Test\n    void testNoNPEOnIsCreditCardAfterInstantiation() {\n        CreditCardValidator ccv = new CreditCardValidator();\n        GenericValidator.isCreditCard(\"1234567890\");\n    }\n}",
+      "method_signature": "testNoNPEOnIsCreditCardAfterInstantiation()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.4,
+      "method_coverage": 0.2571,
+      "line_coverage": 0.2569,
+      "branch_coverage": 0.625
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "all_focal_methods": [
+        "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
         },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
-            "method_signature": "testGenericValidatorCircularDependency()",
-            "all_focal_methods": [
-                "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 2,
+          "query_class_db": 2,
+          "search_reachable_methods_in_class": 2,
+          "get_method_details": 2,
+          "finalize": 1
         },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_class_db": 2,
-                    "get_method_details": 2,
-                    "search_reachable_methods_in_class": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_class_db",
-                        "query_class_db",
-                        "get_method_details",
-                        "search_reachable_methods_in_class",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_class_constructors_and_factories": 1,
-                    "get_method_details": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_class_constructors_and_factories",
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "query_method_db",
+            "query_class_db",
+            "query_class_db",
+            "search_reachable_methods_in_class",
+            "search_reachable_methods_in_class",
+            "get_method_details",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_class_constructors_and_factories": 1,
+          "get_method_details": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
         },
-        "input_tokens": 39535,
-        "output_tokens": 5049,
-        "llm_calls": 11
-    }
+        "tool_trajectories": [
+          [
+            "get_class_constructors_and_factories",
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 43164,
+    "output_tokens": 3232,
+    "llm_calls": 13
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 593,
+      "description": "Define a test class that verifies the absence of circular dependency issues during static initialization between the Generic Validator and Credit Card Validator components. Within the test method, instantiate a Credit Card Validator to trigger its static initialization sequence, which internally references validation constants and code validators for various card types including American Express, Visa, Mastercard, Discover, Diners, and VPay. Following the instantiation, invoke the credit card validation method on the Generic Validator with a numeric string input to confirm that the method executes without encountering a null pointer exception that would indicate a circular dependency in the static initialization chain between the two validator classes. Assert that the validation call completes successfully, demonstrating that the Generic Validator can access the Credit Card Validator's static members after the Credit Card Validator instance has been created without triggering initialization order conflicts. This test addresses a defect where the Generic Validator's static reference to Credit Card Validator functionality would fail if invoked before explicit instantiation of a Credit Card Validator instance due to incomplete static initialization. JUnit 5.",
+      "project_name": "commons-validator",
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.validator.StaticInitializationTest",
+      "code": "package org.apache.commons.validator;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.validator.routines.CreditCardValidator;\n\npublic class StaticInitializationTest {\n\n    @Test\n    public void testCreditCardValidatorStaticInitialization() {\n        // Step 0: Prepare a numeric string input for validation\n        String numeric_string_input = \"4111111111111111\";\n\n        // Step 1: Instantiate Credit Card Validator to trigger its static initialization sequence\n        CreditCardValidator credit_card_validator_instance = new CreditCardValidator();\n\n        // Step 2: Invoke the credit card validation method on the Generic Validator with the numeric string input\n        boolean validation_result = GenericValidator.isCreditCard(numeric_string_input);\n\n        // Step 4: Assert that the validation call completes successfully\n        assertTrue(validation_result);\n    }\n}",
+      "method_signature": "testCreditCardValidatorStaticInitialization()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.6667,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 0.6,
+      "method_coverage": 0.2571,
+      "line_coverage": 0.2292,
+      "branch_coverage": 0.625
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.validator.routines.CreditCardValidatorTest",
+      "method_signature": "testGenericValidatorCircularDependency()",
+      "all_focal_methods": [
+        "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.validator.GenericValidator.isCreditCard(java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_class_db": 2,
+          "get_method_details": 2,
+          "search_reachable_methods_in_class": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "query_class_db",
+            "query_class_db",
+            "get_method_details",
+            "search_reachable_methods_in_class",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_class_constructors_and_factories": 1,
+          "get_method_details": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "get_class_constructors_and_factories",
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 39535,
+    "output_tokens": 5049,
+    "llm_calls": 11
+  }
 ]

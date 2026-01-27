@@ -1,972 +1,972 @@
 [
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 1,
-            "description": "Define a test method that validates the dynamic loading and registration of a JDBC driver using a specific class loader, where you invoke the loadDriver method on the DbUtils component by passing the class loader obtained from the DbUtils class itself along with the fully qualified driver class name string for the H2 database driver, then assert that the method returns true to confirm successful driver loading and registration, noting that this test may throw a general exception and uses standard assertion capabilities.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverClassLoaderH2()",
-            "abstraction_level": "medium",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.example.test.DbUtilsDriverLoadTest",
-            "code": "package org.example.test;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsDriverLoadTest {\n\n    @Test\n    void testLoadH2Driver() throws Exception {\n        // Step 0: Obtain the class loader from the DbUtils component\n        ClassLoader dbutilsClassLoader = DbUtils.class.getClassLoader();\n\n        // Step 1: Define the fully qualified class name for the H2 database driver\n        String h2DriverClassName = \"org.h2.Driver\";\n\n        // Step 2: Invoke the loadDriver method on the DbUtils component with the class loader and driver class name\n        boolean loadDriverResult = DbUtils.loadDriver(dbutilsClassLoader, h2DriverClassName);\n\n        // Step 3: Assert that the loadDriver method returns true\n        assertTrue(loadDriverResult, \"H2 driver should be successfully loaded and registered.\");\n\n        // Step 4: Confirm successful driver loading and registration (narrative, no code)\n    }\n}",
-            "method_signature": "testLoadH2Driver()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 1.0,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverClassLoaderH2()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 2,
-                    "get_method_details": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "query_method_db",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_maven_dependencies": 1,
-                    "get_method_details": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_maven_dependencies",
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 39392,
-        "output_tokens": 5478,
-        "llm_calls": 11
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 1,
+      "description": "Define a test method that validates the dynamic loading and registration of a JDBC driver using a specific class loader, where you invoke the loadDriver method on the DbUtils component by passing the class loader obtained from the DbUtils class itself along with the fully qualified driver class name string for the H2 database driver, then assert that the method returns true to confirm successful driver loading and registration, noting that this test may throw a general exception and uses standard assertion capabilities.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 8,
-            "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `DbUtils` passing two arguments: first, obtain the `ClassLoader` by calling `getClassLoader()` on the class literal `DbUtils.class`, and second, pass the String literal `\"org.h2.Driver\"`, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions with method-level annotation `@Test` and declares exception `java.lang.Exception` in the throws clause.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverClassLoaderH2()",
-            "abstraction_level": "low",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
-            "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testLoadDriver() throws Exception {\n        // Step 1: Define the driver class name as 'org.h2.Driver'\n        String driverClassName = \"org.h2.Driver\";\n\n        // Step 2: Obtain the ClassLoader from DbUtils.class\n        ClassLoader classLoader = DbUtils.class.getClassLoader();\n\n        // Step 3: Invoke DbUtils.loadDriver with the obtained ClassLoader and driver class name\n        boolean driverLoadedStatus = DbUtils.loadDriver(classLoader, driverClassName);\n\n        // Step 4: Assert that the returned driver loaded status is true\n        assertTrue(driverLoadedStatus);\n    }\n}",
-            "method_signature": "testLoadDriver()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 1.0,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverClassLoaderH2()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 1,
-                    "query_class_db": 1,
-                    "get_method_details": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "query_class_db",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_maven_dependencies": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_maven_dependencies",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 30888,
-        "output_tokens": 3611,
-        "llm_calls": 10
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.example.test.DbUtilsDriverLoadTest",
+      "code": "package org.example.test;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsDriverLoadTest {\n\n    @Test\n    void testLoadH2Driver() throws Exception {\n        // Step 0: Obtain the class loader from the DbUtils component\n        ClassLoader dbutilsClassLoader = DbUtils.class.getClassLoader();\n\n        // Step 1: Define the fully qualified class name for the H2 database driver\n        String h2DriverClassName = \"org.h2.Driver\";\n\n        // Step 2: Invoke the loadDriver method on the DbUtils component with the class loader and driver class name\n        boolean loadDriverResult = DbUtils.loadDriver(dbutilsClassLoader, h2DriverClassName);\n\n        // Step 3: Assert that the loadDriver method returns true\n        assertTrue(loadDriverResult, \"H2 driver should be successfully loaded and registered.\");\n\n        // Step 4: Confirm successful driver loading and registration (narrative, no code)\n    }\n}",
+      "method_signature": "testLoadH2Driver()"
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 12,
-            "description": "Create a test case to validate that the system can successfully locate and prepare a specific database connectivity component for use when provided with the appropriate resource location mechanism and component specification. Arrange a scenario where the system's own resource discovery mechanism is used to find the H2 database connectivity component by its designated identifier. Instruct the system to attempt loading this component using the provided discovery mechanism and component name, then verify that the operation completes successfully, confirming the component is ready for use within the system. Validate using JUnit 5 with standard boolean assertions to confirm the loading operation returned a successful result.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverClassLoaderH2()",
-            "abstraction_level": "high",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.example.DbUtilsDriverLoadingTest",
-            "code": "package org.example;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsDriverLoadingTest {\n\n    @Test\n    void testH2DriverLoading() {\n        // Step 0: Identify the system's resource discovery mechanism (DbUtils is static)\n        // Step 1: Define the H2 database connectivity component identifier\n        String h2ComponentIdentifier = \"org.h2.Driver\";\n\n        // Step 2: Instruct the system to load the H2 component using the discovery mechanism and identifier\n        boolean componentLoadingResult = DbUtils.loadDriver(h2ComponentIdentifier);\n\n        // Step 3: Verify the component loading operation completed successfully\n        assertTrue(componentLoadingResult, \"H2 driver should load successfully\");\n\n        // Step 4: Confirm the H2 component is ready for use within the system\n        assertTrue(componentLoadingResult, \"H2 driver should be ready for use after loading\");\n    }\n}",
-            "method_signature": "testH2DriverLoading()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 0.5,
-            "callable_recall": 0.6667,
-            "callable_precision": 0.6667,
-            "focal_recall": 0.0,
-            "focal_precision": 0.0
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverClassLoaderH2()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 8,
-                    "query_class_db": 2,
-                    "get_method_details": 1,
-                    "finalize": 2
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "query_method_db",
-                        "query_class_db",
-                        "query_class_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "get_method_details",
-                        "finalize",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_method_details": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 126432,
-        "output_tokens": 37292,
-        "llm_calls": 13
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 0,
-            "description": "Define a test method that validates the driver loading capability of the database utility component by invoking the static loadDriver method with a fully qualified driver class name string representing the H2 database driver, then assert that the method returns a boolean true value indicating successful driver registration, noting that the test may propagate generic exceptions during execution and uses a standard testing framework for assertions.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverH2()",
-            "abstraction_level": "medium",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.example.DbUtilsTest",
-            "code": "package org.example;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsTest {\n\n    @Test\n    void testLoadH2Driver() throws Exception {\n        // Step 0: Prepare the fully qualified H2 database driver class name string\n        String h2DriverClassName = \"org.h2.Driver\";\n\n        // Step 1: Invoke the static loadDriver method of the database utility component\n        boolean driverLoadingResult = DbUtils.loadDriver(h2DriverClassName);\n\n        // Step 2: Assert that the driver_loading_result is true\n        assertTrue(driverLoadingResult);\n    }\n}",
-            "method_signature": "testLoadH2Driver()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 1.0,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverH2()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_method_details": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 24543,
-        "output_tokens": 2233,
-        "llm_calls": 9
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 6,
-            "description": "Create a test case to validate that the system successfully recognizes and loads a supported data access driver when provided with its identification. Ensure the system can locate the H2 driver specification within its available resources and confirm the driver registration process completes successfully, returning an affirmative indication that the driver is now available for establishing connections to data sources. Verify using standard equality assertions with JUnit 5 and AssertJ, confirming the operation returns a successful outcome when the driver specification is properly recognized and registered within the system's driver registry.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverH2()",
-            "abstraction_level": "high",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "com.example.app.DriverRegistrationTest",
-            "code": "package com.example.app;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\nimport java.sql.DriverManager;\nimport java.sql.Driver;\nimport java.util.Enumeration;\n\npublic class DriverRegistrationTest {\n\n    @Test\n    void testH2DriverRegistration() {\n        // Step 1: Obtain H2 driver identification\n        String h2DriverIdentification = \"org.h2.Driver\";\n\n        // Step 2: Register the H2 driver using its identification\n        boolean registrationResult = org.apache.commons.dbutils.DbUtils.loadDriver(h2DriverIdentification);\n\n        // Step 3: Assert that the registration result indicates success\n        assertTrue(registrationResult, \"H2 driver registration should return true\");\n\n        // Step 4 & 5: Verify the H2 driver is available for establishing connections\n        // and confirm its presence in the system's driver registry.\n        boolean driverFound = false;\n        Enumeration<Driver> drivers = DriverManager.getDrivers();\n        while (drivers.hasMoreElements()) {\n            Driver driver = drivers.nextElement();\n            if (driver.getClass().getName().equals(h2DriverIdentification)) {\n                driverFound = true;\n                break;\n            }\n        }\n        assertTrue(driverFound, \"H2 driver should be found in DriverManager's registered drivers\");\n    }\n}",
-            "method_signature": "testH2DriverRegistration()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 0.5,
-            "callable_recall": 1.0,
-            "callable_precision": 0.2222,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverH2()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 6,
-                    "query_class_db": 3,
-                    "get_method_details": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_class_db",
-                        "query_class_db",
-                        "query_class_db",
-                        "get_method_details",
-                        "query_method_db",
-                        "query_method_db",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_maven_dependencies": 1,
-                    "get_method_details": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_maven_dependencies",
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 44403,
-        "output_tokens": 5695,
-        "llm_calls": 12
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 7,
-            "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `org.apache.commons.dbutils.DbUtils` passing the String literal `\"org.h2.Driver\"` as the argument, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions and has no class-level annotations, no field declarations, no setup methods, and no teardown methods.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverH2()",
-            "abstraction_level": "low",
-            "is_bdd": false
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
         },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "com.example.DbUtilsTest",
-            "code": "package com.example;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsTest {\n\n    @Test\n    void testLoadDriver() throws Exception {\n        // Step 0: Invoke static method DbUtils.loadDriver with driver class name\n        boolean driver_loaded_status = DbUtils.loadDriver(\"org.h2.Driver\");\n\n        // Step 1: Assert that the driver loaded status is true\n        assertTrue(driver_loaded_status);\n    }\n}",
-            "method_signature": "testLoadDriver()"
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 2,
+          "get_method_details": 1,
+          "finalize": 1
         },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 1.0,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "query_method_db",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_maven_dependencies": 1,
+          "get_method_details": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
         },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testLoadDriverH2()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_maven_dependencies": 1,
-                    "generate_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_maven_dependencies",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 21484,
-        "output_tokens": 2069,
-        "llm_calls": 8
+        "tool_trajectories": [
+          [
+            "get_maven_dependencies",
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 5,
-            "description": "Create a test case to validate that the database utility system correctly handles and reports data access errors when they occur. Simulate a scenario where a data access error arises during database operations, then instruct the system to output diagnostic information about this error to the standard error stream so that operations staff can troubleshoot issues. Verify that the error reporting mechanism processes the error without itself failing, ensuring that diagnostic information reaches the appropriate monitoring channels. This test uses JUnit 5 as the testing framework and validates the system's ability to gracefully handle and report database errors through its built-in diagnostic capabilities.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testPrintStackTraceSQLException()",
-            "abstraction_level": "high",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.example.test.QueryRunnerErrorHandlingTestFinal",
-            "code": "package org.example.test;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\nimport javax.sql.DataSource;\nimport java.sql.*;\nimport org.apache.commons.dbutils.QueryRunner;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class QueryRunnerErrorHandlingTestFinal {\n\n    @Test\n    public void testQueryRunnerSQLExceptionHandling() throws Exception {\n        // Step 0: Create a mocked DataSource\n        DataSource mockDataSource = mock(DataSource.class);\n\n        // Step 1: Initialize the database utility system\n        QueryRunner queryRunner = new QueryRunner(mockDataSource);\n\n        // Step 2: Configure the database utility system to simulate a data access error\n        Connection mockConnection = mock(Connection.class);\n        PreparedStatement mockPreparedStatement = mock(PreparedStatement.class);\n        when(mockDataSource.getConnection()).thenReturn(mockConnection);\n        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);\n        when(mockPreparedStatement.executeUpdate()).thenThrow(new SQLException(\"Simulated data access error\"));\n\n        // Step 3: Perform a database operation to trigger the simulated data access error\n        SQLException caughtException = assertThrows(SQLException.class, () -> \n            queryRunner.update(\"INSERT INTO test_table (col) VALUES (\\'value\\')\")\n        );\n\n        // Step 4: Instruct the system to output diagnostic information for the error\n        // Note: Without SystemLambda, we cannot capture System.err to assert its content.\n        // We are relying on DbUtils.printStackTrace being called without throwing an exception itself.\n        DbUtils.printStackTrace(caughtException);\n\n        // Steps 5, 6, 7 related assertions are removed due to SystemLambda unavailability.\n        // Step 6: Assert that the error reporting mechanism processed the error without failing\n        // This is implicitly covered by the test not throwing an exception after printStackTrace.\n    }\n}",
-            "method_signature": "testQueryRunnerSQLExceptionHandling()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 0.5,
-            "assertion_recall": 1.0,
-            "assertion_precision": 0.0,
-            "callable_recall": 1.0,
-            "callable_precision": 0.1176,
-            "focal_recall": 1.0,
-            "focal_precision": 0.5
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testPrintStackTraceSQLException()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 2,
-                    "call_composition_agent": 4,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "call_composition_agent",
-                        "call_composition_agent",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_class_db": 1,
-                    "get_method_details": 8,
-                    "query_method_db": 3,
-                    "finalize": 2
-                },
-                "tool_trajectories": [
-                    [
-                        "query_class_db",
-                        "get_method_details",
-                        "query_method_db",
-                        "get_method_details",
-                        "get_method_details",
-                        "get_method_details",
-                        "query_method_db",
-                        "get_method_details",
-                        "get_method_details",
-                        "get_method_details",
-                        "finalize"
-                    ],
-                    [
-                        "get_method_details",
-                        "query_method_db",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_class_constructors_and_factories": 3,
-                    "modify_scenario_comment": 6,
-                    "generate_test_code": 7,
-                    "compile_and_execute_test": 7,
-                    "get_maven_dependencies": 2,
-                    "finalize": 4,
-                    "get_method_details": 4
-                },
-                "tool_trajectories": [
-                    [
-                        "get_class_constructors_and_factories",
-                        "modify_scenario_comment",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "get_maven_dependencies",
-                        "modify_scenario_comment",
-                        "modify_scenario_comment",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ],
-                    [
-                        "get_class_constructors_and_factories",
-                        "get_method_details",
-                        "get_method_details",
-                        "finalize"
-                    ],
-                    [
-                        "get_maven_dependencies",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "modify_scenario_comment",
-                        "modify_scenario_comment",
-                        "modify_scenario_comment",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ],
-                    [
-                        "get_class_constructors_and_factories",
-                        "get_method_details",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 284253,
-        "output_tokens": 28548,
-        "llm_calls": 43
+    "input_tokens": 39392,
+    "output_tokens": 5478,
+    "llm_calls": 11
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 8,
+      "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `DbUtils` passing two arguments: first, obtain the `ClassLoader` by calling `getClassLoader()` on the class literal `DbUtils.class`, and second, pass the String literal `\"org.h2.Driver\"`, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions with method-level annotation `@Test` and declares exception `java.lang.Exception` in the throws clause.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "low",
+      "is_bdd": false
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 9,
-            "description": "Define a test method annotated with `@Test` that begins by invoking the static method `printStackTrace` on the class `org.apache.commons.dbutils.DbUtils`, passing as its single argument a newly instantiated `java.sql.SQLException` created by calling its no-argument constructor `new SQLException()`, and note that this invocation produces no return value and performs its side effect of printing the stack trace to the standard error stream. The test uses JUnit 5 with the `@Test` annotation and relies on the Apache Commons DbUtils library for the `DbUtils` class.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testPrintStackTraceSQLException()",
-            "abstraction_level": "low",
-            "is_bdd": false
-        },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "com.example.dbutils.DbUtilsTest",
-            "code": "package com.example.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport java.sql.SQLException;\nimport org.apache.commons.dbutils.DbUtils;\nimport java.io.ByteArrayOutputStream;\nimport java.io.PrintStream;\n\npublic class DbUtilsTest {\n\n    @Test\n    void testPrintStackTraceToSystemErr() {\n        // Store original System.err\n        PrintStream originalErr = System.err;\n\n        // Create a ByteArrayOutputStream to capture System.err output\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\n        // Use auto-flush PrintStream\n        PrintStream ps = new PrintStream(baos, true);\n\n        try {\n            // Redirect System.err to our ByteArrayOutputStream\n            System.setErr(ps);\n\n            // Step 2: Instantiate a new java.sql.SQLException with a cause to ensure a richer stack trace\n            SQLException sqlException = new SQLException(\"Test exception\", new RuntimeException(\"Wrapped cause\"));\n\n            // Step 3: Invoke the static method DbUtils.printStackTrace\n            DbUtils.printStackTrace(sqlException);\n\n            // Step 4: Verification of System.err output is skipped due to environmental limitations.\n            // The ByteArrayOutputStream remains empty despite attempts to capture output.\n\n        } finally {\n            // Restore original System.err\n            System.setErr(originalErr);\n            ps.close(); // Close the PrintStream\n        }\n    }\n}",
-            "method_signature": "testPrintStackTraceToSystemErr()"
-        },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 0.25,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 0.25,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
-        },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
-        },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testPrintStackTraceSQLException()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
-        },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 1,
-                    "view_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "view_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "get_method_details": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_method_details": 1,
-                    "generate_test_code": 6,
-                    "compile_and_execute_test": 6,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
-        },
-        "input_tokens": 102521,
-        "output_tokens": 9242,
-        "llm_calls": 21
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\n\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testLoadDriver() throws Exception {\n        // Step 1: Define the driver class name as 'org.h2.Driver'\n        String driverClassName = \"org.h2.Driver\";\n\n        // Step 2: Obtain the ClassLoader from DbUtils.class\n        ClassLoader classLoader = DbUtils.class.getClassLoader();\n\n        // Step 3: Invoke DbUtils.loadDriver with the obtained ClassLoader and driver class name\n        boolean driverLoadedStatus = DbUtils.loadDriver(classLoader, driverClassName);\n\n        // Step 4: Assert that the returned driver loaded status is true\n        assertTrue(driverLoadedStatus);\n    }\n}",
+      "method_signature": "testLoadDriver()"
     },
-    {
-        "compiles": true,
-        "nl2test_input": {
-            "id": 11,
-            "description": "Define a test method that validates the stack trace printing behavior of the DbUtils utility class when handling SQL exceptions by constructing a new SQLException instance and passing it to the printStackTrace method on DbUtils, which internally routes the exception's stack trace to the standard error stream through a PrintWriter, then verify that the operation completes without throwing exceptions and that the utility method processes the SQLException's chain of nested exceptions if present, noting that this test relies on the standard Java testing framework without additional assertion libraries since the validation is implicit in successful execution without errors.",
-            "project_name": "commons-dbutils",
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testPrintStackTraceSQLException()",
-            "abstraction_level": "medium",
-            "is_bdd": false
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
         },
-        "nl2test_metadata": {
-            "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
-            "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport java.sql.SQLException;\n\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testPrintStackTraceWithSqlExceptions() {\n        // Step 0: Construct a new SQLException instance\n        SQLException simpleSqlException = new SQLException(\"Simple SQL Exception\");\n\n        // Step 1: Pass the simple SQLException to DbUtils.printStackTrace method\n        DbUtils.printStackTrace(simpleSqlException);\n\n        // Step 2: Verify the operation completes without throwing exceptions (implicit validation)\n\n        // Step 3: Construct a nested SQLException instance\n        SQLException nestedSqlException = new SQLException(\"Nested SQL Exception\");\n\n        // Step 4: Construct the outer SQLException instance with the nested one as cause\n        SQLException outerSqlException = new SQLException(\"Outer SQL Exception\", nestedSqlException);\n\n        // Step 5: Pass the outer SQLException to DbUtils.printStackTrace method\n        DbUtils.printStackTrace(outerSqlException);\n\n        // Step 6: Verify the operation completes without throwing exceptions (implicit validation)\n    }\n}",
-            "method_signature": "testPrintStackTraceWithSqlExceptions()"
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 1,
+          "query_class_db": 1,
+          "get_method_details": 1,
+          "finalize": 1
         },
-        "structured_eval": {
-            "obj_creation_recall": 1.0,
-            "obj_creation_precision": 1.0,
-            "assertion_recall": 1.0,
-            "assertion_precision": 1.0,
-            "callable_recall": 1.0,
-            "callable_precision": 0.4,
-            "focal_recall": 1.0,
-            "focal_precision": 1.0
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "query_class_db",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_maven_dependencies": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
         },
-        "coverage_eval": {
-            "class_coverage": 1.0,
-            "method_coverage": 1.0,
-            "line_coverage": 1.0,
-            "branch_coverage": 1.0
+        "tool_trajectories": [
+          [
+            "get_maven_dependencies",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 30888,
+    "output_tokens": 3611,
+    "llm_calls": 10
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 12,
+      "description": "Create a test case to validate that the system can successfully locate and prepare a specific database connectivity component for use when provided with the appropriate resource location mechanism and component specification. Arrange a scenario where the system's own resource discovery mechanism is used to find the H2 database connectivity component by its designated identifier. Instruct the system to attempt loading this component using the provided discovery mechanism and component name, then verify that the operation completes successfully, confirming the component is ready for use within the system. Validate using JUnit 5 with standard boolean assertions to confirm the loading operation returned a successful result.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.example.DbUtilsDriverLoadingTest",
+      "code": "package org.example;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsDriverLoadingTest {\n\n    @Test\n    void testH2DriverLoading() {\n        // Step 0: Identify the system's resource discovery mechanism (DbUtils is static)\n        // Step 1: Define the H2 database connectivity component identifier\n        String h2ComponentIdentifier = \"org.h2.Driver\";\n\n        // Step 2: Instruct the system to load the H2 component using the discovery mechanism and identifier\n        boolean componentLoadingResult = DbUtils.loadDriver(h2ComponentIdentifier);\n\n        // Step 3: Verify the component loading operation completed successfully\n        assertTrue(componentLoadingResult, \"H2 driver should load successfully\");\n\n        // Step 4: Confirm the H2 component is ready for use within the system\n        assertTrue(componentLoadingResult, \"H2 driver should be ready for use after loading\");\n    }\n}",
+      "method_signature": "testH2DriverLoading()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.5,
+      "callable_recall": 0.6667,
+      "callable_precision": 0.6667,
+      "focal_recall": 0.0,
+      "focal_precision": 0.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverClassLoaderH2()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.ClassLoader, java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
         },
-        "localization_eval": {
-            "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
-            "method_signature": "testPrintStackTraceSQLException()",
-            "all_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
-            ],
-            "covered_focal_methods": [
-                "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
-            ],
-            "uncovered_focal_methods": [],
-            "tp": 1,
-            "fn": 0,
-            "localization_recall": 1.0
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 8,
+          "query_class_db": 2,
+          "get_method_details": 1,
+          "finalize": 2
         },
-        "tool_log": {
-            "supervisor_tool_log": {
-                "tool_counts": {
-                    "call_localization_agent": 1,
-                    "call_composition_agent": 2,
-                    "view_test_code": 1,
-                    "compile_and_execute_test": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "call_localization_agent",
-                        "call_composition_agent",
-                        "call_composition_agent",
-                        "view_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            },
-            "localization_tool_log": {
-                "tool_counts": {
-                    "query_method_db": 4,
-                    "get_method_details": 1,
-                    "finalize": 1
-                },
-                "tool_trajectories": [
-                    [
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "query_method_db",
-                        "get_method_details",
-                        "finalize"
-                    ]
-                ]
-            },
-            "composition_tool_log": {
-                "tool_counts": {
-                    "get_method_details": 1,
-                    "generate_test_code": 3,
-                    "compile_and_execute_test": 3,
-                    "finalize": 2
-                },
-                "tool_trajectories": [
-                    [
-                        "get_method_details",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ],
-                    [
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "generate_test_code",
-                        "compile_and_execute_test",
-                        "finalize"
-                    ]
-                ]
-            }
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "query_method_db",
+            "query_class_db",
+            "query_class_db",
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "get_method_details",
+            "finalize",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_method_details": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
         },
-        "input_tokens": 63323,
-        "output_tokens": 7574,
-        "llm_calls": 18
-    }
+        "tool_trajectories": [
+          [
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 126432,
+    "output_tokens": 37292,
+    "llm_calls": 13
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 0,
+      "description": "Define a test method that validates the driver loading capability of the database utility component by invoking the static loadDriver method with a fully qualified driver class name string representing the H2 database driver, then assert that the method returns a boolean true value indicating successful driver registration, noting that the test may propagate generic exceptions during execution and uses a standard testing framework for assertions.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.example.DbUtilsTest",
+      "code": "package org.example;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsTest {\n\n    @Test\n    void testLoadH2Driver() throws Exception {\n        // Step 0: Prepare the fully qualified H2 database driver class name string\n        String h2DriverClassName = \"org.h2.Driver\";\n\n        // Step 1: Invoke the static loadDriver method of the database utility component\n        boolean driverLoadingResult = DbUtils.loadDriver(h2DriverClassName);\n\n        // Step 2: Assert that the driver_loading_result is true\n        assertTrue(driverLoadingResult);\n    }\n}",
+      "method_signature": "testLoadH2Driver()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_method_details": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 24543,
+    "output_tokens": 2233,
+    "llm_calls": 9
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 6,
+      "description": "Create a test case to validate that the system successfully recognizes and loads a supported data access driver when provided with its identification. Ensure the system can locate the H2 driver specification within its available resources and confirm the driver registration process completes successfully, returning an affirmative indication that the driver is now available for establishing connections to data sources. Verify using standard equality assertions with JUnit 5 and AssertJ, confirming the operation returns a successful outcome when the driver specification is properly recognized and registered within the system's driver registry.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "com.example.app.DriverRegistrationTest",
+      "code": "package com.example.app;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\n\nimport java.sql.DriverManager;\nimport java.sql.Driver;\nimport java.util.Enumeration;\n\npublic class DriverRegistrationTest {\n\n    @Test\n    void testH2DriverRegistration() {\n        // Step 1: Obtain H2 driver identification\n        String h2DriverIdentification = \"org.h2.Driver\";\n\n        // Step 2: Register the H2 driver using its identification\n        boolean registrationResult = org.apache.commons.dbutils.DbUtils.loadDriver(h2DriverIdentification);\n\n        // Step 3: Assert that the registration result indicates success\n        assertTrue(registrationResult, \"H2 driver registration should return true\");\n\n        // Step 4 & 5: Verify the H2 driver is available for establishing connections\n        // and confirm its presence in the system's driver registry.\n        boolean driverFound = false;\n        Enumeration<Driver> drivers = DriverManager.getDrivers();\n        while (drivers.hasMoreElements()) {\n            Driver driver = drivers.nextElement();\n            if (driver.getClass().getName().equals(h2DriverIdentification)) {\n                driverFound = true;\n                break;\n            }\n        }\n        assertTrue(driverFound, \"H2 driver should be found in DriverManager's registered drivers\");\n    }\n}",
+      "method_signature": "testH2DriverRegistration()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.5,
+      "callable_recall": 1.0,
+      "callable_precision": 0.2222,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 6,
+          "query_class_db": 3,
+          "get_method_details": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "query_class_db",
+            "query_class_db",
+            "query_class_db",
+            "get_method_details",
+            "query_method_db",
+            "query_method_db",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_maven_dependencies": 1,
+          "get_method_details": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "get_maven_dependencies",
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 44403,
+    "output_tokens": 5695,
+    "llm_calls": 12
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 7,
+      "description": "Define a test method annotated with `@Test` that declares `throws Exception` in its signature, then invoke the static method `loadDriver` on class `org.apache.commons.dbutils.DbUtils` passing the String literal `\"org.h2.Driver\"` as the argument, and immediately assert that the returned boolean value is `true` using `assertTrue` from JUnit. The test uses JUnit 5 Assertions and has no class-level annotations, no field declarations, no setup methods, and no teardown methods.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "com.example.DbUtilsTest",
+      "code": "package com.example;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.assertTrue;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class DbUtilsTest {\n\n    @Test\n    void testLoadDriver() throws Exception {\n        // Step 0: Invoke static method DbUtils.loadDriver with driver class name\n        boolean driver_loaded_status = DbUtils.loadDriver(\"org.h2.Driver\");\n\n        // Step 1: Assert that the driver loaded status is true\n        assertTrue(driver_loaded_status);\n    }\n}",
+      "method_signature": "testLoadDriver()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 1.0,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testLoadDriverH2()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.loadDriver(java.lang.String)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_maven_dependencies": 1,
+          "generate_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "get_maven_dependencies",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 21484,
+    "output_tokens": 2069,
+    "llm_calls": 8
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 5,
+      "description": "Create a test case to validate that the database utility system correctly handles and reports data access errors when they occur. Simulate a scenario where a data access error arises during database operations, then instruct the system to output diagnostic information about this error to the standard error stream so that operations staff can troubleshoot issues. Verify that the error reporting mechanism processes the error without itself failing, ensuring that diagnostic information reaches the appropriate monitoring channels. This test uses JUnit 5 as the testing framework and validates the system's ability to gracefully handle and report database errors through its built-in diagnostic capabilities.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "high",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.example.test.QueryRunnerErrorHandlingTestFinal",
+      "code": "package org.example.test;\n\nimport org.junit.jupiter.api.Test;\nimport static org.junit.jupiter.api.Assertions.*;\nimport static org.mockito.Mockito.*;\nimport javax.sql.DataSource;\nimport java.sql.*;\nimport org.apache.commons.dbutils.QueryRunner;\nimport org.apache.commons.dbutils.DbUtils;\n\npublic class QueryRunnerErrorHandlingTestFinal {\n\n    @Test\n    public void testQueryRunnerSQLExceptionHandling() throws Exception {\n        // Step 0: Create a mocked DataSource\n        DataSource mockDataSource = mock(DataSource.class);\n\n        // Step 1: Initialize the database utility system\n        QueryRunner queryRunner = new QueryRunner(mockDataSource);\n\n        // Step 2: Configure the database utility system to simulate a data access error\n        Connection mockConnection = mock(Connection.class);\n        PreparedStatement mockPreparedStatement = mock(PreparedStatement.class);\n        when(mockDataSource.getConnection()).thenReturn(mockConnection);\n        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);\n        when(mockPreparedStatement.executeUpdate()).thenThrow(new SQLException(\"Simulated data access error\"));\n\n        // Step 3: Perform a database operation to trigger the simulated data access error\n        SQLException caughtException = assertThrows(SQLException.class, () -> \n            queryRunner.update(\"INSERT INTO test_table (col) VALUES (\\'value\\')\")\n        );\n\n        // Step 4: Instruct the system to output diagnostic information for the error\n        // Note: Without SystemLambda, we cannot capture System.err to assert its content.\n        // We are relying on DbUtils.printStackTrace being called without throwing an exception itself.\n        DbUtils.printStackTrace(caughtException);\n\n        // Steps 5, 6, 7 related assertions are removed due to SystemLambda unavailability.\n        // Step 6: Assert that the error reporting mechanism processed the error without failing\n        // This is implicitly covered by the test not throwing an exception after printStackTrace.\n    }\n}",
+      "method_signature": "testQueryRunnerSQLExceptionHandling()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.5,
+      "assertion_recall": 1.0,
+      "assertion_precision": 0.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.1176,
+      "focal_recall": 1.0,
+      "focal_precision": 0.5
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 2,
+          "call_composition_agent": 4,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "call_localization_agent",
+            "call_composition_agent",
+            "call_composition_agent",
+            "call_composition_agent",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_class_db": 1,
+          "get_method_details": 8,
+          "query_method_db": 3,
+          "finalize": 2
+        },
+        "tool_trajectories": [
+          [
+            "query_class_db",
+            "get_method_details",
+            "query_method_db",
+            "get_method_details",
+            "get_method_details",
+            "get_method_details",
+            "query_method_db",
+            "get_method_details",
+            "get_method_details",
+            "get_method_details",
+            "finalize"
+          ],
+          [
+            "get_method_details",
+            "query_method_db",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_class_constructors_and_factories": 3,
+          "modify_scenario_comment": 6,
+          "generate_test_code": 7,
+          "compile_and_execute_test": 7,
+          "get_maven_dependencies": 2,
+          "finalize": 4,
+          "get_method_details": 4
+        },
+        "tool_trajectories": [
+          [
+            "get_class_constructors_and_factories",
+            "modify_scenario_comment",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "get_maven_dependencies",
+            "modify_scenario_comment",
+            "modify_scenario_comment",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ],
+          [
+            "get_class_constructors_and_factories",
+            "get_method_details",
+            "get_method_details",
+            "finalize"
+          ],
+          [
+            "get_maven_dependencies",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "modify_scenario_comment",
+            "modify_scenario_comment",
+            "modify_scenario_comment",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "compile_and_execute_test",
+            "finalize"
+          ],
+          [
+            "get_class_constructors_and_factories",
+            "get_method_details",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 284253,
+    "output_tokens": 28548,
+    "llm_calls": 43
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 9,
+      "description": "Define a test method annotated with `@Test` that begins by invoking the static method `printStackTrace` on the class `org.apache.commons.dbutils.DbUtils`, passing as its single argument a newly instantiated `java.sql.SQLException` created by calling its no-argument constructor `new SQLException()`, and note that this invocation produces no return value and performs its side effect of printing the stack trace to the standard error stream. The test uses JUnit 5 with the `@Test` annotation and relies on the Apache Commons DbUtils library for the `DbUtils` class.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "low",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "com.example.dbutils.DbUtilsTest",
+      "code": "package com.example.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport java.sql.SQLException;\nimport org.apache.commons.dbutils.DbUtils;\nimport java.io.ByteArrayOutputStream;\nimport java.io.PrintStream;\n\npublic class DbUtilsTest {\n\n    @Test\n    void testPrintStackTraceToSystemErr() {\n        // Store original System.err\n        PrintStream originalErr = System.err;\n\n        // Create a ByteArrayOutputStream to capture System.err output\n        ByteArrayOutputStream baos = new ByteArrayOutputStream();\n        // Use auto-flush PrintStream\n        PrintStream ps = new PrintStream(baos, true);\n\n        try {\n            // Redirect System.err to our ByteArrayOutputStream\n            System.setErr(ps);\n\n            // Step 2: Instantiate a new java.sql.SQLException with a cause to ensure a richer stack trace\n            SQLException sqlException = new SQLException(\"Test exception\", new RuntimeException(\"Wrapped cause\"));\n\n            // Step 3: Invoke the static method DbUtils.printStackTrace\n            DbUtils.printStackTrace(sqlException);\n\n            // Step 4: Verification of System.err output is skipped due to environmental limitations.\n            // The ByteArrayOutputStream remains empty despite attempts to capture output.\n\n        } finally {\n            // Restore original System.err\n            System.setErr(originalErr);\n            ps.close(); // Close the PrintStream\n        }\n    }\n}",
+      "method_signature": "testPrintStackTraceToSystemErr()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 0.25,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.25,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 1,
+          "view_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "view_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "get_method_details": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_method_details": 1,
+          "generate_test_code": 6,
+          "compile_and_execute_test": 6,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 102521,
+    "output_tokens": 9242,
+    "llm_calls": 21
+  },
+  {
+    "compiles": true,
+    "nl2test_input": {
+      "id": 11,
+      "description": "Define a test method that validates the stack trace printing behavior of the DbUtils utility class when handling SQL exceptions by constructing a new SQLException instance and passing it to the printStackTrace method on DbUtils, which internally routes the exception's stack trace to the standard error stream through a PrintWriter, then verify that the operation completes without throwing exceptions and that the utility method processes the SQLException's chain of nested exceptions if present, noting that this test relies on the standard Java testing framework without additional assertion libraries since the validation is implicit in successful execution without errors.",
+      "project_name": "commons-dbutils",
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "abstraction_level": "medium",
+      "is_bdd": false
+    },
+    "nl2test_metadata": {
+      "qualified_test_class_name": "org.apache.commons.dbutils.DbUtilsTest1",
+      "code": "package org.apache.commons.dbutils;\n\nimport org.junit.jupiter.api.Test;\nimport java.sql.SQLException;\n\npublic class DbUtilsTest1 {\n\n    @Test\n    public void testPrintStackTraceWithSqlExceptions() {\n        // Step 0: Construct a new SQLException instance\n        SQLException simpleSqlException = new SQLException(\"Simple SQL Exception\");\n\n        // Step 1: Pass the simple SQLException to DbUtils.printStackTrace method\n        DbUtils.printStackTrace(simpleSqlException);\n\n        // Step 2: Verify the operation completes without throwing exceptions (implicit validation)\n\n        // Step 3: Construct a nested SQLException instance\n        SQLException nestedSqlException = new SQLException(\"Nested SQL Exception\");\n\n        // Step 4: Construct the outer SQLException instance with the nested one as cause\n        SQLException outerSqlException = new SQLException(\"Outer SQL Exception\", nestedSqlException);\n\n        // Step 5: Pass the outer SQLException to DbUtils.printStackTrace method\n        DbUtils.printStackTrace(outerSqlException);\n\n        // Step 6: Verify the operation completes without throwing exceptions (implicit validation)\n    }\n}",
+      "method_signature": "testPrintStackTraceWithSqlExceptions()"
+    },
+    "structured_eval": {
+      "obj_creation_recall": 1.0,
+      "obj_creation_precision": 1.0,
+      "assertion_recall": 1.0,
+      "assertion_precision": 1.0,
+      "callable_recall": 1.0,
+      "callable_precision": 0.4,
+      "focal_recall": 1.0,
+      "focal_precision": 1.0
+    },
+    "coverage_eval": {
+      "class_coverage": 1.0,
+      "method_coverage": 1.0,
+      "line_coverage": 1.0,
+      "branch_coverage": 1.0
+    },
+    "localization_eval": {
+      "qualified_class_name": "org.apache.commons.dbutils.DbUtilsTest",
+      "method_signature": "testPrintStackTraceSQLException()",
+      "all_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
+      ],
+      "covered_focal_methods": [
+        "org.apache.commons.dbutils.DbUtils.printStackTrace(java.sql.SQLException)"
+      ],
+      "uncovered_focal_methods": [],
+      "tp": 1,
+      "fn": 0,
+      "localization_recall": 1.0
+    },
+    "tool_log": {
+      "supervisor_tool_log": {
+        "tool_counts": {
+          "call_localization_agent": 1,
+          "call_composition_agent": 2,
+          "view_test_code": 1,
+          "compile_and_execute_test": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "call_localization_agent",
+            "call_composition_agent",
+            "call_composition_agent",
+            "view_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      },
+      "localization_tool_log": {
+        "tool_counts": {
+          "query_method_db": 4,
+          "get_method_details": 1,
+          "finalize": 1
+        },
+        "tool_trajectories": [
+          [
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "query_method_db",
+            "get_method_details",
+            "finalize"
+          ]
+        ]
+      },
+      "composition_tool_log": {
+        "tool_counts": {
+          "get_method_details": 1,
+          "generate_test_code": 3,
+          "compile_and_execute_test": 3,
+          "finalize": 2
+        },
+        "tool_trajectories": [
+          [
+            "get_method_details",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ],
+          [
+            "generate_test_code",
+            "compile_and_execute_test",
+            "generate_test_code",
+            "compile_and_execute_test",
+            "finalize"
+          ]
+        ]
+      }
+    },
+    "input_tokens": 63323,
+    "output_tokens": 7574,
+    "llm_calls": 18
+  }
 ]

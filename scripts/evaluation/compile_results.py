@@ -19,15 +19,15 @@ from nltest.utils.statistics import (
 )
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_devstral_output"
+EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 OUTPUT_DIR = ROOT_DIR / "outputs" / "evaluation_stats"
 BUCKETED_FILTERED_DATASET_DIR = ROOT_DIR / "resources" / "filtered_bucketed_tests"
 BUCKETED_DATASET_FILE = "nl2test.json"
 
-# PRICING_MODEL = "minimax/minimax-m2.1"
-PRICING_MODEL = "devstral-small-latest"
-# PRICING_MODEL = "gemini-2.5-pro"
+# PRICING_MODEL = "gemini-2.5-flash"
+# PRICING_MODEL = "devstral-small-latest"
+PRICING_MODEL = "gemini-2.5-pro"
 # PRICING_MODEL = "qwen/qwen3-coder"
 
 ABSTRACTION_ORDER = ("high", "medium", "low")
@@ -81,8 +81,8 @@ MODEL_PRICING = {
         "output_per_million": 0.95,
     },
     "devstral-small-latest": {
-        "input_per_million": 0.0,
-        "output_per_million": 0.0,
+        "input_per_million": 0.1,
+        "output_per_million": 0.3,
     },
     "deepseek/deepseek-v3.2": {
         "input_per_million": 0.25,
@@ -105,12 +105,22 @@ FOCAL_BUCKET_NAMES = {
 STRUCTURAL_METRICS = (
     "obj_creation_recall",
     "obj_creation_precision",
+    "obj_creation_f1",
     "assertion_recall",
     "assertion_precision",
+    "assertion_f1",
     "callable_recall",
     "callable_precision",
+    "callable_f1",
     "focal_recall",
     "focal_precision",
+    "focal_f1",
+)
+F1_METRIC_PAIRS = (
+    ("obj_creation_precision", "obj_creation_recall", "obj_creation_f1"),
+    ("assertion_precision", "assertion_recall", "assertion_f1"),
+    ("callable_precision", "callable_recall", "callable_f1"),
+    ("focal_precision", "focal_recall", "focal_f1"),
 )
 COVERAGE_METRICS = (
     "class_coverage",
@@ -264,7 +274,10 @@ def build_bucket_test_map(dataset: NL2TestDataset) -> BucketTestMap:
         (dataset.tests_with_one_focal_methods, "one_focal"),
         (dataset.tests_with_two_focal_methods, "two_focal"),
         (dataset.tests_with_more_than_two_to_five_focal_methods, "three_to_five_focal"),
-        (dataset.tests_with_more_than_five_to_ten_focal_methods, "more_than_five_focal"),
+        (
+            dataset.tests_with_more_than_five_to_ten_focal_methods,
+            "more_than_five_focal",
+        ),
         (dataset.tests_with_more_than_ten_focal_methods, "more_than_five_focal"),
     ]
     for tests, bucket_name in buckets:
@@ -422,6 +435,23 @@ def parse_localization_eval(value: Any) -> LocalizationEval | None:
         return LocalizationEval.model_validate(value)
     except ValidationError:
         return None
+
+
+def calculate_f1(precision: float, recall: float) -> float:
+    """Calculate F1 score from precision and recall."""
+    if precision + recall == 0:
+        return 0.0
+    return 2 * (precision * recall) / (precision + recall)
+
+
+def append_structural_metrics_with_f1(metrics_map: MetricValues, source: Any) -> None:
+    """Append structural metrics including calculated F1 scores."""
+    for precision_name, recall_name, f1_name in F1_METRIC_PAIRS:
+        precision = float(getattr(source, precision_name))
+        recall = float(getattr(source, recall_name))
+        metrics_map[precision_name].append(precision)
+        metrics_map[recall_name].append(recall)
+        metrics_map[f1_name].append(calculate_f1(precision, recall))
 
 
 def append_metrics(
@@ -674,23 +704,19 @@ def main() -> None:
                 valid_entries += 1
 
             if has_structured:
-                append_metrics_pair(
-                    metrics,
-                    metrics_by_level[abstraction_level],
-                    entry.structured_eval,
-                    STRUCTURAL_METRICS,
+                append_structural_metrics_with_f1(metrics, entry.structured_eval)
+                append_structural_metrics_with_f1(
+                    metrics_by_level[abstraction_level], entry.structured_eval
                 )
                 if focal_bucket is not None:
-                    append_metrics(
+                    append_structural_metrics_with_f1(
                         metrics_by_focal_bucket[focal_bucket],
                         entry.structured_eval,
-                        STRUCTURAL_METRICS,
                     )
                 if focal_class_count_key is not None:
-                    append_metrics(
+                    append_structural_metrics_with_f1(
                         metrics_by_focal_class_count[focal_class_count_key],
                         entry.structured_eval,
-                        STRUCTURAL_METRICS,
                     )
             if has_coverage:
                 append_metrics_pair(

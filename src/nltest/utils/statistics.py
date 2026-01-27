@@ -10,6 +10,9 @@ from typing import Any, Dict, List, Mapping
 @dataclass(frozen=True)
 class DistributionSummary:
     mean: float
+    std: float
+    min: float
+    p10: float
     p25: float
     p50: float
     p75: float
@@ -42,14 +45,19 @@ def summarize_distribution(values: List[float]) -> DistributionSummary:
     """Compute distribution summary statistics for a list of values."""
     if not values:
         return DistributionSummary(
-            mean=0.0, p25=0.0, p50=0.0, p75=0.0, p90=0.0, max=0.0, count=0, total=0.0
+            mean=0.0, std=0.0, min=0.0, p10=0.0, p25=0.0, p50=0.0, p75=0.0, p90=0.0, max=0.0, count=0, total=0.0
         )
 
     sorted_values = sorted(values)
     total_sum = sum(values)
     mean_value = total_sum / len(values)
+    variance = sum((x - mean_value) ** 2 for x in values) / len(values)
+    std_value = math.sqrt(variance)
     return DistributionSummary(
         mean=mean_value,
+        std=std_value,
+        min=sorted_values[0],
+        p10=percentile(sorted_values, 10),
         p25=percentile(sorted_values, 25),
         p50=percentile(sorted_values, 50),
         p75=percentile(sorted_values, 75),
@@ -64,6 +72,9 @@ def distribution_to_dict(summary: DistributionSummary) -> Dict[str, Any]:
     """Convert a DistributionSummary to a dictionary."""
     return {
         "mean": summary.mean,
+        "std": summary.std,
+        "min": summary.min,
+        "p10": summary.p10,
         "p25": summary.p25,
         "p50": summary.p50,
         "p75": summary.p75,

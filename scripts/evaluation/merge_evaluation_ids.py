@@ -5,8 +5,9 @@ from typing import Dict, List, Set
 
 # === CONFIGURATION CONSTANTS ===
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
-SOURCE_DIR = ROOT_DIR / "resources" / "outputs" / "SOURCE"
-MERGE_DIR = ROOT_DIR / "resources" / "outputs" / "MERGE"
+SOURCE_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_qwen3_output"
+MERGE_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_qwen3_repair_output"
+OUTPUT_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_qwen3_output_updated"
 TEST2NL_FILE = ROOT_DIR / "resources" / "test2nl" / "filtered_dataset" / "test2nl.csv"
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"
 
@@ -60,7 +61,7 @@ def save_evaluation_results(json_path: Path, evaluations: List[dict]) -> None:
 
 
 def merge_missing_ids() -> None:
-    """Main function to merge missing evaluation IDs from MERGE_DIR into SOURCE_DIR."""
+    """Main function to merge missing evaluation IDs from MERGE_DIR into OUTPUT_DIR."""
     if not SOURCE_DIR.is_dir():
         print(f"Error: SOURCE_DIR not found: {SOURCE_DIR}")
         return
@@ -72,6 +73,10 @@ def merge_missing_ids() -> None:
     if not TEST2NL_FILE.is_file():
         print(f"Error: TEST2NL_FILE not found: {TEST2NL_FILE}")
         return
+
+    # Create output directory
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    print(f"Output directory: {OUTPUT_DIR}")
 
     # Load expected IDs per project from TEST2NL_FILE
     print(f"Loading Test2NL entries from: {TEST2NL_FILE}")
@@ -102,8 +107,15 @@ def merge_missing_ids() -> None:
         # Find missing IDs
         missing_ids = expected_ids - source_ids
 
+        # Create output project directory
+        output_project_dir = OUTPUT_DIR / project_name
+        output_project_dir.mkdir(parents=True, exist_ok=True)
+        output_eval_path = output_project_dir / EVAL_FILE_NAME
+
         if not missing_ids:
             print(f"{project_name}: No missing IDs")
+            # Still copy the source evaluations to OUTPUT_DIR
+            save_evaluation_results(output_eval_path, source_evals)
             continue
 
         print(f"{project_name}: Missing {len(missing_ids)} IDs: {sorted(missing_ids)}")
@@ -112,6 +124,8 @@ def merge_missing_ids() -> None:
         merge_eval_path = MERGE_DIR / project_name / EVAL_FILE_NAME
         if not merge_eval_path.exists():
             print(f"  Warning: Merge file not found: {merge_eval_path}")
+            # Still save source evaluations to OUTPUT_DIR
+            save_evaluation_results(output_eval_path, source_evals)
             continue
 
         merge_evals = load_evaluation_results(merge_eval_path)
@@ -134,10 +148,10 @@ def merge_missing_ids() -> None:
         if not_found_ids:
             print(f"  Warning: IDs not found in MERGE_DIR: {sorted(not_found_ids)}")
 
+        # Save merged evaluations to OUTPUT_DIR
+        save_evaluation_results(output_eval_path, source_evals)
         if entries_added > 0:
-            # Save updated source evaluations
-            save_evaluation_results(source_eval_path, source_evals)
-            print(f"  Saved {entries_added} entries to {source_eval_path}")
+            print(f"  Saved {entries_added} new entries to {output_eval_path}")
             total_added += entries_added
 
     print(f"\nTotal entries added: {total_added}")

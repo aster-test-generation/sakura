@@ -1,44 +1,22 @@
 from typing import List
-
 from cldk.analysis.java import JavaAnalysis
-
-from .base import BaseIndexer
-
+from.base import BaseIndexer
 from nltest.nl2test.models import ClassSnippet
 from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor
 from nltest.nl2test.preprocessing.searchers import ClassSearcher
 from nltest.nl2test.preprocessing.vector_stores import ClassVectorStore
-from nltest.utils.analysis import CommonAnalysis, Reachability
-
-
+from nltest.utils.analysis import CommonAnalysis,Reachability
 class ClassIndexer(BaseIndexer):
-    def __init__(self, analysis: JavaAnalysis):
-        super().__init__(analysis)
-        self.extractor = ClassSnippetExtractor(analysis)
-
-    def _get_classes_with_visible_methods(self):
-        classes = []
-        for qualified_class_name in self.analysis.get_classes():
-            testing_frameworks = CommonAnalysis(
-                self.analysis
-            ).get_testing_frameworks_for_class(qualified_class_name)
-            if CommonAnalysis(self.analysis).is_test_class(
-                qualified_class_name, testing_frameworks
-            ):
-                continue
-            if not Reachability(self.analysis).get_visible_class_methods(
-                qualified_class_name
-            ):
-                continue
-            classes.append(qualified_class_name)
-        return classes
-
-    def build_index(self, *, exclude_test_dirs: bool = False) -> ClassSearcher:
-        """Extract snippets, embed them, add to vector store, and return searchers."""
-        vector_store = ClassVectorStore(self.embedder)
-        if not vector_store.loaded_from_cache:
-            snippets: List[ClassSnippet] = self.extractor.get_project_snippets(
-                exclude_test_dirs=exclude_test_dirs
-            )
-            vector_store.add_snippets(snippets)
-        return ClassSearcher(vector_store)
+	def __init__(B,analysis:JavaAnalysis):A=analysis;super().__init__(A);B.extractor=ClassSnippetExtractor(A)
+	def _get_classes_with_visible_methods(A):
+		C=[]
+		for B in A.analysis.get_classes():
+			D=CommonAnalysis(A.analysis).get_testing_frameworks_for_class(B)
+			if CommonAnalysis(A.analysis).is_test_class(B,D):continue
+			if not Reachability(A.analysis).get_visible_class_methods(B):continue
+			C.append(B)
+		return C
+	def build_index(B,*,exclude_test_dirs:bool=False)->ClassSearcher:
+		'Extract snippets, embed them, add to vector store, and return searchers.';A=ClassVectorStore(B.embedder)
+		if not A.loaded_from_cache:C:List[ClassSnippet]=B.extractor.get_project_snippets(exclude_test_dirs=exclude_test_dirs);A.add_snippets(C)
+		return ClassSearcher(A)

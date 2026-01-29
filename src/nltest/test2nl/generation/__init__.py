@@ -1,2 +1,2 @@
-from .description_generator import DescriptionGenerator
-from .roundtrip_generator import RoundTripGenerator
+from.description_generator import DescriptionGenerator
+from.roundtrip_generator import RoundTripGenerator

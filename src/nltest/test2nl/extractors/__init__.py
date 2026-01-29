@@ -1,3 +1,3 @@
-from .class_extractor import ClassExtractor
-from .field_declaration_extractor import FieldDeclarationExtractor
-from .method_extractor import MethodExtractor
+from.class_extractor import ClassExtractor
+from.field_declaration_extractor import FieldDeclarationExtractor
+from.method_extractor import MethodExtractor

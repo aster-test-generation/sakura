@@ -1,2 +1,2 @@
-from .method_snippets import MethodSnippetExtractor
-from .class_snippets import ClassSnippetExtractor
+from.method_snippets import MethodSnippetExtractor
+from.class_snippets import ClassSnippetExtractor

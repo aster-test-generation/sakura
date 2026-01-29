@@ -1,540 +1,175 @@
 from __future__ import annotations
-
-import json
-import re
-import textwrap
-import traceback
-import uuid
-from typing import Any, Dict, Literal, Optional, Sequence, Type, TypeVar, Union
-
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
+_I='return_none'
+_H='tool_calls'
+_G='response'
+_F='json_mode'
+_E='function_calling'
+_D=False
+_C='json_schema'
+_B=True
+_A=None
+import json,re,textwrap,traceback,uuid
+from typing import Any,Dict,Literal,Optional,Sequence,Type,TypeVar,Union
+from langchain_core.messages import AIMessage,BaseMessage,HumanMessage,SystemMessage
 from openai import LengthFinishReasonError
 from pydantic import BaseModel
-
-from .general_prompts.structured_retry import (
-    LENGTH_EXCEEDED_RETRY_PROMPT,
-    STRUCTURED_OUTPUT_RETRY_PROMPT,
-)
-
-SchemaT = TypeVar("SchemaT", bound=BaseModel)
+from.general_prompts.structured_retry import LENGTH_EXCEEDED_RETRY_PROMPT,STRUCTURED_OUTPUT_RETRY_PROMPT
+SchemaT=TypeVar('SchemaT',bound=BaseModel)
 from langchain_core.runnables import RunnableSerializable
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
-from tenacity import (
-    RetryCallState,
-    retry,
-    retry_if_exception,
-    stop_after_attempt,
-    wait_chain,
-    wait_random,
-)
-
+from tenacity import RetryCallState,retry,retry_if_exception,stop_after_attempt,wait_chain,wait_random
 from nltest.utils.pretty.color_logger import RichLog
-
-from ..config.config import Config
-from ..exceptions import ConfigurationException
-from .model import ClientType, Provider
-from .usage_tracker import UsageTracker
-
-
-class EmptyLLMResponseError(RuntimeError):
-    """Raised when the provider returns an AIMessage with no content and no tool calls."""
-
-
-def _is_retriable_error(exc: BaseException) -> bool:
-    """Check if exception is transient and worth retrying."""
-    if isinstance(exc, EmptyLLMResponseError):
-        return True
-    status = getattr(exc, "status_code", None) or getattr(
-        getattr(exc, "response", None), "status_code", None
-    )
-    if status in {429, 500, 502, 503, 504}:
-        return True
-    if isinstance(exc, (ConnectionError, TimeoutError)):
-        return True
-    msg = str(exc).lower()
-    if "rate limit" in msg or "too many requests" in msg or "overloaded" in msg:
-        return True
-    # Handle empty structured output responses (common with some models via OpenRouter)
-    if isinstance(
-        exc, ValueError
-    ) and "does not have a 'parsed' field nor a 'refusal' field" in str(exc):
-        return True
-    return False
-
-
-def _log_retry_attempt(retry_state: RetryCallState) -> None:
-    """Log retry attempts for observability."""
-    attempt = retry_state.attempt_number
-    exc = retry_state.outcome.exception() if retry_state.outcome else None
-    wait = retry_state.next_action.sleep if retry_state.next_action else 0
-    RichLog.warn(
-        f"[LLMClient] Retry attempt {attempt} after {wait:.1f}s due to: "
-        f"{type(exc).__name__ if exc else 'unknown'}"
-    )
-
-
+from..config.config import Config
+from..exceptions import ConfigurationException
+from.model import ClientType,Provider
+from.usage_tracker import UsageTracker
+class EmptyLLMResponseError(RuntimeError):'Raised when the provider returns an AIMessage with no content and no tool calls.'
+def _is_retriable_error(exc:BaseException)->bool:
+	'Check if exception is transient and worth retrying.';C='status_code';A=exc
+	if isinstance(A,EmptyLLMResponseError):return _B
+	D=getattr(A,C,_A)or getattr(getattr(A,_G,_A),C,_A)
+	if D in{429,500,502,503,504}:return _B
+	if isinstance(A,(ConnectionError,TimeoutError)):return _B
+	B=str(A).lower()
+	if'rate limit'in B or'too many requests'in B or'overloaded'in B:return _B
+	if isinstance(A,ValueError)and"does not have a 'parsed' field nor a 'refusal' field"in str(A):return _B
+	return _D
+def _log_retry_attempt(retry_state:RetryCallState)->_A:'Log retry attempts for observability.';A=retry_state;C=A.attempt_number;B=A.outcome.exception()if A.outcome else _A;D=A.next_action.sleep if A.next_action else 0;RichLog.warn(f"[LLMClient] Retry attempt {C} after {D:.1f}s due to: {type(B).__name__ if B else'unknown'}")
 class LLMClient:
-    def __init__(
-        self,
-        client_type: ClientType,
-        *,
-        usage_tracker: UsageTracker | None = None,
-    ):
-        config = Config()
-
-        base_url = config.get("llm", "api_url")
-        provider_raw = config.get("llm", "provider")
-        if provider_raw in (None, ""):
-            provider = None
-        else:
-            try:
-                provider = Provider(provider_raw)
-            except ValueError as exc:
-                raise ConfigurationException(
-                    f"Invalid LLM provider: {provider_raw}. Must be one of {list(Provider)}"
-                ) from exc
-        if provider is None and not base_url:
-            raise ConfigurationException(
-                "LLM provider is not configured and no API URL was supplied."
-            )
-
-        model = config.get("llm", "model")
-        temp = config.get("llm", f"{client_type.value}_temp")
-
-        api_key = config.get("llm", "api_key")
-
-        # Assign default values if not set in config
-        try:
-            max_tokens = config.get("llm", "max_tokens")
-        except ConfigurationException:
-            max_tokens = 16384
-
-        try:
-            timeout = config.get("llm", "timeout")
-        except ConfigurationException:
-            timeout = None
-
-        try:
-            default_headers = config.get("llm", "default_headers")
-        except ConfigurationException:
-            default_headers = None
-
-        try:
-            model_kwargs = config.get("llm", "model_kwargs")
-        except ConfigurationException:
-            model_kwargs = {}
-
-        # Extract extra_body from model_kwargs if present (should be a direct kwarg)
-        extra_body: dict[str, Any] = model_kwargs.pop("extra_body", {})
-
-        # The reasoning parameter is OpenRouter-specific and should only be sent
-        # when explicitly configured (configure_reasoning=True)
-        try:
-            configure_reasoning = config.get("reasoning", "configure")
-        except ConfigurationException:
-            configure_reasoning = False
-
-        if provider == Provider.OPENROUTER and configure_reasoning:
-            try:
-                reasoning_effort = config.get("reasoning", "effort")
-            except ConfigurationException:
-                reasoning_effort = "low"
-            try:
-                reasoning_exclude = config.get("reasoning", "exclude")
-            except ConfigurationException:
-                reasoning_exclude = False
-            extra_body["reasoning"] = {
-                "effort": reasoning_effort,
-                "exclude": reasoning_exclude,
-            }
-
-        if provider == Provider.OPENROUTER:
-            default_headers = {} if default_headers is None else default_headers
-            default_headers.setdefault("HTTP-Referer", "http://localhost")
-            default_headers.setdefault("X-Title", "NL2Test LLM Client")
-
-            try:
-                ignore_providers = config.get("openrouter", "ignore_providers")
-                if ignore_providers:
-                    if "provider" not in extra_body:
-                        extra_body["provider"] = {}
-                    extra_body["provider"]["ignore"] = ignore_providers
-            except ConfigurationException:
-                pass
-
-        # Configure parallel tool call behavior from Config
-        try:
-            can_parallel_tool = config.get("llm", "can_parallel_tool")
-        except ConfigurationException:
-            can_parallel_tool = False
-
-        # Only set if not explicitly provided in model_kwargs.
-        if "parallel_tool_calls" not in model_kwargs:
-            model_kwargs["parallel_tool_calls"] = bool(can_parallel_tool)
-
-        # Note: max_retries is omitted to let tenacity handle all retry logic
-        # with proper exponential backoff. Add max_retries here if you want
-        # LangChain's built-in HTTP-level retries to stack with tenacity.
-        # Mistral API requires max_tokens in extra_body (rejects max_completion_tokens)
-        if provider == Provider.MISTRAL:
-            extra_body["max_tokens"] = max_tokens
-            max_tokens_kwarg = {}
-        else:
-            max_tokens_kwarg = {"max_tokens": max_tokens}
-        self._chat = ChatOpenAI(
-            model=model,
-            temperature=temp,
-            **max_tokens_kwarg,
-            base_url=base_url.rstrip("/") if base_url else None,
-            api_key=SecretStr(api_key),
-            timeout=timeout,
-            default_headers=default_headers,
-            model_kwargs=model_kwargs,
-            extra_body=extra_body if extra_body else None,
-        )
-
-        # Store model id for capability queries
-        try:
-            self._model_id = self._chat.model_name
-        except Exception:
-            self._model_id = model
-        self._usage_tracker = usage_tracker or UsageTracker()
-        # Save context for error logging
-        self._provider = provider
-        self._model = model
-        self._base_url = base_url
-        self._client_type = client_type
-
-    def _build_runnable(
-        self,
-        *,
-        tools: Optional[Sequence[BaseTool]] = None,
-        tool_choice: Union[str, dict, None] = "auto",
-        response_format: Optional[Dict[str, Any]] = None,
-        extra_model_kwargs: Optional[Dict[str, Any]] = None,
-        schema: Any = None,
-        strict: bool = True,
-        method: Optional[
-            Literal["json_schema", "function_calling", "json_mode"]
-        ] = "json_schema",
-        temperature: Optional[float] = None,
-    ) -> RunnableSerializable:
-        runnable: RunnableSerializable = self._chat
-
-        if temperature is not None:
-            runnable = runnable.bind(temperature=temperature)
-
-        if tools:
-            runnable = runnable.bind_tools(tools, tool_choice=tool_choice)
-
-        if (
-            response_format is not None and schema is None
-        ):  # NOTE: If schema is provided, we don't need to bind the response format
-            runnable = runnable.bind(response_format=response_format)
-
-        if extra_model_kwargs:
-            runnable = runnable.bind(**extra_model_kwargs)
-
-        if schema is not None:
-            runnable = runnable.with_structured_output(
-                schema=schema, strict=strict, method=method
-            )
-
-        return runnable
-
-    @property
-    def chat(self) -> ChatOpenAI:
-        return self._chat
-
-    def _normalize_tool_call_ids(self, ai_msg: AIMessage) -> AIMessage:
-        """Ensure tool call IDs are always present by generating unique IDs if missing."""
-        if getattr(ai_msg, "tool_calls", None):
-            normalized = []
-            for tc in ai_msg.tool_calls:
-                tc_id = tc.get("id") or f"tool_{uuid.uuid4().hex[:8]}"
-                tc["id"] = tc_id
-                normalized.append(tc)
-            ai_msg.tool_calls = normalized
-        return ai_msg
-
-    @retry(
-        stop=stop_after_attempt(5),
-        wait=wait_chain(
-            wait_random(1, 2),
-            wait_random(5, 10),
-            wait_random(20, 30),
-            wait_random(45, 60),
-        ),
-        retry=retry_if_exception(_is_retriable_error),
-        before_sleep=_log_retry_attempt,
-        reraise=True,
-    )
-    def _invoke_with_retry(
-        self, runnable: RunnableSerializable, messages: Sequence[BaseMessage]
-    ) -> Any:
-        """Internal method that performs the actual invocation with retry logic."""
-        out = runnable.invoke(list(messages))
-
-        if isinstance(out, AIMessage):
-            # Treat "successful but empty" LLM responses as errors (likely provider problem) and retry.
-            has_tool_calls = bool(getattr(out, "tool_calls", None))
-            if isinstance(out.content, str):
-                has_content = bool(out.content.strip())
-            elif isinstance(out.content, list):
-                has_content = len(out.content) > 0
-            else:
-                has_content = bool(out.content)
-            if not has_tool_calls and not has_content:
-                raise EmptyLLMResponseError(
-                    "LLM returned an empty AIMessage (no content, no tool_calls)."
-                )
-
-        return out
-
-    def invoke_messages(
-        self,
-        messages: Sequence[BaseMessage],
-        *,
-        tools: Optional[Sequence[BaseTool]] = None,
-        tool_choice: Union[str, dict, None] = "auto",
-        response_format: Optional[Dict[str, Any]] = None,
-        extra_model_kwargs: Optional[Dict[str, Any]] = None,
-        schema: Any = None,
-        strict: bool = True,
-        method: Optional[
-            Literal["json_schema", "function_calling", "json_mode"]
-        ] = "json_schema",
-        temperature: Optional[float] = None,
-    ) -> Any:
-        runnable = self._build_runnable(
-            tools=tools,
-            tool_choice=tool_choice,
-            response_format=response_format,
-            extra_model_kwargs=extra_model_kwargs,
-            schema=schema,
-            strict=strict,
-            method=method,
-            temperature=temperature,
-        )
-        try:
-            out = self._invoke_with_retry(runnable, messages)
-        except Exception as e:
-            err_type = type(e).__name__
-            RichLog.error(
-                f"[LLMClient] {err_type} during invoke (provider={getattr(self._provider, 'value', self._provider)}, "
-                f"model={self._model}, base_url={self._base_url}, client={self._client_type.value}): {e}"
-            )
-            RichLog.debug(traceback.format_exc())
-            RichLog.debug(
-                f"opts: tool_choice={tool_choice}, "
-                f"schema={'yes' if schema is not None else 'no'}, "
-                f"response_format={'yes' if response_format is not None else 'no'}, "
-                f"extra_model_kwargs={str(extra_model_kwargs)[:500]}"
-            )
-            msg_types = [type(m).__name__ for m in messages]
-            RichLog.debug(f"messages: {','.join(msg_types)}")
-            raise
-
-        if hasattr(out, "usage_metadata") and out.usage_metadata:
-            output_tokens = out.usage_metadata.get("output_tokens", 0)
-            # Include reasoning tokens in output count (billed as output tokens)
-            output_details = out.usage_metadata.get("output_token_details") or {}
-            reasoning_tokens = output_details.get("reasoning_tokens", 0)
-            self._usage_tracker.record(
-                input_tokens=out.usage_metadata.get("input_tokens", 0),
-                output_tokens=output_tokens + reasoning_tokens,
-            )
-
-        return self._normalize_tool_call_ids(out) if isinstance(out, AIMessage) else out
-
-    def invoke_prompts(
-        self,
-        system: str,
-        chat: str,
-        *,
-        response_format: Optional[Dict[str, Any]] = None,
-        extra_model_kwargs: Optional[Dict[str, Any]] = None,
-        schema: Any = None,
-        strict: bool = True,
-        method: Optional[
-            Literal["json_schema", "function_calling", "json_mode"]
-        ] = "json_schema",
-        temperature: Optional[float] = None,
-    ) -> Any:
-        messages: Sequence[BaseMessage] = [
-            SystemMessage(content=system),
-            HumanMessage(content=chat),
-        ]
-        return self.invoke_messages(
-            messages,
-            response_format=response_format,
-            extra_model_kwargs=extra_model_kwargs,
-            schema=schema,
-            strict=strict,
-            method=method,
-            temperature=temperature,
-        )
-
-    def invoke_structured_with_retries(
-        self,
-        *,
-        messages: Sequence[BaseMessage] | None = None,
-        system: str | None = None,
-        chat: str | None = None,
-        schema: Type[SchemaT],
-        strict: bool = True,
-        max_attempts: int = 3,
-        retry_prompt_template: str | None = None,
-        on_failure: Literal["raise", "return_none"] = "raise",
-    ) -> SchemaT | None:
-        """
-        Invoke LLM with structured output binding, retrying on validation failures.
-
-        Accepts EITHER:
-        - messages: A pre-built message list (must end with HumanMessage)
-        - system + chat: Simple prompt pair (for decomposer use cases)
-
-        On failure, modifies the last HumanMessage to include retry context.
-        """
-        if messages is not None and (system is not None or chat is not None):
-            raise ValueError("Provide either 'messages' OR 'system'+'chat', not both.")
-        if messages is None and (system is None or chat is None):
-            raise ValueError(
-                "Must provide either 'messages' or both 'system' and 'chat'."
-            )
-
-        template = retry_prompt_template or STRUCTURED_OUTPUT_RETRY_PROMPT
-        use_message_mode = messages is not None
-
-        base_messages: list[BaseMessage]
-        original_human_content: str
-        if use_message_mode:
-            base_messages = list(messages)
-            if not base_messages or not isinstance(base_messages[-1], HumanMessage):
-                raise ValueError(
-                    "When using messages mode, the last message must be a HumanMessage."
-                )
-            last_human = base_messages[-1]
-            original_human_content = (
-                last_human.content
-                if isinstance(last_human.content, str)
-                else str(last_human.content)
-            )
-        else:
-            assert system is not None and chat is not None
-            base_messages = [SystemMessage(content=system)]
-            original_human_content = chat
-
-        failures: list[str] = []
-        last_error: Exception | None = None
-
-        for attempt in range(1, max_attempts + 1):
-            working_messages = list(base_messages)
-
-            if failures:
-                failure_block = "\n\n".join(failures)
-                augmented_content = f"{original_human_content}\n\n{failure_block}"
-            else:
-                augmented_content = original_human_content
-
-            if use_message_mode:
-                working_messages[-1] = HumanMessage(content=augmented_content)
-            else:
-                working_messages.append(HumanMessage(content=augmented_content))
-
-            try:
-                result = self.invoke_messages(
-                    working_messages,
-                    schema=schema,
-                    strict=strict,
-                )
-                return result
-            except LengthFinishReasonError as length_exc:
-                last_error = length_exc
-                # Extract partial output from the completion if available
-                partial_content = ""
-                completion = getattr(length_exc, "completion", None)
-                if completion:
-                    choices = getattr(completion, "choices", [])
-                    if choices:
-                        message = getattr(choices[0], "message", None)
-                        if message:
-                            partial_content = getattr(message, "content", "") or ""
-
-                retry_prompt = LENGTH_EXCEEDED_RETRY_PROMPT.format(
-                    attempt=attempt,
-                    partial_output=partial_content[:500]
-                    if partial_content
-                    else "(none available)",
-                )
-                failures.append(retry_prompt)
-            except Exception as exc:
-                # Don't retry transient errors - tenacity already exhausted retries
-                if _is_retriable_error(exc):
-                    raise
-                last_error = exc
-                error_excerpt = (str(exc) or repr(exc)).strip()[:800]
-
-                raw_output = getattr(exc, "raw_output", None)
-                if raw_output is None:
-                    response = getattr(exc, "response", None)
-                    if response is not None:
-                        raw_output = getattr(response, "text", None)
-                output_excerpt = str(raw_output or "")[:800]
-
-                retry_prompt = template.format(
-                    attempt=attempt,
-                    error_excerpt=error_excerpt,
-                    output_excerpt=output_excerpt,
-                )
-                failures.append(retry_prompt)
-
-        if on_failure == "return_none":
-            return None
-
-        if last_error is not None:
-            raise last_error
-        raise RuntimeError(
-            "Structured prompt invocation failed without raising an error."
-        )
-
-    @staticmethod
-    def sanitize(text: str) -> str:
-        # Apply standard sanitation operations
-        sanitize_operations = [
-            lambda t: re.sub(r"(?si).*?</think>", "", t, flags=re.IGNORECASE),
-            # Remove everything before and include </think>
-        ]
-        for op in sanitize_operations:
-            text = op(text)
-        return text.strip()
-
-    @staticmethod
-    def _normalize_string_values(value: Any) -> Any:
-        """Recursively dedent and strip string values to normalize LLM tool args."""
-        if isinstance(value, str):
-            return textwrap.dedent(value).strip()
-        if isinstance(value, dict):
-            return {k: LLMClient._normalize_string_values(v) for k, v in value.items()}
-        if isinstance(value, list):
-            return [LLMClient._normalize_string_values(v) for v in value]
-        if isinstance(value, tuple):
-            return tuple(LLMClient._normalize_string_values(v) for v in value)
-        return value
-
-    @staticmethod
-    def parse_tool_args(args: Union[str, Dict[str, Any]]) -> Dict[str, Any]:
-        """Tool call args can be passed as a JSON string or a dict."""
-        if isinstance(args, dict):
-            return LLMClient._normalize_string_values(args)
-        if isinstance(args, str):
-            try:
-                parsed = json.loads(args)
-            except Exception:
-                return {}
-            if not isinstance(parsed, dict):
-                return {}
-            return LLMClient._normalize_string_values(parsed)
-        return {}
+	def __init__(C,client_type:ClientType,*,usage_tracker:UsageTracker|_A=_A):
+		Y='parallel_tool_calls';X='exclude';W='effort';O=client_type;N='max_tokens';J='reasoning';I='provider';B='llm';A=Config();H=A.get(B,'api_url');K=A.get(B,I)
+		if K in(_A,''):F=_A
+		else:
+			try:F=Provider(K)
+			except ValueError as Z:raise ConfigurationException(f"Invalid LLM provider: {K}. Must be one of {list(Provider)}")from Z
+		if F is _A and not H:raise ConfigurationException('LLM provider is not configured and no API URL was supplied.')
+		L=A.get(B,'model');a=A.get(B,f"{O.value}_temp");b=A.get(B,'api_key')
+		try:M=A.get(B,N)
+		except ConfigurationException:M=16384
+		try:P=A.get(B,'timeout')
+		except ConfigurationException:P=_A
+		try:D=A.get(B,'default_headers')
+		except ConfigurationException:D=_A
+		try:G=A.get(B,'model_kwargs')
+		except ConfigurationException:G={}
+		E:dict[str,Any]=G.pop('extra_body',{})
+		try:Q=A.get(J,'configure')
+		except ConfigurationException:Q=_D
+		if F==Provider.OPENROUTER and Q:
+			try:R=A.get(J,W)
+			except ConfigurationException:R='low'
+			try:S=A.get(J,X)
+			except ConfigurationException:S=_D
+			E[J]={W:R,X:S}
+		if F==Provider.OPENROUTER:
+			D={}if D is _A else D;D.setdefault('HTTP-Referer','http://localhost');D.setdefault('X-Title','NL2Test LLM Client')
+			try:
+				T=A.get('openrouter','ignore_providers')
+				if T:
+					if I not in E:E[I]={}
+					E[I]['ignore']=T
+			except ConfigurationException:pass
+		try:U=A.get(B,'can_parallel_tool')
+		except ConfigurationException:U=_D
+		if Y not in G:G[Y]=bool(U)
+		if F==Provider.MISTRAL:E[N]=M;V={}
+		else:V={N:M}
+		C._chat=ChatOpenAI(model=L,temperature=a,**V,base_url=H.rstrip('/')if H else _A,api_key=SecretStr(b),timeout=P,default_headers=D,model_kwargs=G,extra_body=E if E else _A)
+		try:C._model_id=C._chat.model_name
+		except Exception:C._model_id=L
+		C._usage_tracker=usage_tracker or UsageTracker();C._provider=F;C._model=L;C._base_url=H;C._client_type=O
+	def _build_runnable(G,*,tools:Optional[Sequence[BaseTool]]=_A,tool_choice:Union[str,dict,_A]='auto',response_format:Optional[Dict[str,Any]]=_A,extra_model_kwargs:Optional[Dict[str,Any]]=_A,schema:Any=_A,strict:bool=_B,method:Optional[Literal[_C,_E,_F]]=_C,temperature:Optional[float]=_A)->RunnableSerializable:
+		F=temperature;E=extra_model_kwargs;D=response_format;C=tools;B=schema;A:RunnableSerializable=G._chat
+		if F is not _A:A=A.bind(temperature=F)
+		if C:A=A.bind_tools(C,tool_choice=tool_choice)
+		if D is not _A and B is _A:A=A.bind(response_format=D)
+		if E:A=A.bind(**E)
+		if B is not _A:A=A.with_structured_output(schema=B,strict=strict,method=method)
+		return A
+	@property
+	def chat(self)->ChatOpenAI:return self._chat
+	def _normalize_tool_call_ids(E,ai_msg:AIMessage)->AIMessage:
+		'Ensure tool call IDs are always present by generating unique IDs if missing.';A=ai_msg
+		if getattr(A,_H,_A):
+			C=[]
+			for B in A.tool_calls:D=B.get('id')or f"tool_{uuid.uuid4().hex[:8]}";B['id']=D;C.append(B)
+			A.tool_calls=C
+		return A
+	@retry(stop=stop_after_attempt(5),wait=wait_chain(wait_random(1,2),wait_random(5,10),wait_random(20,30),wait_random(45,60)),retry=retry_if_exception(_is_retriable_error),before_sleep=_log_retry_attempt,reraise=_B)
+	def _invoke_with_retry(self,runnable:RunnableSerializable,messages:Sequence[BaseMessage])->Any:
+		'Internal method that performs the actual invocation with retry logic.';A=runnable.invoke(list(messages))
+		if isinstance(A,AIMessage):
+			C=bool(getattr(A,_H,_A))
+			if isinstance(A.content,str):B=bool(A.content.strip())
+			elif isinstance(A.content,list):B=len(A.content)>0
+			else:B=bool(A.content)
+			if not C and not B:raise EmptyLLMResponseError('LLM returned an empty AIMessage (no content, no tool_calls).')
+		return A
+	def invoke_messages(A,messages:Sequence[BaseMessage],*,tools:Optional[Sequence[BaseTool]]=_A,tool_choice:Union[str,dict,_A]='auto',response_format:Optional[Dict[str,Any]]=_A,extra_model_kwargs:Optional[Dict[str,Any]]=_A,schema:Any=_A,strict:bool=_B,method:Optional[Literal[_C,_E,_F]]=_C,temperature:Optional[float]=_A)->Any:
+		I='yes';G=schema;F=extra_model_kwargs;E=response_format;D=tool_choice;C=messages;J=A._build_runnable(tools=tools,tool_choice=D,response_format=E,extra_model_kwargs=F,schema=G,strict=strict,method=method,temperature=temperature)
+		try:B=A._invoke_with_retry(J,C)
+		except Exception as H:K=type(H).__name__;RichLog.error(f"[LLMClient] {K} during invoke (provider={getattr(A._provider,'value',A._provider)}, model={A._model}, base_url={A._base_url}, client={A._client_type.value}): {H}");RichLog.debug(traceback.format_exc());RichLog.debug(f"opts: tool_choice={D}, schema={I if G is not _A else'no'}, response_format={I if E is not _A else'no'}, extra_model_kwargs={str(F)[:500]}");L=[type(A).__name__ for A in C];RichLog.debug(f"messages: {','.join(L)}");raise
+		if hasattr(B,'usage_metadata')and B.usage_metadata:M=B.usage_metadata.get('output_tokens',0);N=B.usage_metadata.get('output_token_details')or{};O=N.get('reasoning_tokens',0);A._usage_tracker.record(input_tokens=B.usage_metadata.get('input_tokens',0),output_tokens=M+O)
+		return A._normalize_tool_call_ids(B)if isinstance(B,AIMessage)else B
+	def invoke_prompts(A,system:str,chat:str,*,response_format:Optional[Dict[str,Any]]=_A,extra_model_kwargs:Optional[Dict[str,Any]]=_A,schema:Any=_A,strict:bool=_B,method:Optional[Literal[_C,_E,_F]]=_C,temperature:Optional[float]=_A)->Any:B:Sequence[BaseMessage]=[SystemMessage(content=system),HumanMessage(content=chat)];return A.invoke_messages(B,response_format=response_format,extra_model_kwargs=extra_model_kwargs,schema=schema,strict=strict,method=method,temperature=temperature)
+	def invoke_structured_with_retries(V,*,messages:Sequence[BaseMessage]|_A=_A,system:str|_A=_A,chat:str|_A=_A,schema:Type[SchemaT],strict:bool=_B,max_attempts:int=3,retry_prompt_template:str|_A=_A,on_failure:Literal['raise',_I]='raise')->SchemaT|_A:
+		'\n        Invoke LLM with structured output binding, retrying on validation failures.\n\n        Accepts EITHER:\n        - messages: A pre-built message list (must end with HumanMessage)\n        - system + chat: Simple prompt pair (for decomposer use cases)\n\n        On failure, modifies the last HumanMessage to include retry context.\n        ';E=chat;D=system;C=messages
+		if C is not _A and(D is not _A or E is not _A):raise ValueError("Provide either 'messages' OR 'system'+'chat', not both.")
+		if C is _A and(D is _A or E is _A):raise ValueError("Must provide either 'messages' or both 'system' and 'chat'.")
+		W=retry_prompt_template or STRUCTURED_OUTPUT_RETRY_PROMPT;O=C is not _A;A:list[BaseMessage];F:str
+		if O:
+			A=list(C)
+			if not A or not isinstance(A[-1],HumanMessage):raise ValueError('When using messages mode, the last message must be a HumanMessage.')
+			I=A[-1];F=I.content if isinstance(I.content,str)else str(I.content)
+		else:assert D is not _A and E is not _A;A=[SystemMessage(content=D)];F=E
+		G:list[str]=[];H:Exception|_A=_A
+		for P in range(1,max_attempts+1):
+			J=list(A)
+			if G:X='\n\n'.join(G);K=f"{F}\n\n{X}"
+			else:K=F
+			if O:J[-1]=HumanMessage(content=K)
+			else:J.append(HumanMessage(content=K))
+			try:Y=V.invoke_messages(J,schema=schema,strict=strict);return Y
+			except LengthFinishReasonError as Q:
+				H=Q;L='';R=getattr(Q,'completion',_A)
+				if R:
+					S=getattr(R,'choices',[])
+					if S:
+						T=getattr(S[0],'message',_A)
+						if T:L=getattr(T,'content','')or''
+				M=LENGTH_EXCEEDED_RETRY_PROMPT.format(attempt=P,partial_output=L[:500]if L else'(none available)');G.append(M)
+			except Exception as B:
+				if _is_retriable_error(B):raise
+				H=B;Z=(str(B)or repr(B)).strip()[:800];N=getattr(B,'raw_output',_A)
+				if N is _A:
+					U=getattr(B,_G,_A)
+					if U is not _A:N=getattr(U,'text',_A)
+				a=str(N or'')[:800];M=W.format(attempt=P,error_excerpt=Z,output_excerpt=a);G.append(M)
+		if on_failure==_I:return
+		if H is not _A:raise H
+		raise RuntimeError('Structured prompt invocation failed without raising an error.')
+	@staticmethod
+	def sanitize(text:str)->str:
+		A=text;B=[lambda t:re.sub('(?si).*?</think>','',t,flags=re.IGNORECASE)]
+		for C in B:A=C(A)
+		return A.strip()
+	@staticmethod
+	def _normalize_string_values(value:Any)->Any:
+		'Recursively dedent and strip string values to normalize LLM tool args.';A=value
+		if isinstance(A,str):return textwrap.dedent(A).strip()
+		if isinstance(A,dict):return{A:LLMClient._normalize_string_values(B)for(A,B)in A.items()}
+		if isinstance(A,list):return[LLMClient._normalize_string_values(A)for A in A]
+		if isinstance(A,tuple):return tuple(LLMClient._normalize_string_values(A)for A in A)
+		return A
+	@staticmethod
+	def parse_tool_args(args:Union[str,Dict[str,Any]])->Dict[str,Any]:
+		'Tool call args can be passed as a JSON string or a dict.';A=args
+		if isinstance(A,dict):return LLMClient._normalize_string_values(A)
+		if isinstance(A,str):
+			try:B=json.loads(A)
+			except Exception:return{}
+			if not isinstance(B,dict):return{}
+			return LLMClient._normalize_string_values(B)
+		return{}

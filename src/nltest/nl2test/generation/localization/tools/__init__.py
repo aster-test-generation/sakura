@@ -1,41 +1,14 @@
-from typing import List, Tuple
-
+from typing import List,Tuple
 from langchain_core.tools import BaseTool
-
-from .base import BaseLocalizationTools
-from .grammatical import GrammaticalLocalizationTools
-from .gherkin import GherkinLocalizationTools
+from.base import BaseLocalizationTools
+from.grammatical import GrammaticalLocalizationTools
+from.gherkin import GherkinLocalizationTools
 from nltest.nl2test.models import DecompositionMode
-
-
 class LocalizationTools:
-    """Deprecated: use GrammaticalLocalizationTools or GherkinLocalizationTools.
-
-    Provided to keep tests and legacy imports working.
-    """
-
-    def __init__(
-        self,
-        *,
-        decomposition_mode: DecompositionMode = DecompositionMode.GRAMMATICAL,
-        **kwargs,
-    ):
-        if decomposition_mode == DecompositionMode.GHERKIN:
-            self._delegate = GherkinLocalizationTools(**kwargs)
-        else:
-            self._delegate = GrammaticalLocalizationTools(**kwargs)
-
-    def all(self) -> Tuple[List[BaseTool], List[BaseTool]]:
-        return self._delegate.all()
-
-    def __getattr__(self, item):
-        # Forward any attribute/method access to the delegate for compatibility
-        return getattr(self._delegate, item)
-
-
-__all__ = [
-    "BaseLocalizationTools",
-    "GrammaticalLocalizationTools",
-    "GherkinLocalizationTools",
-    "LocalizationTools",
-]
+	'Deprecated: use GrammaticalLocalizationTools or GherkinLocalizationTools.\n\n    Provided to keep tests and legacy imports working.\n    '
+	def __init__(A,*,decomposition_mode:DecompositionMode=DecompositionMode.GRAMMATICAL,**B):
+		if decomposition_mode==DecompositionMode.GHERKIN:A._delegate=GherkinLocalizationTools(**B)
+		else:A._delegate=GrammaticalLocalizationTools(**B)
+	def all(A)->Tuple[List[BaseTool],List[BaseTool]]:return A._delegate.all()
+	def __getattr__(A,item):return getattr(A._delegate,item)
+__all__=['BaseLocalizationTools','GrammaticalLocalizationTools','GherkinLocalizationTools','LocalizationTools']

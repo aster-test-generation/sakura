@@ -1,1 +1,1 @@
-from .java_analyzer import CommonAnalysis, Reachability, ReachabilityConfig
+from.java_analyzer import CommonAnalysis,Reachability,ReachabilityConfig

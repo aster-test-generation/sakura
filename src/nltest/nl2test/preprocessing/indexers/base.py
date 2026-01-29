@@ -1,44 +1,20 @@
-from abc import ABC, abstractmethod
-
+from abc import ABC,abstractmethod
 from cldk.analysis.java import JavaAnalysis
-
-from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
+from nltest.nl2test.preprocessing.embedders import HttpEmbedder,OllamaEmbedder
 from nltest.utils.config import Config
 from nltest.utils.llm.model import Provider
-
-
 class BaseIndexer(ABC):
-    def __init__(self, analysis: JavaAnalysis):
-        self.analysis = analysis
-        self.config = Config()
-        self.embedder = self._initialize_embedder()
-
-    def _initialize_embedder(self):
-        raw_provider = self.config.get("emb", "provider")
-        emb_model = self.config.get("emb", "model")
-
-        try:
-            provider = Provider(raw_provider)
-        except ValueError:
-            provider = None
-
-        if provider == Provider.OLLAMA:
-            return OllamaEmbedder(model_id=emb_model)
-
-        else:
-            api_url = self.config.get("emb", "api_url")
-            if not api_url:
-                provider_name = provider.name if provider else "unknown"
-                raise ValueError(
-                    f"API URL is missing in config for HTTP provider {provider_name}"
-                )
-            try:
-                api_key = self.config.get("emb", "api_key")
-            except Exception:
-                api_key = None
-            return HttpEmbedder(model_id=emb_model, api_url=api_url, api_key=api_key)
-
-    @abstractmethod
-    def build_index(self, *, exclude_test_dirs: bool = False):
-        """Each subclass must implement its own indexing logic."""
-        pass
+	def __init__(A,analysis:JavaAnalysis):A.analysis=analysis;A.config=Config();A.embedder=A._initialize_embedder()
+	def _initialize_embedder(A):
+		C='emb';G=A.config.get(C,'provider');D=A.config.get(C,'model')
+		try:B=Provider(G)
+		except ValueError:B=None
+		if B==Provider.OLLAMA:return OllamaEmbedder(model_id=D)
+		else:
+			E=A.config.get(C,'api_url')
+			if not E:H=B.name if B else'unknown';raise ValueError(f"API URL is missing in config for HTTP provider {H}")
+			try:F=A.config.get(C,'api_key')
+			except Exception:F=None
+			return HttpEmbedder(model_id=D,api_url=E,api_key=F)
+	@abstractmethod
+	def build_index(self,*,exclude_test_dirs:bool=False):'Each subclass must implement its own indexing logic.'

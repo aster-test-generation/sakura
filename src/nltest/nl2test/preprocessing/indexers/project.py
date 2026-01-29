@@ -1,30 +1,10 @@
 from typing import List
-
-from .base import BaseIndexer
-
+from.base import BaseIndexer
 from cldk.analysis.java import JavaAnalysis
-from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor, MethodSnippetExtractor
+from nltest.nl2test.preprocessing.extractors import ClassSnippetExtractor,MethodSnippetExtractor
 from nltest.nl2test.preprocessing.vector_stores import ProjectFAISSVectorStore
 from nltest.nl2test.preprocessing.searchers import ProjectSearcher
-
-"""DEPRECATED: Filter applies post search so often under-retrieves classes."""
-
-
+'DEPRECATED: Filter applies post search so often under-retrieves classes.'
 class ProjectIndexer(BaseIndexer):
-    def __init__(self, analysis: JavaAnalysis):
-        super().__init__(analysis)
-        self.class_extractor = ClassSnippetExtractor(analysis)
-        self.method_extractor = MethodSnippetExtractor(analysis)
-
-    def build_index(self, *, exclude_test_dirs: bool = False) -> ProjectSearcher:
-        class_snippets = self.class_extractor.get_project_snippets(
-            exclude_test_dirs=exclude_test_dirs
-        )
-        method_snippets = self.method_extractor.get_project_snippets(
-            exclude_test_dirs=exclude_test_dirs
-        )
-
-        snippets: List = class_snippets + method_snippets
-        vector_store = ProjectFAISSVectorStore(self.embedder)
-        vector_store.add_snippets(snippets)
-        return ProjectSearcher(vector_store)
+	def __init__(B,analysis:JavaAnalysis):A=analysis;super().__init__(A);B.class_extractor=ClassSnippetExtractor(A);B.method_extractor=MethodSnippetExtractor(A)
+	def build_index(A,*,exclude_test_dirs:bool=False)->ProjectSearcher:B=exclude_test_dirs;D=A.class_extractor.get_project_snippets(exclude_test_dirs=B);E=A.method_extractor.get_project_snippets(exclude_test_dirs=B);F:List=D+E;C=ProjectFAISSVectorStore(A.embedder);C.add_snippets(F);return ProjectSearcher(C)

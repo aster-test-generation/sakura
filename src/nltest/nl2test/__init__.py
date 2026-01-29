@@ -1,3 +1,2 @@
-from .pipeline import Pipeline
-
-__all__ = ["Pipeline"]
+from.pipeline import Pipeline
+__all__=['Pipeline']

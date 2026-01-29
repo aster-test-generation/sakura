@@ -1,39 +1,16 @@
+_A=None
 from typing import List
-
 from cldk.analysis.java import JavaAnalysis
 from cldk.models.java.models import JField
-
 from nltest.test2nl.model.models import FieldDeclaration
 from nltest.utils.analysis import CommonAnalysis
-
-
 class FieldDeclarationExtractor:
-    def __init__(self, analysis: JavaAnalysis, application_classes: List[str]):
-        self.analysis = analysis
-        self.application_classes = application_classes
-
-    def _is_helper_class(self, type_name: str | None) -> bool | None:
-        """Check if type exists in repo but is not an application class."""
-        if not type_name:
-            return None
-        non_param_types = CommonAnalysis.extract_non_parameterized_types(type_name)
-        for type_ in non_param_types:
-            if self.analysis.get_class(type_) and type_ not in self.application_classes:
-                return True
-        return False
-
-    def extract(self, field_declaration: JField) -> FieldDeclaration:
-        field_type = field_declaration.type if field_declaration.type else None
-        return FieldDeclaration(
-            variables=field_declaration.variables
-            if field_declaration.variables
-            else None,
-            type=field_type,
-            modifiers=field_declaration.modifiers
-            if field_declaration.modifiers
-            else None,
-            annotations=field_declaration.annotations
-            if field_declaration.annotations
-            else None,
-            type_is_helper_class=self._is_helper_class(field_type),
-        )
+	def __init__(A,analysis:JavaAnalysis,application_classes:List[str]):A.analysis=analysis;A.application_classes=application_classes
+	def _is_helper_class(A,type_name:str|_A)->bool|_A:
+		'Check if type exists in repo but is not an application class.';B=type_name
+		if not B:return
+		D=CommonAnalysis.extract_non_parameterized_types(B)
+		for C in D:
+			if A.analysis.get_class(C)and C not in A.application_classes:return True
+		return False
+	def extract(C,field_declaration:JField)->FieldDeclaration:A=field_declaration;B=A.type if A.type else _A;return FieldDeclaration(variables=A.variables if A.variables else _A,type=B,modifiers=A.modifiers if A.modifiers else _A,annotations=A.annotations if A.annotations else _A,type_is_helper_class=C._is_helper_class(B))

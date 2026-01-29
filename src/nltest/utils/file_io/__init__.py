@@ -1,2 +1,2 @@
-from .structured_data_manager import StructuredDataManager
-from .test_file_manager import TestFileManager, TestFileInfo
+from.structured_data_manager import StructuredDataManager
+from.test_file_manager import TestFileManager,TestFileInfo

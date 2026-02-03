@@ -64,20 +64,26 @@ def create_compilation_bar_graph(
         compile_rates.append(compile_rate)
         colors.append(get_color(filename))
 
-    fig, ax = plt.subplots(figsize=(5, 6))
+    fig, ax = plt.subplots(figsize=(5, 8))
 
     bar_width = 0.25
     x_positions = [i * bar_width for i in range(len(model_names))]
     bars = ax.bar(
-        x_positions, compile_rates, width=bar_width, color=colors, edgecolor="black", linewidth=0.5
+        x_positions,
+        compile_rates,
+        width=bar_width,
+        color=colors,
+        edgecolor="black",
+        linewidth=0.5,
     )
 
     ax.set_ylim(0, 100)
+    ax.margins(x=0.15)
     ax.set_xticks([])
-    ax.tick_params(axis="y", labelsize=14)
+    ax.tick_params(axis="y", labelsize=28)
 
     if not DISABLE_LEGEND:
-        ax.legend(bars, model_names, loc="upper left")
+        ax.legend(bars, model_names, loc="upper left", fontsize=22)
 
     plt.tight_layout()
 

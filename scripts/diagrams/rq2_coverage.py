@@ -6,12 +6,17 @@ from typing import Any, Literal
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
 
-COVERAGE_TYPES = ["class_coverage", "method_coverage", "line_coverage", "branch_coverage"]
+COVERAGE_TYPES = [
+    "class_coverage",
+    "method_coverage",
+    "line_coverage",
+    "branch_coverage",
+]
 COVERAGE_LABELS = ["Class", "Method", "Line", "Branch"]
 
 GraphType = Literal["bar_graph", "box_plot"]
 GRAPH_TYPE: GraphType = "bar_graph"
-DISABLE_LEGEND = False
+DISABLE_LEGEND = True
 
 
 def load_results(file_path: Path) -> dict[str, Any]:
@@ -37,23 +42,27 @@ def create_coverage_bar_graph(
     bar_width = 0.12
     group_width = num_models * bar_width + 0.15
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 8))
 
     bars_list = []
     for model_idx, filename in enumerate(filenames):
-        values = [model_data[filename][cov_type]["mean"] * 100 for cov_type in COVERAGE_TYPES]
+        values = [
+            model_data[filename][cov_type]["mean"] * 100 for cov_type in COVERAGE_TYPES
+        ]
 
         # Calculate 95% CI error bars
         ci_errors = [
             calculate_95_ci(
                 model_data[filename][cov_type]["std"],
                 model_data[filename][cov_type]["count"],
-            ) * 100
+            )
+            * 100
             for cov_type in COVERAGE_TYPES
         ]
 
         x_positions = [
-            group_idx * group_width + model_idx * bar_width for group_idx in range(num_groups)
+            group_idx * group_width + model_idx * bar_width
+            for group_idx in range(num_groups)
         ]
         bars = ax.bar(
             x_positions,
@@ -75,11 +84,11 @@ def create_coverage_bar_graph(
         for group_idx in range(num_groups)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(COVERAGE_LABELS, fontsize=14)
-    ax.tick_params(axis="y", labelsize=14)
+    ax.set_xticklabels(COVERAGE_LABELS, fontsize=28)
+    ax.tick_params(axis="y", labelsize=28)
 
     if not DISABLE_LEGEND:
-        ax.legend(bars_list, model_names, loc="upper right")
+        ax.legend(bars_list, model_names, loc="upper right", fontsize=22)
 
     plt.tight_layout()
 
@@ -102,11 +111,12 @@ def create_coverage_box_plot(
     box_width = 0.12
     group_width = num_models * box_width + 0.15
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 8))
 
     for model_idx, filename in enumerate(filenames):
         positions = [
-            group_idx * group_width + model_idx * box_width for group_idx in range(num_groups)
+            group_idx * group_width + model_idx * box_width
+            for group_idx in range(num_groups)
         ]
 
         for group_idx, cov_type in enumerate(COVERAGE_TYPES):
@@ -145,15 +155,17 @@ def create_coverage_box_plot(
         for group_idx in range(num_groups)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(COVERAGE_LABELS, fontsize=14)
-    ax.tick_params(axis="y", labelsize=14)
+    ax.set_xticklabels(COVERAGE_LABELS, fontsize=28)
+    ax.tick_params(axis="y", labelsize=28)
 
     if not DISABLE_LEGEND:
         legend_patches = [
-            plt.Rectangle((0, 0), 1, 1, facecolor=get_color(f), edgecolor="black", linewidth=0.5)
+            plt.Rectangle(
+                (0, 0), 1, 1, facecolor=get_color(f), edgecolor="black", linewidth=0.5
+            )
             for f in filenames
         ]
-        ax.legend(legend_patches, model_names, loc="upper right")
+        ax.legend(legend_patches, model_names, loc="upper right", fontsize=22)
 
     plt.tight_layout()
 
@@ -183,10 +195,13 @@ def save_coverage_stats(
         stats[display_name] = {}
         for cov_type, cov_label in zip(COVERAGE_TYPES, COVERAGE_LABELS):
             mean = distributions[cov_type]["mean"] * 100
-            ci = calculate_95_ci(
-                distributions[cov_type]["std"],
-                distributions[cov_type]["count"],
-            ) * 100
+            ci = (
+                calculate_95_ci(
+                    distributions[cov_type]["std"],
+                    distributions[cov_type]["count"],
+                )
+                * 100
+            )
             stats[display_name][cov_label] = {
                 "mean_pct": round(mean, 2),
                 "ci_95_pct": round(ci, 2),

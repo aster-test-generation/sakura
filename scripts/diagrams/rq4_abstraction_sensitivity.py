@@ -6,8 +6,8 @@ from typing import Any, Literal
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
 
-ABSTRACTION_LEVELS = ["high", "medium", "low"]
-ABSTRACTION_LABELS = ["High", "Medium", "Low"]
+ABSTRACTION_LEVELS = ["low", "medium", "high"]
+ABSTRACTION_LABELS = ["Low", "Medium", "High"]
 
 METRICS: dict[str, tuple[str, str]] = {
     "obj_creation_recall": ("Type Instantiation", "rq4_abs_type_instantiation"),
@@ -31,7 +31,7 @@ DISABLE_LEGEND: dict[str, bool] = {
     "class_coverage": True,
     "method_coverage": True,
     "line_coverage": True,
-    "branch_coverage": False,
+    "branch_coverage": True,
 }
 
 DISABLE_TITLE: dict[str, bool] = {
@@ -74,7 +74,7 @@ def create_bar_graph(
     bar_width = 0.12
     group_width = num_models * bar_width + 0.15
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 8))
 
     bars_list = []
     for model_idx, filename in enumerate(filenames):
@@ -110,18 +110,18 @@ def create_bar_graph(
 
     ax.set_ylim(0, 100)
     if not DISABLE_TITLE[metric_key]:
-        ax.set_title(metric_label, fontsize=14)
+        ax.set_title(metric_label, fontsize=32)
 
     group_centers = [
         group_idx * group_width + (num_models - 1) * bar_width / 2
         for group_idx in range(num_groups)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(ABSTRACTION_LABELS, fontsize=14)
-    ax.tick_params(axis="y", labelsize=14)
+    ax.set_xticklabels(ABSTRACTION_LABELS, fontsize=34)
+    ax.tick_params(axis="y", labelsize=34)
 
     if not DISABLE_LEGEND[metric_key]:
-        ax.legend(bars_list, model_names, loc="upper right")
+        ax.legend(bars_list, model_names, loc="upper right", fontsize=26)
 
     plt.tight_layout()
 
@@ -142,7 +142,7 @@ def create_line_graph(
     output_dir: Path,
 ) -> None:
     """Create line graph for a single metric across abstraction levels."""
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(8, 8))
 
     x_positions = list(range(len(ABSTRACTION_LEVELS)))
 
@@ -175,13 +175,13 @@ def create_line_graph(
 
     ax.set_ylim(0, 100)
     if not DISABLE_TITLE[metric_key]:
-        ax.set_title(metric_label, fontsize=14)
+        ax.set_title(metric_label, fontsize=32)
     ax.set_xticks(x_positions)
-    ax.set_xticklabels(ABSTRACTION_LABELS, fontsize=14)
-    ax.tick_params(axis="y", labelsize=14)
+    ax.set_xticklabels(ABSTRACTION_LABELS, fontsize=34)
+    ax.tick_params(axis="y", labelsize=34)
 
     if not DISABLE_LEGEND[metric_key]:
-        ax.legend(loc="upper right")
+        ax.legend(loc="upper right", fontsize=26)
 
     plt.tight_layout()
 
@@ -274,10 +274,13 @@ def save_abstraction_sensitivity_stats(
                 if metric_key not in distributions:
                     continue
                 mean = distributions[metric_key]["mean"] * 100
-                ci = calculate_95_ci(
-                    distributions[metric_key]["std"],
-                    int(distributions[metric_key]["count"]),
-                ) * 100
+                ci = (
+                    calculate_95_ci(
+                        distributions[metric_key]["std"],
+                        int(distributions[metric_key]["count"]),
+                    )
+                    * 100
+                )
                 stats[display_name][level_label][metric_label] = {
                     "mean_pct": round(mean, 2),
                     "ci_95_pct": round(ci, 2),

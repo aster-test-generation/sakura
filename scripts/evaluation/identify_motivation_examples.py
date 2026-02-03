@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Tuple, Union
 from pydantic import ValidationError
 
 from nltest.dataset_creation.model import NL2TestDataset
+from nltest.nl2test.models.decomposition import LocalizationEval
 from nltest.utils.models.nl2test import (
     NL2TestCoverageEval,
     NL2TestEval,
@@ -27,8 +28,12 @@ from nltest.utils.models.nl2test import (
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Input directories
-NL2TEST_EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_pro_output" # for NL2Test
-OTHER_AGENT_EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"  # for other agent
+NL2TEST_EVAL_DIR = (
+    ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_pro_output"
+)  # for NL2Test
+OTHER_AGENT_EVAL_DIR = (
+    ROOT_DIR / "outputs" / "raw_outputs" / "gemini_cli_pro_output"
+)  # for other agent
 
 # Output directory
 OUTPUT_DIR = ROOT_DIR / "outputs" / "motivation"
@@ -111,7 +116,9 @@ def load_evaluation_results(
                 if entry_id is not None and entry_id >= 0:
                     entries_by_id[entry_id] = entry
             except ValidationError as e:
-                print(f"Warning: Validation error for entry {index} in {eval_file}: {e}")
+                print(
+                    f"Warning: Validation error for entry {index} in {eval_file}: {e}"
+                )
                 continue
 
     return entries_by_id
@@ -326,6 +333,31 @@ def has_complete_eval_data(entry: EvalEntry) -> bool:
     return entry.structured_eval is not None and entry.coverage_eval is not None
 
 
+def has_high_localization(entry: NL2TestEval, threshold: float = 0.8) -> bool:
+    """Check if entry has localization_eval with localization_recall >= threshold.
+
+    Args:
+        entry: NL2TestEval entry (not OutOfBoxAgentEval, which has no localization).
+        threshold: Minimum localization_recall value (default 0.8).
+
+    Returns:
+        True if localization_eval exists and localization_recall >= threshold.
+    """
+    if entry.localization_eval is None:
+        return False
+
+    # Handle both dict (from JSON) and LocalizationEval model
+    if isinstance(entry.localization_eval, dict):
+        recall = entry.localization_eval.get("localization_recall")
+        if recall is None:
+            return False
+        return recall >= threshold
+    elif isinstance(entry.localization_eval, LocalizationEval):
+        return entry.localization_eval.localization_recall >= threshold
+
+    return False
+
+
 def _get_metric_pairs(
     nl2test_structural: NL2TestStructuralEval,
     nl2test_coverage: NL2TestCoverageEval,
@@ -404,7 +436,8 @@ def nl2test_beats_other(
     # When min_gap == 0, require at least one metric to be strictly greater
     # (greater than other AND not approximately equal)
     return any(
-        nl2test_val > other_val and not math.isclose(nl2test_val, other_val, rel_tol=1e-9)
+        nl2test_val > other_val
+        and not math.isclose(nl2test_val, other_val, rel_tol=1e-9)
         for nl2test_val, other_val in metric_pairs
     )
 
@@ -505,12 +538,21 @@ def find_motivation_examples(
     # Compile Gap buckets (organized by focal method bucket)
     compile_gap_high_quality: Dict[str, List[int]] = create_empty_bucket_dict()
     compile_gap_perfect: Dict[str, List[int]] = create_empty_bucket_dict()
+    compile_gap_perfect_high_localization: Dict[str, List[int]] = (
+        create_empty_bucket_dict()
+    )
 
     # Quality Gap buckets (organized by focal method bucket)
     quality_gap_beats_other: Dict[str, List[int]] = create_empty_bucket_dict()
     quality_gap_significant: Dict[str, List[int]] = create_empty_bucket_dict()
     quality_gap_perfect: Dict[str, List[int]] = create_empty_bucket_dict()
     quality_gap_perfect_significant: Dict[str, List[int]] = create_empty_bucket_dict()
+    quality_gap_perfect_high_localization: Dict[str, List[int]] = (
+        create_empty_bucket_dict()
+    )
+    quality_gap_perfect_significant_high_localization: Dict[str, List[int]] = (
+        create_empty_bucket_dict()
+    )
 
     for entry_id in sorted(matching_ids):
         nl2test_entry = nl2test_entries[entry_id]
@@ -528,24 +570,30 @@ def find_motivation_examples(
         other_failed_code_gen = other_entry.failed_code_generation
 
         # Compile Gap Analysis: NL2Test compiles, other doesn't
-        if nl2test_entry.compiles and not other_entry.compiles and not other_failed_code_gen:
+        if (
+            nl2test_entry.compiles
+            and not other_entry.compiles
+            and not other_failed_code_gen
+        ):
             # Check for high quality (> 0.8)
             # We already checked that structural_eval and coverage_eval are not None
             assert nl2test_entry.structured_eval is not None
             assert nl2test_entry.coverage_eval is not None
 
-            if (
-                check_structural_recall_above(nl2test_entry.structured_eval, 0.8)
-                and check_coverage_above(nl2test_entry.coverage_eval, 0.8)
-            ):
+            if check_structural_recall_above(
+                nl2test_entry.structured_eval, 0.8
+            ) and check_coverage_above(nl2test_entry.coverage_eval, 0.8):
                 compile_gap_high_quality[bucket].append(entry_id)
 
                 # Check for perfect (== 1.0)
-                if (
-                    check_structural_recall_equals(nl2test_entry.structured_eval, 1.0)
-                    and check_coverage_equals(nl2test_entry.coverage_eval, 1.0)
-                ):
+                if check_structural_recall_equals(
+                    nl2test_entry.structured_eval, 1.0
+                ) and check_coverage_equals(nl2test_entry.coverage_eval, 1.0):
                     compile_gap_perfect[bucket].append(entry_id)
+
+                    # Check for perfect with perfect localization
+                    if has_high_localization(nl2test_entry):
+                        compile_gap_perfect_high_localization[bucket].append(entry_id)
 
         # Quality Gap Analysis: Both compile, but quality difference
         elif nl2test_entry.compiles and other_entry.compiles:
@@ -583,16 +631,25 @@ def find_motivation_examples(
                     quality_gap_significant[bucket].append(entry_id)
 
                 # perfect: NL2Test achieves perfect scores (1.0) while beating other
-                is_perfect = (
-                    check_structural_recall_equals(nl2test_entry.structured_eval, 1.0)
-                    and check_coverage_equals(nl2test_entry.coverage_eval, 1.0)
-                )
+                is_perfect = check_structural_recall_equals(
+                    nl2test_entry.structured_eval, 1.0
+                ) and check_coverage_equals(nl2test_entry.coverage_eval, 1.0)
                 if is_perfect:
                     quality_gap_perfect[bucket].append(entry_id)
 
                     # perfect_significant: Perfect scores AND significant gap
                     if is_significant:
                         quality_gap_perfect_significant[bucket].append(entry_id)
+
+                    # perfect_high_localization: Perfect scores AND perfect localization
+                    if has_high_localization(nl2test_entry):
+                        quality_gap_perfect_high_localization[bucket].append(entry_id)
+
+                        # perfect_significant_high_localization: All three conditions
+                        if is_significant:
+                            quality_gap_perfect_significant_high_localization[
+                                bucket
+                            ].append(entry_id)
 
     return {
         "summary": {
@@ -614,6 +671,10 @@ def find_motivation_examples(
                 compile_gap_perfect,
                 "Structural recall = 1.0 and coverage = 1.0",
             ),
+            "perfect_high_localization": _format_bucket_results(
+                compile_gap_perfect_high_localization,
+                "Structural recall = 1.0, coverage = 1.0, and localization_recall >= 0.8",
+            ),
         },
         "quality_gap": {
             "description": "Both compile, NL2Test beats other agent on all 8 metrics",
@@ -632,6 +693,14 @@ def find_motivation_examples(
             "perfect_significant": _format_bucket_results(
                 quality_gap_perfect_significant,
                 f"All metrics = 1.0 AND average gap > {significant_gap_threshold}",
+            ),
+            "perfect_high_localization": _format_bucket_results(
+                quality_gap_perfect_high_localization,
+                "All metrics = 1.0 AND localization_recall >= 0.8",
+            ),
+            "perfect_significant_high_localization": _format_bucket_results(
+                quality_gap_perfect_significant_high_localization,
+                f"All metrics = 1.0, average gap > {significant_gap_threshold}, AND localization_recall >= 0.8",
             ),
         },
     }
@@ -706,11 +775,25 @@ def main() -> None:
     print("\nCompile Gap:")
     _print_bucket_summary("High Quality", results["compile_gap"]["high_quality"])
     _print_bucket_summary("Perfect", results["compile_gap"]["perfect"])
+    _print_bucket_summary(
+        "Perfect + High Localization",
+        results["compile_gap"]["perfect_high_localization"],
+    )
     print("\nQuality Gap:")
     _print_bucket_summary("Beats Other", results["quality_gap"]["beats_other"])
     _print_bucket_summary("Significant", results["quality_gap"]["significant"])
     _print_bucket_summary("Perfect", results["quality_gap"]["perfect"])
-    _print_bucket_summary("Perfect Significant", results["quality_gap"]["perfect_significant"])
+    _print_bucket_summary(
+        "Perfect Significant", results["quality_gap"]["perfect_significant"]
+    )
+    _print_bucket_summary(
+        "Perfect + High Localization",
+        results["quality_gap"]["perfect_high_localization"],
+    )
+    _print_bucket_summary(
+        "Perfect Significant + High Localization",
+        results["quality_gap"]["perfect_significant_high_localization"],
+    )
 
 
 if __name__ == "__main__":

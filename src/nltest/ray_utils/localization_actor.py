@@ -11,6 +11,7 @@ from cldk.analysis import AnalysisLevel
 from nltest.nl2test import Pipeline as NL2TestPipeline
 from nltest.nl2test.models import NL2TestInput
 from nltest.nl2test.models.decomposition import DecompositionMode
+from nltest.utils.analysis import AppJavaAnalysis, CommonAnalysis
 from nltest.utils.config import init_config
 from nltest.utils.llm.model import Provider
 
@@ -64,7 +65,7 @@ class LocalizationActor:
             emb_api_key=os.getenv("EMB_API_KEY"),
             localization_max_iters=(self.localization_max_iters or 20),
         )
-        self.analysis = CLDK(language="java").analysis(
+        full_analysis = CLDK(language="java").analysis(
             project_path=self.project_root,
             analysis_backend_path=None,
             analysis_level=AnalysisLevel.symbol_table,
@@ -72,12 +73,31 @@ class LocalizationActor:
             eager=False,
         )
 
+        common_analysis = CommonAnalysis(full_analysis)
+        _, application_classes, test_utility_classes = (
+            common_analysis.categorize_classes()
+        )
+        app_analysis = AppJavaAnalysis(
+            application_classes=application_classes,
+            project_dir=full_analysis.project_dir,
+            source_code=full_analysis.source_code,
+            analysis_backend_path=full_analysis.analysis_backend_path,
+            analysis_json_path=full_analysis.analysis_json_path,
+            analysis_level=full_analysis.analysis_level,
+            target_files=full_analysis.target_files,
+            eager_analysis=full_analysis.eager_analysis,
+        )
+
         # Pipeline should be immutable on calls to localize
         self.pipeline = NL2TestPipeline(
-            self.analysis,
+            app_analysis,
             project_root=self.project_root,
             analysis_dir=self.project_output_dir,
             decomposition_mode=self.decomposition_mode,
+            application_classes=application_classes,
+            test_utility_classes=test_utility_classes,
+            common_analysis=common_analysis,
+            grading_analysis=full_analysis,
         )
         self.pipeline.run_preprocessing()
 

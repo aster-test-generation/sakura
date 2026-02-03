@@ -57,8 +57,13 @@ class Pipeline:
         analysis_dir: Path,
         grading_analysis_dir: Path | None = None,
         decomposition_mode: DecompositionMode = DecompositionMode.GHERKIN,
+        application_classes: list[str],
+        test_utility_classes: list[str],
+        common_analysis: CommonAnalysis,
+        grading_analysis: JavaAnalysis | None = None,
     ):
         self.analysis = analysis
+        self.grading_analysis = grading_analysis or analysis
         # Expect absolute paths for project and analysis directories.
         self.project_root = Path(project_root)
         self.decomposition_mode = decomposition_mode
@@ -75,24 +80,21 @@ class Pipeline:
         self.class_searcher: Optional[ClassSearcher] = None
 
         # Initialize TestGrader with current analysis and application classes
-        self.common = CommonAnalysis(self.analysis)
-        _, _application_classes, _test_utility_classes = (
-            self.common.categorize_classes()
-        )
-        self.application_classes = _application_classes
-        self.test_utility_classes = _test_utility_classes
+        self.common = common_analysis
+        self.application_classes = list(application_classes)
+        self.test_utility_classes = list(test_utility_classes)
         self.test_grader = TestGrader(
-            analysis=self.analysis,
+            analysis=self.grading_analysis,
             project_root=self.project_root,
-            application_classes=_application_classes,
-            test_utility_classes=_test_utility_classes,
+            application_classes=self.application_classes,
+            test_utility_classes=self.test_utility_classes,
         )
         self.localization_grader = LocalizationGrader(
-            analysis=self.analysis,
+            analysis=self.grading_analysis,
             project_root=self.project_root,
             decomposition_mode=self.decomposition_mode,
-            application_classes=_application_classes,
-            test_utility_classes=_test_utility_classes,
+            application_classes=self.application_classes,
+            test_utility_classes=self.test_utility_classes,
         )
 
     def run_project_compilation(self) -> List[CompilationError]:
@@ -206,7 +208,7 @@ class Pipeline:
 
         # Run evaluation using LocalizationGrader with detailed output
         grader = LocalizationGrader(
-            analysis=self.analysis,
+            analysis=self.grading_analysis,
             project_root=self.project_root,
             decomposition_mode=self.decomposition_mode,
             application_classes=self.application_classes,
@@ -307,8 +309,8 @@ class Pipeline:
 
         run_usage_tracker = UsageTracker()
 
-        self.test_grader.set_analysis(self.analysis)
-        self.localization_grader.set_analysis(self.analysis)
+        self.test_grader.set_analysis(self.grading_analysis)
+        self.localization_grader.set_analysis(self.grading_analysis)
 
         # Decompose into initial blocks
         blocks = self.decompose_natural_language(

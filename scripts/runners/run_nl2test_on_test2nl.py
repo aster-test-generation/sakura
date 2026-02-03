@@ -10,14 +10,14 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 SRC_DIR = "src"
 BASE_PROJECT_DIR = "resources/datasets/"
 BASE_ANALYSIS_DIR = "resources/analysis/"
-OUTPUT_DIR = "resources/output/"
+OUTPUT_DIR = "outputs/raw_outputs/"
 # Log file name to write under OUTPUT_DIR
 LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 # Test2NL CSV file path (must include the filename)
 CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"
 
 # CLI arguments
-MAX_ENTRIES = 1
+MAX_ENTRIES = 0
 # Note: 0 = unlimited
 TARGET_IDS: list[int] = []  # Empty list processes all; non-empty filters to these IDs
 DEBUG = True
@@ -25,7 +25,7 @@ USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = "qwen/qwen3-coder"
+LLM_MODEL = ""
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
     "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"
@@ -69,6 +69,9 @@ MAX_INFLIGHT = 0  # 0 uses num_proj_parallel
 
 # Save localized scenarios to separate JSON file per-project (GHERKIN mode only)
 SAVE_LOCALIZED_SCENARIOS: bool = False
+
+# Save each generate_test_code iteration to code_iteration/ directory for debugging
+STORE_CODE_ITERATION: bool = False
 
 
 def main() -> None:
@@ -199,6 +202,9 @@ def main() -> None:
 
     if SAVE_LOCALIZED_SCENARIOS:
         cmd.append("--save-localized-scenarios")
+
+    if STORE_CODE_ITERATION:
+        cmd.append("--store-code-iteration")
 
     print("Running NL2Test on Test2NL inputs...", flush=True)
     print(f"Decomposition mode: {DECOMPOSITION_MODE}", flush=True)

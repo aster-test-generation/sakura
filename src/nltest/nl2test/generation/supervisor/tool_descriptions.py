@@ -79,5 +79,6 @@ Returns:
 """
 
 FINALIZE_DESC = """
-End supervision and complete test generation once fault localization is complete and a compilable test case that satisfies all provided test descriptions has been produced.
+End supervision once a compilable test satisfies the request.
+Provide 1-2 short sentences in comments; if none, write "No issues.".
 """

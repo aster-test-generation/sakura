@@ -179,7 +179,9 @@ class FinalizeCommentsArgs(BaseModel):
     comments: Annotated[
         str,
         Field(
-            description="Comments about any problems with the procedure or concerns."
+            description=(
+                "Provide 1-2 short sentences. If no issues, write 'No issues.'."
+            )
         ),
     ]
 

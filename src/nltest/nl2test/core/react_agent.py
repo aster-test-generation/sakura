@@ -376,6 +376,13 @@ class ReActAgent:
                 tools=self.tools,
                 tool_choice="auto",
                 extra_model_kwargs={"parallel_tool_calls": self.allow_parallelize},
+                context={
+                    "agent": type(self).__name__,
+                    "iteration": state.iterations,
+                    "max_iters": self.max_iters,
+                    "no_tool_retries": state.no_tool_retries,
+                    "finalize_called": state.finalize_called,
+                },
             )
             state.messages.append(out)
             state.iterations += 1

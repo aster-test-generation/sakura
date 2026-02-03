@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Type
 
-from langchain_core.messages import AIMessage, ToolMessage, ToolCall
+from langchain_core.messages import ToolMessage, ToolCall
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel
 
@@ -18,6 +18,7 @@ from nltest.nl2test.models import AgentState
 from nltest.nl2test.models.agents import FinalizeCommentsArgs
 from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from nltest.utils.llm import LLMClient, FormatValidator
+from nltest.utils.config import Config
 from nltest.utils.constants import TEST_DIR
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
 from nltest.utils.exceptions import ProjectCompilationError
@@ -106,6 +107,7 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         self.module_root = (
             resolved_module_root.resolve() if resolved_module_root is not None else None
         )
+        self._code_iteration_counter = 0
 
     def _get_finalize_schema(self) -> Type[BaseModel]:
         return FinalizeCommentsArgs
@@ -153,6 +155,28 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
             raise ValueError("project_root is not configured")
         test_base_dir = self.test_base_dir or TEST_DIR
         return TestFileManager(self.project_root, test_base_dir=test_base_dir)
+
+    def _save_code_iteration(self, test_code: str) -> None:
+        """Save a code iteration to the code_iteration directory if enabled."""
+        try:
+            config = Config()
+            store_enabled = config.get("composition", "store_code_iteration")
+        except Exception:
+            return
+
+        if not store_enabled:
+            return
+
+        try:
+            output_dir = Path(config.get("project", "project_output_dir"))
+        except Exception:
+            return
+
+        code_iter_dir = output_dir / "code_iteration"
+        code_iter_dir.mkdir(parents=True, exist_ok=True)
+        filename = f"nl2test_code_iteration_{self._code_iteration_counter}.java"
+        (code_iter_dir / filename).write_text(test_code, encoding="utf-8")
+        self._code_iteration_counter += 1
 
     def prepare_tool_args(
         self, tool_name: str, raw_args: Dict[str, Any], state: AgentState
@@ -309,6 +333,8 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
         )
         qualified_class_name = normalized_qcn
         method_signature = method_signature.strip()
+
+        self._save_code_iteration(test_code)
 
         fm = self._get_test_file_manager()
 

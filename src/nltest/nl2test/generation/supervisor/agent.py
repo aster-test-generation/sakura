@@ -19,7 +19,7 @@ from nltest.nl2test.generation.localization.orchestrators.base import (
     BaseLocalizationOrchestrator,
 )
 from nltest.nl2test.models import AgentState
-from nltest.nl2test.models.agents import NoArgs
+from nltest.nl2test.models.agents import FinalizeCommentsArgs
 from nltest.utils.constants import TEST_DIR
 from nltest.utils.llm import LLMClient
 from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
@@ -88,13 +88,13 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
         self.composition_state: Optional[AgentState] = None
 
     def _get_finalize_schema(self) -> Type[BaseModel]:
-        return NoArgs
+        return FinalizeCommentsArgs
 
     def _execute_force_end(self, state: AgentState) -> AgentState:
-        """Skip LLM call for supervisor since NoArgs schema provides no value."""
+        """Skip LLM call for supervisor and finalize with concise comments."""
         state.force_end_attempts += 1
         state.finalize_called = True
-        state.final_comments = ""
+        state.final_comments = "No issues."
         self._log_force_finalize(state)
         return state
 

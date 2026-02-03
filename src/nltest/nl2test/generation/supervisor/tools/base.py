@@ -7,7 +7,7 @@ from typing import List, Tuple, Union
 from langchain_core.tools import BaseTool
 
 from nltest.nl2test.core.deferred_tool import DeferredTool
-from nltest.nl2test.models import NoArgs, ViewTestCodeArgs
+from nltest.nl2test.models import FinalizeCommentsArgs
 from nltest.utils.llm import LLMClient
 from nltest.nl2test.generation.supervisor.tool_descriptions import FINALIZE_DESC
 from nltest.nl2test.generation.common.tools.common_test_tools import CommonTestTools
@@ -49,9 +49,10 @@ class BaseSupervisorTools:
 
     def _make_finalize_tool(self) -> BaseTool:
         """Create the finalize tool to end supervision."""
-        return DeferredTool.create_no_args(
+        return DeferredTool.create(
             name="finalize",
             description=textwrap.dedent(FINALIZE_DESC).strip(),
-            returns_static={"status": "finalize"},
+            args_schema=FinalizeCommentsArgs,
+            returns_input_keys=["comments"],
             processing_note="Agent sets finalize_called=True and ends the run",
         )

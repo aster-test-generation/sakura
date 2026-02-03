@@ -49,4 +49,5 @@ Composition agent (code)
 ## Completion
 - NEVER finalize immediately. Always call call_localization_agent and call_composition_agent at least once before finalizing.
 - Call finalize only after composition has produced code, or when the iteration limit is reached.
+- When calling finalize, provide 1-2 short sentences in comments; if none, write "No issues.".
 - The last composition output test file is the final result.

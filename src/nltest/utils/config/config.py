@@ -37,6 +37,7 @@ def init_config(
     reasoning_effort: str = "medium",
     exclude_reasoning: bool = True,
     openrouter_ignore_providers: list[str] | None = None,
+    store_code_iteration: bool = False,
 ) -> "Config":
     config = Config(None, reuse=reuse_config)
 
@@ -119,6 +120,9 @@ def init_config(
     config.set("project", "base_project_dir", val=base_project_dir)
     config.set("project", "project_output_dir", val=project_output_dir)
     config.set("project", "use_stored_index", val=use_stored_index)
+
+    # Composition agent settings
+    config.set("composition", "store_code_iteration", val=store_code_iteration)
 
     return config
 

@@ -55,6 +55,7 @@ class NL2TestActor:
         max_tokens: int = 16384,
         openrouter_ignore_providers: list[str] | None = None,
         save_localized_scenarios: bool = False,
+        store_code_iteration: bool = False,
     ) -> None:
         self.project_name = project_name
         self.project_root = Path(base_project_dir) / project_name
@@ -110,6 +111,7 @@ class NL2TestActor:
             exclude_reasoning=exclude_reasoning,
             max_tokens=max_tokens,
             openrouter_ignore_providers=openrouter_ignore_providers,
+            store_code_iteration=store_code_iteration,
         )
 
         # Load analysis from precomputed JSON for this project

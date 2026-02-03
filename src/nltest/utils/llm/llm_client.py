@@ -7,20 +7,18 @@ import traceback
 import uuid
 from typing import Any, Dict, Literal, Optional, Sequence, Type, TypeVar, Union
 
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from openai import LengthFinishReasonError
-from pydantic import BaseModel
-
-from .general_prompts.structured_retry import (
-    LENGTH_EXCEEDED_RETRY_PROMPT,
-    STRUCTURED_OUTPUT_RETRY_PROMPT,
+from langchain_core.messages import (
+    AIMessage,
+    BaseMessage,
+    HumanMessage,
+    SystemMessage,
+    ToolMessage,
 )
-
-SchemaT = TypeVar("SchemaT", bound=BaseModel)
 from langchain_core.runnables import RunnableSerializable
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from pydantic import SecretStr
+from openai import LengthFinishReasonError
+from pydantic import BaseModel, SecretStr
 from tenacity import (
     RetryCallState,
     retry,
@@ -36,6 +34,13 @@ from ..config.config import Config
 from ..exceptions import ConfigurationException
 from .model import ClientType, Provider
 from .usage_tracker import UsageTracker
+
+from .general_prompts.structured_retry import (
+    LENGTH_EXCEEDED_RETRY_PROMPT,
+    STRUCTURED_OUTPUT_RETRY_PROMPT,
+)
+
+SchemaT = TypeVar("SchemaT", bound=BaseModel)
 
 
 class EmptyLLMResponseError(RuntimeError):
@@ -259,6 +264,99 @@ class LLMClient:
             ai_msg.tool_calls = normalized
         return ai_msg
 
+    @staticmethod
+    def _message_preview(message: BaseMessage | None, limit: int = 500) -> str:
+        if message is None:
+            return ""
+        content = getattr(message, "content", "")
+        if isinstance(content, str):
+            text = content
+        elif isinstance(content, list):
+            segments = []
+            for chunk in content:
+                if isinstance(chunk, dict):
+                    segments.append(
+                        str(chunk.get("text") or chunk.get("content") or chunk)
+                    )
+                else:
+                    segments.append(str(chunk))
+            text = "\n".join(segments)
+        else:
+            text = str(content)
+        text = text.strip()
+        return text[:limit]
+
+    def _summarize_messages(self, messages: Sequence[BaseMessage]) -> Dict[str, Any]:
+        summary: Dict[str, Any] = {
+            "count": len(messages),
+            "types": {},
+        }
+        for msg in messages:
+            msg_type = type(msg).__name__
+            summary["types"][msg_type] = summary["types"].get(msg_type, 0) + 1
+
+        last_system = next(
+            (m for m in reversed(messages) if isinstance(m, SystemMessage)), None
+        )
+        last_human = next(
+            (m for m in reversed(messages) if isinstance(m, HumanMessage)), None
+        )
+        last_tool = next(
+            (m for m in reversed(messages) if isinstance(m, ToolMessage)), None
+        )
+        last_ai = next(
+            (m for m in reversed(messages) if isinstance(m, AIMessage)), None
+        )
+
+        summary["last_message_type"] = type(messages[-1]).__name__ if messages else None
+        summary["system_preview"] = self._message_preview(last_system)
+        summary["last_human_preview"] = self._message_preview(last_human)
+        summary["last_tool_preview"] = self._message_preview(last_tool)
+        summary["last_ai_preview"] = self._message_preview(last_ai)
+
+        if last_ai is not None:
+            tool_calls = getattr(last_ai, "tool_calls", None) or []
+            summary["last_ai_tool_calls"] = [
+                tc.get("name") for tc in tool_calls if isinstance(tc, dict)
+            ]
+
+        return summary
+
+    def _log_empty_response(
+        self,
+        out: AIMessage,
+        messages: Sequence[BaseMessage],
+        context: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        def _content_len(value: Any) -> int:
+            if isinstance(value, str):
+                return len(value)
+            if isinstance(value, list):
+                return len(value)
+            if value is None:
+                return 0
+            return len(str(value))
+
+        payload = {
+            "provider": getattr(self._provider, "value", self._provider),
+            "model": self._model,
+            "base_url": self._base_url,
+            "client": self._client_type.value,
+            "context": context or {},
+            "response": {
+                "content_type": type(out.content).__name__,
+                "content_len": _content_len(out.content),
+                "tool_calls": getattr(out, "tool_calls", None),
+                "usage_metadata": getattr(out, "usage_metadata", None),
+                "response_metadata": getattr(out, "response_metadata", None),
+            },
+            "messages": self._summarize_messages(messages),
+        }
+
+        RichLog.error(
+            f"[LLMClient] empty_response details={json.dumps(payload, default=str)[:4000]}"
+        )
+
     @retry(
         stop=stop_after_attempt(5),
         wait=wait_chain(
@@ -272,7 +370,10 @@ class LLMClient:
         reraise=True,
     )
     def _invoke_with_retry(
-        self, runnable: RunnableSerializable, messages: Sequence[BaseMessage]
+        self,
+        runnable: RunnableSerializable,
+        messages: Sequence[BaseMessage],
+        context: Optional[Dict[str, Any]] = None,
     ) -> Any:
         """Internal method that performs the actual invocation with retry logic."""
         out = runnable.invoke(list(messages))
@@ -287,6 +388,7 @@ class LLMClient:
             else:
                 has_content = bool(out.content)
             if not has_tool_calls and not has_content:
+                self._log_empty_response(out, messages, context)
                 raise EmptyLLMResponseError(
                     "LLM returned an empty AIMessage (no content, no tool_calls)."
                 )
@@ -307,6 +409,7 @@ class LLMClient:
             Literal["json_schema", "function_calling", "json_mode"]
         ] = "json_schema",
         temperature: Optional[float] = None,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Any:
         runnable = self._build_runnable(
             tools=tools,
@@ -319,7 +422,7 @@ class LLMClient:
             temperature=temperature,
         )
         try:
-            out = self._invoke_with_retry(runnable, messages)
+            out = self._invoke_with_retry(runnable, messages, context)
         except Exception as e:
             err_type = type(e).__name__
             RichLog.error(
@@ -327,6 +430,8 @@ class LLMClient:
                 f"model={self._model}, base_url={self._base_url}, client={self._client_type.value}): {e}"
             )
             RichLog.debug(traceback.format_exc())
+            if context:
+                RichLog.debug(f"context: {json.dumps(context, default=str)[:2000]}")
             RichLog.debug(
                 f"opts: tool_choice={tool_choice}, "
                 f"schema={'yes' if schema is not None else 'no'}, "

@@ -157,6 +157,12 @@ def _clear_nl2test_output_artifacts(
             failures_path = project_dir / "nl2test_failures.json"
             if failures_path.exists():
                 failures_path.unlink()
+            localized_scenarios_path = project_dir / "nl2test_localized_scenarios.json"
+            if localized_scenarios_path.exists():
+                localized_scenarios_path.unlink()
+            code_iteration_dir = project_dir / "code_iteration"
+            if code_iteration_dir.exists():
+                shutil.rmtree(code_iteration_dir)
 
         temp_analysis = project_dir / "temp_analysis"
         if temp_analysis.exists():
@@ -812,6 +818,13 @@ def run_nl2test(
             show_default=True,
         ),
     ] = False,
+    store_code_iteration: Annotated[
+        bool,
+        typer.Option(
+            help="Save each generate_test_code iteration to code_iteration/ directory for debugging.",
+            show_default=True,
+        ),
+    ] = False,
 ):
     try:
         decomposition_mode = DecompositionMode(decomposition_mode.strip().lower())
@@ -996,6 +1009,7 @@ def run_nl2test(
                 if openrouter_ignore_providers
                 else None,
                 save_localized_scenarios=save_localized_scenarios,
+                store_code_iteration=store_code_iteration,
             )
 
             payloads = [
@@ -1169,7 +1183,11 @@ def run_nl2test(
                             )
                         else:
                             nl2test_input = getattr(input_data, "nl2test_input", None)
-                            input_id = getattr(nl2test_input, "id", -1) if nl2test_input else -1
+                            input_id = (
+                                getattr(nl2test_input, "id", -1)
+                                if nl2test_input
+                                else -1
+                            )
                         localized_scenarios_to_save.append(
                             {
                                 "input_id": input_id,

@@ -55,9 +55,7 @@ def _distribution_to_dict(dist: DistributionSummary) -> dict[str, Any]:
     return asdict(dist)
 
 
-def collect_localization_stats(
-    output_dir: Path, eval_file_name: str
-) -> dict[str, Any]:
+def collect_localization_stats(output_dir: Path, eval_file_name: str) -> dict[str, Any]:
     """Collect localization recall stats from all projects in output_dir."""
     project_dirs = sorted(
         [d for d in output_dir.iterdir() if d.is_dir()], key=lambda p: p.name
@@ -89,7 +87,7 @@ def collect_localization_stats(
 
     return {
         "summary": {
-            "output_directory": str(output_dir),
+            "output_directory": str(output_dir.relative_to(ROOT_DIR)),
             "total_entries": len(all_recalls),
             "overall_recall_distribution": _distribution_to_dict(
                 summarize_distribution(all_recalls)

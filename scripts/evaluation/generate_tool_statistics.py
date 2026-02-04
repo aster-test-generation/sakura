@@ -194,7 +194,7 @@ def evaluate_directory(output_dir: Path) -> None:
 
     json_output: Dict[str, Any] = {
         "summary": {
-            "output_directory": str(output_dir),
+            "output_directory": str(output_dir.relative_to(ROOT_DIR)),
             "total_entries": total_entries,
             "entries_with_tool_data": entries_with_data,
         },

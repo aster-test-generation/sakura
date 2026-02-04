@@ -826,7 +826,7 @@ def evaluate_directory(
 
     analysis_result = {
         "summary": {
-            "output_directory": str(output_dir),
+            "output_directory": str(output_dir.relative_to(ROOT_DIR)),
             "eval_file": eval_file_name,
             "entry_count": len(entries),
             "compile_rate": compile_rate,

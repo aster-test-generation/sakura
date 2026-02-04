@@ -1061,7 +1061,7 @@ def evaluate_directory(
 
     json_output: Dict[str, Any] = {
         "summary": {
-            "output_directory": str(output_dir),
+            "output_directory": str(output_dir.relative_to(ROOT_DIR)),
             "eval_file": eval_file_name,
             "pricing_model": pricing_model,
             "projects_scanned": len(project_dirs),

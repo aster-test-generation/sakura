@@ -10,7 +10,7 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 SRC_DIR = "src"
 BASE_PROJECT_DIR = "resources/datasets/"
 BASE_ANALYSIS_DIR = "resources/analysis/"
-OUTPUT_DIR = "outputs/raw_outputs/"
+OUTPUT_DIR = "outputs/raw_outputs/OUTPUT_DIR"
 # Log file name to write under OUTPUT_DIR
 LOG_FILE_NAME = "nl2test.log"  # Only the name; saved inside OUTPUT_DIR
 # Test2NL CSV file path (must include the filename)
@@ -25,7 +25,7 @@ USE_STORED_INDEX = True
 RESET_EVALUATION_RESULTS = True
 EXCLUDE_TEST_DIRS = True
 
-LLM_MODEL = ""
+LLM_MODEL = "google/gemini-2.5-flash"
 # Either LLM_PROVIDER or LLM_API_URL must be non-None
 LLM_PROVIDER: str | None = (
     "openrouter"  # Supported providers: "openrouter", "ollama", "vllm", "openai", "gcp", "mistral"

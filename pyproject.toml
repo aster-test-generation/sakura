@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "nltest"
+name = "sakura"
 version = "0.0.1"
-description = "ASTER-NL2Test: [A]utomated Natural Language to Te[s][t] Cas[e] Generato[r]"
+description = "ASTER-Sakura: [A]utomated Natural Language to Te[s][t] Cas[e] Generato[r]"
 authors = []
 license = ""
 readme = "README.md"
 packages = [
-    { include = "nltest", from = "src" }
+    { include = "sakura", from = "src" }
 ]
 
 [tool.poetry.dependencies]
@@ -42,7 +42,7 @@ pyright = "^1.1.407"
 tenacity = "^9.0.0"
 
 [tool.poetry.scripts]
-nltest = "nltest.cli:app"
+sakura = "sakura.cli:app"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"

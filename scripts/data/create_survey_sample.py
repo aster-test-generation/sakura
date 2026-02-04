@@ -10,7 +10,7 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.utils.analysis.java_analyzer import CommonAnalysis
+from sakura.utils.analysis.java_analyzer import CommonAnalysis
 
 
 @dataclass

@@ -15,9 +15,9 @@ from typing import Any, Dict, List, Tuple, Union
 
 from pydantic import ValidationError
 
-from nltest.dataset_creation.model import NL2TestDataset
-from nltest.nl2test.models.decomposition import LocalizationEval
-from nltest.utils.models.nl2test import (
+from sakura.dataset_creation.model import NL2TestDataset
+from sakura.nl2test.models.decomposition import LocalizationEval
+from sakura.utils.models.nl2test import (
     NL2TestCoverageEval,
     NL2TestEval,
     NL2TestStructuralEval,

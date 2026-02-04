@@ -2,18 +2,18 @@ from typing import List
 
 import pytest
 
-from nltest.test2nl.extractors import (
+from sakura.test2nl.extractors import (
     ClassExtractor,
     FieldDeclarationExtractor,
     MethodExtractor,
 )
-from nltest.test2nl.model.models import (
+from sakura.test2nl.model.models import (
     AbstractionLevel,
     Test2NLEntry,
     TestDescriptionInfo,
 )
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.pretty.prints import pretty_print
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.pretty.prints import pretty_print
 
 
 class TestDescriptionGeneration:

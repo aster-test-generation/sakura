@@ -1,0 +1,64 @@
+from __future__ import annotations
+
+from pathlib import Path
+import textwrap
+from typing import Union
+
+from langchain_core.tools import BaseTool
+
+from .base import BaseCompositionTools
+from sakura.nl2test.core.deferred_tool import DeferredTool
+from sakura.nl2test.models import ModifyScenarioCommentArgs, NL2TestInput
+from cldk.analysis.java import JavaAnalysis
+from sakura.nl2test.preprocessing.searchers import MethodSearcher, ClassSearcher
+from sakura.utils.llm import LLMClient
+from sakura.nl2test.generation.composition.tool_descriptions import (
+    MODIFY_SCENARIO_COMMENT_DESC,
+)
+
+
+class GherkinCompositionTools(BaseCompositionTools):
+    """
+    Tool builder for Gherkin-mode composition agent.
+
+    Extends base composition tools with Gherkin-specific tools:
+    - modify_scenario_comment: Update comment on a scenario step (deferred)
+    """
+
+    def __init__(
+        self,
+        *,
+        analysis: JavaAnalysis,
+        method_searcher: MethodSearcher,
+        class_searcher: ClassSearcher,
+        structured_llm: LLMClient,
+        project_root: Union[str, Path],
+        module_root: Union[str, Path] | None = None,
+        nl2_input: NL2TestInput,
+    ):
+        super().__init__(
+            analysis=analysis,
+            method_searcher=method_searcher,
+            class_searcher=class_searcher,
+            structured_llm=structured_llm,
+            project_root=str(project_root),
+            module_root=module_root,
+            nl2_input=nl2_input,
+        )
+        self.tools.append(self._make_modify_scenario_comment_tool())
+
+    def _make_modify_scenario_comment_tool(self) -> BaseTool:
+        """
+        Create the modify_scenario_comment tool for Gherkin mode.
+
+        This is a deferred tool - it returns the step id and comment,
+        and the agent's process_tool_output hook updates the scenario in state.
+        """
+        return DeferredTool.create(
+            name="modify_scenario_comment",
+            description=textwrap.dedent(MODIFY_SCENARIO_COMMENT_DESC).strip(),
+            args_schema=ModifyScenarioCommentArgs,
+            returns_input_keys=["id", "comment"],
+            processing_note="Agent locates step by id in state.localized_scenario "
+            "and updates its comments field",
+        )

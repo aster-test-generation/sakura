@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import List
 
-from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
-from nltest.utils.formatting import ErrorFormatter
-from nltest.utils.pretty.color_logger import RichLog
-from nltest.utils.vcs.git_utils import GitUtilities
+from sakura.utils.compilation.maven import CompilationError, JavaMavenCompilation
+from sakura.utils.formatting import ErrorFormatter
+from sakura.utils.pretty.color_logger import RichLog
+from sakura.utils.vcs.git_utils import GitUtilities
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 PROJECTS_DIR = ROOT_DIR / "resources" / "datasets"

@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from nltest.utils.pretty.color_logger import RichLog
-from nltest.utils.vcs.git_utils import GitUtilities
+from sakura.utils.pretty.color_logger import RichLog
+from sakura.utils.vcs.git_utils import GitUtilities
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 SUBMODULES_DIR = ROOT_DIR / "resources" / "datasets"

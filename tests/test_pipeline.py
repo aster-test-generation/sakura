@@ -3,7 +3,7 @@ import random
 
 import pytest
 
-from nltest.nl2test.models import (
+from sakura.nl2test.models import (
     AtomicBlock,
     AtomicBlockList,
     NL2LocalizationOutput,
@@ -13,18 +13,18 @@ from nltest.nl2test.models import (
     AbstractionLevel as NL2AbstractionLevel,
     LocalizationEval,
 )
-from nltest.nl2test.models.decomposition import (
+from sakura.nl2test.models.decomposition import (
     DecompositionMode,
     GrammaticalBlockList,
 )
-from nltest.nl2test.pipeline import Pipeline as NL2TestPipeline
-from nltest.test2nl.pipeline import Pipeline as Test2NLPipeline
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.utils.pretty.prints import pretty_print
+from sakura.nl2test.pipeline import Pipeline as NL2TestPipeline
+from sakura.test2nl.pipeline import Pipeline as Test2NLPipeline
+from sakura.utils.file_io.structured_data_manager import StructuredDataManager
+from sakura.utils.pretty.prints import pretty_print
 
-from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
+from sakura.test2nl.model.models import AbstractionLevel, Test2NLEntry
 
-from nltest.utils.utilities import test2nl_entry_to_nl2test_input
+from sakura.utils.utilities import test2nl_entry_to_nl2test_input
 
 
 class TestTest2NLPipeline:

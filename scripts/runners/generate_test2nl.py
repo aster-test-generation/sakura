@@ -65,7 +65,7 @@ def main() -> None:
         "python",
         "-u",
         "-m",
-        "nltest.cli",
+        "sakura.cli",
         "generate-descriptions",
         "--analysis-dir",
         str(analysis_dir),

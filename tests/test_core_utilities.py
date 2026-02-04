@@ -9,13 +9,13 @@ import pytest
 from langchain_core.messages import AIMessage, ToolMessage
 from pydantic import BaseModel, Field
 
-from nltest.nl2test.core.deferred_tool import DeferredTool
-from nltest.nl2test.core.message_redactor import MessageRedactor
-from nltest.nl2test.generation.common.cldk_normalizer import CLDKArgNormalizer
-from nltest.nl2test.models import AgentState
-from nltest.utils.compilation.maven import CompilationError
-from nltest.utils.execution.maven import ExecutionIssue
-from nltest.utils.formatting import ErrorFormatter
+from sakura.nl2test.core.deferred_tool import DeferredTool
+from sakura.nl2test.core.message_redactor import MessageRedactor
+from sakura.nl2test.generation.common.cldk_normalizer import CLDKArgNormalizer
+from sakura.nl2test.models import AgentState
+from sakura.utils.compilation.maven import CompilationError
+from sakura.utils.execution.maven import ExecutionIssue
+from sakura.utils.formatting import ErrorFormatter
 
 
 class TestMessageRedactor:

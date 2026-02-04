@@ -11,13 +11,13 @@ from cldk.analysis import AnalysisLevel
 from cldk.analysis.java import JavaAnalysis
 from dotenv import load_dotenv
 
-from nltest.test2nl import Pipeline as Test2NLPipeline
-from nltest.test2nl.generation import DescriptionGenerator
-from nltest.test2nl.prompts import Test2NLPrompt
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.config import Config, init_config
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.utils.llm.model import Provider
+from sakura.test2nl import Pipeline as Test2NLPipeline
+from sakura.test2nl.generation import DescriptionGenerator
+from sakura.test2nl.prompts import Test2NLPrompt
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.config import Config, init_config
+from sakura.utils.file_io.structured_data_manager import StructuredDataManager
+from sakura.utils.llm.model import Provider
 
 
 @dataclass(frozen=True)

@@ -13,21 +13,21 @@ import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.compilation.maven import JavaMavenCompilation
-from nltest.utils.evaluation import TestGrader
-from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
-from nltest.utils.models import (
+from sakura.test2nl.model.models import AbstractionLevel, Test2NLEntry
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.compilation.maven import JavaMavenCompilation
+from sakura.utils.evaluation import TestGrader
+from sakura.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
+from sakura.utils.models import (
     NL2TestCoverageEval,
     NL2TestInput,
     NL2TestMetadata,
     NL2TestStructuralEval,
     OutOfBoxAgentEval,
 )
-from nltest.utils.pretty.color_logger import RichLog
-from nltest.utils.utilities import test2nl_entry_to_nl2test_input
-from nltest.utils.vcs.git_utils import GitUtilities
+from sakura.utils.pretty.color_logger import RichLog
+from sakura.utils.utilities import test2nl_entry_to_nl2test_input
+from sakura.utils.vcs.git_utils import GitUtilities
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 AGENT_OUTPUT_DIR = ROOT_DIR / "resources" / "outputs" / "gemini_cli_flash_output"

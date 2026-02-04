@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from pydantic import ValidationError
 
-from nltest.utils.models.nl2test import OutOfBoxAgentEval
+from sakura.utils.models.nl2test import OutOfBoxAgentEval
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 RAW_OUTPUTS_DIR = ROOT_DIR / "outputs" / "raw_outputs"

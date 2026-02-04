@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from nltest.utils.file_io.pom_processor import PomProcessor
+from sakura.utils.file_io.pom_processor import PomProcessor
 
 
 def _dependency_keys(

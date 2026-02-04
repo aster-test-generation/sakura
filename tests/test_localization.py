@@ -3,36 +3,36 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from nltest.nl2test.evaluation.localization_grader import LocalizationGrader
-from nltest.nl2test.generation.localization import (
+from sakura.nl2test.evaluation.localization_grader import LocalizationGrader
+from sakura.nl2test.generation.localization import (
     GherkinLocalizationOrchestrator,
     GrammaticalLocalizationOrchestrator,
 )
-from nltest.nl2test.generation.localization.tools.base import BaseLocalizationTools
-from nltest.nl2test.generation.localization.tools.gherkin import (
+from sakura.nl2test.generation.localization.tools.base import BaseLocalizationTools
+from sakura.nl2test.generation.localization.tools.gherkin import (
     GherkinLocalizationTools,
 )
-from nltest.nl2test.generation.localization.tools.grammatical import (
+from sakura.nl2test.generation.localization.tools.grammatical import (
     GrammaticalLocalizationTools,
 )
-from nltest.nl2test.models import (
+from sakura.nl2test.models import (
     AgentState,
     AtomicBlock,
     AtomicBlockList,
     LocalizedScenario,
     NL2TestInput,
 )
-from nltest.nl2test.models.decomposition import (
+from sakura.nl2test.models.decomposition import (
     DecompositionMode,
     GrammaticalBlockList,
     Scenario,
 )
-from nltest.nl2test.preprocessing.indexers import ClassIndexer, MethodIndexer
-from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.llm import UsageTracker
-from nltest.utils.pretty.prints import pretty_print
+from sakura.nl2test.preprocessing.indexers import ClassIndexer, MethodIndexer
+from sakura.nl2test.preprocessing.nl_decomposer import NLDecomposer
+from sakura.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.llm import UsageTracker
+from sakura.utils.pretty.prints import pretty_print
 
 
 class TestLocalizationAgent:
@@ -974,7 +974,7 @@ class TestLocalizationForceFinalize:
         decomposition_mode: DecompositionMode, strict_finalize: bool = False
     ):
         """Create a LocalizationReActAgent with mocked dependencies."""
-        from nltest.nl2test.generation.localization.agent import LocalizationReActAgent
+        from sakura.nl2test.generation.localization.agent import LocalizationReActAgent
 
         mock_llm = MagicMock()
         mock_finalize = TestLocalizationForceFinalize._create_mock_finalize_tool()
@@ -992,7 +992,7 @@ class TestLocalizationForceFinalize:
 
     def test_get_finalize_schema_gherkin_returns_scenario_args(self):
         """Verify _get_finalize_schema returns FinalizeScenarioArgs for Gherkin mode."""
-        from nltest.nl2test.models.agents import FinalizeScenarioArgs
+        from sakura.nl2test.models.agents import FinalizeScenarioArgs
 
         agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
         schema = agent._get_finalize_schema()
@@ -1001,7 +1001,7 @@ class TestLocalizationForceFinalize:
 
     def test_get_finalize_schema_grammatical_returns_atomic_block_args(self):
         """Verify _get_finalize_schema returns FinalizeAtomicBlockArgs for Grammatical mode."""
-        from nltest.nl2test.models.agents import FinalizeAtomicBlockArgs
+        from sakura.nl2test.models.agents import FinalizeAtomicBlockArgs
 
         agent = self._create_mock_localization_agent(DecompositionMode.GRAMMATICAL)
         schema = agent._get_finalize_schema()
@@ -1035,7 +1035,7 @@ class TestLocalizationForceFinalize:
 
     def test_process_force_finalize_result_gherkin_sets_state(self):
         """Verify _process_force_finalize_result correctly updates state for Gherkin mode."""
-        from nltest.nl2test.models.agents import FinalizeScenarioArgs
+        from sakura.nl2test.models.agents import FinalizeScenarioArgs
 
         agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
         state = AgentState()
@@ -1059,7 +1059,7 @@ class TestLocalizationForceFinalize:
 
     def test_process_force_finalize_result_grammatical_sets_state(self):
         """Verify _process_force_finalize_result correctly updates state for Grammatical mode."""
-        from nltest.nl2test.models.agents import FinalizeAtomicBlockArgs
+        from sakura.nl2test.models.agents import FinalizeAtomicBlockArgs
 
         agent = self._create_mock_localization_agent(DecompositionMode.GRAMMATICAL)
         state = AgentState()
@@ -1079,7 +1079,7 @@ class TestLocalizationForceFinalize:
 
     def test_execute_force_end_with_mocked_llm_gherkin(self):
         """Test _execute_force_end with mocked LLM returning valid structured output."""
-        from nltest.nl2test.models.agents import FinalizeScenarioArgs
+        from sakura.nl2test.models.agents import FinalizeScenarioArgs
 
         agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
 
@@ -1105,7 +1105,7 @@ class TestLocalizationForceFinalize:
 
     def test_execute_force_end_with_mocked_llm_failure_strict(self):
         """Test _execute_force_end raises exception when LLM fails in strict mode."""
-        from nltest.utils.exceptions import ConfigurationException
+        from sakura.utils.exceptions import ConfigurationException
 
         agent = self._create_mock_localization_agent(DecompositionMode.GHERKIN)
         agent.strict_finalize = True

@@ -6,9 +6,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-from nltest.dataset_creation.model import NL2TestDataset
-from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
+from sakura.dataset_creation.model import NL2TestDataset
+from sakura.test2nl.model.models import AbstractionLevel, Test2NLEntry
+from sakura.utils.file_io.structured_data_manager import StructuredDataManager
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 

@@ -34,7 +34,7 @@ from typing import Any
 from cldk import CLDK
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.utils.analysis.java_analyzer import CommonAnalysis
+from sakura.utils.analysis.java_analyzer import CommonAnalysis
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 

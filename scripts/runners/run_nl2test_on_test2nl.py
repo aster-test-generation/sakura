@@ -118,7 +118,7 @@ def main() -> None:
         "python",
         "-u",
         "-m",
-        "nltest.cli",
+        "sakura.cli",
         "run-nl2test",
         "--base-project-dir",
         str(base_project_dir),

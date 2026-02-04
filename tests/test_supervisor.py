@@ -8,28 +8,28 @@ import pytest
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-from nltest.nl2test.generation.supervisor.orchestrators.gherkin import (
+from sakura.nl2test.generation.supervisor.orchestrators.gherkin import (
     GherkinSupervisorOrchestrator,
 )
-from nltest.nl2test.generation.supervisor.tools.base import BaseSupervisorTools
-from nltest.nl2test.generation.supervisor.tools.gherkin import GherkinSupervisorTools
-from nltest.nl2test.generation.supervisor.tools.grammatical import (
+from sakura.nl2test.generation.supervisor.tools.base import BaseSupervisorTools
+from sakura.nl2test.generation.supervisor.tools.gherkin import GherkinSupervisorTools
+from sakura.nl2test.generation.supervisor.tools.grammatical import (
     GrammaticalSupervisorTools,
 )
-from nltest.nl2test.models import AgentState
-from nltest.nl2test.models.decomposition import DecompositionMode, LocalizedScenario
-from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
-from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.test2nl.model.models import Test2NLEntry
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.compilation.maven import JavaMavenCompilation
-from nltest.utils.evaluation.test_grader import TestGrader
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
-from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from nltest.utils.llm import UsageTracker
-from nltest.utils.models import NL2TestMetadata
-from nltest.utils.pretty.prints import pretty_print
-from nltest.utils.utilities import test2nl_entry_to_nl2test_input
+from sakura.nl2test.models import AgentState
+from sakura.nl2test.models.decomposition import DecompositionMode, LocalizedScenario
+from sakura.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
+from sakura.nl2test.preprocessing.nl_decomposer import NLDecomposer
+from sakura.test2nl.model.models import Test2NLEntry
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.compilation.maven import JavaMavenCompilation
+from sakura.utils.evaluation.test_grader import TestGrader
+from sakura.utils.file_io.structured_data_manager import StructuredDataManager
+from sakura.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
+from sakura.utils.llm import UsageTracker
+from sakura.utils.models import NL2TestMetadata
+from sakura.utils.pretty.prints import pretty_print
+from sakura.utils.utilities import test2nl_entry_to_nl2test_input
 
 
 class TestSupervisorAgent:
@@ -322,7 +322,7 @@ class TestSupervisorForceEnd:
 
     def test_execute_force_end_sets_finalize_called(self):
         """Verify _execute_force_end sets finalize_called=True without LLM call."""
-        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+        from sakura.nl2test.generation.supervisor.agent import SupervisorReActAgent
 
         mock_llm = MagicMock()
         mock_llm.parse_tool_args = lambda x: x
@@ -348,7 +348,7 @@ class TestSupervisorForceEnd:
 
     def test_execute_force_end_increments_attempts(self):
         """Verify _execute_force_end increments force_end_attempts each call."""
-        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+        from sakura.nl2test.generation.supervisor.agent import SupervisorReActAgent
 
         mock_llm = MagicMock()
         mock_llm.parse_tool_args = lambda x: x
@@ -371,7 +371,7 @@ class TestSupervisorForceEnd:
 
     def test_force_finalize_prompt_methods_raise_not_implemented(self):
         """Verify prompt methods raise NotImplementedError since they're unused."""
-        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
+        from sakura.nl2test.generation.supervisor.agent import SupervisorReActAgent
 
         mock_llm = MagicMock()
         mock_llm.parse_tool_args = lambda x: x
@@ -396,8 +396,8 @@ class TestSupervisorForceEnd:
 
     def test_get_finalize_schema_returns_no_args(self):
         """Verify _get_finalize_schema returns NoArgs."""
-        from nltest.nl2test.generation.supervisor.agent import SupervisorReActAgent
-        from nltest.nl2test.models.agents import NoArgs
+        from sakura.nl2test.generation.supervisor.agent import SupervisorReActAgent
+        from sakura.nl2test.models.agents import NoArgs
 
         mock_llm = MagicMock()
         mock_llm.parse_tool_args = lambda x: x

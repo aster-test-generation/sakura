@@ -31,8 +31,8 @@ def main() -> None:
     sys.path.insert(0, str(src_dir))
 
     # Import after path setup
-    from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-    from nltest.utils.llm import PromptFormatter
+    from sakura.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+    from sakura.utils.llm import PromptFormatter
 
     # Resolve output directory
     output_dir = (ROOT_DIR / OUTPUT_DIR).resolve()

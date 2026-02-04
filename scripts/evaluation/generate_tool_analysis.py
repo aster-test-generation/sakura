@@ -12,9 +12,9 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from pydantic import ValidationError
 
-from nltest.dataset_creation.model import NL2TestDataset, Test
-from nltest.utils.models.nl2test import OutOfBoxAgentEval
-from nltest.utils.statistics import (
+from sakura.dataset_creation.model import NL2TestDataset, Test
+from sakura.utils.models.nl2test import OutOfBoxAgentEval
+from sakura.utils.statistics import (
     distribution_to_dict,
     summarize_distribution,
 )

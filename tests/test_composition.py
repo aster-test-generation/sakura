@@ -4,28 +4,28 @@ from langchain_core.tools import StructuredTool
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-from nltest.nl2test.generation.composition.orchestrators import (
+from sakura.nl2test.generation.composition.orchestrators import (
     GherkinCompositionOrchestrator,
 )
-from nltest.nl2test.generation.composition.tools.base import BaseCompositionTools
-from nltest.nl2test.generation.composition.tools.gherkin import GherkinCompositionTools
-from nltest.nl2test.generation.composition.tools.grammatical import (
+from sakura.nl2test.generation.composition.tools.base import BaseCompositionTools
+from sakura.nl2test.generation.composition.tools.gherkin import GherkinCompositionTools
+from sakura.nl2test.generation.composition.tools.grammatical import (
     GrammaticalCompositionTools,
 )
-from nltest.nl2test.models import (
+from sakura.nl2test.models import (
     NL2TestInput,
     LocalizedScenario,
     AbstractionLevel,
     AgentState,
 )
-from nltest.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
-from nltest.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.compilation.maven import JavaMavenCompilation
-from nltest.utils.evaluation.test_grader import TestGrader
-from nltest.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from nltest.utils.models import NL2TestMetadata
-from nltest.utils.pretty.prints import pretty_print
+from sakura.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
+from sakura.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.compilation.maven import JavaMavenCompilation
+from sakura.utils.evaluation.test_grader import TestGrader
+from sakura.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
+from sakura.utils.models import NL2TestMetadata
+from sakura.utils.pretty.prints import pretty_print
 
 
 class TestCompositionAgent:
@@ -630,7 +630,7 @@ class TestCompositionForceFinalize:
         """Create a CompositionReActAgent with mocked dependencies."""
         from pathlib import Path
 
-        from nltest.nl2test.generation.composition.agent import CompositionReActAgent
+        from sakura.nl2test.generation.composition.agent import CompositionReActAgent
 
         mock_llm = MagicMock()
         mock_finalize = TestCompositionForceFinalize._create_mock_finalize_tool()
@@ -648,7 +648,7 @@ class TestCompositionForceFinalize:
 
     def test_get_finalize_schema_returns_comments_args(self):
         """Verify _get_finalize_schema returns FinalizeCommentsArgs."""
-        from nltest.nl2test.models.agents import FinalizeCommentsArgs
+        from sakura.nl2test.models.agents import FinalizeCommentsArgs
 
         agent = self._create_mock_composition_agent()
         schema = agent._get_finalize_schema()
@@ -676,7 +676,7 @@ class TestCompositionForceFinalize:
 
     def test_process_force_finalize_result_sets_state(self):
         """Verify _process_force_finalize_result correctly updates state."""
-        from nltest.nl2test.models.agents import FinalizeCommentsArgs
+        from sakura.nl2test.models.agents import FinalizeCommentsArgs
 
         agent = self._create_mock_composition_agent()
         state = AgentState()
@@ -692,7 +692,7 @@ class TestCompositionForceFinalize:
 
     def test_execute_force_end_with_mocked_llm(self):
         """Test _execute_force_end with mocked LLM returning valid structured output."""
-        from nltest.nl2test.models.agents import FinalizeCommentsArgs
+        from sakura.nl2test.models.agents import FinalizeCommentsArgs
 
         agent = self._create_mock_composition_agent()
 
@@ -713,7 +713,7 @@ class TestCompositionForceFinalize:
         """Test _execute_force_end raises exception when LLM fails in strict mode."""
         import pytest
 
-        from nltest.utils.exceptions import ConfigurationException
+        from sakura.utils.exceptions import ConfigurationException
 
         agent = self._create_mock_composition_agent()
         agent.strict_finalize = True

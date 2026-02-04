@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
-from nltest.utils.llm import LLMClient
-from nltest.utils.llm.model import ClientType
+from sakura.utils.llm import LLMClient
+from sakura.utils.llm.model import ClientType
 
 
 class MockAPIError(Exception):
@@ -18,8 +18,8 @@ class MockAPIError(Exception):
 class TestLLMClientRetry:
     """Tests for LLMClient retry behavior using mocks."""
 
-    @patch("nltest.utils.llm.llm_client.ChatOpenAI")
-    @patch("nltest.utils.llm.llm_client.Config")
+    @patch("sakura.utils.llm.llm_client.ChatOpenAI")
+    @patch("sakura.utils.llm.llm_client.Config")
     def test_retry_on_rate_limit_succeeds_after_retry(
         self, mock_config_class, mock_chat_openai
     ):
@@ -68,8 +68,8 @@ class TestLLMClientRetry:
         assert result.content == "Success!"
         assert call_count == 3
 
-    @patch("nltest.utils.llm.llm_client.ChatOpenAI")
-    @patch("nltest.utils.llm.llm_client.Config")
+    @patch("sakura.utils.llm.llm_client.ChatOpenAI")
+    @patch("sakura.utils.llm.llm_client.Config")
     def test_no_retry_on_client_error(self, mock_config_class, mock_chat_openai):
         mock_config = MagicMock()
         mock_config.get.side_effect = lambda section, key: {

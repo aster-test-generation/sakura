@@ -7,14 +7,14 @@ from typing import cast
 import pytest
 from langchain_core.messages import ToolCall
 
-from nltest.nl2test.generation.common.compilation_execution import (
+from sakura.nl2test.generation.common.compilation_execution import (
     CompilationExecutionMixin,
 )
-from nltest.nl2test.models import AgentState
-from nltest.utils.compilation.maven import CompilationError, JavaMavenCompilation
-from nltest.utils.execution.maven import JavaMavenExecution
-from nltest.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
-from nltest.utils.pretty.prints import pretty_print
+from sakura.nl2test.models import AgentState
+from sakura.utils.compilation.maven import CompilationError, JavaMavenCompilation
+from sakura.utils.execution.maven import JavaMavenExecution
+from sakura.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
+from sakura.utils.pretty.prints import pretty_print
 
 
 class DummyCompilationExecutor(CompilationExecutionMixin):

@@ -11,9 +11,9 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from pydantic import ValidationError
 
-from nltest.dataset_creation.model import NL2TestDataset, Test
-from nltest.utils.models.nl2test import OutOfBoxAgentEval
-from nltest.utils.statistics import distribution_to_dict, summarize_distribution
+from sakura.dataset_creation.model import NL2TestDataset, Test
+from sakura.utils.models.nl2test import OutOfBoxAgentEval
+from sakura.utils.statistics import distribution_to_dict, summarize_distribution
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 EVAL_FILE_NAME = "nl2test_evaluation_results.json"

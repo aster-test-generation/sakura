@@ -10,8 +10,8 @@ from typing import Any, Dict, List
 
 from pydantic import ValidationError
 
-from nltest.nl2test.models.decomposition import LocalizationEval
-from nltest.utils.models.nl2test import NL2TestEval
+from sakura.nl2test.models.decomposition import LocalizationEval
+from sakura.utils.models.nl2test import NL2TestEval
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_EVAL_DIR = ROOT_DIR / "outputs" / "raw_outputs" / "nl2test_gemini_flash_output"

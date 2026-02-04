@@ -7,10 +7,10 @@ from unittest.mock import MagicMock
 
 from langchain_core.messages import ToolMessage
 
-from nltest.nl2test.core.deferred_tool import DeferredTool
-from nltest.nl2test.core.react_agent import ReActAgent
-from nltest.nl2test.models import AgentState
-from nltest.utils.exceptions import InvalidArgumentError, ToolExceptionHandler
+from sakura.nl2test.core.deferred_tool import DeferredTool
+from sakura.nl2test.core.react_agent import ReActAgent
+from sakura.nl2test.models import AgentState
+from sakura.utils.exceptions import InvalidArgumentError, ToolExceptionHandler
 
 
 class TestToolErrorHandling:

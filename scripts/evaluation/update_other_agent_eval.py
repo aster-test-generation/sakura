@@ -27,9 +27,9 @@ from make_other_agent_eval import (
     load_test2nl_entries,
 )
 
-from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
-from nltest.utils.models import OutOfBoxAgentEval
-from nltest.utils.pretty.color_logger import RichLog
+from sakura.test2nl.model.models import AbstractionLevel, Test2NLEntry
+from sakura.utils.models import OutOfBoxAgentEval
+from sakura.utils.pretty.color_logger import RichLog
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 OLD_EVAL_DIR = (

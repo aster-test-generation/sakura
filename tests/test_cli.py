@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from nltest.cli import (
+from sakura.cli import (
     _load_nl2_inputs_by_project_from_csv,
     generate_descriptions,
     run_nl2test,

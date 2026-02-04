@@ -11,9 +11,9 @@ from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from pydantic import ValidationError
 
-from nltest.dataset_creation.model import NL2TestDataset
-from nltest.utils.analysis.java_analyzer import CommonAnalysis
-from nltest.utils.statistics import (
+from sakura.dataset_creation.model import NL2TestDataset
+from sakura.utils.analysis.java_analyzer import CommonAnalysis
+from sakura.utils.statistics import (
     DistributionSummary,
     distribution_to_dict,
     summarize_distribution,

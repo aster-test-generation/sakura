@@ -9,7 +9,7 @@ import csv
 from pathlib import Path
 from typing import Iterable, List
 
-from nltest.test2nl.model.models import AbstractionLevel, Test2NLEntry
+from sakura.test2nl.model.models import AbstractionLevel, Test2NLEntry
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 TEST2NL_CSV_FILE = "resources/test2nl/filtered_dataset/test2nl.csv"

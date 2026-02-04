@@ -1,10 +1,10 @@
-from nltest.nl2test.models.decomposition import (
+from sakura.nl2test.models.decomposition import (
     DecompositionMode,
     Scenario,
     GrammaticalBlockList,
 )
-from nltest.nl2test.preprocessing.nl_decomposer import NLDecomposer
-from nltest.utils.pretty.prints import pretty_print
+from sakura.nl2test.preprocessing.nl_decomposer import NLDecomposer
+from sakura.utils.pretty.prints import pretty_print
 
 
 def test_nl_grammatical_decomposition_grammatical():

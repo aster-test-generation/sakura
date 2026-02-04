@@ -10,8 +10,8 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from nltest.nl2test.models.decomposition import LocalizationEval
-from nltest.utils.statistics import DistributionSummary, summarize_distribution
+from sakura.nl2test.models.decomposition import LocalizationEval
+from sakura.utils.statistics import DistributionSummary, summarize_distribution
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 RAW_OUTPUTS_DIR = ROOT_DIR / "outputs" / "raw_outputs"

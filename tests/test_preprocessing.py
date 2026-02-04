@@ -1,24 +1,24 @@
 import pytest
 from cldk.analysis.java import JavaAnalysis
 
-from nltest.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
-from nltest.nl2test.preprocessing.extractors import (
+from sakura.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
+from sakura.nl2test.preprocessing.extractors import (
     ClassSnippetExtractor,
     MethodSnippetExtractor,
 )
-from nltest.nl2test.preprocessing.indexers import (
+from sakura.nl2test.preprocessing.indexers import (
     ClassIndexer,
     MethodIndexer,
     ProjectIndexer,
 )
-from nltest.nl2test.preprocessing.searchers import (
+from sakura.nl2test.preprocessing.searchers import (
     ClassSearcher,
     MethodSearcher,
     ProjectSearcher,
 )
-from nltest.nl2test.preprocessing.vector_stores import MethodVectorStore
-from nltest.utils.config import Config
-from nltest.utils.pretty.prints import pretty_print
+from sakura.nl2test.preprocessing.vector_stores import MethodVectorStore
+from sakura.utils.config import Config
+from sakura.utils.pretty.prints import pretty_print
 
 
 class TestEmbedding:
@@ -417,7 +417,7 @@ class TestClassSnippetExtractor:
 
         for expected_class in expected_app_classes:
             if self.analysis.get_class(expected_class) is not None:
-                from nltest.utils.analysis import Reachability
+                from sakura.utils.analysis import Reachability
 
                 visible_methods = Reachability(self.analysis).get_visible_class_methods(
                     expected_class

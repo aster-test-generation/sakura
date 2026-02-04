@@ -3,8 +3,8 @@ from typing import Dict, List
 import pytest
 from hamster.code_analysis.test_statistics.setup_analysis_info import SetupAnalysisInfo
 
-from nltest.utils.analysis import CommonAnalysis
-from nltest.utils.pretty.prints import pretty_print
+from sakura.utils.analysis import CommonAnalysis
+from sakura.utils.pretty.prints import pretty_print
 
 
 def test_multiple_focal(petclinic_analysis):
@@ -357,7 +357,7 @@ class TestReachability:
         self, petclinic_analysis, petclinic_categorized_classes
     ):
         """Test that get_helper_methods for ClinicServiceTests returns EntityUtils."""
-        from nltest.utils.analysis import Reachability
+        from sakura.utils.analysis import Reachability
 
         _, test_utility_classes = petclinic_categorized_classes
         qualified_class_name = (

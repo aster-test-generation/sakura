@@ -9,8 +9,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import ValidationError
 
-from nltest.utils.models.nl2test import NL2TestEval, ToolLog
-from nltest.utils.statistics import (
+from sakura.utils.models.nl2test import NL2TestEval, ToolLog
+from sakura.utils.statistics import (
     distribution_to_dict,
     summarize_distribution,
 )

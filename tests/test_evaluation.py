@@ -6,11 +6,11 @@ import pytest
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
-from nltest.utils.analysis.java_analyzer import CommonAnalysis
-from nltest.utils.compilation.compilation_old import JavaCompilation
-from nltest.utils.evaluation import TestGrader
-from nltest.utils.models import NL2TestInput, NL2TestMetadata
-from nltest.utils.pretty.prints import pretty_print
+from sakura.utils.analysis.java_analyzer import CommonAnalysis
+from sakura.utils.compilation.compilation_old import JavaCompilation
+from sakura.utils.evaluation import TestGrader
+from sakura.utils.models import NL2TestInput, NL2TestMetadata
+from sakura.utils.pretty.prints import pretty_print
 
 
 @pytest.fixture(scope="session")

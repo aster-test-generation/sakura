@@ -5,8 +5,8 @@ from pathlib import Path
 
 from jinja2 import Template
 
-from nltest.test2nl.model.models import Test2NLEntry
-from nltest.utils.file_io.structured_data_manager import StructuredDataManager
+from sakura.test2nl.model.models import Test2NLEntry
+from sakura.utils.file_io.structured_data_manager import StructuredDataManager
 
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 SRC_DIR = ROOT_DIR / "src"

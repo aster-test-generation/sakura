@@ -9,10 +9,10 @@ from typing import Any, Dict, Iterable, List, Mapping, Tuple
 
 from pydantic import ValidationError
 
-from nltest.dataset_creation.model import NL2TestDataset, Test
-from nltest.nl2test.models.decomposition import LocalizationEval
-from nltest.utils.models.nl2test import NL2TestInput, OutOfBoxAgentEval
-from nltest.utils.statistics import (
+from sakura.dataset_creation.model import NL2TestDataset, Test
+from sakura.nl2test.models.decomposition import LocalizationEval
+from sakura.utils.models.nl2test import NL2TestInput, OutOfBoxAgentEval
+from sakura.utils.statistics import (
     DistributionSummary,
     build_distributions,
     distributions_to_dict,

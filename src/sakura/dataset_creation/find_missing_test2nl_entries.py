@@ -1,280 +1,82 @@
-import csv
-import json
-import os
-import shutil
+_N='tests_with_more_than_ten_focal_methods'
+_M='tests_with_more_than_five_to_ten_focal_methods'
+_L='tests_with_more_than_two_to_five_focal_methods'
+_K='tests_with_two_focal_methods'
+_J='tests_with_one_focal_methods'
+_I='nl2test.json'
+_H='missing_count'
+_G=True
+_F='incomplete_abstractions'
+_E='completely_missing'
+_D='project_name'
+_C='utf-8'
+_B=None
+_A='total_tests'
+import csv,json,os,shutil
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
-
+from typing import Any,Dict,List,Set,Tuple
 import ray
 from tqdm import tqdm
-
-from sakura.dataset_creation.model import NL2TestDataset, Test
-
-# Path constants
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
-
-# Test2NL dataset paths
-TEST2NL_DIR = "resources/test2nl/filtered_dataset"
-TEST2NL_FILE = "test2nl.csv"
-
-# Bucketed dataset paths
-BUCKETED_DATASET_DIR = "resources/filtered_bucketed_tests"
-BUCKETED_FILE = "nl2test.json"
-
-# Output paths
-MISSING_TESTS_DIR = "resources/missing_tests"
-OUTPUT_FILE = "nl2test.json"
-
-
-REQUIRED_ABSTRACTION_LEVELS = {"low", "medium", "high"}
-
-
-def load_test2nl_entries(csv_path: Path) -> Dict[Tuple[str, str, str], Set[str]]:
-    """
-    Load Test2NL entries from CSV and return a dict mapping
-    (project_name, qualified_class_name, method_signature) to set of abstraction levels.
-    """
-    entries: Dict[Tuple[str, str, str], Set[str]] = {}
-    with open(csv_path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            key = (
-                row["project_name"],
-                row["qualified_class_name"],
-                row["method_signature"],
-            )
-            abstraction_level = row.get("abstraction_level", "")
-            if key not in entries:
-                entries[key] = set()
-            if abstraction_level:
-                entries[key].add(abstraction_level)
-    return entries
-
-
-def get_all_tests_by_bucket(dataset: NL2TestDataset) -> Dict[str, List[Test]]:
-    """Return tests organized by bucket name."""
-    return {
-        "tests_with_one_focal_methods": dataset.tests_with_one_focal_methods,
-        "tests_with_two_focal_methods": dataset.tests_with_two_focal_methods,
-        "tests_with_more_than_two_to_five_focal_methods": (
-            dataset.tests_with_more_than_two_to_five_focal_methods
-        ),
-        "tests_with_more_than_five_to_ten_focal_methods": (
-            dataset.tests_with_more_than_five_to_ten_focal_methods
-        ),
-        "tests_with_more_than_ten_focal_methods": (
-            dataset.tests_with_more_than_ten_focal_methods
-        ),
-    }
-
-
+from sakura.dataset_creation.model import NL2TestDataset,Test
+ROOT_DIR=Path(__file__).resolve().parent.parent.parent.parent
+TEST2NL_DIR='resources/test2nl/filtered_dataset'
+TEST2NL_FILE='test2nl.csv'
+BUCKETED_DATASET_DIR='resources/filtered_bucketed_tests'
+BUCKETED_FILE=_I
+MISSING_TESTS_DIR='resources/missing_tests'
+OUTPUT_FILE=_I
+REQUIRED_ABSTRACTION_LEVELS={'low','medium','high'}
+def load_test2nl_entries(csv_path:Path)->Dict[Tuple[str,str,str],Set[str]]:
+	'\n    Load Test2NL entries from CSV and return a dict mapping\n    (project_name, qualified_class_name, method_signature) to set of abstraction levels.\n    ';A:Dict[Tuple[str,str,str],Set[str]]={}
+	with open(csv_path,'r',encoding=_C)as E:
+		F=csv.DictReader(E)
+		for B in F:
+			C=B[_D],B['qualified_class_name'],B['method_signature'];D=B.get('abstraction_level','')
+			if C not in A:A[C]=set()
+			if D:A[C].add(D)
+	return A
+def get_all_tests_by_bucket(dataset:NL2TestDataset)->Dict[str,List[Test]]:'Return tests organized by bucket name.';A=dataset;return{_J:A.tests_with_one_focal_methods,_K:A.tests_with_two_focal_methods,_L:A.tests_with_more_than_two_to_five_focal_methods,_M:A.tests_with_more_than_five_to_ten_focal_methods,_N:A.tests_with_more_than_ten_focal_methods}
 @ray.remote
-def find_missing_tests_for_project(
-    project_name: str,
-    bucketed_file: str,
-    test2nl_entries: Dict[Tuple[str, str, str], Set[str]],
-    output_dir: str,
-) -> Dict[str, Any] | None:
-    """
-    Find tests in the bucketed dataset that are missing from Test2NL entries.
-
-    A test is considered missing if:
-    1. It doesn't exist in Test2NL at all, or
-    2. It doesn't have all three abstraction levels (low, medium, high)
-
-    Returns a dict with project stats or None if processing fails.
-    """
-    with open(bucketed_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    dataset = NL2TestDataset(**data)
-
-    tests_by_bucket = get_all_tests_by_bucket(dataset)
-    missing_by_bucket: Dict[str, List[Test]] = {k: [] for k in tests_by_bucket}
-
-    total_tests = 0
-    missing_count = 0
-    completely_missing = 0
-    incomplete_abstractions = 0
-
-    for bucket_name, tests in tests_by_bucket.items():
-        for test in tests:
-            total_tests += 1
-            key = (project_name, test.qualified_class_name, test.method_signature)
-            if key not in test2nl_entries:
-                missing_by_bucket[bucket_name].append(test)
-                missing_count += 1
-                completely_missing += 1
-            elif test2nl_entries[key] != REQUIRED_ABSTRACTION_LEVELS:
-                missing_by_bucket[bucket_name].append(test)
-                missing_count += 1
-                incomplete_abstractions += 1
-
-    if missing_count == 0:
-        return {
-            "project_name": project_name,
-            "total_tests": total_tests,
-            "missing_count": 0,
-            "completely_missing": 0,
-            "incomplete_abstractions": 0,
-        }
-
-    # Create output dataset with missing tests
-    missing_dataset = NL2TestDataset(
-        dataset_name=f"{project_name}_missing",
-        tests_with_one_focal_methods=missing_by_bucket["tests_with_one_focal_methods"],
-        tests_with_two_focal_methods=missing_by_bucket["tests_with_two_focal_methods"],
-        tests_with_more_than_two_to_five_focal_methods=missing_by_bucket[
-            "tests_with_more_than_two_to_five_focal_methods"
-        ],
-        tests_with_more_than_five_to_ten_focal_methods=missing_by_bucket[
-            "tests_with_more_than_five_to_ten_focal_methods"
-        ],
-        tests_with_more_than_ten_focal_methods=missing_by_bucket[
-            "tests_with_more_than_ten_focal_methods"
-        ],
-    )
-
-    # Write output
-    project_output_dir = Path(output_dir) / project_name
-    project_output_dir.mkdir(parents=True, exist_ok=True)
-    output_file = project_output_dir / OUTPUT_FILE
-
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(missing_dataset.model_dump(), f, indent=2)
-
-    return {
-        "project_name": project_name,
-        "total_tests": total_tests,
-        "missing_count": missing_count,
-        "completely_missing": completely_missing,
-        "incomplete_abstractions": incomplete_abstractions,
-    }
-
-
-def create_summary(output_dir: Path, results: List[Dict[str, Any] | None]) -> None:
-    """Create a summary.json with missing test stats per project."""
-    summary: Dict[str, Any] = {
-        "total_projects": 0,
-        "projects_with_missing": 0,
-        "total_missing_tests": 0,
-        "total_completely_missing": 0,
-        "total_incomplete_abstractions": 0,
-        "total_tests": 0,
-        "projects": {},
-    }
-
-    for result in results:
-        if result is None:
-            continue
-
-        summary["total_projects"] += 1
-        summary["total_tests"] += result["total_tests"]
-        missing_count = result["missing_count"]
-        completely_missing = result["completely_missing"]
-        incomplete_abstractions = result["incomplete_abstractions"]
-
-        if missing_count > 0:
-            summary["projects_with_missing"] += 1
-            summary["total_missing_tests"] += missing_count
-            summary["total_completely_missing"] += completely_missing
-            summary["total_incomplete_abstractions"] += incomplete_abstractions
-            summary["projects"][result["project_name"]] = {
-                "total": result["total_tests"],
-                "missing": missing_count,
-                "completely_missing": completely_missing,
-                "incomplete_abstractions": incomplete_abstractions,
-            }
-
-    summary["projects"] = dict(sorted(summary["projects"].items()))
-
-    summary_file = output_dir / "summary.json"
-    with open(summary_file, "w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2)
-
-    print("\nMissing tests analysis complete:")
-    print(f"  Total projects: {summary['total_projects']}")
-    print(f"  Projects with missing tests: {summary['projects_with_missing']}")
-    print(f"  Total tests: {summary['total_tests']}")
-    print(f"  Total missing tests: {summary['total_missing_tests']}")
-    print(f"    - Completely missing: {summary['total_completely_missing']}")
-    print(f"    - Incomplete abstractions: {summary['total_incomplete_abstractions']}")
-    print(f"  Summary saved to: {summary_file}")
-
-
-def process_projects(
-    test2nl_file: Path,
-    bucketed_dir: Path,
-    output_dir: Path,
-) -> None:
-    """Process all projects in parallel to find missing tests."""
-    # Clear previous output
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Load Test2NL entries
-    print(f"Loading Test2NL entries from {test2nl_file}...")
-    test2nl_entries = load_test2nl_entries(test2nl_file)
-    complete_entries = sum(
-        1
-        for levels in test2nl_entries.values()
-        if levels == REQUIRED_ABSTRACTION_LEVELS
-    )
-    print(f"  Loaded {len(test2nl_entries)} unique test entries")
-    print(f"  {complete_entries} entries have all abstraction levels")
-
-    # Put entries in Ray object store for sharing across workers
-    test2nl_ref = ray.put(test2nl_entries)
-
-    # Collect projects and launch ray tasks
-    futures = []
-    for project_name in sorted(os.listdir(bucketed_dir)):
-        if project_name.startswith(".") or project_name.startswith("__"):
-            continue
-
-        project_path = bucketed_dir / project_name
-        if not project_path.is_dir():
-            continue
-
-        bucketed_file = project_path / BUCKETED_FILE
-        if not bucketed_file.exists():
-            print(f"Skipping {project_name}: no {BUCKETED_FILE} found")
-            continue
-
-        futures.append(
-            find_missing_tests_for_project.remote(  # pyright: ignore[reportAttributeAccessIssue]
-                project_name,
-                str(bucketed_file),
-                test2nl_ref,
-                str(output_dir),
-            )
-        )
-
-    # Process results as they complete
-    results: List[Dict[str, Any] | None] = []
-    with tqdm(total=len(futures), desc="Analyzing projects...") as pbar:
-        while futures:
-            done, futures = ray.wait(futures, num_returns=1)
-            res = ray.get(done)
-            results.extend(res)
-            pbar.update(len(done))
-
-    create_summary(output_dir, results)
-
-
+def find_missing_tests_for_project(project_name:str,bucketed_file:str,test2nl_entries:Dict[Tuple[str,str,str],Set[str]],output_dir:str)->Dict[str,Any]|_B:
+	"\n    Find tests in the bucketed dataset that are missing from Test2NL entries.\n\n    A test is considered missing if:\n    1. It doesn't exist in Test2NL at all, or\n    2. It doesn't have all three abstraction levels (low, medium, high)\n\n    Returns a dict with project stats or None if processing fails.\n    ";G=test2nl_entries;B=project_name
+	with open(bucketed_file,'r',encoding=_C)as E:N=json.load(E)
+	O=NL2TestDataset(**N);H=get_all_tests_by_bucket(O);A:Dict[str,List[Test]]={A:[]for A in H};F=0;C=0;I=0;J=0
+	for(K,P)in H.items():
+		for D in P:
+			F+=1;L=B,D.qualified_class_name,D.method_signature
+			if L not in G:A[K].append(D);C+=1;I+=1
+			elif G[L]!=REQUIRED_ABSTRACTION_LEVELS:A[K].append(D);C+=1;J+=1
+	if C==0:return{_D:B,_A:F,_H:0,_E:0,_F:0}
+	Q=NL2TestDataset(dataset_name=f"{B}_missing",tests_with_one_focal_methods=A[_J],tests_with_two_focal_methods=A[_K],tests_with_more_than_two_to_five_focal_methods=A[_L],tests_with_more_than_five_to_ten_focal_methods=A[_M],tests_with_more_than_ten_focal_methods=A[_N]);M=Path(output_dir)/B;M.mkdir(parents=_G,exist_ok=_G);R=M/OUTPUT_FILE
+	with open(R,'w',encoding=_C)as E:json.dump(Q.model_dump(),E,indent=2)
+	return{_D:B,_A:F,_H:C,_E:I,_F:J}
+def create_summary(output_dir:Path,results:List[Dict[str,Any]|_B])->_B:
+	'Create a summary.json with missing test stats per project.';I='total_incomplete_abstractions';H='total_completely_missing';G='total_missing_tests';F='projects_with_missing';E='total_projects';C='projects';A:Dict[str,Any]={E:0,F:0,G:0,H:0,I:0,_A:0,C:{}}
+	for B in results:
+		if B is _B:continue
+		A[E]+=1;A[_A]+=B[_A];D=B[_H];J=B[_E];K=B[_F]
+		if D>0:A[F]+=1;A[G]+=D;A[H]+=J;A[I]+=K;A[C][B[_D]]={'total':B[_A],'missing':D,_E:J,_F:K}
+	A[C]=dict(sorted(A[C].items()));L=output_dir/'summary.json'
+	with open(L,'w',encoding=_C)as M:json.dump(A,M,indent=2)
+	print('\nMissing tests analysis complete:');print(f"  Total projects: {A[E]}");print(f"  Projects with missing tests: {A[F]}");print(f"  Total tests: {A[_A]}");print(f"  Total missing tests: {A[G]}");print(f"    - Completely missing: {A[H]}");print(f"    - Incomplete abstractions: {A[I]}");print(f"  Summary saved to: {L}")
+def process_projects(test2nl_file:Path,bucketed_dir:Path,output_dir:Path)->_B:
+	'Process all projects in parallel to find missing tests.';F=bucketed_dir;E=test2nl_file;A=output_dir
+	if A.exists():shutil.rmtree(A)
+	A.mkdir(parents=_G,exist_ok=_G);print(f"Loading Test2NL entries from {E}...");D=load_test2nl_entries(E);K=sum(1 for A in D.values()if A==REQUIRED_ABSTRACTION_LEVELS);print(f"  Loaded {len(D)} unique test entries");print(f"  {K} entries have all abstraction levels");L=ray.put(D);B=[]
+	for C in sorted(os.listdir(F)):
+		if C.startswith('.')or C.startswith('__'):continue
+		G=F/C
+		if not G.is_dir():continue
+		H=G/BUCKETED_FILE
+		if not H.exists():print(f"Skipping {C}: no {BUCKETED_FILE} found");continue
+		B.append(find_missing_tests_for_project.remote(C,str(H),L,str(A)))
+	I:List[Dict[str,Any]|_B]=[]
+	with tqdm(total=len(B),desc='Analyzing projects...')as M:
+		while B:J,B=ray.wait(B,num_returns=1);N=ray.get(J);I.extend(N);M.update(len(J))
+	create_summary(A,I)
 def main():
-    test2nl_file = ROOT_DIR / TEST2NL_DIR / TEST2NL_FILE
-    bucketed_dir = ROOT_DIR / BUCKETED_DATASET_DIR
-    output_dir = ROOT_DIR / MISSING_TESTS_DIR
-
-    if not test2nl_file.exists():
-        raise FileNotFoundError(f"Test2NL file not found: {test2nl_file}")
-
-    if not bucketed_dir.exists():
-        raise FileNotFoundError(f"Bucketed dataset directory not found: {bucketed_dir}")
-
-    process_projects(test2nl_file, bucketed_dir, output_dir)
-
-
-if __name__ == "__main__":
-    main()
+	A=ROOT_DIR/TEST2NL_DIR/TEST2NL_FILE;B=ROOT_DIR/BUCKETED_DATASET_DIR;C=ROOT_DIR/MISSING_TESTS_DIR
+	if not A.exists():raise FileNotFoundError(f"Test2NL file not found: {A}")
+	if not B.exists():raise FileNotFoundError(f"Bucketed dataset directory not found: {B}")
+	process_projects(A,B,C)
+if __name__=='__main__':main()

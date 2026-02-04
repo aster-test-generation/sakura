@@ -1,142 +1,32 @@
 from __future__ import annotations
-
+_A=None
 from pathlib import Path
 from typing import List
-
 from cldk.analysis.java import JavaAnalysis
 from langchain_core.prompts import PromptTemplate
 from langchain_core.tools import BaseTool
-
 from sakura.nl2test.generation.composition.agent import CompositionReActAgent
-from sakura.nl2test.generation.composition.tools import (
-    GherkinCompositionTools,
-    GrammaticalCompositionTools,
-)
-from sakura.nl2test.models import AgentState, NL2TestInput
+from sakura.nl2test.generation.composition.tools import GherkinCompositionTools,GrammaticalCompositionTools
+from sakura.nl2test.models import AgentState,NL2TestInput
 from sakura.nl2test.models.decomposition import DecompositionMode
-from sakura.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
-from sakura.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
+from sakura.nl2test.prompts.load_prompt import LoadPrompt,PromptFormat
+from sakura.nl2test.preprocessing.searchers import ClassSearcher,MethodSearcher
 from sakura.utils.config import Config
-from sakura.utils.llm import ClientType, LLMClient, UsageTracker
-
-
+from sakura.utils.llm import ClientType,LLMClient,UsageTracker
 class BaseCompositionOrchestrator:
-    def __init__(
-        self,
-        *,
-        analysis: JavaAnalysis,
-        method_searcher: MethodSearcher,
-        class_searcher: ClassSearcher,
-        nl2_input: NL2TestInput,
-        project_root: str,
-        test_base_dir: str | Path | None = None,
-        module_root: str | Path | None = None,
-        decomposition_mode: DecompositionMode,
-        usage_tracker: UsageTracker | None = None,
-    ) -> None:
-        self.usage_tracker = usage_tracker or UsageTracker()
-        decision_llm = LLMClient(
-            ClientType.DECISION,
-            usage_tracker=self.usage_tracker,
-        )
-        structured_llm = LLMClient(
-            ClientType.STRUCTURED,
-            usage_tracker=self.usage_tracker,
-        )
-
-        resolved_project_root = Path(project_root).expanduser().resolve()
-        resolved_module_root = resolved_project_root
-        if module_root is not None:
-            resolved_module_root = Path(module_root).expanduser()
-            if not resolved_module_root.is_absolute():
-                resolved_module_root = resolved_project_root / resolved_module_root
-            resolved_module_root = resolved_module_root.resolve()
-
-        tool_builder = (
-            GherkinCompositionTools(
-                analysis=analysis,
-                method_searcher=method_searcher,
-                class_searcher=class_searcher,
-                structured_llm=structured_llm,
-                project_root=str(resolved_project_root),
-                module_root=resolved_module_root,
-                nl2_input=nl2_input,
-            )
-            if decomposition_mode == DecompositionMode.GHERKIN
-            else GrammaticalCompositionTools(
-                analysis=analysis,
-                method_searcher=method_searcher,
-                class_searcher=class_searcher,
-                structured_llm=structured_llm,
-                project_root=str(resolved_project_root),
-                module_root=resolved_module_root,
-                nl2_input=nl2_input,
-            )
-        )
-
-        tools, allow_duplicate_tools = tool_builder.all()
-
-        self.nl2_input = nl2_input
-        self.decomposition_mode = decomposition_mode
-        self.test_base_dir = test_base_dir
-
-        chat_prompt, system_prompt = self._init_prompts()
-        self.chat_prompt = chat_prompt
-
-        # Determine if the model supports parallel tool calls from configuration
-        parallelizable: bool = bool(Config().get("llm", "can_parallel_tool"))
-        max_iters = Config().get("composition", "max_iters")
-        duplicate_tools_str = (
-            ", ".join(f"`{t.name}`" for t in allow_duplicate_tools)
-            if allow_duplicate_tools
-            else ""
-        )
-
-        if self.decomposition_mode != DecompositionMode.GHERKIN:
-            raise NotImplementedError("Only supported for Gherkin style...")
-
-        system_kwargs = {
-            "parallelizable": parallelizable,
-            "max_iters": max_iters,
-            "duplicate_tools": duplicate_tools_str,
-        }
-
-        system_message = system_prompt.format(**system_kwargs)
-
-        self.agent = CompositionReActAgent(
-            llm=decision_llm,
-            tools=tools,
-            allow_duplicate_tools=allow_duplicate_tools,
-            system_message=system_message,
-            project_root=resolved_project_root,
-            test_base_dir=test_base_dir,
-            module_root=resolved_module_root,
-            max_iters=max_iters,
-            parallelizable=parallelizable,
-        )
-
-    def _init_prompts(self) -> tuple[PromptTemplate, PromptTemplate]:
-        # Choose prompts according to decomposition mode
-        if self.decomposition_mode == DecompositionMode.GHERKIN:
-            chat_file = "composition_agent_gherkin.jinja2"
-            system_file = "composition_agent_gherkin.jinja2"
-        else:
-            chat_file = "composition_agent_grammatical.jinja2"
-            system_file = "composition_agent_grammatical.jinja2"
-
-        chat_prompt = LoadPrompt.load_prompt(
-            chat_file, PromptFormat.JINJA2, prompt_type="chat"
-        )
-        system_prompt = LoadPrompt.load_prompt(
-            system_file, PromptFormat.JINJA2, prompt_type="system"
-        )
-        return chat_prompt, system_prompt
-
-    def reset_agent(self) -> None:
-        self.agent.reset_agent()
-
-    # Shared signature implemented by subclasses. Intentionally untyped for different decomposition modes
-    def assign_task(
-        self, blocks, *, instructions: str, agent_state: AgentState | None = None
-    ):
-        raise NotImplementedError
+	def __init__(A,*,analysis:JavaAnalysis,method_searcher:MethodSearcher,class_searcher:ClassSearcher,nl2_input:NL2TestInput,project_root:str,test_base_dir:str|Path|_A=_A,module_root:str|Path|_A=_A,decomposition_mode:DecompositionMode,usage_tracker:UsageTracker|_A=_A)->_A:
+		O='max_iters';K=decomposition_mode;J=module_root;I=test_base_dir;H=class_searcher;G=method_searcher;F=analysis;D=nl2_input;A.usage_tracker=usage_tracker or UsageTracker();P=LLMClient(ClientType.DECISION,usage_tracker=A.usage_tracker);L=LLMClient(ClientType.STRUCTURED,usage_tracker=A.usage_tracker);C=Path(project_root).expanduser().resolve();B=C
+		if J is not _A:
+			B=Path(J).expanduser()
+			if not B.is_absolute():B=C/B
+			B=B.resolve()
+		Q=GherkinCompositionTools(analysis=F,method_searcher=G,class_searcher=H,structured_llm=L,project_root=str(C),module_root=B,nl2_input=D)if K==DecompositionMode.GHERKIN else GrammaticalCompositionTools(analysis=F,method_searcher=G,class_searcher=H,structured_llm=L,project_root=str(C),module_root=B,nl2_input=D);R,E=Q.all();A.nl2_input=D;A.decomposition_mode=K;A.test_base_dir=I;S,T=A._init_prompts();A.chat_prompt=S;M:bool=bool(Config().get('llm','can_parallel_tool'));N=Config().get('composition',O);U=', '.join(f"`{A.name}`"for A in E)if E else''
+		if A.decomposition_mode!=DecompositionMode.GHERKIN:raise NotImplementedError('Only supported for Gherkin style...')
+		V={'parallelizable':M,O:N,'duplicate_tools':U};W=T.format(**V);A.agent=CompositionReActAgent(llm=P,tools=R,allow_duplicate_tools=E,system_message=W,project_root=C,test_base_dir=I,module_root=B,max_iters=N,parallelizable=M)
+	def _init_prompts(E)->tuple[PromptTemplate,PromptTemplate]:
+		D='composition_agent_grammatical.jinja2';C='composition_agent_gherkin.jinja2'
+		if E.decomposition_mode==DecompositionMode.GHERKIN:A=C;B=C
+		else:A=D;B=D
+		F=LoadPrompt.load_prompt(A,PromptFormat.JINJA2,prompt_type='chat');G=LoadPrompt.load_prompt(B,PromptFormat.JINJA2,prompt_type='system');return F,G
+	def reset_agent(A)->_A:A.agent.reset_agent()
+	def assign_task(A,blocks,*,instructions:str,agent_state:AgentState|_A=_A):raise NotImplementedError

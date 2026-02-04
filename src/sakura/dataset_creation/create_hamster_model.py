@@ -1,100 +1,30 @@
+_B='__pycache__'
+_A=True
 from pathlib import Path
-
 import ray
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 from hamster.code_analysis.test_statistics import ProjectAnalysisInfo
 from tqdm import tqdm
-
-# Path constants
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent  # Project root
-
-# Relative to ROOT_DIR
-RESOURCES_DIR = "resources/"
-
-# Relative to RESOURCES_DIR
-DATASETS_DIR = "datasets/"  # Source projects for CLDK analysis
-ANALYSIS_DIR = "analysis/"  # CLDK analysis cache directory
-HAMSTER_DIR = "hamster/"  # Output: hamster.json per project
-
-# File names
-OUTPUT_FILE_NAME = "hamster.json"
-
-
-def get_subfolders(base_folder: Path) -> list[str]:
-    """Get all immediate subfolders in the base folder."""
-    return [
-        str(base_folder / f.name)
-        for f in base_folder.iterdir()
-        if f.is_dir() and f.name != "__pycache__" and not f.name.startswith(".")
-    ]
-
-
+ROOT_DIR=Path(__file__).resolve().parent.parent.parent.parent
+RESOURCES_DIR='resources/'
+DATASETS_DIR='datasets/'
+ANALYSIS_DIR='analysis/'
+HAMSTER_DIR='hamster/'
+OUTPUT_FILE_NAME='hamster.json'
+def get_subfolders(base_folder:Path)->list[str]:'Get all immediate subfolders in the base folder.';B=base_folder;return[str(B/A.name)for A in B.iterdir()if A.is_dir()and A.name!=_B and not A.name.startswith('.')]
 @ray.remote
-def _create_hamster_model(
-    project_path: str,
-    analysis_path: str,
-    output_path: str,
-) -> None:
-    """Create a hamster model from CLDK analysis for a project."""
-    proj_name = Path(project_path).name
-    if proj_name == "__pycache__" or proj_name.startswith("."):
-        return
-
-    try:
-        cldk = CLDK(language="java").analysis(
-            project_path=project_path,
-            analysis_backend_path=None,
-            analysis_level=AnalysisLevel.symbol_table,
-            analysis_json_path=analysis_path,
-            eager=True,  # ENSURE CLDK IS REGENERATED
-        )
-        project_analysis = ProjectAnalysisInfo(
-            analysis=cldk, dataset_name=proj_name
-        ).gather_project_analysis_info()
-        project_analysis_str = project_analysis.model_dump_json()
-
-        output_dir = Path(output_path)
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        with open(output_dir / OUTPUT_FILE_NAME, "w") as f:
-            f.write(project_analysis_str)
-    except Exception as e:
-        print(f"Error processing dataset {project_path}: {e}")
-
-
-def main() -> None:
-    """Process all projects and create hamster models."""
-    resources_path = ROOT_DIR / RESOURCES_DIR
-    datasets_dir = resources_path / DATASETS_DIR
-    analysis_dir = resources_path / ANALYSIS_DIR
-    hamster_dir = resources_path / HAMSTER_DIR
-
-    datasets_dir.mkdir(parents=True, exist_ok=True)
-    analysis_dir.mkdir(parents=True, exist_ok=True)
-    hamster_dir.mkdir(parents=True, exist_ok=True)
-
-    projects = get_subfolders(datasets_dir)
-
-    futures = []
-    for project_folder in projects:
-        project_name = Path(project_folder).name
-        futures.append(
-            _create_hamster_model.remote(  # pyright: ignore[reportCallIssue]
-                project_folder,
-                str(analysis_dir / project_name),
-                str(hamster_dir / project_name),
-            )
-        )
-
-    results = []
-    with tqdm(total=len(futures), desc="Processing folders") as pbar:
-        while futures:
-            done, futures = ray.wait(futures, num_returns=1)
-            res = ray.get(done)
-            results.extend(res)
-            pbar.update(len(done))
-
-
-if __name__ == "__main__":
-    main()
+def _create_hamster_model(project_path:str,analysis_path:str,output_path:str)->None:
+	'Create a hamster model from CLDK analysis for a project.';A=project_path;B=Path(A).name
+	if B==_B or B.startswith('.'):return
+	try:
+		D=CLDK(language='java').analysis(project_path=A,analysis_backend_path=None,analysis_level=AnalysisLevel.symbol_table,analysis_json_path=analysis_path,eager=_A);E=ProjectAnalysisInfo(analysis=D,dataset_name=B).gather_project_analysis_info();F=E.model_dump_json();C=Path(output_path);C.mkdir(parents=_A,exist_ok=_A)
+		with open(C/OUTPUT_FILE_NAME,'w')as G:G.write(F)
+	except Exception as H:print(f"Error processing dataset {A}: {H}")
+def main()->None:
+	'Process all projects and create hamster models.';B=ROOT_DIR/RESOURCES_DIR;C=B/DATASETS_DIR;D=B/ANALYSIS_DIR;E=B/HAMSTER_DIR;C.mkdir(parents=_A,exist_ok=_A);D.mkdir(parents=_A,exist_ok=_A);E.mkdir(parents=_A,exist_ok=_A);I=get_subfolders(C);A=[]
+	for F in I:G=Path(F).name;A.append(_create_hamster_model.remote(F,str(D/G),str(E/G)))
+	J=[]
+	with tqdm(total=len(A),desc='Processing folders')as K:
+		while A:H,A=ray.wait(A,num_returns=1);L=ray.get(H);J.extend(L);K.update(len(H))
+if __name__=='__main__':main()

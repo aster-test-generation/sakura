@@ -1,1 +1,1 @@
-from .compilation_old import JavaCompilation
+from.compilation_old import JavaCompilation

@@ -1,105 +1,12 @@
-QUERY_METHOD_DESC_OLD = """
-Semantic search over application methods (vector index).
-Args:
-  query: Natural language or code-like phrase describing the desired behavior or the likely method name.
-  i, j: 1-based inclusive window into the ranked results (i > 0, j >= i).
-Use when:
-  You need candidate methods for a sentence or intent; first-pass recall before filtering.
-Limitations:
-  Application code only; excludes inherited methods from external libraries.
-Returns:
-  List of dicts with method_signature, declaring_class_name (class that directly implements the method), and containing_class_name (class that inherits/contains the method).
-  On failure, a structured error dict is returned.
-"""
-
-QUERY_METHOD_DESC = """
-Semantic search over application methods (application source only).
-Returns: method_signature, declaring_class_name (where implemented), containing_class_name (type under analysis), and return_type (if available).
-Use for candidate discovery. Prefer <= 3 results unless you justify more.
-"""
-
-SEARCH_REACHABLE_METHODS_DESC_OLD = """
-Search reachable methods visible from a class using semantic similarity.
-Args:
-  qualified_class_name: Fully qualified class to inspect.
-  query: Natural language or code-like phrase describing the method intent.
-  visibility_mode: One of public, same_package, same_package_or_subclass. It must be one of these three string values.
-  k: Maximum number of results to return.
-Use when:
-  You need a short, ranked list of reachable methods for a class instead of a full dump.
-Limitations:
-  Uses the application method index only; external library parents are excluded.
-Returns:
-  List of reachable method metadata dicts (signature, declaring class, modifiers, visibility, requires_subclass).
-  On failure, a structured error dict is returned.
-"""
-
-SEARCH_REACHABLE_METHODS_DESC = """
-Search reachable application methods from a class using semantic similarity (returns top k).
-Prefer k <= 5 unless you justify more.
-"""
-
-CLASS_DETAILS_DESC_OLD = """
-Fetch structural info for a class (no inheritance traversal).
-Args:
-  qualified_class_name: Fully qualified class.
-Use when:
-  You need direct extends/implements, modifiers, or annotations to understand context or testability.
-Limitations:
-  Does not walk the inheritance graph and does not include fields by default.
-Returns:
-  Dict with class_name, modifiers, extends_list, implements_list, annotations.
-  On failure, a structured error dict is returned.
-"""
-
-CLASS_DETAILS_DESC = """
-Fetch class-level metadata, including its modifiers, superclass, implemented interfaces, and annotations.
-"""
-
-INHERITED_LIBRARY_CLASSES_DESC_OLD = """
-Identify external superclasses/interfaces inherited by a class that are not part of the application codebase.
-Args:
-  qualified_class_name: Fully qualified class to inspect.
-Use when:
-  You suspect reachable behavior comes from libraries (methods not found in the application index).
-Limitations:
-  Returns names only; no method listing. Use docs or other tools to inspect those libraries.
-Returns:
-  List of fully qualified class/interface names for inherited library types.
-  On failure, a structured error dict is returned.
-"""
-
-INHERITED_LIBRARY_CLASSES_DESC = """
-Return the inheritance chain (including library/framework supertypes) for a class, in order.
-Use to detect when a missing method may be defined in a library/framework base type (treat as external/unverifiable).
-"""
-
-FINALIZE_ATOMIC_BLOCKS_DESC_OLD = """
-End localization by returning the final AtomicBlockList and brief comments.
-Args:
-  current_blocks: The finalized AtomicBlockList.
-  comments: Short notes on selection rationale and any non-localized tasks retained.
-Use when:
-  The blocks are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
-Returns:
-  Tuple (AtomicBlockList, comments).
-"""
-
-FINALIZE_ATOMIC_BLOCKS_DESC = """
-End localization by returning the final atomic block list with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly. 
-"""
-
-FINALIZE_LOCALIZED_SCENARIO_DESC_OLD = """
-End localization by returning the final LocalizedScenario and brief comments.
-Args:
-  scenario: The finalized LocalizedScenario (setup_steps + gherkin_steps + teardown_steps).
-  comments: Short notes on choices, alternates, and any non-localized tasks retained.
-Use when:
-  Steps are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.
-Returns:
-  Tuple (LocalizedScenario, comments).
-"""
-
-FINALIZE_LOCALIZED_SCENARIO_DESC = """
-End localization by returning the final localized scenario (localized_scenario) with a concise 1–4 sentence status note (comments) summarizing key finds and unresolved issues, stated directly and bluntly.
-"""
+QUERY_METHOD_DESC_OLD='\nSemantic search over application methods (vector index).\nArgs:\n  query: Natural language or code-like phrase describing the desired behavior or the likely method name.\n  i, j: 1-based inclusive window into the ranked results (i > 0, j >= i).\nUse when:\n  You need candidate methods for a sentence or intent; first-pass recall before filtering.\nLimitations:\n  Application code only; excludes inherited methods from external libraries.\nReturns:\n  List of dicts with method_signature, declaring_class_name (class that directly implements the method), and containing_class_name (class that inherits/contains the method).\n  On failure, a structured error dict is returned.\n'
+QUERY_METHOD_DESC='\nSemantic search over application methods (application source only).\nReturns: method_signature, declaring_class_name (where implemented), containing_class_name (type under analysis), and return_type (if available).\nUse for candidate discovery. Prefer <= 3 results unless you justify more.\n'
+SEARCH_REACHABLE_METHODS_DESC_OLD='\nSearch reachable methods visible from a class using semantic similarity.\nArgs:\n  qualified_class_name: Fully qualified class to inspect.\n  query: Natural language or code-like phrase describing the method intent.\n  visibility_mode: One of public, same_package, same_package_or_subclass. It must be one of these three string values.\n  k: Maximum number of results to return.\nUse when:\n  You need a short, ranked list of reachable methods for a class instead of a full dump.\nLimitations:\n  Uses the application method index only; external library parents are excluded.\nReturns:\n  List of reachable method metadata dicts (signature, declaring class, modifiers, visibility, requires_subclass).\n  On failure, a structured error dict is returned.\n'
+SEARCH_REACHABLE_METHODS_DESC='\nSearch reachable application methods from a class using semantic similarity (returns top k).\nPrefer k <= 5 unless you justify more.\n'
+CLASS_DETAILS_DESC_OLD='\nFetch structural info for a class (no inheritance traversal).\nArgs:\n  qualified_class_name: Fully qualified class.\nUse when:\n  You need direct extends/implements, modifiers, or annotations to understand context or testability.\nLimitations:\n  Does not walk the inheritance graph and does not include fields by default.\nReturns:\n  Dict with class_name, modifiers, extends_list, implements_list, annotations.\n  On failure, a structured error dict is returned.\n'
+CLASS_DETAILS_DESC='\nFetch class-level metadata, including its modifiers, superclass, implemented interfaces, and annotations.\n'
+INHERITED_LIBRARY_CLASSES_DESC_OLD='\nIdentify external superclasses/interfaces inherited by a class that are not part of the application codebase.\nArgs:\n  qualified_class_name: Fully qualified class to inspect.\nUse when:\n  You suspect reachable behavior comes from libraries (methods not found in the application index).\nLimitations:\n  Returns names only; no method listing. Use docs or other tools to inspect those libraries.\nReturns:\n  List of fully qualified class/interface names for inherited library types.\n  On failure, a structured error dict is returned.\n'
+INHERITED_LIBRARY_CLASSES_DESC='\nReturn the inheritance chain (including library/framework supertypes) for a class, in order.\nUse to detect when a missing method may be defined in a library/framework base type (treat as external/unverifiable).\n'
+FINALIZE_ATOMIC_BLOCKS_DESC_OLD='\nEnd localization by returning the final AtomicBlockList and brief comments.\nArgs:\n  current_blocks: The finalized AtomicBlockList.\n  comments: Short notes on selection rationale and any non-localized tasks retained.\nUse when:\n  The blocks are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.\nReturns:\n  Tuple (AtomicBlockList, comments).\n'
+FINALIZE_ATOMIC_BLOCKS_DESC='\nEnd localization by returning the final atomic block list with a concise 1–4 sentence status note summarizing key finds and unresolved issues, stated directly and bluntly. \n'
+FINALIZE_LOCALIZED_SCENARIO_DESC_OLD='\nEnd localization by returning the final LocalizedScenario and brief comments.\nArgs:\n  scenario: The finalized LocalizedScenario (setup_steps + gherkin_steps + teardown_steps).\n  comments: Short notes on choices, alternates, and any non-localized tasks retained.\nUse when:\n  Steps are localized to candidate methods (with bindings) and a best candidate where feasible, or when at the iteration limit. This call ends the run.\nReturns:\n  Tuple (LocalizedScenario, comments).\n'
+FINALIZE_LOCALIZED_SCENARIO_DESC='\nEnd localization by returning the final localized scenario (localized_scenario) with a concise 1–4 sentence status note (comments) summarizing key finds and unresolved issues, stated directly and bluntly.\n'

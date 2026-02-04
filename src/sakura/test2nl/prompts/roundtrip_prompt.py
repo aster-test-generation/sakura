@@ -1,75 +1,20 @@
-from typing import List, Tuple
-
+from typing import List,Tuple
 import yaml
 from cldk.analysis.java import JavaAnalysis
-
 from sakura.test2nl.extractors import ClassExtractor
 from sakura.test2nl.model.models import ClassContext
-from sakura.test2nl.prompts.load_prompt import LoadPrompt, PromptFormat
+from sakura.test2nl.prompts.load_prompt import LoadPrompt,PromptFormat
 from sakura.utils.analysis import CommonAnalysis
-from sakura.utils.llm import ClientType, LLMClient
-
-
+from sakura.utils.llm import ClientType,LLMClient
 class RoundTripPrompt:
-    """
-    This class is used to generate the roundtrip prompt for the test case.
-
-    TODO: Update prompt.
-    """
-
-    def __init__(self, analysis: JavaAnalysis):
-        super().__init__()
-        self.analysis = analysis
-        self.llm = LLMClient(ClientType.CODE_GEN)
-
-    def format(
-        self, test_method_signature: str, test_qualified_class: str, description: str
-    ) -> str:
-        # Base prompts needs natural language description, test class imports, test class field declarations,
-        # and the custom classes
-
-        method_details = self.analysis.get_method(
-            test_qualified_class, test_method_signature
-        )
-
-        # Get all referenced classes from the test method (relevant code context)
-        referenced_classes: List[ClassContext] = []
-        ref_class_names: List[str] = CommonAnalysis(
-            self.analysis
-        ).get_referenced_app_classes(method_details)
-        for qualified_class_name in ref_class_names:
-            if qualified_class_name != test_qualified_class:
-                referenced_classes.append(
-                    ClassExtractor(self.analysis).extract(
-                        qualified_class_name, complete_methods=True
-                    )
-                )
-        referenced_class_str: List[str] = [
-            yaml.dump(referenced_class.model_dump(), sort_keys=False, indent=4)
-            for referenced_class in referenced_classes
-        ]
-
-        prompt_template = LoadPrompt.load_prompt(
-            "roundtrip_prompt.jinja2", PromptFormat.JINJA2
-        )
-        rendered_prompt = prompt_template.format(
-            test_case_description=description,
-            custom_classes=referenced_class_str,
-        )
-        return rendered_prompt
-
-    def generate(
-        self, test_method_signature: str, test_qualified_class: str, description: str
-    ) -> Tuple[str | None, str, bool]:
-        rendered_prompt = self.format(
-            test_method_signature, test_qualified_class, description
-        )
-
-        # Call the LLM
-        test_case = self.llm.generate(rendered_prompt, sanitize=True)
-        # Strip the ```java ```
-        # test_block = FormatValidator.strip_java_block(test_case)
-        test_block = test_case.strip()
-        if test_block:
-            return test_block, rendered_prompt, True
-        return None, rendered_prompt, False
+	'\n    This class is used to generate the roundtrip prompt for the test case.\n\n    TODO: Update prompt.\n    '
+	def __init__(A,analysis:JavaAnalysis):super().__init__();A.analysis=analysis;A.llm=LLMClient(ClientType.CODE_GEN)
+	def format(A,test_method_signature:str,test_qualified_class:str,description:str)->str:
+		B=test_qualified_class;E=A.analysis.get_method(B,test_method_signature);C:List[ClassContext]=[];F:List[str]=CommonAnalysis(A.analysis).get_referenced_app_classes(E)
+		for D in F:
+			if D!=B:C.append(ClassExtractor(A.analysis).extract(D,complete_methods=True))
+		G:List[str]=[yaml.dump(A.model_dump(),sort_keys=False,indent=4)for A in C];H=LoadPrompt.load_prompt('roundtrip_prompt.jinja2',PromptFormat.JINJA2);I=H.format(test_case_description=description,custom_classes=G);return I
+	def generate(B,test_method_signature:str,test_qualified_class:str,description:str)->Tuple[str|None,str,bool]:
+		A=B.format(test_method_signature,test_qualified_class,description);D=B.llm.generate(A,sanitize=True);C=D.strip()
+		if C:return C,A,True
+		return None,A,False

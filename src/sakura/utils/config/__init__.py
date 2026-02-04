@@ -1,5 +1,2 @@
-"""
-Configuration package
-"""
-
-from .config import Config, init_config
+'\nConfiguration package\n'
+from.config import Config,init_config

@@ -1,2 +1,2 @@
-from .roundtrip_prompt import RoundTripPrompt
-from .test2nl_prompt import Test2NLPrompt
+from.roundtrip_prompt import RoundTripPrompt
+from.test2nl_prompt import Test2NLPrompt

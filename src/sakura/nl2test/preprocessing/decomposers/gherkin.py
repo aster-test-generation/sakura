@@ -1,38 +1,8 @@
 from __future__ import annotations
-
 from sakura.nl2test.models.decomposition import Scenario
-from sakura.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
+from sakura.nl2test.prompts.load_prompt import LoadPrompt,PromptFormat
 from sakura.nl2test.preprocessing.decomposers.base import BaseDecomposer
-from sakura.utils.llm import LLMClient, ClientType, UsageTracker
-
-
+from sakura.utils.llm import LLMClient,ClientType,UsageTracker
 class GherkinDecomposer(BaseDecomposer):
-    def __init__(self, *, usage_tracker: UsageTracker | None = None) -> None:
-        tracker = usage_tracker or UsageTracker()
-        self.structured = LLMClient(
-            ClientType.STRUCTURED,
-            usage_tracker=tracker,
-        )
-        self.usage_tracker = tracker
-
-    def decompose(self, nl_description: str) -> Scenario:
-        system_prompt = LoadPrompt.load_prompt(
-            "gherkin_decomposition.jinja2",
-            prompt_format=PromptFormat.JINJA2,
-            prompt_type="system",
-        ).format()
-        chat_prompt = LoadPrompt.load_prompt(
-            "gherkin_decomposition.jinja2",
-            prompt_format=PromptFormat.JINJA2,
-            prompt_type="chat",
-        ).format(input=nl_description)
-
-        scenario: Scenario = self.invoke_with_retries(
-            client=self.structured,
-            system_prompt=system_prompt,
-            base_chat_prompt=chat_prompt,
-            schema=Scenario,
-            strict=True,
-        )
-
-        return scenario
+	def __init__(A,*,usage_tracker:UsageTracker|None=None)->None:B=usage_tracker or UsageTracker();A.structured=LLMClient(ClientType.STRUCTURED,usage_tracker=B);A.usage_tracker=B
+	def decompose(A,nl_description:str)->Scenario:B='gherkin_decomposition.jinja2';C=LoadPrompt.load_prompt(B,prompt_format=PromptFormat.JINJA2,prompt_type='system').format();D=LoadPrompt.load_prompt(B,prompt_format=PromptFormat.JINJA2,prompt_type='chat').format(input=nl_description);E:Scenario=A.invoke_with_retries(client=A.structured,system_prompt=C,base_chat_prompt=D,schema=Scenario,strict=True);return E

@@ -1,363 +1,119 @@
 from __future__ import annotations
-
-import os
-import re
-import tempfile
-import time
+_D='TestFileInfo'
+_C=False
+_B=None
+_A=True
+import os,re,tempfile,time
 from pathlib import Path
-from typing import TYPE_CHECKING, Annotated, List, Optional, Tuple, Union
-
+from typing import TYPE_CHECKING,Annotated,List,Optional,Tuple,Union
 from pydantic import BaseModel
-
 from sakura.utils.exceptions.tool_exceptions import FileDeletionError
 from sakura.utils.pretty.color_logger import RichLog
-
-if TYPE_CHECKING:
-    from sakura.nl2test.models import NL2TestInput
-    from sakura.test2nl.model.models import RoundTripTest
-
-
+if TYPE_CHECKING:from sakura.nl2test.models import NL2TestInput;from sakura.test2nl.model.models import RoundTripTest
 class TestFileInfo(BaseModel):
-    """
-    Container for single generated test file.
-    """
-
-    qualified_class_name: Annotated[str, "The qualified class name of the test"]
-    test_code: Annotated[str, "The test code of the test"] = ""
-    id: Annotated[int, "The ID from NL2TestInput"] = -1
-
-    @classmethod
-    def from_nl2test_input(
-        cls,
-        nl2test_input: NL2TestInput,
-        *,
-        test_code: str = "",
-    ) -> "TestFileInfo":
-        return cls(
-            qualified_class_name=nl2test_input.qualified_class_name,
-            test_code=test_code,
-            id=nl2test_input.id,
-        )
-
-    @classmethod
-    def from_roundtrip_test(
-        cls,
-        rt_test: RoundTripTest,
-    ) -> "TestFileInfo":
-        return cls(
-            qualified_class_name=rt_test.qualified_class_name,
-            test_code=rt_test.generated_test,
-            id=-1,  # Default value for roundtrip test
-        )
-
-
+	'\n    Container for single generated test file.\n    ';qualified_class_name:Annotated[str,'The qualified class name of the test'];test_code:Annotated[str,'The test code of the test']='';id:Annotated[int,'The ID from NL2TestInput']=-1
+	@classmethod
+	def from_nl2test_input(B,nl2test_input:NL2TestInput,*,test_code:str='')->_D:A=nl2test_input;return B(qualified_class_name=A.qualified_class_name,test_code=test_code,id=A.id)
+	@classmethod
+	def from_roundtrip_test(B,rt_test:RoundTripTest)->_D:A=rt_test;return B(qualified_class_name=A.qualified_class_name,test_code=A.generated_test,id=-1)
 class TestFileManager:
-    def __init__(
-        self, project_root: Path, test_base_dir: Union[str, Path] = "src/test/java"
-    ):
-        project_root.mkdir(parents=True, exist_ok=True)
-        self.project_root = project_root
-        self.test_base_dir = project_root / Path(test_base_dir)
-
-    @staticmethod
-    def _atomic_write(target_path: Path, content: str) -> None:
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-        tmp_path: Optional[str] = None
-        fd: Optional[int] = None
-        try:
-            fd, tmp_path = tempfile.mkstemp(
-                dir=str(target_path.parent),
-                prefix=f".{target_path.name}.",
-                suffix=".tmp",
-            )
-            with os.fdopen(fd, "w", encoding="utf-8") as tmp_file:
-                tmp_file.write(content)
-                tmp_file.flush()
-                os.fsync(tmp_file.fileno())
-                fd = None  # fd handled by context manager
-            os.replace(tmp_path, target_path)
-            dir_fd: Optional[int] = None
-            if hasattr(os, "O_DIRECTORY"):
-                try:
-                    dir_fd = os.open(str(target_path.parent), os.O_DIRECTORY)
-                except OSError:
-                    dir_fd = None
-            if dir_fd is not None:
-                try:
-                    os.fsync(dir_fd)
-                finally:
-                    os.close(dir_fd)
-        finally:
-            if fd is not None:
-                try:
-                    os.close(fd)
-                except Exception:
-                    pass
-            if tmp_path and os.path.exists(tmp_path):
-                try:
-                    os.unlink(tmp_path)
-                except Exception:
-                    pass
-
-    @staticmethod
-    def _sanitize_generated_code(code: str) -> str:
-        if not isinstance(code, str):
-            return code
-
-        s = code.strip("\ufeff\r\n\t ")
-
-        # Remove a leading ``` (optionally with language) or leading ''' / """
-        s = re.sub(r"^\s*(?:```[^\n]*\n|(?:'''|\"\"\")[\t ]*\n?)", "", s)
-
-        # Remove a trailing ```, ''' or """
-        s = re.sub(r"(?:\n?```|\n?(?:'''|\"\"\"))\s*$", "", s)
-
-        return s
-
-    @staticmethod
-    def _split_qualified_class_name(qualified_class_name: str) -> Tuple[str, str]:
-        package, sep, class_name = qualified_class_name.rpartition(".")
-        if not sep:
-            return "", qualified_class_name
-        return package, class_name
-
-    @staticmethod
-    def _package_dir_from_package(package: str) -> Path:
-        return Path(*package.split(".")) if package else Path()
-
-    @staticmethod
-    def _package_dir_from_qualified(qualified_class_name: str) -> Path:
-        package, _ = TestFileManager._split_qualified_class_name(qualified_class_name)
-        return TestFileManager._package_dir_from_package(package)
-
-    @staticmethod
-    def encode_class_name(id: int = -1) -> str:
-        """
-        Produce an encoded Java class name for a generated test case.
-        E.g., NL2T_001 for ID-based encoding
-        """
-        if id == -1:
-            raise ValueError("ID-based encoding requires a valid ID (id != -1)")
-
-        class_name = f"NL2T_{id:03d}"
-        return class_name
-
-    @staticmethod
-    def decode_class_name(encoded_class_name: str) -> int:
-        """
-        Decode the class name to an ID.
-        """
-        # Remove the "NL2T_" prefix if present
-        if encoded_class_name.startswith("NL2T_"):
-            encoded_class_name = encoded_class_name[5:]
-
-        # Only support ID-based encoding
-        if not encoded_class_name.isdigit():
-            raise ValueError(
-                f"Invalid encoded class name format: expected numeric ID, got '{encoded_class_name}'. Legacy method signature encoding is no longer supported."
-            )
-
-        return int(encoded_class_name)
-
-    @staticmethod
-    def decode_file_name(file_name: str) -> int:
-        # Remove .java extension if present
-        if file_name.endswith(".java"):
-            file_name = file_name[:-5]
-
-        class_name = file_name.split("/")[-1]
-        return TestFileManager.decode_class_name(class_name)
-
-    def target_path(
-        self, test_info: TestFileInfo, *, encode_class_name: bool = True
-    ) -> Path:
-        """
-        Compute the target file path for a test file.
-        - If encode_class_name is True, use the encoded class name (e.g., NL2T_001.java)
-          under the package path derived from qualified_class_name.
-        - If encode_class_name is False, place the file directly under
-          `self.test_base_dir` mirroring the fully qualified class name
-          as a path, with `.java` appended at the end.
-        """
-        if encode_class_name:
-            class_name = self.encode_class_name(test_info.id)
-            return (
-                self.test_base_dir
-                / self._package_dir_from_qualified(test_info.qualified_class_name)
-                / f"{class_name}.java"
-            )
-        else:
-            # Non-encoded: Use the fully qualified class name as path components
-            qcn_path = Path(*test_info.qualified_class_name.split("."))
-            return self.test_base_dir / (qcn_path.with_suffix(".java"))
-
-    def _rewrite_java_header(self, package: str, new_class_name: str, code: str) -> str:
-        """
-        Ensure the Java package declaration and top-level type name match the target.
-
-        - Adds or replaces the package declaration with `package` (if non-empty),
-          or removes it if package is empty.
-        - Rewrites the first top-level class/interface/enum/record name to `new_class_name`.
-        """
-        if package:
-            pkg_decl = f"package {package};"
-            pkg_regex = r"(?m)^\s*package\s+[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*;"
-            if re.search(pkg_regex, code):
-                code = re.sub(pkg_regex, pkg_decl, code, count=1)
-            else:
-                code = pkg_decl + "\n\n" + code.lstrip()
-        else:
-            # Remove any existing package declaration
-            code = re.sub(
-                r"(?m)^\s*package\s+[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*;\s*\n?",
-                "",
-                code,
-                count=1,
-            )
-
-        top_level_decl = (
-            r"(?m)^(?P<prefix>\s*"
-            r"(?:@\w+(?:\([^)]*\))?\s*)*"
-            r"(?:public\s+)?"
-            r"(?:abstract\s+|final\s+)?"
-            r"(?:class|interface|enum|record)\s+)"
-            r"(?P<name>[A-Za-z_]\w*)"
-        )
-        code = re.sub(top_level_decl, rf"\g<prefix>{new_class_name}", code, count=1)
-
-        return code
-
-    def save_single(
-        self,
-        test_info: TestFileInfo,
-        *,
-        sync_names: bool = False,
-        encode_class_name: bool = False,
-        sanitize_wrappers: bool = True,
-        allow_overwrite: bool = False,
-    ) -> Tuple[str, Path]:
-        """
-        Save a single test file. If a conflict occurs, append a numeric suffix
-        to the class name (starting at 1) until a free filename is found unless
-        `allow_overwrite` is True, in which case the existing file is atomically
-        replaced.
-        """
-        # Determine package and base class name
-        if encode_class_name:
-            base_class_name = self.encode_class_name(test_info.id)
-            package, _ = self._split_qualified_class_name(
-                test_info.qualified_class_name
-            )
-        else:
-            package, base_class_name = self._split_qualified_class_name(
-                test_info.qualified_class_name
-            )
-
-        # Compute parent directory and initial file path
-        parent_dir = self.test_base_dir / self._package_dir_from_package(package)
-        parent_dir.mkdir(parents=True, exist_ok=True)
-
-        # Add number to the end until a nonconflict unless overwriting in place
-        class_name = base_class_name
-        file_path = parent_dir / f"{class_name}.java"
-        if not allow_overwrite:
-            counter = 1
-            while file_path.exists():
-                class_name = f"{base_class_name}{counter}"
-                file_path = parent_dir / f"{class_name}.java"
-                counter += 1
-
-        # Optionally sanitize wrapper noise before any processing
-        content = (
-            self._sanitize_generated_code(test_info.test_code)
-            if sanitize_wrappers
-            else test_info.test_code
-        )
-
-        # Rewrite package and class name in code content
-        conflict_renamed = class_name != base_class_name
-        if sync_names or conflict_renamed:
-            content = self._rewrite_java_header(package, class_name, content)
-
-        # Write file
-        self._atomic_write(file_path, content)
-
-        # Return the final qualified class name and path
-        qualified_name = f"{package}.{class_name}" if package else class_name
-        return qualified_name, file_path
-
-    def save_batch(self, tests: List[TestFileInfo]) -> List[Path]:
-        saved_paths: List[Path] = []
-        for t in tests:
-            # Preserve legacy behavior for batch saves: use encoded class names
-            _, p = self.save_single(t, encode_class_name=True)
-            saved_paths.append(p)
-        return saved_paths
-
-    def load(self, test_info: TestFileInfo, *, encode_class_name: bool = False) -> str:
-        file_path = self.target_path(test_info, encode_class_name=encode_class_name)
-        if not file_path.exists():
-            raise FileNotFoundError(f"Test file not found at {file_path}")
-        with open(file_path, "r", encoding="utf-8") as f:
-            return f.read()
-
-    def make_test_fqn(self, test_info: TestFileInfo) -> str:
-        class_name = self.encode_class_name(test_info.id)
-        package, _ = self._split_qualified_class_name(test_info.qualified_class_name)
-        return f"{package}.{class_name}" if package else class_name
-
-    def delete_single(
-        self,
-        test_info: TestFileInfo,
-        *,
-        encode_class_name: bool = False,
-        strict: bool = False,
-        max_attempts: int = 2,
-        retry_delay: float = 0.05,
-    ) -> bool:
-        """
-        Delete the test file at the location where it would have been saved.
-
-        - If `encode_class_name` is True, uses the encoded class name path.
-        - If `encode_class_name` is False, deletes the file at the fully
-          qualified class name path.
-
-        Returns True if the file existed and was successfully deleted, False otherwise.
-        When `strict` is True, an exception is raised if the file cannot be removed
-        after the configured retry attempts.
-        """
-        file_path = self.target_path(test_info, encode_class_name=encode_class_name)
-        if not file_path.exists():
-            RichLog.info(f"File does not exist, skipping delete: {file_path}")
-            return True if strict else False
-
-        attempts = 0
-        last_error: Optional[Exception] = None
-        while attempts < max_attempts:
-            attempts += 1
-            try:
-                file_path.unlink()
-            except FileNotFoundError:
-                break
-            except Exception as exc:
-                last_error = exc
-                RichLog.error(f"Failed to delete {file_path}: {exc}")
-                if attempts >= max_attempts:
-                    break
-                time.sleep(max(retry_delay, 0.0))
-            else:
-                break
-
-        if file_path.exists():
-            if strict:
-                raise FileDeletionError(
-                    f"Failed to delete test file at {file_path}",
-                    extra_info={
-                        "path": str(file_path),
-                        "attempts": attempts,
-                        "error": str(last_error) if last_error else "",
-                    },
-                )
-            return False
-
-        return True
+	def __init__(B,project_root:Path,test_base_dir:Union[str,Path]='src/test/java'):A=project_root;A.mkdir(parents=_A,exist_ok=_A);B.project_root=A;B.test_base_dir=A/Path(test_base_dir)
+	@staticmethod
+	def _atomic_write(target_path:Path,content:str)->_B:
+		A=target_path;A.parent.mkdir(parents=_A,exist_ok=_A);B:Optional[str]=_B;C:Optional[int]=_B
+		try:
+			C,B=tempfile.mkstemp(dir=str(A.parent),prefix=f".{A.name}.",suffix='.tmp')
+			with os.fdopen(C,'w',encoding='utf-8')as E:E.write(content);E.flush();os.fsync(E.fileno());C=_B
+			os.replace(B,A);D:Optional[int]=_B
+			if hasattr(os,'O_DIRECTORY'):
+				try:D=os.open(str(A.parent),os.O_DIRECTORY)
+				except OSError:D=_B
+			if D is not _B:
+				try:os.fsync(D)
+				finally:os.close(D)
+		finally:
+			if C is not _B:
+				try:os.close(C)
+				except Exception:pass
+			if B and os.path.exists(B):
+				try:os.unlink(B)
+				except Exception:pass
+	@staticmethod
+	def _sanitize_generated_code(code:str)->str:
+		B=code
+		if not isinstance(B,str):return B
+		A=B.strip('\ufeff\r\n\t ');A=re.sub('^\\s*(?:```[^\\n]*\\n|(?:\'\'\'|\\"\\"\\")[\\t ]*\\n?)','',A);A=re.sub('(?:\\n?```|\\n?(?:\'\'\'|\\"\\"\\"))\\s*$','',A);return A
+	@staticmethod
+	def _split_qualified_class_name(qualified_class_name:str)->Tuple[str,str]:
+		A=qualified_class_name;B,C,D=A.rpartition('.')
+		if not C:return'',A
+		return B,D
+	@staticmethod
+	def _package_dir_from_package(package:str)->Path:A=package;return Path(*A.split('.'))if A else Path()
+	@staticmethod
+	def _package_dir_from_qualified(qualified_class_name:str)->Path:A,B=TestFileManager._split_qualified_class_name(qualified_class_name);return TestFileManager._package_dir_from_package(A)
+	@staticmethod
+	def encode_class_name(id:int=-1)->str:
+		'\n        Produce an encoded Java class name for a generated test case.\n        E.g., NL2T_001 for ID-based encoding\n        '
+		if id==-1:raise ValueError('ID-based encoding requires a valid ID (id != -1)')
+		A=f"NL2T_{id:03d}";return A
+	@staticmethod
+	def decode_class_name(encoded_class_name:str)->int:
+		'\n        Decode the class name to an ID.\n        ';A=encoded_class_name
+		if A.startswith('NL2T_'):A=A[5:]
+		if not A.isdigit():raise ValueError(f"Invalid encoded class name format: expected numeric ID, got '{A}'. Legacy method signature encoding is no longer supported.")
+		return int(A)
+	@staticmethod
+	def decode_file_name(file_name:str)->int:
+		A=file_name
+		if A.endswith('.java'):A=A[:-5]
+		B=A.split('/')[-1];return TestFileManager.decode_class_name(B)
+	def target_path(A,test_info:TestFileInfo,*,encode_class_name:bool=_A)->Path:
+		'\n        Compute the target file path for a test file.\n        - If encode_class_name is True, use the encoded class name (e.g., NL2T_001.java)\n          under the package path derived from qualified_class_name.\n        - If encode_class_name is False, place the file directly under\n          `self.test_base_dir` mirroring the fully qualified class name\n          as a path, with `.java` appended at the end.\n        ';B=test_info
+		if encode_class_name:C=A.encode_class_name(B.id);return A.test_base_dir/A._package_dir_from_qualified(B.qualified_class_name)/f"{C}.java"
+		else:D=Path(*B.qualified_class_name.split('.'));return A.test_base_dir/D.with_suffix('.java')
+	def _rewrite_java_header(F,package:str,new_class_name:str,code:str)->str:
+		'\n        Ensure the Java package declaration and top-level type name match the target.\n\n        - Adds or replaces the package declaration with `package` (if non-empty),\n          or removes it if package is empty.\n        - Rewrites the first top-level class/interface/enum/record name to `new_class_name`.\n        ';B=package;A=code
+		if B:
+			C=f"package {B};";D='(?m)^\\s*package\\s+[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)*\\s*;'
+			if re.search(D,A):A=re.sub(D,C,A,count=1)
+			else:A=C+'\n\n'+A.lstrip()
+		else:A=re.sub('(?m)^\\s*package\\s+[A-Za-z_]\\w*(?:\\.[A-Za-z_]\\w*)*\\s*;\\s*\\n?','',A,count=1)
+		E='(?m)^(?P<prefix>\\s*(?:@\\w+(?:\\([^)]*\\))?\\s*)*(?:public\\s+)?(?:abstract\\s+|final\\s+)?(?:class|interface|enum|record)\\s+)(?P<name>[A-Za-z_]\\w*)';A=re.sub(E,f"\\g<prefix>{new_class_name}",A,count=1);return A
+	def save_single(A,test_info:TestFileInfo,*,sync_names:bool=_C,encode_class_name:bool=_C,sanitize_wrappers:bool=_A,allow_overwrite:bool=_C)->Tuple[str,Path]:
+		'\n        Save a single test file. If a conflict occurs, append a numeric suffix\n        to the class name (starting at 1) until a free filename is found unless\n        `allow_overwrite` is True, in which case the existing file is atomically\n        replaced.\n        ';C=test_info
+		if encode_class_name:E=A.encode_class_name(C.id);D,L=A._split_qualified_class_name(C.qualified_class_name)
+		else:D,E=A._split_qualified_class_name(C.qualified_class_name)
+		G=A.test_base_dir/A._package_dir_from_package(D);G.mkdir(parents=_A,exist_ok=_A);B=E;F=G/f"{B}.java"
+		if not allow_overwrite:
+			I=1
+			while F.exists():B=f"{E}{I}";F=G/f"{B}.java";I+=1
+		H=A._sanitize_generated_code(C.test_code)if sanitize_wrappers else C.test_code;J=B!=E
+		if sync_names or J:H=A._rewrite_java_header(D,B,H)
+		A._atomic_write(F,H);K=f"{D}.{B}"if D else B;return K,F
+	def save_batch(B,tests:List[TestFileInfo])->List[Path]:
+		A:List[Path]=[]
+		for C in tests:E,D=B.save_single(C,encode_class_name=_A);A.append(D)
+		return A
+	def load(B,test_info:TestFileInfo,*,encode_class_name:bool=_C)->str:
+		A=B.target_path(test_info,encode_class_name=encode_class_name)
+		if not A.exists():raise FileNotFoundError(f"Test file not found at {A}")
+		with open(A,'r',encoding='utf-8')as C:return C.read()
+	def make_test_fqn(A,test_info:TestFileInfo)->str:B=test_info;C=A.encode_class_name(B.id);D,E=A._split_qualified_class_name(B.qualified_class_name);return f"{D}.{C}"if D else C
+	def delete_single(G,test_info:TestFileInfo,*,encode_class_name:bool=_C,strict:bool=_C,max_attempts:int=2,retry_delay:float=.05)->bool:
+		'\n        Delete the test file at the location where it would have been saved.\n\n        - If `encode_class_name` is True, uses the encoded class name path.\n        - If `encode_class_name` is False, deletes the file at the fully\n          qualified class name path.\n\n        Returns True if the file existed and was successfully deleted, False otherwise.\n        When `strict` is True, an exception is raised if the file cannot be removed\n        after the configured retry attempts.\n        ';E=max_attempts;D=strict;A=G.target_path(test_info,encode_class_name=encode_class_name)
+		if not A.exists():RichLog.info(f"File does not exist, skipping delete: {A}");return _A if D else _C
+		B=0;C:Optional[Exception]=_B
+		while B<E:
+			B+=1
+			try:A.unlink()
+			except FileNotFoundError:break
+			except Exception as F:
+				C=F;RichLog.error(f"Failed to delete {A}: {F}")
+				if B>=E:break
+				time.sleep(max(retry_delay,.0))
+			else:break
+		if A.exists():
+			if D:raise FileDeletionError(f"Failed to delete test file at {A}",extra_info={'path':str(A),'attempts':B,'error':str(C)if C else''})
+			return _C
+		return _A

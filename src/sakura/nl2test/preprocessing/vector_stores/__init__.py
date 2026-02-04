@@ -1,5 +1,5 @@
-from .base import BaseVectorStore
-from .faiss_base import BaseFAISSVectorStore
-from .methods import MethodVectorStore
-from .classes import ClassVectorStore
-from .project_faiss import ProjectFAISSVectorStore
+from.base import BaseVectorStore
+from.faiss_base import BaseFAISSVectorStore
+from.methods import MethodVectorStore
+from.classes import ClassVectorStore
+from.project_faiss import ProjectFAISSVectorStore

@@ -1,74 +1,26 @@
 from __future__ import annotations
-
-from typing import Any, Dict, Set
-
+_C='get_call_site_details'
+_B='extract_method_code'
+_A='get_method_details'
+from typing import Any,Dict,Set
 from sakura.utils.analysis.java_analyzer import CommonAnalysis
-
-
 class CLDKArgNormalizer:
-    """
-    Shared utility for normalizing tool arguments for CLDK compatibility.
-    Handles inner class name normalization and constructor method signature normalization.
-    """
-
-    NORMALIZE_CLASS_TOOLS: Set[str] = {
-        "get_method_details",
-        "get_class_fields",
-        "get_class_imports",
-        "get_class_constructors_and_factories",
-        "get_getters_and_setters",
-        "extract_method_code",
-        "get_call_site_details",
-        "search_reachable_methods_in_class",
-        "get_class_details",
-        "get_inherited_library_classes",
-    }
-
-    NORMALIZE_METHOD_SIG_TOOLS: Set[str] = {
-        "get_call_site_details",
-        "get_method_details",
-        "extract_method_code",
-    }
-
-    @staticmethod
-    def normalize_args(tool_name: str, raw_args: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Normalize tool arguments for CLDK compatibility.
-
-        Handles:
-        - Inner class name normalization (e.g., Outer$Inner -> Outer.Inner for CLDK)
-        - Constructor method signature normalization
-
-        Args:
-            tool_name: The name of the tool being called
-            raw_args: The original tool arguments
-
-        Returns:
-            Normalized arguments dict (may be same object if no changes needed)
-        """
-        updated_args: Dict[str, Any] = raw_args
-
-        if tool_name in CLDKArgNormalizer.NORMALIZE_CLASS_TOOLS:
-            qualified_class_name = raw_args.get("qualified_class_name")
-            if isinstance(qualified_class_name, str):
-                normalized_class = CommonAnalysis.get_cldk_class_name(
-                    qualified_class_name
-                )
-                if normalized_class != qualified_class_name:
-                    if updated_args is raw_args:
-                        updated_args = dict(updated_args)
-                    updated_args["qualified_class_name"] = normalized_class
-
-        if tool_name in CLDKArgNormalizer.NORMALIZE_METHOD_SIG_TOOLS:
-            qualified_class_name = updated_args.get("qualified_class_name")
-            method_signature = updated_args.get("method_signature")
-            if qualified_class_name and method_signature:
-                normalized_sig = CommonAnalysis.get_cldk_method_sig(
-                    qualified_class_name, method_signature
-                )
-                if normalized_sig != method_signature:
-                    if updated_args is raw_args:
-                        updated_args = dict(updated_args)
-                    updated_args["method_signature"] = normalized_sig
-
-        return updated_args
+	'\n    Shared utility for normalizing tool arguments for CLDK compatibility.\n    Handles inner class name normalization and constructor method signature normalization.\n    ';NORMALIZE_CLASS_TOOLS:Set[str]={_A,'get_class_fields','get_class_imports','get_class_constructors_and_factories','get_getters_and_setters',_B,_C,'search_reachable_methods_in_class','get_class_details','get_inherited_library_classes'};NORMALIZE_METHOD_SIG_TOOLS:Set[str]={_C,_A,_B}
+	@staticmethod
+	def normalize_args(tool_name:str,raw_args:Dict[str,Any])->Dict[str,Any]:
+		'\n        Normalize tool arguments for CLDK compatibility.\n\n        Handles:\n        - Inner class name normalization (e.g., Outer$Inner -> Outer.Inner for CLDK)\n        - Constructor method signature normalization\n\n        Args:\n            tool_name: The name of the tool being called\n            raw_args: The original tool arguments\n\n        Returns:\n            Normalized arguments dict (may be same object if no changes needed)\n        ';I='method_signature';F=tool_name;E='qualified_class_name';C=raw_args;A:Dict[str,Any]=C
+		if F in CLDKArgNormalizer.NORMALIZE_CLASS_TOOLS:
+			B=C.get(E)
+			if isinstance(B,str):
+				G=CommonAnalysis.get_cldk_class_name(B)
+				if G!=B:
+					if A is C:A=dict(A)
+					A[E]=G
+		if F in CLDKArgNormalizer.NORMALIZE_METHOD_SIG_TOOLS:
+			B=A.get(E);D=A.get(I)
+			if B and D:
+				H=CommonAnalysis.get_cldk_method_sig(B,D)
+				if H!=D:
+					if A is C:A=dict(A)
+					A[I]=H
+		return A

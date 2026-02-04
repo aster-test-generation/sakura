@@ -1,75 +1,26 @@
 from __future__ import annotations
-from typing import Iterable, List, Tuple, Any, Dict
-
+_A='snippet_type'
+from typing import Iterable,List,Tuple,Any,Dict
 import faiss
 from langchain.schema import Document
 from langchain_community.vectorstores import FAISS
 from langchain_community.docstore import InMemoryDocstore
-
-from .base import BaseVectorStore
-
+from.base import BaseVectorStore
 from sakura.nl2test.preprocessing.embedders import BaseEmbedder
-from sakura.nl2test.models import SnippetType, Snippet, MethodSnippet, ClassSnippet
-
-"""DEPRECATED: Filter applies post search so often under-retrieves classes."""
-
-
+from sakura.nl2test.models import SnippetType,Snippet,MethodSnippet,ClassSnippet
+'DEPRECATED: Filter applies post search so often under-retrieves classes.'
 class ProjectFAISSVectorStore(BaseVectorStore):
-    def __init__(self, embedder: BaseEmbedder):
-        index = faiss.IndexFlatL2(embedder.dim)
-        docstore = InMemoryDocstore({})
-        index_to_docstore_id: Dict[int, str] = {}
-
-        store = FAISS(
-            embedding_function=embedder,
-            index=index,
-            docstore=docstore,
-            index_to_docstore_id=index_to_docstore_id,
-        )
-        super().__init__(store, embedder)
-
-    def add_snippets(self, snippets: Iterable[Any]) -> None:
-        docs = [self._to_doc(s) for s in snippets]
-        if docs:
-            self.store.add_documents(docs)
-
-    def find_similar(
-            self,
-            query: str,
-            k: int = 5,
-            **kwargs,
-    ) -> List[Tuple[Document, float]]:
-        filter_ = {}
-
-        snippet_type = kwargs.get("snippet_type")
-        if snippet_type and isinstance(snippet_type, SnippetType):
-            filter_["snippet_type"] = snippet_type.value
-
-        # If empty dictionary, convert to None to avoid filter overhead
-        if not filter_:
-            filter_ = None
-
-        return self.store.similarity_search_with_score(query, k=k, filter=filter_)
-
-    def _to_doc(self, snippet: Snippet) -> Document:
-        if isinstance(snippet, MethodSnippet):
-            return Document(
-                page_content=snippet.code,
-                metadata={
-                    "snippet_type": "method",
-                    "declaring_class_name": snippet.declaring_class_name,
-                    "containing_class_name": snippet.containing_class_name,
-                    "method_signature": snippet.method_signature,
-                },
-            )
-
-        if isinstance(snippet, ClassSnippet):
-            return Document(
-                page_content=snippet.simple_class_name,
-                metadata={
-                    "snippet_type": "class",
-                    "declaring_class_name": snippet.declaring_class_name,
-                },
-            )
-
-        raise Exception(f"Unsupported snippet type: {type(snippet)}")
+	def __init__(F,embedder:BaseEmbedder):A=embedder;B=faiss.IndexFlatL2(A.dim);C=InMemoryDocstore({});D:Dict[int,str]={};E=FAISS(embedding_function=A,index=B,docstore=C,index_to_docstore_id=D);super().__init__(E,A)
+	def add_snippets(A,snippets:Iterable[Any])->None:
+		B=[A._to_doc(B)for B in snippets]
+		if B:A.store.add_documents(B)
+	def find_similar(C,query:str,k:int=5,**D)->List[Tuple[Document,float]]:
+		A={};B=D.get(_A)
+		if B and isinstance(B,SnippetType):A[_A]=B.value
+		if not A:A=None
+		return C.store.similarity_search_with_score(query,k=k,filter=A)
+	def _to_doc(C,snippet:Snippet)->Document:
+		B='declaring_class_name';A=snippet
+		if isinstance(A,MethodSnippet):return Document(page_content=A.code,metadata={_A:'method',B:A.declaring_class_name,'containing_class_name':A.containing_class_name,'method_signature':A.method_signature})
+		if isinstance(A,ClassSnippet):return Document(page_content=A.simple_class_name,metadata={_A:'class',B:A.declaring_class_name})
+		raise Exception(f"Unsupported snippet type: {type(A)}")

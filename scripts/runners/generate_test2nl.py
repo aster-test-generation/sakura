@@ -52,7 +52,7 @@ def main() -> None:
     if not src_dir.is_dir():
         raise FileNotFoundError(f"Source directory not found: {src_dir}")
 
-    cli_file = src_dir / "nltest" / "cli.py"
+    cli_file = src_dir / "sakura" / "cli.py"
     if not cli_file.is_file():
         raise FileNotFoundError(f"CLI not found at expected path: {cli_file}")
 

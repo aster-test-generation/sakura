@@ -12,7 +12,7 @@ load_dotenv()
 # Root directory (project root, two levels up from this script)
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
-# Prompt file names (located in src/nltest/nl2test/prompts/templates/{system,chat}/)
+# Prompt file names (located in src/sakura/nl2test/prompts/templates/{system,chat}/)
 SYSTEM_PROMPT_FILE = "composition_agent_gherkin.jinja2"
 CHAT_PROMPT_FILE = "composition_agent_gherkin.jinja2"
 

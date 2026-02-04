@@ -194,7 +194,7 @@ class TestDescriptionGeneration:
 
 class TestDescriptionContextExtraction:
     """
-    Tests for extractors in src/nltest/test2nl/extractors/
+    Tests for extractors in src/sakura/test2nl/extractors/
     Using Spring PetClinic resources.
     """
 

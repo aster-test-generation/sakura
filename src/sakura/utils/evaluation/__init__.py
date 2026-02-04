@@ -1,4 +1,4 @@
-"""Evaluation utilities for nltest.
+"""Evaluation utilities for Sakura.
 
 This package provides reusable grading utilities that can be used across
 both nl2test and test2nl flows without duplication.

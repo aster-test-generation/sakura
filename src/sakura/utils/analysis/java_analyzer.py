@@ -48,7 +48,7 @@ from sakura.utils.pretty.prompt_formatting import pretty_indent
 
 
 def _map_class_exception(qualified_class_name: str, e: Exception) -> Exception:
-    """Map Hamster ClassNotFoundException to nltest ClassNotFoundError"""
+    """Map Hamster ClassNotFoundException to Sakura ClassNotFoundError"""
     if isinstance(e, HamsterClassNotFound):
         return ClassNotFoundError(
             f"Class {qualified_class_name} not found (may be externally defined or misspelled).",
@@ -58,7 +58,7 @@ def _map_class_exception(qualified_class_name: str, e: Exception) -> Exception:
 
 
 def _map_file_exception(qualified_class_name: str, e: Exception) -> Exception:
-    """Map Hamster file/compilation unit exceptions to nltest exceptions"""
+    """Map Hamster file/compilation unit exceptions to Sakura exceptions"""
     if isinstance(e, HamsterClassFileNotFound):
         return ClassFileNotFound(
             f"Java file for {qualified_class_name} not found",
@@ -75,7 +75,7 @@ def _map_file_exception(qualified_class_name: str, e: Exception) -> Exception:
 def _map_method_exception(
     qualified_class_name: str, method_signature: str, e: Exception
 ) -> Exception:
-    """Map Hamster MethodNotFoundException to nltest MethodNotFoundError"""
+    """Map Hamster MethodNotFoundException to Sakura MethodNotFoundError"""
     if isinstance(e, HamsterMethodNotFound):
         return MethodNotFoundError(
             f"Method {method_signature} not found in class {qualified_class_name} (may be externally defined or misspelled).",
@@ -619,7 +619,7 @@ class Reachability:
         self._hamster = HamsterReachability(analysis)
         self._reachability_cache: Dict[
             Tuple, Dict[str, List[str]]
-        ] = {}  # For nltest-specific methods
+        ] = {}  # For Sakura-specific methods
 
     def get_helper_methods(
         self,

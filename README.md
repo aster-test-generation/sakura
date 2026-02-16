@@ -6,7 +6,7 @@
 
 ## Overview
 
-ASTER-Sakura is a multi-agent system for bidirectional translation between natural language test descriptions and Java test code. It operates two pipelines:
+ASTER-Sakura is a research project investigating the automated generation of structurally complex Java test code from abstract natural language test descriptions. It consists of two complementary pipelines:
 
 - **Test2NL** -- generates natural language descriptions from existing Java test methods at three abstraction levels (high, medium, low).
 - **NL2Test** -- generates compilable Java test code from natural language descriptions using a trio of cooperating LangGraph ReAct agents (Supervisor, Localization, Composition).
@@ -317,33 +317,33 @@ Pre-computed results from different model configurations:
 
 | Project | Multi-module |
 |---------|:------------:|
-| commons-bcel | no |
-| commons-beanutils | no |
-| commons-bsf | no |
-| commons-cli | no |
-| commons-codec | no |
-| commons-collections | no |
-| commons-configuration | no |
-| commons-crypto | no |
-| commons-csv | no |
-| commons-dbcp | no |
-| commons-dbutils | no |
-| commons-email | yes |
-| commons-exec | no |
-| commons-fileupload | yes |
-| commons-imaging | no |
-| commons-io | no |
-| commons-jcs | yes |
-| commons-jexl | no |
-| commons-lang | no |
-| commons-logging | yes |
-| commons-math | yes |
-| commons-net | no |
-| commons-numbers | yes |
-| commons-pool | no |
-| commons-text | no |
-| commons-validator | no |
-| commons-vfs | yes |
+| commons-bcel | - |
+| commons-beanutils | - |
+| commons-bsf | - |
+| commons-cli | - |
+| commons-codec | - |
+| commons-collections | - |
+| commons-configuration | - |
+| commons-crypto | - |
+| commons-csv | - |
+| commons-dbcp | - |
+| commons-dbutils | - |
+| commons-email | :white_check_mark: |
+| commons-exec | - |
+| commons-fileupload | :white_check_mark: |
+| commons-imaging | - |
+| commons-io | - |
+| commons-jcs | :white_check_mark: |
+| commons-jexl | - |
+| commons-lang | - |
+| commons-logging | :white_check_mark: |
+| commons-math | :white_check_mark: |
+| commons-net | - |
+| commons-numbers | :white_check_mark: |
+| commons-pool | - |
+| commons-text | - |
+| commons-validator | - |
+| commons-vfs | :white_check_mark: |
 
 ## LLM Providers
 

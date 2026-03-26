@@ -53,12 +53,14 @@ sakura/
 |-- src/sakura/              # Core Python package
 |   |-- cli.py               # Typer CLI (entry point for both pipelines)
 |   |-- nl2test/             # NL-to-test generation pipeline
+|   |   |-- pipeline.py      #   NL2Test pipeline entry point (used by CLI)
 |   |   |-- core/            #   Base ReAct agent architecture
 |   |   |-- generation/      #   Supervisor, Localization, Composition agents
 |   |   |-- models/          #   Input/output data models
 |   |   |-- preprocessing/   #   FAISS indexing, embeddings, vector stores
 |   |   +-- prompts/         #   Jinja2 prompt templates
 |   |-- test2nl/             # Test-to-NL description pipeline
+|   |   |-- pipeline.py      #   Test2NL pipeline entry point (used by CLI)
 |   |   |-- extractors/      #   Test method extraction
 |   |   |-- generation/      #   Description generation
 |   |   |-- model/           #   Data models
@@ -87,6 +89,40 @@ sakura/
     |-- evaluation_stats/    # Aggregated statistics (JSON)
     +-- diagrams/            # Comparative charts
 ```
+
+## Prompt Mapping
+
+The prompt files are split by pipeline:
+
+- `src/sakura/test2nl/prompts/templates/system/` and `src/sakura/test2nl/prompts/templates/chat/` drive Test2NL description generation.
+- `src/sakura/nl2test/prompts/templates/system/` and `src/sakura/nl2test/prompts/templates/chat/` drive NL2Test decomposition and agent orchestration.
+
+### Test2NL prompt mapping
+
+The `generate-descriptions` CLI path goes through `Pipeline.run_descriptions_*()`, `DescriptionGenerator.generate_for_method()`, and then `Test2NLPrompt.generate()`. For each abstraction level, the system prompt is loaded directly and the chat prompt is rendered after the method, setup/teardown, helper, and application context have been assembled.
+
+| Abstraction level | System prompt | Chat prompt | Loaded / rendered in | Used from |
+|--------|-------------|-------------|-------------|-------------|
+| High | `system/high_abs.jinja2` | `chat/high_abs.jinja2` | `src/sakura/test2nl/prompts/test2nl_prompt.py` (`generate()` and `format()`) | `src/sakura/test2nl/generation/description_generator.py` |
+| Medium | `system/medium_abs.jinja2` | `chat/medium_abs.jinja2` | `src/sakura/test2nl/prompts/test2nl_prompt.py` (`generate()` and `format()`) | `src/sakura/test2nl/generation/description_generator.py` |
+| Low | `system/low_abs.jinja2` | `chat/low_abs.jinja2` | `src/sakura/test2nl/prompts/test2nl_prompt.py` (`generate()` and `format()`) | `src/sakura/test2nl/generation/description_generator.py` |
+
+### NL2Test prompt mapping
+
+The `run-nl2test` CLI path enters `Pipeline.run_nl2test()`, which first decomposes the input description (Given-When-Then) and then constructs a Supervisor orchestrator. The Supervisor coordinates Localization and Composition sub-agents with their own prompt pairs.
+
+| Stage | System prompt | Chat prompt | Loaded / rendered in | Used from |
+|--------|-------------|-------------|-------------|-------------|
+| NL decomposition | `system/gherkin_decomposition.jinja2` | `chat/gherkin_decomposition.jinja2` | `src/sakura/nl2test/preprocessing/decomposers/gherkin.py` | `src/sakura/nl2test/preprocessing/nl_decomposer.py` -> `src/sakura/nl2test/pipeline.py` |
+| Localization agent | `system/localization_agent_gherkin.jinja2` | `chat/localization_agent_gherkin.jinja2` | `src/sakura/nl2test/generation/localization/orchestrators/base.py` and `src/sakura/nl2test/generation/localization/orchestrators/gherkin.py` | `src/sakura/nl2test/generation/supervisor/agent.py` and `src/sakura/nl2test/pipeline.py` |
+| Composition agent | `system/composition_agent_gherkin.jinja2` | `chat/composition_agent_gherkin.jinja2` | `src/sakura/nl2test/generation/composition/orchestrators/base.py` and `src/sakura/nl2test/generation/composition/orchestrators/gherkin.py` | `src/sakura/nl2test/generation/supervisor/agent.py` |
+| Supervisor agent | `system/supervisor_agent_gherkin.jinja2` | `chat/supervisor_agent_gherkin.jinja2` | `src/sakura/nl2test/generation/supervisor/orchestrators/base.py` and `src/sakura/nl2test/generation/supervisor/orchestrators/gherkin.py` | `src/sakura/nl2test/pipeline.py` |
+
+| NL2Test finalize / fallback path | Prompt file(s) | Where it is used | Notes |
+|--------|-------------|-------------|-------------|
+| Localization force-finalize | `system/localization_agent_gherkin_finalize.jinja2` and `chat/localization_agent_gherkin_finalize.jinja2` | `src/sakura/nl2test/generation/localization/agent.py` | Used only when the localization ReAct loop must force a final structured output |
+| Composition force-finalize | `system/composition_agent_gherkin_finalize.jinja2` and `chat/composition_agent_gherkin_finalize.jinja2` | `src/sakura/nl2test/generation/composition/agent.py` | Used only when the composition ReAct loop must force a final response |
+| Supervisor force-finalize | No template file; `_execute_force_end()` returns a fixed comment | `src/sakura/nl2test/generation/supervisor/agent.py` | Supervisor does not use an LLM finalize prompt |
 
 ## CLI Reference
 

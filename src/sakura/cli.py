@@ -10,6 +10,9 @@ from typing_extensions import Annotated
 
 from sakura.dataset_creation.model import NL2TestDataset
 from sakura.dataset_creation.model import Test as DatasetTest
+from sakura.dataset_creation.sample_test2nl_descriptions import (
+    create_abstraction_samples,
+)
 from sakura.nl2test.models import NL2TestEval, NL2TestInput
 from sakura.nl2test.models.decomposition import DecompositionMode
 from sakura.ray_utils.nl2test_actor import NL2TestActor
@@ -44,6 +47,41 @@ NL2TEST_DEBUG = False
 @app.callback()
 def main() -> None:
     return
+
+
+@app.command()
+def sample_descriptions(
+    num_each_abstraction: Annotated[
+        int,
+        typer.Option(
+            help="Rows to randomly sample for each abstraction level.",
+            min=1,
+            show_default=False,
+        ),
+    ],
+    output_dir: Annotated[
+        str,
+        typer.Option(
+            help="Directory for low.csv, medium.csv, and high.csv.",
+            show_default=False,
+        ),
+    ],
+    seed: Annotated[
+        int | None,
+        typer.Option(
+            help="Optional random seed for a reproducible sample.",
+            show_default=False,
+        ),
+    ] = None,
+) -> None:
+    """Sample the filtered Test2NL descriptions by abstraction level."""
+    written_files = create_abstraction_samples(
+        num_each_abstraction=num_each_abstraction,
+        output_dir=output_dir,
+        seed=seed,
+    )
+    for level, path in written_files.items():
+        typer.echo(f"Wrote {num_each_abstraction} {level} rows: {path}")
 
 
 def _load_nl2_inputs_by_project_from_csv(

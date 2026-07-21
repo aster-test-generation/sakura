@@ -95,7 +95,7 @@ HTML = r"""<!doctype html>
     .criterion-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
     .criterion h3 { margin: 0; font-size: 16.5px; font-weight: 650; }
     .criterion p { margin: 6px 0 13px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
-    .scale { display: grid; max-width: 440px; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+    .scale { position: relative; display: grid; max-width: 440px; grid-template-columns: repeat(5, 1fr); gap: 7px; }
     .scale input { position: absolute; opacity: 0; pointer-events: none; }
     .scale label { min-height: 42px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--muted); background: #fbfcfe; font-size: 15px; font-weight: 700; transition: .15s ease; }
     .scale label:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-1px); }

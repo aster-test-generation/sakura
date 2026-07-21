@@ -84,8 +84,10 @@ HTML = r"""<!doctype html>
     .project-text { margin: 0; color: var(--body); font-size: 14.5px; line-height: 1.65; }
     .description { margin: 0; white-space: pre-wrap; font: 16px/1.7 var(--serif); color: #26303e; }
     .level-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; max-width: 440px; margin: 8px 0 11px; }
-    .level-tabs button { display: grid; gap: 2px; justify-items: center; align-content: center; padding: 8px 6px; border: 1px solid var(--line-strong); border-radius: 10px; background: #fbfcfe; color: var(--muted); font-size: 14px; font-weight: 650; transition: .15s ease; }
+    .level-tabs button { display: grid; gap: 2px; justify-items: center; align-content: center; padding: 8px 6px; border: 2px solid var(--line-strong); border-radius: 10px; background: #fbfcfe; color: var(--muted); font-size: 14px; font-weight: 650; transition: .15s ease; }
     .section-hint { margin: 6px 0 0; color: var(--muted); font-size: 13.5px; }
+    #levelNote { font-size: 15.5px; }
+    .invariant-note { margin-top: 10px; font-size: 14.5px; line-height: 1.55; }
     .level-tabs button:hover { border-color: var(--accent); color: var(--accent-deep); }
     .level-tabs button:focus-visible { outline: 3px solid rgba(201, 54, 107, .35); outline-offset: 2px; }
     .level-tabs button.viewing { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -95,9 +97,9 @@ HTML = r"""<!doctype html>
     .criterion p { margin: 6px 0 13px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
     .scale { position: relative; display: grid; max-width: 640px; gap: 7px; }
     .scale input { position: absolute; opacity: 0; pointer-events: none; }
-    .scale label { min-height: 44px; display: grid; place-items: center; padding: 6px 5px; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--muted); background: #fbfcfe; text-align: center; font-size: 13.5px; font-weight: 650; line-height: 1.25; transition: .15s ease; }
+    .scale label { min-height: 44px; display: grid; place-items: center; padding: 6px 5px; border: 2px solid var(--line-strong); border-radius: 10px; color: var(--muted); background: #fbfcfe; text-align: center; font-size: 13.5px; font-weight: 650; line-height: 1.25; transition: .15s ease; }
     .scale label:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-1px); }
-    .scale label.straddle { border-style: dashed; background: var(--panel-2); }
+    .scale label.straddle { border-style: dashed; background: #e2e7f0; color: var(--body); }
     .scale label.straddle:hover { border-color: var(--flag); color: var(--flag); }
     .scale input:focus-visible + label { outline: 3px solid rgba(201, 54, 107, .35); outline-offset: 2px; }
     .scale input:checked + label { color: #fff; background: var(--accent); border-color: var(--accent); }
@@ -161,7 +163,7 @@ HTML = r"""<!doctype html>
             <button type="button" data-level="high">High</button>
           </div>
           <p class="project-text" id="levelNote"></p>
-          <p class="section-hint">Invariant across levels: each description is one self-contained paragraph, leaves the test name unspecified, and ends by listing the testing framework, assertion library, and mocking library. These traits carry no level signal.</p>
+          <p class="section-hint invariant-note">Invariant across levels: each description is one self-contained paragraph, leaves the test name unspecified, and ends by listing the testing framework, assertion library, and mocking library. These traits carry no level signal.</p>
         </section>
         <section class="section"><div class="eyebrow">Generated description</div><h2>What the agent wrote</h2><p class="description" id="description"></p></section>
         <section class="section"><div class="eyebrow">Evaluation</div><h2>Rate this description</h2><div id="criteria"></div></section>

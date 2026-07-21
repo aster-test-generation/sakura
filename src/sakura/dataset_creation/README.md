@@ -144,6 +144,67 @@ python -m sakura.dataset_creation.create_random_sample_dataset
 
 Default sample size: 20 per bucket
 
+### 10. Grade Sampled Descriptions (Optional)
+
+Open the local browser viewer and identify the reviewer with `--user`:
+
+```bash
+uv run sakura grade-descriptions --user alice
+```
+
+The viewer reads `outputs/descriptions_sample/low.csv`, `medium.csv`, and
+`high.csv`. To assign a reviewer subset, create
+`outputs/descriptions_sample/subset/alice.json`:
+
+```json
+{
+  "low": [857],
+  "medium": [957],
+  "high": [1275]
+}
+```
+
+The lists retain their internal order and are presented in a balanced
+low-medium-high rotation. If the subset file is absent, every CSV entry is
+loaded. Each entry requires 1-to-5 scores for naturalness, fidelity, and
+abstraction fit. Completed scores are saved atomically in presentation order
+to `outputs/descriptions_sample/graded/alice.json`. Reopening the viewer with
+the same user resumes at the first incomplete entry.
+
+The grade file is self-contained. It retains every selected CSV field and adds
+the three scores, while unfinished entries use `"grades": null`:
+
+```json
+{
+  "schema_version": 1,
+  "user": "alice",
+  "selection": {
+    "kind": "subset",
+    "path": "outputs/descriptions_sample/subset/alice.json"
+  },
+  "entries": [
+    {
+      "abstraction_level": "low",
+      "description": "...",
+      "id": 857,
+      "is_bdd": false,
+      "method_signature": "testDeprecatedFindWrapPosZeroWidth(int)",
+      "project_name": "commons-cli",
+      "qualified_class_name": "org.apache.commons.cli.HelpFormatterTest",
+      "grades": {
+        "naturalness": 4,
+        "fidelity": 5,
+        "abstraction_fit": 3
+      }
+    }
+  ]
+}
+```
+
+The source context uses the same extraction depth as Test2NL generation.
+Existing analysis is loaded from `resources/analysis/<project>/analysis.json`;
+missing analysis is generated and cached when that project is first viewed.
+
 ## Data Models
 
 Defined in `model.py`:

@@ -8,6 +8,7 @@ import typer
 from dotenv import load_dotenv
 from typing_extensions import Annotated
 
+from sakura.dataset_creation.description_grading import run_description_grader
 from sakura.dataset_creation.model import NL2TestDataset
 from sakura.dataset_creation.model import Test as DatasetTest
 from sakura.dataset_creation.sample_test2nl_descriptions import (
@@ -82,6 +83,21 @@ def sample_descriptions(
     )
     for level, path in written_files.items():
         typer.echo(f"Wrote {num_each_abstraction} {level} rows: {path}")
+
+
+@app.command()
+def grade_descriptions(
+    user: Annotated[
+        str,
+        typer.Option(
+            help="Reviewer name used for subset selection and saved grades.",
+            show_default=False,
+        ),
+    ],
+) -> None:
+    """Open the local Test2NL description grading viewer."""
+    repo_root = Path(__file__).resolve().parents[2]
+    run_description_grader(user=user, repo_root=repo_root)
 
 
 def _load_nl2_inputs_by_project_from_csv(

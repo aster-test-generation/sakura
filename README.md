@@ -123,7 +123,23 @@ The `run-nl2test` CLI path enters `Pipeline.run_nl2test()`, which first decompos
 
 ## CLI Reference
 
-The CLI is exposed as the `sakura` command (or `python -m sakura.cli`). It has two subcommands.
+The CLI is exposed as the `sakura` command (or `python -m sakura.cli`).
+
+### `grade-descriptions` (human evaluation)
+
+Opens a local browser viewer for rating the sampled Test2NL descriptions. The
+viewer loads a reviewer-specific subset when present, builds missing CLDK
+analysis on demand, and saves every completed entry atomically.
+
+```bash
+uv run sakura grade-descriptions --user alice
+```
+
+Reviewer subsets live at
+`outputs/descriptions_sample/subset/<user>.json` and contain ordered `low`,
+`medium`, and `high` ID lists. Grades resume from
+`outputs/descriptions_sample/graded/<user>.json`. If no subset exists, the
+viewer loads all three sample CSVs.
 
 ### `generate-descriptions` (Test2NL)
 

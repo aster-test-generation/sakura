@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from sakura.utils.constants import ABSTRACTION_TEMPERATURES
 
@@ -95,6 +95,20 @@ class MethodContext(BaseModel):
     variable_declarations: List[VariableInfo] = []
     thrown_exceptions: List[str] = []
     javadoc: str | None = None
+
+
+class Test2NLContext(BaseModel):
+    """Structured source context shared by Test2NL prompts and reviewers."""
+
+    qualified_class_name: str
+    class_annotations: List[str] = Field(default_factory=list)
+    field_declarations: List[FieldDeclaration] = Field(default_factory=list)
+    setup_methods: List[MethodContext] = Field(default_factory=list)
+    method_annotations: List[str] = Field(default_factory=list)
+    test_method: MethodContext
+    helper_methods: List[MethodContext] = Field(default_factory=list)
+    teardown_methods: List[MethodContext] = Field(default_factory=list)
+    application_classes: List[ClassContext] = Field(default_factory=list)
 
 
 class Test2NLEntry(BaseModel):

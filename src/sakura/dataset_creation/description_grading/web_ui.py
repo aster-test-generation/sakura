@@ -161,6 +161,7 @@ HTML = r"""<!doctype html>
             <button type="button" data-level="high">High</button>
           </div>
           <p class="project-text" id="levelNote"></p>
+          <p class="section-hint">Invariant across levels: each description is one self-contained paragraph, leaves the test name unspecified, and ends by listing the testing framework, assertion library, and mocking library. These traits carry no level signal.</p>
         </section>
         <section class="section"><div class="eyebrow">Generated description</div><h2>What the agent wrote</h2><p class="description" id="description"></p></section>
         <section class="section"><div class="eyebrow">Evaluation</div><h2>Rate this description</h2><div id="criteria"></div></section>
@@ -204,9 +205,9 @@ HTML = r"""<!doctype html>
       }
     ];
     const levelInfo = {
-      low: 'An implementation-complete specification. It uses exact class, method, and variable names and exact literal input values. Helper logic is inlined step by step, each chained call is listed in order, and every assertion appears with its exact API and expected value.',
-      medium: 'Architectural guidance that leaves room for implementation choices. It refers to classes and methods by semantic descriptors rather than exact names, describes helpers and application code by intent and observable effects, collapses call chains into logical operations, characterizes inputs by type or constraints, and states the intent of each assertion.',
-      high: 'A business-level requirement. It avoids technical identifiers entirely, hides helpers and method calls so only resulting states are visible, describes inputs as high-level domain scenarios, and frames verification as observable business outcomes.'
+      low: 'An implementation-complete specification. It uses the exact class, method, and variable names from the code and exact literal values for every input. Helper logic is fully unwrapped and inlined step by step, application code is specified as exact method invocations with their arguments while its internal behavior is omitted, each chained call is enumerated in order, and every assertion is listed with its exact API and expected value.',
+      medium: 'Architectural guidance that leaves room for implementation choices. It refers to classes and methods by semantic descriptors, using variable names only where needed for disambiguation. Helpers are described by their intent without implementation details, application code is a black box described by its invocation and observable effects, call chains are collapsed into intent-based logical operations, inputs are characterized by type, constraints, or characteristics, and each assertion is described by its intent with references to the relevant variables.',
+      high: 'A business-level requirement. It uses business-level entities and concepts only, with no technical identifiers apart from the closing framework and library listing. Helpers and method calls are invisible: only resulting states or preconditions appear, and call chains are reduced to their final state. Inputs are high-level domain archetypes and scenarios, and verification is framed as observable business outcomes without technical detail.'
     };
     let session, entry, position = 0, selected = {}, retryAction = null;
     const el = id => document.getElementById(id);

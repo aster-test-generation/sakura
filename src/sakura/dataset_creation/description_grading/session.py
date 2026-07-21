@@ -216,7 +216,7 @@ class GradingSession:
             raise ValueError(f"Invalid existing grade file: {self.output_path}") from exc
         if not isinstance(data, dict):
             raise ValueError(f"Existing grade file must be an object: {self.output_path}")
-        if data.get("schema_version") != 2 or data.get("user") != self.user:
+        if data.get("schema_version") != 3 or data.get("user") != self.user:
             raise ValueError(
                 f"Incompatible existing grade file: {self.output_path}. "
                 "Rerun with --reset to archive it and start over."
@@ -275,22 +275,27 @@ class GradingSession:
 
     def save(self) -> None:
         document = {
-            "schema_version": 2,
+            "schema_version": 3,
             "user": self.user,
             "selection": {
                 "kind": self.selection["kind"],
                 "path": self.selection["path"],
             },
-            "entries": [],
+            # Only IDs and grades are stored so a reviewer reading this file
+            # cannot uncover the true abstraction levels mid-session. Join on
+            # ID against the level CSVs to recover the full rows.
+            "entries": [
+                {
+                    "id": entry.id,
+                    "grades": (
+                        self.grades[entry.id].model_dump()
+                        if entry.id in self.grades
+                        else None
+                    ),
+                }
+                for entry in self.entries
+            ],
         }
-        for entry in self.entries:
-            row = entry.model_dump(mode="json")
-            row["grades"] = (
-                self.grades[entry.id].model_dump()
-                if entry.id in self.grades
-                else None
-            )
-            document["entries"].append(row)
         self.output_path.parent.mkdir(parents=True, exist_ok=True)
         StructuredDataManager._atomic_write_text(
             self.output_path,

@@ -111,7 +111,7 @@ def test_rejects_unsafe_user_names(tmp_path: Path, user: str) -> None:
         GradingSession(user, descriptions, tmp_path)
 
 
-def test_grades_save_full_entries_and_resume(tmp_path: Path) -> None:
+def test_grades_save_only_ids_and_grades_and_resume(tmp_path: Path) -> None:
     descriptions = _write_sample(tmp_path, (1, 1, 1))
     session = GradingSession("alice", descriptions, tmp_path)
     first_id = session.entries[0].id
@@ -120,11 +120,12 @@ def test_grades_save_full_entries_and_resume(tmp_path: Path) -> None:
         first_id, {"fidelity": 4, "perceived_level": "low_medium"}
     )
     saved = json.loads(session.output_path.read_text(encoding="utf-8"))
-    assert saved["schema_version"] == 2
+    assert saved["schema_version"] == 3
     assert len(saved["entries"]) == 3
+    assert all(set(entry) == {"id", "grades"} for entry in saved["entries"])
+    assert saved["entries"][0]["id"] == first_id
     assert saved["entries"][0]["grades"]["fidelity"] == 4
     assert saved["entries"][0]["grades"]["perceived_level"] == "low_medium"
-    assert saved["entries"][0]["abstraction_level"] == "low"
     assert saved["entries"][1]["grades"] is None
     assert not session.output_path.with_suffix(".json.tmp").exists()
 

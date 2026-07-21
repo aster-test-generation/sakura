@@ -179,13 +179,15 @@ viewer with the same user resumes at the first incomplete entry. Pass
 `--reset` to archive the existing grade file to `alice.json.bak` and start
 over, for example after a rubric change makes the old file incompatible.
 
-The grade file is self-contained. It retains every selected CSV field,
-including the true `abstraction_level` for later comparison, and adds the two
-judgments, while unfinished entries use `"grades": null`:
+The grade file deliberately stores only entry IDs and grades, in
+presentation order, so a reviewer who opens it cannot accidentally uncover
+the true abstraction levels mid-session. Unfinished entries use
+`"grades": null`. To analyze results, join each ID against the level CSVs,
+which hold the full rows including the true `abstraction_level`:
 
 ```json
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "user": "alice",
   "selection": {
     "kind": "subset",
@@ -193,13 +195,7 @@ judgments, while unfinished entries use `"grades": null`:
   },
   "entries": [
     {
-      "abstraction_level": "low",
-      "description": "...",
       "id": 857,
-      "is_bdd": false,
-      "method_signature": "testDeprecatedFindWrapPosZeroWidth(int)",
-      "project_name": "commons-cli",
-      "qualified_class_name": "org.apache.commons.cli.HelpFormatterTest",
       "grades": {
         "fidelity": 4,
         "perceived_level": "low_medium"

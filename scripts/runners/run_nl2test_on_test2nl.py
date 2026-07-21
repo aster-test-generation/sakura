@@ -113,7 +113,7 @@ def main() -> None:
 
     # Construct the command
     cmd = [
-        "poetry",
+        "uv",
         "run",
         "python",
         "-u",

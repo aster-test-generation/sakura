@@ -16,7 +16,7 @@ The evaluation dataset is built from 27 Apache Commons projects. Each project is
 ## Prerequisites
 
 - Python 3.11
-- [Poetry](https://python-poetry.org/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
 - Java 11+ and Maven (for compiling and executing generated tests)
 - An LLM API key for at least one supported provider (see [LLM Providers](#llm-providers))
 
@@ -30,11 +30,8 @@ cd sakura
 # Or initialize submodules after cloning
 git submodule update --init --recursive
 
-# Install Python dependencies
-poetry install
-
-# Activate the virtual environment
-poetry shell
+# Install Python and synchronize the project environment
+uv sync
 ```
 
 Create a `.env` file in the project root with your API keys:
@@ -133,7 +130,7 @@ The CLI is exposed as the `sakura` command (or `python -m sakura.cli`). It has t
 Generates natural language descriptions for test methods. Reads bucketed test datasets, sends each method to an LLM, and writes `test2nl.csv` and `descriptions.json`.
 
 ```bash
-poetry run sakura generate-descriptions \
+uv run sakura generate-descriptions \
     --analysis-dir resources/analysis \
     --output-dir <output-path> \
     --organized-methods-dir resources/filtered_bucketed_tests \
@@ -164,7 +161,7 @@ Key options:
 Runs the multi-agent test generation pipeline. Reads a Test2NL CSV, processes each entry through the Supervisor/Localization/Composition agents, compiles the generated test, executes it, and records evaluation metrics.
 
 ```bash
-poetry run sakura run-nl2test \
+uv run sakura run-nl2test \
     --base-project-dir resources/datasets \
     --base-analysis-dir resources/analysis \
     --output-dir <output-path> \
@@ -209,7 +206,7 @@ The `scripts/runners/` directory contains pre-configured wrapper scripts. Edit t
 ```bash
 # Edit scripts/runners/generate_test2nl.py to set:
 #   LLM_MODEL, LLM_PROVIDER, OUTPUT_DIR, etc.
-poetry run python scripts/runners/generate_test2nl.py
+uv run python scripts/runners/generate_test2nl.py
 ```
 
 This script invokes `sakura generate-descriptions` with paths resolved relative to the project root. It reads bucketed test methods from `resources/filtered_bucketed_tests/` and writes the output CSV and JSON to the configured `OUTPUT_DIR`.
@@ -219,7 +216,7 @@ This script invokes `sakura generate-descriptions` with paths resolved relative 
 ```bash
 # Edit scripts/runners/run_nl2test_on_test2nl.py to set:
 #   LLM_MODEL, LLM_PROVIDER, EMB_MODEL, EMB_PROVIDER, OUTPUT_DIR, etc.
-poetry run python scripts/runners/run_nl2test_on_test2nl.py
+uv run python scripts/runners/run_nl2test_on_test2nl.py
 ```
 
 This script invokes `sakura run-nl2test`. It reads the Test2NL CSV from `resources/test2nl/filtered_dataset/test2nl.csv`, runs the multi-agent pipeline against the dataset projects in `resources/datasets/`, and writes per-project evaluation results (`nl2test_evaluation_results.json`) under the configured `OUTPUT_DIR`.
@@ -231,7 +228,7 @@ This script invokes `sakura run-nl2test`. It reads the Test2NL CSV from `resourc
 Confirm that all dataset projects compile before running any pipelines:
 
 ```bash
-poetry run python scripts/utilities/compile_dataset_projects.py
+uv run python scripts/utilities/compile_dataset_projects.py
 ```
 
 ### Step 2: Generate CLDK Analysis (if not present)
@@ -239,7 +236,7 @@ poetry run python scripts/utilities/compile_dataset_projects.py
 The analysis files under `resources/analysis/` are required by both pipelines. To regenerate them:
 
 ```bash
-poetry run python scripts/data/generate_analysis.py
+uv run python scripts/data/generate_analysis.py
 ```
 
 This uses Ray to run CLDK symbol-table analysis on all 27 projects in parallel.
@@ -257,7 +254,7 @@ Run Test2NL and/or NL2Test as described above. Results land in `outputs/raw_outp
 After running NL2Test, aggregate the per-project results into summary statistics:
 
 ```bash
-poetry run python scripts/evaluation/generate_statistics.py
+uv run python scripts/evaluation/generate_statistics.py
 ```
 
 This reads from directories listed in its `EVAL_DIRS` constant (edit the script to point at your output directories). It writes JSON evaluation summaries to `outputs/evaluation_stats/`.
@@ -276,7 +273,7 @@ All metrics are broken down by abstraction level (high/medium/low) and focal met
 To produce comparative bar charts across multiple evaluation runs:
 
 ```bash
-poetry run python scripts/evaluation/perform_comparison.py
+uv run python scripts/evaluation/perform_comparison.py
 ```
 
 Edit `INPUT_FILES` in the script to list the evaluation JSON files to compare. Diagrams are saved to `outputs/diagrams/`.
@@ -420,11 +417,11 @@ Ray is used for between-project parallelism. Each project runs as an independent
 
 ```bash
 # Type checking
-poetry run pyright src/sakura/path/to/file.py
+uv run pyright src/sakura/path/to/file.py
 
 # Formatting
-poetry run ruff format src/sakura/path/to/file.py
-poetry run ruff check --fix src/sakura/path/to/file.py
+uv run ruff format src/sakura/path/to/file.py
+uv run ruff check --fix src/sakura/path/to/file.py
 ```
 
 Note: Do not run `pytest` or the CLI pipelines casually -- they make LLM API calls that incur costs.

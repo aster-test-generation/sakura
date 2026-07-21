@@ -164,19 +164,28 @@ The viewer reads `outputs/descriptions_sample/low.csv`, `medium.csv`, and
 }
 ```
 
-The lists retain their internal order and are presented in a balanced
-low-medium-high rotation. If the subset file is absent, every CSV entry is
-loaded. Each entry requires 1-to-5 scores for naturalness, fidelity, and
-abstraction fit. Completed scores are saved atomically in presentation order
-to `outputs/descriptions_sample/graded/alice.json`. Reopening the viewer with
-the same user resumes at the first incomplete entry.
+The selected entries are shuffled into a fixed random order produced by a
+constant seed, so every reviewer sees the same sequence (useful for checking
+agreement on the first few entries) while the level pattern stays
+unpredictable. If the subset file is absent, every CSV entry is loaded. Each entry requires two judgments: a 1-to-4 fidelity rating (strongly
+disagree to strongly agree that the description preserves the tested behavior
+and outcome) and a perceived abstraction level guessed from the description
+alone (`low`, `low_medium`, `medium`, `medium_high`, or `high`, where the
+split values mark a description that straddles two levels without fitting
+either). The viewer never reveals the entry's actual abstraction level, so
+the guess stays blind. Completed scores are saved atomically in presentation
+order to `outputs/descriptions_sample/graded/alice.json`. Reopening the
+viewer with the same user resumes at the first incomplete entry. Pass
+`--reset` to archive the existing grade file to `alice.json.bak` and start
+over, for example after a rubric change makes the old file incompatible.
 
-The grade file is self-contained. It retains every selected CSV field and adds
-the three scores, while unfinished entries use `"grades": null`:
+The grade file is self-contained. It retains every selected CSV field,
+including the true `abstraction_level` for later comparison, and adds the two
+judgments, while unfinished entries use `"grades": null`:
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "user": "alice",
   "selection": {
     "kind": "subset",
@@ -192,9 +201,8 @@ the three scores, while unfinished entries use `"grades": null`:
       "project_name": "commons-cli",
       "qualified_class_name": "org.apache.commons.cli.HelpFormatterTest",
       "grades": {
-        "naturalness": 4,
-        "fidelity": 5,
-        "abstraction_fit": 3
+        "fidelity": 4,
+        "perceived_level": "low_medium"
       }
     }
   ]

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import csv
 import json
+import random
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -23,20 +24,27 @@ REQUIRED_COLUMNS = {
     "qualified_class_name",
 }
 SAFE_USER = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+SHUFFLE_SEED = "sakura-description-grading"
 
 
 class Grades(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    naturalness: int = Field(ge=1, le=5)
-    fidelity: int = Field(ge=1, le=5)
-    abstraction_fit: int = Field(ge=1, le=5)
+    fidelity: int = Field(ge=1, le=4)
+    perceived_level: Literal["low", "low_medium", "medium", "medium_high", "high"]
 
 
 class GradingSession:
     """Own the selected entries, reviewer progress, and durable grade file."""
 
-    def __init__(self, user: str, descriptions_dir: Path, repo_root: Path) -> None:
+    def __init__(
+        self,
+        user: str,
+        descriptions_dir: Path,
+        repo_root: Path,
+        *,
+        reset: bool = False,
+    ) -> None:
         self.user = self.validate_user(user)
         self.descriptions_dir = descriptions_dir.resolve()
         self.repo_root = repo_root.resolve()
@@ -45,9 +53,20 @@ class GradingSession:
 
         entries_by_level = self._load_entries()
         self.selection = self._load_selection(entries_by_level)
-        self.entries = self._balanced_entries(entries_by_level, self.selection)
+        self.entries = self._shuffled_entries(entries_by_level, self.selection)
         self.grades: dict[int, Grades] = {}
+        self.archived_backup: Path | None = (
+            self._archive_existing() if reset else None
+        )
         self._load_existing()
+
+    def _archive_existing(self) -> Path | None:
+        if not self.output_path.exists():
+            return None
+        backup = self.output_path.with_suffix(".json.bak")
+        backup.unlink(missing_ok=True)
+        self.output_path.rename(backup)
+        return backup
 
     @staticmethod
     def validate_user(user: str) -> str:
@@ -170,22 +189,22 @@ class GradingSession:
         }
 
     @staticmethod
-    def _balanced_entries(
+    def _shuffled_entries(
         entries_by_level: dict[str, list[Test2NLEntry]], selection: dict[str, Any]
     ) -> list[Test2NLEntry]:
         lookup = {
             level: {entry.id: entry for entry in entries_by_level[level]}
             for level in LEVELS
         }
-        lists = [
-            [lookup[level][entry_id] for entry_id in selection["ids"][level]]
+        result = [
+            lookup[level][entry_id]
             for level in LEVELS
+            for entry_id in selection["ids"][level]
         ]
-        result: list[Test2NLEntry] = []
-        for index in range(max(map(len, lists), default=0)):
-            for entries in lists:
-                if index < len(entries):
-                    result.append(entries[index])
+        # A fixed seed gives every reviewer the same order, so early entries
+        # stay aligned for agreement checks while the level sequence remains
+        # unpredictable to the reviewer.
+        random.Random(SHUFFLE_SEED).shuffle(result)
         return result
 
     def _load_existing(self) -> None:
@@ -197,8 +216,11 @@ class GradingSession:
             raise ValueError(f"Invalid existing grade file: {self.output_path}") from exc
         if not isinstance(data, dict):
             raise ValueError(f"Existing grade file must be an object: {self.output_path}")
-        if data.get("schema_version") != 1 or data.get("user") != self.user:
-            raise ValueError(f"Incompatible existing grade file: {self.output_path}")
+        if data.get("schema_version") != 2 or data.get("user") != self.user:
+            raise ValueError(
+                f"Incompatible existing grade file: {self.output_path}. "
+                "Rerun with --reset to archive it and start over."
+            )
         saved_entries = data.get("entries")
         if not isinstance(saved_entries, list) or not all(
             isinstance(entry, dict) for entry in saved_entries
@@ -209,7 +231,7 @@ class GradingSession:
         if saved_ids != current_ids:
             raise ValueError(
                 "Existing grade file does not match the current selected ID order: "
-                f"{self.output_path}"
+                f"{self.output_path}. Rerun with --reset to archive it and start over."
             )
         for saved in saved_entries:
             if saved.get("grades") is not None:
@@ -231,6 +253,8 @@ class GradingSession:
             raise IndexError(f"Entry position out of range: {index}")
         entry = self.entries[index]
         payload = entry.model_dump(mode="json")
+        # Reviewers guess the level from the description, so keep the API blind.
+        payload.pop("abstraction_level", None)
         payload["grades"] = (
             self.grades[entry.id].model_dump() if entry.id in self.grades else None
         )
@@ -251,7 +275,7 @@ class GradingSession:
 
     def save(self) -> None:
         document = {
-            "schema_version": 1,
+            "schema_version": 2,
             "user": self.user,
             "selection": {
                 "kind": self.selection["kind"],

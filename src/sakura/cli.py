@@ -94,10 +94,17 @@ def grade_descriptions(
             show_default=False,
         ),
     ],
+    reset: Annotated[
+        bool,
+        typer.Option(
+            "--reset",
+            help="Archive this reviewer's existing grade file and start over.",
+        ),
+    ] = False,
 ) -> None:
     """Open the local Test2NL description grading viewer."""
     repo_root = Path(__file__).resolve().parents[2]
-    run_description_grader(user=user, repo_root=repo_root)
+    run_description_grader(user=user, repo_root=repo_root, reset=reset)
 
 
 def _load_nl2_inputs_by_project_from_csv(

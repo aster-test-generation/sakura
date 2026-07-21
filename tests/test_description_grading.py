@@ -66,22 +66,22 @@ def _write_sample(root: Path, counts: tuple[int, int, int] = (2, 2, 2)) -> Path:
     return descriptions
 
 
-def test_full_sample_uses_balanced_rotation(tmp_path: Path) -> None:
+def test_full_sample_uses_shared_shuffled_order(tmp_path: Path) -> None:
     descriptions = _write_sample(tmp_path, (3, 1, 2))
     session = GradingSession("alice", descriptions, tmp_path)
+    ids = [entry.id for entry in session.entries]
 
-    assert [entry.abstraction_level.value for entry in session.entries] == [
-        "low",
-        "medium",
-        "high",
-        "low",
-        "high",
-        "low",
-    ]
+    assert sorted(ids) == [1, 2, 3, 4, 5, 6]
+    assert ids != [1, 2, 3, 4, 5, 6]
     assert session.selection["kind"] == "full"
 
+    other = GradingSession("bob", descriptions, tmp_path)
+    assert [entry.id for entry in other.entries] == ids
 
-def test_subset_preserves_each_level_order_and_validates_ids(tmp_path: Path) -> None:
+
+def test_subset_selects_ids_in_stable_shuffled_order_and_validates_ids(
+    tmp_path: Path,
+) -> None:
     descriptions = _write_sample(tmp_path)
     subset_dir = descriptions / "subset"
     subset_dir.mkdir()
@@ -91,7 +91,10 @@ def test_subset_preserves_each_level_order_and_validates_ids(tmp_path: Path) -> 
     )
 
     session = GradingSession("alice", descriptions, tmp_path)
-    assert [entry.id for entry in session.entries] == [2, 4, 6, 1, 5]
+    ids = [entry.id for entry in session.entries]
+    assert sorted(ids) == [1, 2, 4, 5, 6]
+    resumed = GradingSession("alice", descriptions, tmp_path)
+    assert [entry.id for entry in resumed.entries] == ids
 
     (subset_dir / "bob.json").write_text(
         json.dumps({"low": [3], "medium": [], "high": []}),
@@ -114,12 +117,14 @@ def test_grades_save_full_entries_and_resume(tmp_path: Path) -> None:
     first_id = session.entries[0].id
 
     session.set_grades(
-        first_id, {"naturalness": 4, "fidelity": 5, "abstraction_fit": 3}
+        first_id, {"fidelity": 4, "perceived_level": "low_medium"}
     )
     saved = json.loads(session.output_path.read_text(encoding="utf-8"))
-    assert saved["schema_version"] == 1
+    assert saved["schema_version"] == 2
     assert len(saved["entries"]) == 3
-    assert saved["entries"][0]["grades"]["fidelity"] == 5
+    assert saved["entries"][0]["grades"]["fidelity"] == 4
+    assert saved["entries"][0]["grades"]["perceived_level"] == "low_medium"
+    assert saved["entries"][0]["abstraction_level"] == "low"
     assert saved["entries"][1]["grades"] is None
     assert not session.output_path.with_suffix(".json.tmp").exists()
 
@@ -133,7 +138,7 @@ def test_resume_rejects_a_changed_selection(tmp_path: Path) -> None:
     session = GradingSession("alice", descriptions, tmp_path)
     session.set_grades(
         session.entries[0].id,
-        {"naturalness": 4, "fidelity": 5, "abstraction_fit": 3},
+        {"fidelity": 4, "perceived_level": "medium"},
     )
     subset_dir = descriptions / "subset"
     subset_dir.mkdir()
@@ -151,13 +156,15 @@ def test_rejects_out_of_range_or_incomplete_grades(tmp_path: Path) -> None:
     with pytest.raises(Exception):
         session.set_grades(
             session.entries[0].id,
-            {"naturalness": 6, "fidelity": 5, "abstraction_fit": 3},
+            {"fidelity": 5, "perceived_level": "medium"},
         )
     with pytest.raises(Exception):
         session.set_grades(
             session.entries[0].id,
-            {"naturalness": 4, "fidelity": 5},
+            {"fidelity": 4, "perceived_level": "medium-high"},
         )
+    with pytest.raises(Exception):
+        session.set_grades(session.entries[0].id, {"fidelity": 4})
 
 
 def test_java_renderer_groups_only_collected_members() -> None:
@@ -340,13 +347,14 @@ def test_http_session_entry_grade_and_shutdown(tmp_path: Path) -> None:
         status, entry = _request(base, token, "/api/entries/0")
         assert status == 200
         assert entry["code_context"] == "class ExampleTest {}\n"
+        assert "abstraction_level" not in entry
 
         status, metadata = _request(
             base,
             token,
             f"/api/entries/{entry['id']}/grades",
             method="PUT",
-            body={"naturalness": 4, "fidelity": 5, "abstraction_fit": 3},
+            body={"fidelity": 4, "perceived_level": "high"},
         )
         assert status == 200
         assert metadata["completed"] == 1
@@ -385,11 +393,36 @@ def test_real_project_descriptions_follow_style_rules() -> None:
 def test_cli_grade_command_uses_repository_root(monkeypatch) -> None:
     called = {}
 
-    def fake_run(*, user: str, repo_root: Path) -> None:
-        called.update(user=user, repo_root=repo_root)
+    def fake_run(*, user: str, repo_root: Path, reset: bool) -> None:
+        called.update(user=user, repo_root=repo_root, reset=reset)
 
     monkeypatch.setattr("sakura.cli.run_description_grader", fake_run)
     grade_descriptions(user="alice")
 
     assert called["user"] == "alice"
     assert called["repo_root"] == Path(__file__).resolve().parents[1]
+    assert called["reset"] is False
+
+
+def test_reset_archives_incompatible_grades_and_starts_over(tmp_path: Path) -> None:
+    descriptions = _write_sample(tmp_path, (1, 1, 1))
+    session = GradingSession("alice", descriptions, tmp_path)
+    session.set_grades(session.entries[0].id, {"fidelity": 4, "perceived_level": "high"})
+
+    outdated = json.loads(session.output_path.read_text(encoding="utf-8"))
+    outdated["schema_version"] = 1
+    session.output_path.write_text(json.dumps(outdated), encoding="utf-8")
+    with pytest.raises(ValueError, match="--reset"):
+        GradingSession("alice", descriptions, tmp_path)
+
+    fresh = GradingSession("alice", descriptions, tmp_path, reset=True)
+    assert fresh.completed_count == 0
+    assert fresh.archived_backup is not None
+    assert fresh.archived_backup.name == "alice.json.bak"
+    assert json.loads(fresh.archived_backup.read_text(encoding="utf-8"))[
+        "schema_version"
+    ] == 1
+    assert not fresh.output_path.exists()
+
+    untouched = GradingSession("bob", descriptions, tmp_path, reset=True)
+    assert untouched.archived_backup is None

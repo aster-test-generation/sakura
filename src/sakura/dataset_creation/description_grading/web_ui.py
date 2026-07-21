@@ -21,6 +21,7 @@ HTML = r"""<!doctype html>
       --accent-deep: #a92857;
       --accent-soft: #f5e7ed;
       --accent-line: #e6c5d3;
+      --flag: #a8611f;
       --danger: #b3261e;
       --shadow: 0 1px 2px rgba(31, 39, 51, .04), 0 10px 32px rgba(31, 39, 51, .07);
       --serif: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
@@ -87,20 +88,20 @@ HTML = r"""<!doctype html>
     .section-hint { margin: 6px 0 0; color: var(--muted); font-size: 13.5px; }
     .level-tabs button:hover { border-color: var(--accent); color: var(--accent-deep); }
     .level-tabs button:focus-visible { outline: 3px solid rgba(201, 54, 107, .35); outline-offset: 2px; }
-    .level-tabs button.viewing { border-color: var(--text); color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
-    .level-tabs button.target { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-deep); }
-    .level-tabs button.target.viewing { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: none; }
-    .target-flag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; opacity: .85; }
+    .level-tabs button.viewing { background: var(--accent); border-color: var(--accent); color: #fff; }
     .criterion { margin-top: 16px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-2); }
     .criterion-title { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
     .criterion h3 { margin: 0; font-size: 16.5px; font-weight: 650; }
     .criterion p { margin: 6px 0 13px; color: var(--muted); font-size: 14.5px; line-height: 1.55; }
-    .scale { position: relative; display: grid; max-width: 440px; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+    .scale { position: relative; display: grid; max-width: 640px; gap: 7px; }
     .scale input { position: absolute; opacity: 0; pointer-events: none; }
-    .scale label { min-height: 42px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--muted); background: #fbfcfe; font-size: 15px; font-weight: 700; transition: .15s ease; }
+    .scale label { min-height: 44px; display: grid; place-items: center; padding: 6px 5px; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--muted); background: #fbfcfe; text-align: center; font-size: 13.5px; font-weight: 650; line-height: 1.25; transition: .15s ease; }
     .scale label:hover { border-color: var(--accent); color: var(--accent-deep); transform: translateY(-1px); }
+    .scale label.straddle { border-style: dashed; background: var(--panel-2); }
+    .scale label.straddle:hover { border-color: var(--flag); color: var(--flag); }
     .scale input:focus-visible + label { outline: 3px solid rgba(201, 54, 107, .35); outline-offset: 2px; }
     .scale input:checked + label { color: #fff; background: var(--accent); border-color: var(--accent); }
+    .scale input:checked + label.straddle { background: var(--flag); border-color: var(--flag); border-style: solid; }
     .anchor { margin-top: 11px; color: var(--muted); font-size: 14.5px; line-height: 1.5; font-style: italic; }
     .anchor.selected { color: var(--body); font-style: normal; }
     footer { padding: 13px 22px; display: flex; justify-content: space-between; gap: 12px; align-items: center; border-top: 1px solid var(--line); background: rgba(246, 247, 249, .92); }
@@ -153,11 +154,11 @@ HTML = r"""<!doctype html>
         <section class="section"><div class="eyebrow">Project context</div><h2 id="projectTitle"></h2><p class="project-text" id="projectText"></p></section>
         <section class="section">
           <div class="eyebrow">Abstraction level</div>
-          <p class="section-hint">Click a level to read its definition. The level assigned to this entry stays marked.</p>
+          <p class="section-hint">Click a level to read its definition.</p>
           <div class="level-tabs" id="levelTabs">
-            <button type="button" data-level="low">Low<span class="target-flag" hidden>This entry</span></button>
-            <button type="button" data-level="medium">Medium<span class="target-flag" hidden>This entry</span></button>
-            <button type="button" data-level="high">High<span class="target-flag" hidden>This entry</span></button>
+            <button type="button" data-level="low">Low</button>
+            <button type="button" data-level="medium">Medium</button>
+            <button type="button" data-level="high">High</button>
           </div>
           <p class="project-text" id="levelNote"></p>
         </section>
@@ -171,34 +172,37 @@ HTML = r"""<!doctype html>
   <div class="complete" id="complete" hidden><div class="dialog"><div class="mark" style="margin:0 auto 16px">✓</div><div class="eyebrow">Session complete</div><h2>Every selected description is graded</h2><p class="subtle" id="completeText"></p><button class="button primary" id="close">Close Viewer</button></div></div>
   <script>
     const token = new URLSearchParams(location.search).get('token');
-    const anchors = {
-      naturalness: [
-        'Clearly machine-like, fragmented, or difficult to read',
-        'Awkward or repetitive phrasing that sometimes interferes with comprehension',
-        'Fully understandable, but the style is noticeably synthetic or uneven',
-        'Reads naturally with only minor awkwardness',
-        'Reads like polished developer-written prose'
-      ],
-      fidelity: [
-        'Contradicts or entirely misses the tested behavior',
-        'Inaccuracies or omissions that would mislead a reader about what the test verifies',
-        'Conveys the right idea of what the test verifies, though some stated details are off',
-        'Accurately represents the test with only minor issues',
-        'Fully preserves the essential behavior and outcome, including order where it matters'
-      ],
-      abstraction_fit: [
-        'Written at the wrong level of detail, and what makes the test distinctive is lost',
-        'Far more or far less detailed than the stated level calls for',
-        'Roughly the right level of detail, but drifts too specific or too vague in places',
-        'Matches the stated level with only minor extra or missing detail',
-        'Matches the stated level throughout and keeps what makes the test distinctive'
-      ]
-    };
-    const criterionInfo = {
-      naturalness: ['Naturalness', 'How much the prose resembles clear developer-written text.'],
-      fidelity: ['Fidelity', 'How accurately the description preserves the test behavior and outcome.'],
-      abstraction_fit: ['Abstraction Fit', 'How well the detail matches the stated abstraction level while retaining what distinguishes the test.']
-    };
+    const FIDELITY_OPTIONS = [
+      { value: 1, label: 'Strongly Disagree', anchor: 'The description contradicts or entirely misses the tested behavior.' },
+      { value: 2, label: 'Disagree', anchor: 'Inaccuracies or omissions would mislead a reader about what the test verifies.' },
+      { value: 3, label: 'Agree', anchor: 'The description conveys what the test verifies, with only minor inaccuracies or omissions.' },
+      { value: 4, label: 'Strongly Agree', anchor: 'The description fully preserves the essential behavior and outcome, including order where it matters.' }
+    ];
+    const PERCEIVED_OPTIONS = [
+      { value: 'low', label: 'Low', anchor: 'Reads clearly as a low-level, implementation-complete description.' },
+      { value: 'low_medium', label: 'Low / Medium', straddle: true, anchor: 'Straddles low and medium. The description mixes exact implementation detail with architectural phrasing and does not settle at either level.' },
+      { value: 'medium', label: 'Medium', anchor: 'Reads clearly as a medium-level, architectural description.' },
+      { value: 'medium_high', label: 'Medium / High', straddle: true, anchor: 'Straddles medium and high. The description mixes architectural phrasing with business-level intent and does not settle at either level.' },
+      { value: 'high', label: 'High', anchor: 'Reads clearly as a high-level, business-focused description.' }
+    ];
+    const CRITERIA = [
+      {
+        key: 'fidelity',
+        title: 'Fidelity',
+        range: '1 to 4',
+        help: 'How strongly do you agree that the description accurately preserves the tested behavior and outcome?',
+        options: FIDELITY_OPTIONS,
+        defaultAnchor: 'Select a rating to view its meaning.'
+      },
+      {
+        key: 'perceived_level',
+        title: 'Perceived Abstraction',
+        range: 'Low to High',
+        help: 'Judged from the description alone, which abstraction level does it read as? The dashed options mark a description that straddles two levels without fitting either.',
+        options: PERCEIVED_OPTIONS,
+        defaultAnchor: 'Select the level this description reads as.'
+      }
+    ];
     const levelInfo = {
       low: 'An implementation-complete specification. It uses exact class, method, and variable names and exact literal input values. Helper logic is inlined step by step, each chained call is listed in order, and every assertion appears with its exact API and expected value.',
       medium: 'Architectural guidance that leaves room for implementation choices. It refers to classes and methods by semantic descriptors rather than exact names, describes helpers and application code by intent and observable effects, collapses call chains into logical operations, characterizes inputs by type or constraints, and states the intent of each assertion.',
@@ -252,42 +256,41 @@ HTML = r"""<!doctype html>
       el('retry').hidden = false;
       el('overlay').hidden = false;
     }
-    let targetLevel = null;
     function showLevel(level) {
       for (const tab of el('levelTabs').children) {
         tab.classList.toggle('viewing', tab.dataset.level === level);
-        tab.classList.toggle('target', tab.dataset.level === targetLevel);
-        tab.querySelector('.target-flag').hidden = tab.dataset.level !== targetLevel;
       }
       el('levelNote').textContent = levelInfo[level];
     }
-    function renderLevel(level) {
-      const key = (level || '').toLowerCase();
-      targetLevel = key in levelInfo ? key : null;
-      showLevel(targetLevel || 'low');
-      if (!targetLevel) el('levelNote').textContent = 'No abstraction level is recorded for this entry. Select a level to read its definition.';
+    function renderLevel() {
+      for (const tab of el('levelTabs').children) tab.classList.remove('viewing');
+      el('levelNote').textContent = 'Levels range from implementation-complete detail (low) to business-level intent (high).';
+    }
+    function buildCriterion({ key, title, range, help, options, defaultAnchor }) {
+      const box = document.createElement('div'); box.className = 'criterion';
+      box.innerHTML = `<div class="criterion-title"><h3>${title}</h3><span class="subtle">${range}</span></div><p>${help}</p>`;
+      const scale = document.createElement('div'); scale.className = 'scale';
+      scale.style.gridTemplateColumns = `repeat(${options.length}, 1fr)`;
+      const anchor = document.createElement('div'); anchor.className = 'anchor';
+      for (const option of options) {
+        const input = document.createElement('input'); input.type = 'radio'; input.name = key; input.id = `${key}-${option.value}`; input.value = option.value;
+        input.checked = selected[key] === option.value;
+        const label = document.createElement('label'); label.htmlFor = input.id; label.textContent = option.label; label.title = option.anchor;
+        if (option.straddle) label.classList.add('straddle');
+        input.addEventListener('change', () => { selected[key] = option.value; anchor.textContent = option.anchor; anchor.classList.add('selected'); updateNext(); });
+        scale.append(input, label);
+      }
+      const current = options.find(option => option.value === selected[key]);
+      if (current) { anchor.textContent = current.anchor; anchor.classList.add('selected'); }
+      else anchor.textContent = defaultAnchor;
+      box.append(scale, anchor);
+      return box;
     }
     function renderCriteria() {
-      const root = el('criteria'); root.replaceChildren();
-      for (const [key, [title, help]] of Object.entries(criterionInfo)) {
-        const box = document.createElement('div'); box.className = 'criterion';
-        box.innerHTML = `<div class="criterion-title"><h3>${title}</h3><span class="subtle">1 to 5</span></div><p>${help}</p>`;
-        const scale = document.createElement('div'); scale.className = 'scale';
-        const anchor = document.createElement('div'); anchor.className = 'anchor';
-        for (let score = 1; score <= 5; score++) {
-          const input = document.createElement('input'); input.type = 'radio'; input.name = key; input.id = `${key}-${score}`; input.value = score;
-          input.checked = selected[key] === score;
-          const label = document.createElement('label'); label.htmlFor = input.id; label.textContent = score; label.title = anchors[key][score - 1];
-          input.addEventListener('change', () => { selected[key] = score; anchor.textContent = anchors[key][score - 1]; anchor.classList.add('selected'); updateNext(); });
-          scale.append(input, label);
-        }
-        if (selected[key]) { anchor.textContent = anchors[key][selected[key] - 1]; anchor.classList.add('selected'); }
-        else anchor.textContent = 'Select a score to view its anchor.';
-        box.append(scale, anchor); root.append(box);
-      }
+      el('criteria').replaceChildren(...CRITERIA.map(buildCriterion));
     }
     function updateNext() {
-      const ready = Object.keys(criterionInfo).every(key => Number.isInteger(selected[key]));
+      const ready = Number.isInteger(selected.fidelity) && typeof selected.perceived_level === 'string';
       el('next').disabled = !ready;
     }
     function renderEntry(data) {
@@ -296,7 +299,7 @@ HTML = r"""<!doctype html>
       el('projectTitle').textContent = data.project_name;
       el('projectText').textContent = data.project_description;
       el('method').textContent = `${data.qualified_class_name} · ${data.method_signature} · ID ${data.id}`;
-      renderLevel(data.abstraction_level);
+      renderLevel();
       el('code').innerHTML = highlightJava(data.code_context);
       el('description').textContent = data.description;
       el('position').textContent = `${position + 1} / ${data.total}`;

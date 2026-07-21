@@ -147,9 +147,12 @@ def run_description_grader(
     repo_root: Path,
     *,
     open_browser: bool = True,
+    reset: bool = False,
 ) -> None:
     descriptions_dir = repo_root / "outputs" / "descriptions_sample"
-    session = GradingSession(user, descriptions_dir, repo_root)
+    session = GradingSession(user, descriptions_dir, repo_root, reset=reset)
+    if session.archived_backup is not None:
+        print(f"Archived previous grades to {session.archived_backup}")
     context_service = DescriptionContextService(
         repo_root / "resources" / "datasets",
         repo_root / "resources" / "analysis",

@@ -18,8 +18,14 @@ coefficients per scale — Fleiss' kappa (nominal), Krippendorff's alpha
 (ordinal difference function), and Gwet's AC2 (ordinal weights), the
 latter because the marginal-based coefficients are deflated by the
 kappa paradox when ratings concentrate on few categories — and, against
-ground truth, per-rater exact/within-half-level accuracy, MAE, weighted
-kappa, Spearman's rho, and a truth-by-perceived confusion matrix.
+ground truth, per-rater exact/within-half-level accuracy, MAE, signed
+bias, weighted kappa, Spearman's rho, a truth-by-perceived confusion
+matrix, a signed-error distribution, and the same three group
+coefficients computed over the (rater, truth) pairs, so a single-rater
+report keeps chance-corrected agreement figures commensurable with the
+multi-rater ones. With one selected rater the "common" entry set is
+simply everything that rater graded, so the report covers their whole
+graded set against ground truth alone.
 """
 
 from __future__ import annotations
@@ -407,11 +413,22 @@ def _truth_metrics(
         confusion[truth_row[truth_value]][
             PERCEIVED_CODES[perceived_value] - 1
         ] += 1
+    # Signed error in scale steps (perceived - truth; one step = half an
+    # abstraction level, positive = read as more abstract than generated).
+    deltas = [code - truth_code for code, truth_code in zip(codes, truth_codes)]
+    signed_counts = {
+        str(step): sum(delta == step for delta in deltas)
+        for step in range(-4, 5)
+    }
+    # The group coefficients with ground truth as a second rater keep a
+    # single-rater report commensurable with the multi-rater agreement block.
+    pairs = [[code, truth_code] for code, truth_code in zip(codes, truth_codes)]
     return {
         "n": len(codes),
         "exact": _round(_exact_rate(codes, truth_codes)),
         "within_half_level": _round(_adjacent_rate(codes, truth_codes)),
         "mae": _round(_mae(codes, truth_codes)),
+        "bias": _round(sum(deltas) / len(deltas)),
         "spearman": _round(_spearman_rho(codes, truth_codes)),
         "kappa_linear": _round(
             _cohen_kappa(codes, truth_codes, categories, "linear")
@@ -419,6 +436,14 @@ def _truth_metrics(
         "kappa_quadratic": _round(
             _cohen_kappa(codes, truth_codes, categories, "quadratic")
         ),
+        "agreement": {
+            "fleiss_kappa": _round(_fleiss_kappa(pairs, categories)),
+            "krippendorff_alpha": _round(
+                _krippendorff_alpha_ordinal(pairs, categories)
+            ),
+            "gwet_ac2": _round(_gwet_ac2_ordinal(pairs, categories)),
+        },
+        "signed_counts": signed_counts,
         "confusion": confusion,
     }
 

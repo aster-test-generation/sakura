@@ -159,13 +159,16 @@ HTML_TEMPLATE = r"""<!doctype html>
   </header>
   <main>
     <section class="panel">
-      <div class="panel-head"><div><div class="eyebrow">Summary</div><h2>Agreement &amp; scoring</h2></div><div class="subtle">Metrics computed over the commonly graded entries only.</div></div>
+      <div class="panel-head"><div><div class="eyebrow">Summary</div><h2>Agreement &amp; scoring</h2></div><div class="subtle" id="summaryNote">Metrics computed over the commonly graded entries only.</div></div>
       <div class="panel-body">
         <div class="cards" id="cards"></div>
         <div id="groupAgreement"></div>
         <h3>Perceived level vs ground truth</h3>
-        <p class="hint">The perceived scale is coded 1&ndash;5; the true level sits at 1/3/5, so one step is half an abstraction level. Exact requires the precise level (straddles never match); &plusmn;&frac12; level also accepts the adjacent straddle.</p>
+        <p class="hint">The perceived scale is coded 1&ndash;5; the true level sits at 1/3/5, so one step is half an abstraction level. Exact requires the precise level (straddles never match); &plusmn;&frac12; level also accepts the adjacent straddle. Bias is the mean signed error in steps (positive = read as more abstract than generated). AC&#8322; and &alpha; are the group coefficients computed with ground truth as a second rater.</p>
         <div class="table-wrap" id="truthTable"></div>
+        <h3>Error distribution (perceived &minus; truth)</h3>
+        <p class="hint">How far off each rater's perceived level is, in abstraction levels. 0 is an exact match; &plusmn;&frac12; is the adjacent straddle.</p>
+        <div class="table-wrap" id="errorDist"></div>
         <h3>Confusion matrices (truth &times; perceived)</h3>
         <div class="matrices" id="matrices"></div>
         <h3>Score distributions</h3>
@@ -180,6 +183,8 @@ HTML_TEMPLATE = r"""<!doctype html>
           <button data-filter="all" class="active">All</button>
           <button data-filter="perceived">Perceived disagreement</button>
           <button data-filter="fidelity">Fidelity disagreement</button>
+          <button data-filter="exact">Exact match</button>
+          <button data-filter="half">Off by &frac12; level</button>
           <button data-filter="truth">Missed truth (&gt; &frac12; level)</button>
           <input type="search" id="search" placeholder="Filter by project, class, ID&hellip;">
         </div>
@@ -190,7 +195,7 @@ HTML_TEMPLATE = r"""<!doctype html>
       </div>
     </section>
   </main>
-  <footer>Fidelity: 4-point ordinal scale (1&ndash;4). Perceived abstraction: 5-point ordinal scale including straddles. Group agreement: Gwet's AC&#8322; (ordinal weights, paradox-resistant), Fleiss' &kappa; (nominal), Krippendorff's &alpha; (ordinal). Vs truth: &kappa; lin/quad = Cohen's kappa (linearly/quadratically weighted), &rho; = Spearman's rho. MAE is in scale steps.</footer>
+  <footer>Fidelity: 4-point ordinal scale (1&ndash;4). Perceived abstraction: 5-point ordinal scale including straddles. Group agreement: Gwet's AC&#8322; (ordinal weights, paradox-resistant), Fleiss' &kappa; (nominal), Krippendorff's &alpha; (ordinal). Vs truth: &kappa; lin/quad = Cohen's kappa (linearly/quadratically weighted), &rho; = Spearman's rho, AC&#8322;/&alpha; = the group coefficients with ground truth as a second rater. MAE and bias are in scale steps (one step = &frac12; abstraction level; positive bias = read as more abstract than generated).</footer>
   <script>
     const DATA = __PAYLOAD__;
     const FIDELITY_OPTIONS = __FIDELITY_OPTIONS__;
@@ -235,8 +240,15 @@ HTML_TEMPLATE = r"""<!doctype html>
     const rateClass = v => v == null ? 'metric-na' : v >= 0.9 ? 'metric-good' : v >= 0.75 ? 'metric-ok' : v >= 0.5 ? 'metric-warn' : 'metric-bad';
     const rateCell = v => `<td class="${rateClass(v)}">${pct(v)}</td>`;
 
+    const SINGLE = DATA.users.length === 1;
+
     function renderHeader() {
-      el('headline').textContent = `${DATA.summary.n_common} entries graded by all ${DATA.users.length} rater${DATA.users.length === 1 ? '' : 's'}`;
+      el('headline').textContent = SINGLE
+        ? `${DATA.summary.n_common} graded entries by ${DATA.users[0]}, scored against ground truth`
+        : `${DATA.summary.n_common} entries graded by all ${DATA.users.length} raters`;
+      el('summaryNote').textContent = SINGLE
+        ? 'Metrics computed over every entry this rater graded, against the generated (ground-truth) abstraction level.'
+        : 'Metrics computed over the commonly graded entries only.';
       el('raters').innerHTML = DATA.users.map(user => {
         const meta = DATA.user_meta[user];
         return `<span class="rater-chip" title="${esc(meta.path)} — ${meta.graded_count} graded"><span class="kind kind-${meta.kind}">${meta.kind}</span>${esc(user)}</span>`;
@@ -245,18 +257,27 @@ HTML_TEMPLATE = r"""<!doctype html>
 
     function renderCards() {
       const s = DATA.summary;
-      const cards = [
-        { label: 'Common entries', value: String(s.n_common), note: 'graded by every selected rater' },
-      ];
-      if (DATA.users.length > 1) {
-        cards.push(
+      let cards;
+      if (SINGLE) {
+        const truth = s.perceived.vs_truth[DATA.users[0]];
+        const biasLevels = truth.bias == null ? '—' : `${truth.bias > 0 ? '+' : ''}${(truth.bias / 2).toFixed(2)}`;
+        cards = [
+          { label: 'Graded entries', value: String(s.n_common), note: 'the whole graded set for this rater' },
+          { label: 'Exact match', value: pct(truth.exact), note: 'perceived = true level', cls: rateClass(truth.exact) },
+          { label: 'Within ½ level', value: pct(truth.within_half_level), note: 'exact or adjacent straddle', cls: rateClass(truth.within_half_level) },
+          { label: 'MAE · bias', value: `${num(truth.mae, 2)} · ${num(truth.bias, 2)}`, note: `in steps · bias ${biasLevels} levels (+ = more abstract)` },
+          { label: 'AC₂ vs truth', value: num(truth.agreement.gwet_ac2), note: "Gwet's AC₂, ordinal, rater + truth", cls: agreementClass(truth.agreement.gwet_ac2) },
+        ];
+      } else {
+        cards = [
+          { label: 'Common entries', value: String(s.n_common), note: 'graded by every selected rater' },
           { label: 'AC₂ · fidelity', value: num(s.fidelity.agreement.gwet_ac2), note: "Gwet's AC₂, ordinal, all raters", cls: agreementClass(s.fidelity.agreement.gwet_ac2) },
           { label: 'AC₂ · perceived', value: num(s.perceived.agreement.gwet_ac2), note: "Gwet's AC₂, ordinal, all raters", cls: agreementClass(s.perceived.agreement.gwet_ac2) },
-        );
-      }
-      for (const user of DATA.users) {
-        const truth = s.perceived.vs_truth[user];
-        cards.push({ label: `${user} vs truth`, value: pct(truth.within_half_level), note: `within ½ level · exact ${(truth.exact * 100).toFixed(1)}%`, cls: rateClass(truth.within_half_level) });
+        ];
+        for (const user of DATA.users) {
+          const truth = s.perceived.vs_truth[user];
+          cards.push({ label: `${user} vs truth`, value: pct(truth.within_half_level), note: `within ½ level · exact ${(truth.exact * 100).toFixed(1)}%`, cls: rateClass(truth.within_half_level) });
+        }
       }
       el('cards').innerHTML = cards.map(card =>
         `<div class="card"><div class="label">${esc(card.label)}</div><div class="value ${card.cls || ''}">${card.value}</div><div class="note">${card.note}</div></div>`
@@ -264,7 +285,7 @@ HTML_TEMPLATE = r"""<!doctype html>
     }
 
     function renderGroupAgreement() {
-      if (DATA.users.length < 2) { el('groupAgreement').innerHTML = ''; return; }
+      if (SINGLE) { el('groupAgreement').innerHTML = ''; return; }
       const row = (label, a) =>
         `<tr><td class="name">${label}</td>${agreeCell(a.gwet_ac2)}${agreeCell(a.fleiss_kappa)}${agreeCell(a.krippendorff_alpha)}</tr>`;
       el('groupAgreement').innerHTML = `
@@ -279,9 +300,31 @@ HTML_TEMPLATE = r"""<!doctype html>
     function renderTruthTable() {
       const rows = DATA.users.map(user => {
         const m = DATA.summary.perceived.vs_truth[user];
-        return `<tr><td class="name">${esc(user)}</td><td>${m.n}</td>${rateCell(m.exact)}${rateCell(m.within_half_level)}<td>${num(m.mae, 2)}</td>${agreeCell(m.spearman)}${agreeCell(m.kappa_linear)}${agreeCell(m.kappa_quadratic)}</tr>`;
+        const bias = m.bias == null ? '&mdash;' : `${m.bias > 0 ? '+' : ''}${m.bias.toFixed(2)}`;
+        return `<tr><td class="name">${esc(user)}</td><td>${m.n}</td>${rateCell(m.exact)}${rateCell(m.within_half_level)}<td>${num(m.mae, 2)}</td><td>${bias}</td>${agreeCell(m.spearman)}${agreeCell(m.kappa_linear)}${agreeCell(m.kappa_quadratic)}${agreeCell(m.agreement.gwet_ac2)}${agreeCell(m.agreement.krippendorff_alpha)}</tr>`;
       }).join('');
-      el('truthTable').innerHTML = `<table><thead><tr><th>Rater</th><th>N</th><th>Exact</th><th>&plusmn;&frac12; level</th><th>MAE</th><th>&rho;</th><th>&kappa; lin</th><th>&kappa; quad</th></tr></thead><tbody>${rows}</tbody></table>`;
+      el('truthTable').innerHTML = `<table><thead><tr><th>Rater</th><th>N</th><th>Exact</th><th>&plusmn;&frac12; level</th><th>MAE</th><th>Bias</th><th>&rho;</th><th>&kappa; lin</th><th>&kappa; quad</th><th>AC&#8322;</th><th>&alpha;</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    function renderErrorDist() {
+      const steps = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+      const levelLabel = step => {
+        if (step === 0) return '0';
+        const magnitude = Math.abs(step) / 2;
+        return `${step > 0 ? '+' : '−'}${magnitude % 1 ? (magnitude > 1 ? `${Math.floor(magnitude)}½` : '½') : magnitude}`;
+      };
+      const header = steps.map(step => `<th>${levelLabel(step)}</th>`).join('');
+      const max = Math.max(1, ...DATA.users.flatMap(user =>
+        steps.map(step => DATA.summary.perceived.vs_truth[user].signed_counts[String(step)] || 0)));
+      const rows = DATA.users.map(user => {
+        const counts = DATA.summary.perceived.vs_truth[user].signed_counts;
+        return `<tr><td class="name">${esc(user)}</td>` + steps.map(step => {
+          const count = counts[String(step)] || 0;
+          const background = count ? `rgba(${step === 0 ? '47, 125, 70' : Math.abs(step) === 1 ? '168, 97, 31' : '201, 54, 107'}, ${(0.12 + 0.5 * count / max).toFixed(2)})` : 'transparent';
+          return `<td style="text-align:center;background:${background}">${count || ''}</td>`;
+        }).join('') + '</tr>';
+      }).join('');
+      el('errorDist').innerHTML = `<table><thead><tr><th title="perceived minus truth, in abstraction levels">Rater</th>${header}</tr></thead><tbody>${rows}</tbody></table>`;
     }
 
     function renderMatrices() {
@@ -329,8 +372,14 @@ HTML_TEMPLATE = r"""<!doctype html>
     function entryFlags(entry) {
       const perceivedValues = new Set(DATA.users.map(u => entry.grades[u].perceived_level));
       const fidelityValues = new Set(DATA.users.map(u => entry.grades[u].fidelity));
-      const truthMiss = DATA.users.some(u => Math.abs(PERCEIVED_CODE[entry.grades[u].perceived_level] - TRUTH_CODE[entry.true_level]) >= 2);
-      return { perceived: perceivedValues.size > 1, fidelity: fidelityValues.size > 1, truth: truthMiss };
+      const deltas = DATA.users.map(u => Math.abs(PERCEIVED_CODE[entry.grades[u].perceived_level] - TRUTH_CODE[entry.true_level]));
+      return {
+        perceived: perceivedValues.size > 1,
+        fidelity: fidelityValues.size > 1,
+        exact: deltas.every(d => d === 0),
+        half: deltas.some(d => d === 1),
+        truth: deltas.some(d => d >= 2),
+      };
     }
 
     function entryMarkup(entry) {
@@ -377,6 +426,10 @@ HTML_TEMPLATE = r"""<!doctype html>
         : '<div class="empty">No entries match the current filter.</div>';
     }
 
+    // Rater-disagreement filters need at least two raters; the truth-offset
+    // filters replace them when a single rater is compared to ground truth.
+    const hiddenFilters = SINGLE ? ['perceived', 'fidelity'] : ['exact', 'half'];
+    hiddenFilters.forEach(name => document.querySelector(`.filters button[data-filter="${name}"]`).remove());
     document.querySelectorAll('.filters button').forEach(button => {
       button.addEventListener('click', () => {
         document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
@@ -391,6 +444,7 @@ HTML_TEMPLATE = r"""<!doctype html>
     renderCards();
     renderGroupAgreement();
     renderTruthTable();
+    renderErrorDist();
     renderMatrices();
     renderDistributions();
     renderEntries();

@@ -170,7 +170,11 @@ def compare_grades(
     have graded, shows every entry's scores next to the ground-truth
     abstraction level, and summarizes group agreement per scale with
     Gwet's AC2 (ordinal), Fleiss' kappa, and Krippendorff's alpha
-    (ordinal), plus per-rater accuracy and MAE against ground truth.
+    (ordinal), plus per-rater accuracy, MAE, and signed bias against
+    ground truth. With a single --user the report covers that rater's
+    whole graded set against ground truth alone: the same coefficients
+    computed with truth as the second rater, a signed-error
+    distribution, and per-entry deltas.
     """
     repo_root = Path(__file__).resolve().parents[2]
     result = run_grade_comparison(

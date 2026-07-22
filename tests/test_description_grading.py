@@ -428,3 +428,74 @@ def test_reset_archives_incompatible_grades_and_starts_over(tmp_path: Path) -> N
 
     untouched = GradingSession("bob", descriptions, tmp_path, reset=True)
     assert untouched.archived_backup is None
+
+
+def test_truth_metrics_perfect_agreement() -> None:
+    from sakura.dataset_creation.description_grading.comparison import _truth_metrics
+
+    levels = ["low", "medium", "high", "low", "medium", "high"]
+    metrics = _truth_metrics(levels, levels)
+
+    assert metrics["exact"] == 1.0
+    assert metrics["mae"] == 0.0
+    assert metrics["bias"] == 0.0
+    assert metrics["agreement"]["gwet_ac2"] == 1.0
+    assert metrics["agreement"]["krippendorff_alpha"] == 1.0
+    assert metrics["signed_counts"]["0"] == 6
+    assert sum(metrics["signed_counts"].values()) == 6
+
+
+def test_truth_metrics_signed_bias_and_error_distribution() -> None:
+    from sakura.dataset_creation.description_grading.comparison import _truth_metrics
+
+    # Consistent one-step over-abstraction: straddle above each true level.
+    metrics = _truth_metrics(
+        ["low_medium", "medium_high", "high", "low_medium"],
+        ["low", "medium", "high", "low"],
+    )
+    assert metrics["exact"] == 0.25
+    assert metrics["within_half_level"] == 1.0
+    assert metrics["mae"] == 0.75
+    assert metrics["bias"] == 0.75
+    assert metrics["signed_counts"]["1"] == 3
+    assert metrics["signed_counts"]["0"] == 1
+
+    # Under-abstraction gives negative bias and negative-delta counts.
+    metrics = _truth_metrics(["low", "low", "medium"], ["medium", "high", "high"])
+    assert metrics["bias"] < 0
+    assert metrics["signed_counts"]["-2"] == 2
+    assert metrics["signed_counts"]["-4"] == 1
+
+
+def test_two_rater_vs_truth_coefficients_match_reference_packages() -> None:
+    """The (rater, truth) pair reduction of the group coefficients.
+
+    Expected values computed with the canonical krippendorff package
+    (ordinal alpha) and scikit-learn (weighted Cohen's kappa) on the same
+    data; they agreed with these implementations to nine decimals.
+    """
+    from sakura.dataset_creation.description_grading.comparison import (
+        _cohen_kappa,
+        _gwet_ac2_ordinal,
+        _krippendorff_alpha_ordinal,
+    )
+
+    rater = [1, 3, 5, 2, 3, 5, 1, 4, 2, 5, 3, 1, 4, 4, 2, 3]
+    truth = [1, 3, 5, 3, 1, 5, 1, 5, 1, 5, 3, 3, 5, 3, 1, 3]
+    pairs = [[a, b] for a, b in zip(rater, truth)]
+    categories = [1, 2, 3, 4, 5]
+
+    assert _krippendorff_alpha_ordinal(pairs, categories) == pytest.approx(
+        0.813068, abs=1e-6
+    )
+    assert _cohen_kappa(rater, truth, categories, "quadratic") == pytest.approx(
+        0.8, abs=1e-9
+    )
+    assert _cohen_kappa(rater, truth, categories, "linear") == pytest.approx(
+        0.626168, abs=1e-6
+    )
+    # AC2 has no reference package here, but must stay paradox-resistant:
+    # near-unanimous skewed ratings keep it high while alpha deflates.
+    skew_pairs = [[5, 5]] * 10 + [[4, 5], [3, 3]]
+    assert _gwet_ac2_ordinal(skew_pairs, categories) > 0.95
+    assert _krippendorff_alpha_ordinal(skew_pairs, categories) < 0.8

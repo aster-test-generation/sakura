@@ -34,6 +34,105 @@ class Grades(BaseModel):
     perceived_level: Literal["low", "low_medium", "medium", "medium_high", "high"]
 
 
+def load_project_descriptions(descriptions_dir: Path) -> dict[str, str]:
+    path = descriptions_dir / "project_txt.json"
+    if not path.is_file():
+        raise FileNotFoundError(f"Project description file not found: {path}")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid project description JSON: {path}") from exc
+    if not isinstance(data, dict) or not all(
+        isinstance(key, str) and isinstance(value, str) and value.strip()
+        for key, value in data.items()
+    ):
+        raise ValueError(f"Project descriptions must map project names to text: {path}")
+    return data
+
+
+def load_entries_by_level(
+    descriptions_dir: Path,
+    project_descriptions: dict[str, str] | None = None,
+) -> dict[str, list[Test2NLEntry]]:
+    if project_descriptions is None:
+        project_descriptions = load_project_descriptions(descriptions_dir)
+    result: dict[str, list[Test2NLEntry]] = {}
+    seen_ids: set[int] = set()
+    projects: set[str] = set()
+    for level in LEVELS:
+        path = descriptions_dir / f"{level}.csv"
+        if not path.is_file():
+            raise FileNotFoundError(f"Description CSV not found: {path}")
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            reader = csv.DictReader(handle)
+            columns = set(reader.fieldnames or [])
+            missing = REQUIRED_COLUMNS - columns
+            if missing:
+                raise ValueError(
+                    f"{path} is missing columns: {', '.join(sorted(missing))}"
+                )
+            rows = [Test2NLEntry.model_validate(row) for row in reader]
+        for entry in rows:
+            entry_level = (
+                entry.abstraction_level.value
+                if entry.abstraction_level is not None
+                else None
+            )
+            if entry_level != level:
+                raise ValueError(
+                    f"Entry {entry.id} in {path.name} has level {entry_level!r}"
+                )
+            if entry.id in seen_ids:
+                raise ValueError(f"Duplicate description ID across CSVs: {entry.id}")
+            seen_ids.add(entry.id)
+            projects.add(entry.project_name)
+        result[level] = rows
+
+    missing_projects = projects - set(project_descriptions)
+    if missing_projects:
+        raise ValueError(
+            "project_txt.json is missing projects: "
+            + ", ".join(sorted(missing_projects))
+        )
+    return result
+
+
+def full_selection(entries_by_level: dict[str, list[Test2NLEntry]]) -> dict[str, Any]:
+    return {
+        "kind": "full",
+        "path": None,
+        "ids": {
+            level: [entry.id for entry in entries_by_level[level]]
+            for level in LEVELS
+        },
+    }
+
+
+def shuffled_entries(
+    entries_by_level: dict[str, list[Test2NLEntry]], selection: dict[str, Any]
+) -> list[Test2NLEntry]:
+    lookup = {
+        level: {entry.id: entry for entry in entries_by_level[level]}
+        for level in LEVELS
+    }
+    result = [
+        lookup[level][entry_id]
+        for level in LEVELS
+        for entry_id in selection["ids"][level]
+    ]
+    # A fixed seed gives every reviewer the same order, so early entries
+    # stay aligned for agreement checks while the level sequence remains
+    # unpredictable to the reviewer.
+    random.Random(SHUFFLE_SEED).shuffle(result)
+    return result
+
+
+def load_grader_order(descriptions_dir: Path) -> list[Test2NLEntry]:
+    """The full-selection deterministic order every reviewer grades in."""
+    entries_by_level = load_entries_by_level(descriptions_dir)
+    return shuffled_entries(entries_by_level, full_selection(entries_by_level))
+
+
 class GradingSession:
     """Own the selected entries, reviewer progress, and durable grade file."""
 
@@ -82,74 +181,17 @@ class GradingSession:
         return user
 
     def _load_project_descriptions(self) -> dict[str, str]:
-        path = self.descriptions_dir / "project_txt.json"
-        if not path.is_file():
-            raise FileNotFoundError(f"Project description file not found: {path}")
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            raise ValueError(f"Invalid project description JSON: {path}") from exc
-        if not isinstance(data, dict) or not all(
-            isinstance(key, str) and isinstance(value, str) and value.strip()
-            for key, value in data.items()
-        ):
-            raise ValueError(f"Project descriptions must map project names to text: {path}")
-        return data
+        return load_project_descriptions(self.descriptions_dir)
 
     def _load_entries(self) -> dict[str, list[Test2NLEntry]]:
-        result: dict[str, list[Test2NLEntry]] = {}
-        seen_ids: set[int] = set()
-        projects: set[str] = set()
-        for level in LEVELS:
-            path = self.descriptions_dir / f"{level}.csv"
-            if not path.is_file():
-                raise FileNotFoundError(f"Description CSV not found: {path}")
-            with path.open("r", encoding="utf-8", newline="") as handle:
-                reader = csv.DictReader(handle)
-                columns = set(reader.fieldnames or [])
-                missing = REQUIRED_COLUMNS - columns
-                if missing:
-                    raise ValueError(
-                        f"{path} is missing columns: {', '.join(sorted(missing))}"
-                    )
-                rows = [Test2NLEntry.model_validate(row) for row in reader]
-            for entry in rows:
-                entry_level = (
-                    entry.abstraction_level.value
-                    if entry.abstraction_level is not None
-                    else None
-                )
-                if entry_level != level:
-                    raise ValueError(
-                        f"Entry {entry.id} in {path.name} has level {entry_level!r}"
-                    )
-                if entry.id in seen_ids:
-                    raise ValueError(f"Duplicate description ID across CSVs: {entry.id}")
-                seen_ids.add(entry.id)
-                projects.add(entry.project_name)
-            result[level] = rows
-
-        missing_projects = projects - set(self.project_descriptions)
-        if missing_projects:
-            raise ValueError(
-                "project_txt.json is missing projects: "
-                + ", ".join(sorted(missing_projects))
-            )
-        return result
+        return load_entries_by_level(self.descriptions_dir, self.project_descriptions)
 
     def _load_selection(
         self, entries_by_level: dict[str, list[Test2NLEntry]]
     ) -> dict[str, Any]:
         subset_path = self.descriptions_dir / "subset" / f"{self.user}.json"
         if not subset_path.exists():
-            return {
-                "kind": "full",
-                "path": None,
-                "ids": {
-                    level: [entry.id for entry in entries_by_level[level]]
-                    for level in LEVELS
-                },
-            }
+            return full_selection(entries_by_level)
         try:
             raw = json.loads(subset_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
@@ -192,20 +234,7 @@ class GradingSession:
     def _shuffled_entries(
         entries_by_level: dict[str, list[Test2NLEntry]], selection: dict[str, Any]
     ) -> list[Test2NLEntry]:
-        lookup = {
-            level: {entry.id: entry for entry in entries_by_level[level]}
-            for level in LEVELS
-        }
-        result = [
-            lookup[level][entry_id]
-            for level in LEVELS
-            for entry_id in selection["ids"][level]
-        ]
-        # A fixed seed gives every reviewer the same order, so early entries
-        # stay aligned for agreement checks while the level sequence remains
-        # unpredictable to the reviewer.
-        random.Random(SHUFFLE_SEED).shuffle(result)
-        return result
+        return shuffled_entries(entries_by_level, selection)
 
     def _load_existing(self) -> None:
         if not self.output_path.exists():

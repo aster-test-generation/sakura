@@ -1,0 +1,45 @@
+Grade the following natural-language description of an existing Java test method.
+
+## Test under evaluation
+- Project: {{ entry.project_name }} — {{ project_description }}
+- Test class: {{ entry.qualified_class_name }}
+- Test method: {{ entry.method_signature }}
+{% if file_path %}
+- Expected file location (a hint — verify it): {{ file_path }}
+{% else %}
+- File location: unknown. Locate the class source file with Glob/Grep before grading.
+{% endif %}
+
+## Description to grade
+<description>
+{{ entry.description }}
+</description>
+
+## Required process
+1. Open the test file and read the test method in full, along with the setup methods, fields, helper methods, and application code it touches. If the method is not where the hint says, search the repository for it (it may be inherited from a base class).
+2. Grade **fidelity** by comparing the description against the actual tested behavior and outcome you observed in the code.
+3. Grade **perceived abstraction** from the description alone: judge how the description reads, using the level definitions below. Do not let the code influence this judgment — it concerns the description's style, not its accuracy.
+
+## Criterion 1 — Fidelity (1 to 4)
+{{ criteria.fidelity_help }}
+{% for option in criteria.fidelity_options %}
+- {{ option.value }} ({{ option.label }}): {{ option.anchor }}
+{% endfor %}
+
+## Criterion 2 — Perceived Abstraction
+{{ criteria.perceived_help }}
+{% for option in criteria.perceived_options %}
+- "{{ option.value }}" ({{ option.label }}): {{ option.anchor }}
+{% endfor %}
+
+### Abstraction level definitions
+**Low**: {{ criteria.level_definitions.low }}
+
+**Medium**: {{ criteria.level_definitions.medium }}
+
+**High**: {{ criteria.level_definitions.high }}
+
+**{{ criteria.invariant_note }}**
+
+## Output
+Report your grades via the structured output: `fidelity` (integer 1-4), `fidelity_rationale`, `perceived_level` (one of "low", "low_medium", "medium", "medium_high", "high"), and `perceived_rationale`.

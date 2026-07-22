@@ -12,7 +12,9 @@ from typing import Any
 
 FIDELITY_HELP = (
     "How strongly do you agree that the description accurately preserves the "
-    "tested behavior and outcome?"
+    "tested behavior and outcome, judged at the abstraction level the "
+    "description reads as? Detail the level legitimately abstracts away is "
+    "not an omission."
 )
 
 FIDELITY_OPTIONS: list[dict[str, Any]] = [
@@ -25,8 +27,8 @@ FIDELITY_OPTIONS: list[dict[str, Any]] = [
         "value": 2,
         "label": "Disagree",
         "anchor": (
-            "Inaccuracies or omissions would mislead a reader about what the "
-            "test verifies."
+            "Inaccuracies, or omissions its abstraction level does not "
+            "justify, would mislead a reader about what the test verifies."
         ),
     },
     {
@@ -34,15 +36,17 @@ FIDELITY_OPTIONS: list[dict[str, Any]] = [
         "label": "Agree",
         "anchor": (
             "The description conveys what the test verifies, with only minor "
-            "inaccuracies or omissions."
+            "inaccuracies or omissions beyond what its abstraction level "
+            "justifies."
         ),
     },
     {
         "value": 4,
         "label": "Strongly Agree",
         "anchor": (
-            "The description fully preserves the essential behavior and "
-            "outcome, including order where it matters."
+            "At its abstraction level, the description fully preserves the "
+            "essential behavior and outcome, including order where it "
+            "matters."
         ),
     },
 ]

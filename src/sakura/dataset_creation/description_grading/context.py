@@ -151,7 +151,7 @@ class JavaContextRenderer:
                 primary,
                 classes.pop(primary),
                 context.class_annotations,
-                "// TEST SUITE: class declaring the test method",
+                f"// TEST SUITE: {primary} declares the test method",
             )
         ]
         for owner, members in classes.items():
@@ -160,7 +160,8 @@ class JavaContextRenderer:
                     owner,
                     members,
                     [],
-                    "// TEST SUITE: fixtures and helpers referenced by the test",
+                    f"// TEST SUITE: {owner} provides fixtures and helpers "
+                    "referenced by the test",
                 )
             )
         for application_class in context.application_classes:
@@ -197,9 +198,10 @@ class JavaContextRenderer:
         declaration = f"{modifiers} class {context.simple_class_name}".strip()
         if context.extends:
             declaration += " extends " + ", ".join(context.extends)
+        qualified = context.qualified_class_name or context.simple_class_name
         lines = [
-            "// APPLICATION CODE: class exercised by the test; only the "
-            "signatures below were visible during description generation",
+            f"// APPLICATION CODE: {qualified}; only the signatures below "
+            "were visible during description generation",
             *(context.annotations or []),
             declaration + " {",
         ]

@@ -37,6 +37,39 @@ def _mark_line_comment_breaks(raw_code_str: str) -> str:
     return " ".join(marked)
 
 
+def _skip_string(text: str, start: int) -> int:
+    # Returns the index just past the string or char literal opening at start
+    quote = text[start]
+    j = start + 1
+    while j < len(text):
+        if text[j] == "\\":
+            j += 2
+        elif text[j] == quote:
+            return j + 1
+        else:
+            j += 1
+    return j
+
+
+def _rejoin_chained_calls(line: str) -> str:
+    # Collapsed newlines leave " ." artifacts before chained calls; rejoin
+    # them without touching string literals
+    result = []
+    i = 0
+    while i < len(line):
+        ch = line[i]
+        if ch in "\"'":
+            end = _skip_string(line, i)
+            result.append(line[i:end])
+            i = end
+        elif ch == " " and line.startswith(" .", i):
+            i += 1
+        else:
+            result.append(ch)
+            i += 1
+    return "".join(result)
+
+
 def pretty_indent(raw_code_str: str, indent_size: int = 4):
     # Removes new lines and allows for better character-by-character
     # processing. Lines ending in a // comment are marked first so the
@@ -53,6 +86,8 @@ def pretty_indent(raw_code_str: str, indent_size: int = 4):
         nonlocal token
         t = token.replace(_LINE_BREAK, " ").strip()
         if t:
+            if not t.startswith("//"):
+                t = _rejoin_chained_calls(t)
             result_lines.append(" " * (indent_level * indent_size) + t)
         token = ""
 
@@ -81,15 +116,28 @@ def pretty_indent(raw_code_str: str, indent_size: int = 4):
 
         elif ch in "\"'":
             # String and char literals are opaque to line splitting
-            j = i + 1
+            j = _skip_string(compact, i)
+            token += compact[i:j]
+            i = j
+
+        elif ch == '{' and token.rstrip().endswith(("]", "=")):
+            # Array or annotation initializer: keep the whole balanced
+            # brace group inline instead of treating it as code blocks
+            depth = 0
+            j = i
             while j < len(compact):
-                if compact[j] == "\\":
-                    j += 2
-                elif compact[j] == ch:
-                    j += 1
-                    break
-                else:
-                    j += 1
+                cj = compact[j]
+                if cj in "\"'":
+                    j = _skip_string(compact, j)
+                    continue
+                if cj == '{':
+                    depth += 1
+                elif cj == '}':
+                    depth -= 1
+                    if depth == 0:
+                        j += 1
+                        break
+                j += 1
             token += compact[i:j]
             i = j
 

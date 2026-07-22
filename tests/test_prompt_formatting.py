@@ -54,3 +54,19 @@ def test_symbols_inside_string_literals_do_not_split_lines() -> None:
         "    done();\n"
         "}"
     )
+
+
+def test_rejoins_chained_calls_split_across_lines() -> None:
+    code = 'void run() {\n    b = B.builder()\n        .x(1)\n        .y("a .b")\n        .get();\n}'
+    assert pretty_indent(code) == (
+        "void run()  {\n"
+        '    b = B.builder().x(1).y("a .b").get();\n'
+        "}"
+    )
+
+
+def test_array_initializers_stay_inline() -> None:
+    code = 'void run() {\n    int[] direct = { 1, 2 };\n    use(new String[]\n    { "-a", "-b" }\n    );\n}'
+    lines = pretty_indent(code).splitlines()
+    assert "    int[] direct = { 1, 2 };" in lines
+    assert '    use(new String[] { "-a", "-b" } );' in lines

@@ -162,10 +162,10 @@ HTML_TEMPLATE = r"""<!doctype html>
       <div class="panel-head"><div><div class="eyebrow">Summary</div><h2>Agreement &amp; scoring</h2></div><div class="subtle">Metrics computed over the commonly graded entries only.</div></div>
       <div class="panel-body">
         <div class="cards" id="cards"></div>
+        <div id="groupAgreement"></div>
         <h3>Perceived level vs ground truth</h3>
         <p class="hint">The perceived scale is coded 1&ndash;5; the true level sits at 1/3/5, so one step is half an abstraction level. Exact requires the precise level (straddles never match); &plusmn;&frac12; level also accepts the adjacent straddle.</p>
         <div class="table-wrap" id="truthTable"></div>
-        <div id="pairwiseSections"></div>
         <h3>Confusion matrices (truth &times; perceived)</h3>
         <div class="matrices" id="matrices"></div>
         <h3>Score distributions</h3>
@@ -190,7 +190,7 @@ HTML_TEMPLATE = r"""<!doctype html>
       </div>
     </section>
   </main>
-  <footer>Fidelity: 4-point ordinal scale (1&ndash;4). Perceived abstraction: 5-point ordinal scale including straddles. &kappa; = Cohen's kappa (lin/quad = linearly/quadratically weighted), &rho; = Spearman's rho, &alpha; = Krippendorff's alpha (ordinal). MAE is in scale steps.</footer>
+  <footer>Fidelity: 4-point ordinal scale (1&ndash;4). Perceived abstraction: 5-point ordinal scale including straddles. Group agreement: Gwet's AC&#8322; (ordinal weights, paradox-resistant), Fleiss' &kappa; (nominal), Krippendorff's &alpha; (ordinal). Vs truth: &kappa; lin/quad = Cohen's kappa (linearly/quadratically weighted), &rho; = Spearman's rho. MAE is in scale steps.</footer>
   <script>
     const DATA = __PAYLOAD__;
     const FIDELITY_OPTIONS = __FIDELITY_OPTIONS__;
@@ -250,8 +250,8 @@ HTML_TEMPLATE = r"""<!doctype html>
       ];
       if (DATA.users.length > 1) {
         cards.push(
-          { label: 'α · fidelity', value: num(s.fidelity.krippendorff_alpha), note: "Krippendorff's α, ordinal", cls: agreementClass(s.fidelity.krippendorff_alpha) },
-          { label: 'α · perceived', value: num(s.perceived.krippendorff_alpha), note: "Krippendorff's α, ordinal", cls: agreementClass(s.perceived.krippendorff_alpha) },
+          { label: 'AC₂ · fidelity', value: num(s.fidelity.agreement.gwet_ac2), note: "Gwet's AC₂, ordinal, all raters", cls: agreementClass(s.fidelity.agreement.gwet_ac2) },
+          { label: 'AC₂ · perceived', value: num(s.perceived.agreement.gwet_ac2), note: "Gwet's AC₂, ordinal, all raters", cls: agreementClass(s.perceived.agreement.gwet_ac2) },
         );
       }
       for (const user of DATA.users) {
@@ -263,27 +263,25 @@ HTML_TEMPLATE = r"""<!doctype html>
       ).join('');
     }
 
+    function renderGroupAgreement() {
+      if (DATA.users.length < 2) { el('groupAgreement').innerHTML = ''; return; }
+      const row = (label, a) =>
+        `<tr><td class="name">${label}</td>${agreeCell(a.gwet_ac2)}${agreeCell(a.fleiss_kappa)}${agreeCell(a.krippendorff_alpha)}</tr>`;
+      el('groupAgreement').innerHTML = `
+        <h3>Group agreement (all raters)</h3>
+        <p class="hint">Gwet's AC&#8322; is the primary coefficient: its chance model stays stable when ratings concentrate on few categories, where the marginal-based Fleiss &kappa; and Krippendorff &alpha; are deflated by the kappa paradox. A large AC&#8322;&ndash;&kappa; gap signals skewed score usage, not rater disagreement.</p>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Scale</th><th>Gwet AC&#8322; (ordinal)</th><th>Fleiss &kappa; (nominal)</th><th>Krippendorff &alpha; (ordinal)</th></tr></thead>
+          <tbody>${row('Fidelity (1&ndash;4)', DATA.summary.fidelity.agreement)}${row('Perceived abstraction (5-point)', DATA.summary.perceived.agreement)}</tbody>
+        </table></div>`;
+    }
+
     function renderTruthTable() {
       const rows = DATA.users.map(user => {
         const m = DATA.summary.perceived.vs_truth[user];
         return `<tr><td class="name">${esc(user)}</td><td>${m.n}</td>${rateCell(m.exact)}${rateCell(m.within_half_level)}<td>${num(m.mae, 2)}</td>${agreeCell(m.spearman)}${agreeCell(m.kappa_linear)}${agreeCell(m.kappa_quadratic)}</tr>`;
       }).join('');
       el('truthTable').innerHTML = `<table><thead><tr><th>Rater</th><th>N</th><th>Exact</th><th>&plusmn;&frac12; level</th><th>MAE</th><th>&rho;</th><th>&kappa; lin</th><th>&kappa; quad</th></tr></thead><tbody>${rows}</tbody></table>`;
-    }
-
-    function renderPairwise() {
-      if (DATA.users.length < 2) { el('pairwiseSections').innerHTML = ''; return; }
-      const section = (title, rows) => `
-        <h3>Pairwise agreement &middot; ${title}</h3>
-        <div class="table-wrap"><table>
-          <thead><tr><th>Pair</th><th>N</th><th>Exact</th><th>Adjacent</th><th>MAE</th><th>&kappa;</th><th>&kappa; lin</th><th>&kappa; quad</th><th>&rho;</th></tr></thead>
-          <tbody>${rows.map(r =>
-            `<tr><td class="name">${esc(r.a)} &times; ${esc(r.b)}</td><td>${r.n}</td>${rateCell(r.exact)}${rateCell(r.adjacent)}<td>${num(r.mae, 2)}</td>${agreeCell(r.kappa)}${agreeCell(r.kappa_linear)}${agreeCell(r.kappa_quadratic)}${agreeCell(r.spearman)}</tr>`
-          ).join('')}</tbody>
-        </table></div>`;
-      el('pairwiseSections').innerHTML =
-        section('Fidelity (1&ndash;4)', DATA.summary.fidelity.pairwise) +
-        section('Perceived abstraction (5-point)', DATA.summary.perceived.pairwise);
     }
 
     function renderMatrices() {
@@ -391,8 +389,8 @@ HTML_TEMPLATE = r"""<!doctype html>
 
     renderHeader();
     renderCards();
+    renderGroupAgreement();
     renderTruthTable();
-    renderPairwise();
     renderMatrices();
     renderDistributions();
     renderEntries();

@@ -154,9 +154,9 @@ def compare_grades(
 
     Joins the selected reviewers' grade files on the entries all of them
     have graded, shows every entry's scores next to the ground-truth
-    abstraction level, and summarizes agreement with standard metrics
-    (percent agreement, MAE, Cohen's kappa, Spearman's rho, and ordinal
-    Krippendorff's alpha) for the fidelity and perceived-abstraction scales.
+    abstraction level, and summarizes group agreement per scale with
+    Gwet's AC2 (ordinal), Fleiss' kappa, and Krippendorff's alpha
+    (ordinal), plus per-rater accuracy and MAE against ground truth.
     """
     repo_root = Path(__file__).resolve().parents[2]
     result = run_grade_comparison(

@@ -13,10 +13,11 @@ the two rubric scales:
   1/3/5 of the same axis, so one scale step equals half an abstraction
   level and a straddle pick sits exactly half a level from each neighbour.
 
-Reported metrics: exact and adjacent (within one step) percent agreement,
-mean absolute error in scale steps, Cohen's kappa (unweighted, linear- and
-quadratic-weighted), and Spearman's rho for every rater pair; multi-rater
-Krippendorff's alpha with the ordinal difference function; and, against
+Reported metrics: three complementary multi-rater group agreement
+coefficients per scale — Fleiss' kappa (nominal), Krippendorff's alpha
+(ordinal difference function), and Gwet's AC2 (ordinal weights), the
+latter because the marginal-based coefficients are deflated by the
+kappa paradox when ratings concentrate on few categories — and, against
 ground truth, per-rater exact/within-half-level accuracy, MAE, weighted
 kappa, Spearman's rho, and a truth-by-perceived confusion matrix.
 """
@@ -26,7 +27,6 @@ from __future__ import annotations
 import json
 import re
 import webbrowser
-from itertools import combinations
 from math import sqrt
 from pathlib import Path
 from typing import Any, Sequence
@@ -239,6 +239,40 @@ def _cohen_kappa(
     return 1.0 - disagreement / expected
 
 
+def _fleiss_kappa(
+    values_by_unit: Sequence[Sequence[int]], categories: Sequence[int]
+) -> float | None:
+    """Fleiss' kappa for multi-rater nominal agreement (Fleiss, 1971).
+
+    Each inner sequence holds the codes all raters assigned to one unit;
+    every unit must be rated by the same number of raters (at least two).
+    """
+    if not values_by_unit:
+        return None
+    raters = len(values_by_unit[0])
+    if raters < 2:
+        return None
+    index = {category: i for i, category in enumerate(categories)}
+    units = len(values_by_unit)
+    category_totals = [0.0] * len(categories)
+    observed = 0.0
+    for values in values_by_unit:
+        counts = [0] * len(categories)
+        for value in values:
+            counts[index[value]] += 1
+        for position, count in enumerate(counts):
+            category_totals[position] += count
+        observed += (sum(count * count for count in counts) - raters) / (
+            raters * (raters - 1)
+        )
+    observed /= units
+    proportions = [total / (units * raters) for total in category_totals]
+    expected = sum(p * p for p in proportions)
+    if expected == 1:
+        return None
+    return (observed - expected) / (1 - expected)
+
+
 def _krippendorff_alpha_ordinal(
     values_by_unit: Sequence[Sequence[int]], categories: Sequence[int]
 ) -> float | None:
@@ -284,32 +318,81 @@ def _krippendorff_alpha_ordinal(
     return 1.0 - (grand_total - 1.0) * observed / expected
 
 
-def _pairwise_metrics(
+def _gwet_ac2_ordinal(
+    values_by_unit: Sequence[Sequence[int]], categories: Sequence[int]
+) -> float | None:
+    """Gwet's AC2 with ordinal weights (Gwet, 2008/2014).
+
+    Unlike Fleiss' kappa and Krippendorff's alpha, whose marginal-based
+    chance models deflate the score when ratings concentrate on few
+    categories (the kappa paradox), AC2's chance model stays stable under
+    skewed distributions. Ordinal weights: w(k, m) = 1 - C(|k-m|+1, 2) /
+    C(q, 2) over category ranks 1..q. Every unit must be rated by the same
+    number of raters (at least two).
+    """
+    if not values_by_unit:
+        return None
+    raters = len(values_by_unit[0])
+    if raters < 2:
+        return None
+    index = {category: i for i, category in enumerate(categories)}
+    size = len(categories)
+    units = len(values_by_unit)
+
+    def comb2(n: int) -> float:
+        return n * (n - 1) / 2.0
+
+    max_weight = comb2(size)
+    weights = [
+        [1.0 - comb2(abs(k - m) + 1) / max_weight for m in range(size)]
+        for k in range(size)
+    ]
+
+    observed = 0.0
+    category_totals = [0.0] * size
+    for values in values_by_unit:
+        counts = [0] * size
+        for value in values:
+            counts[index[value]] += 1
+        for position, count in enumerate(counts):
+            category_totals[position] += count
+        weighted_counts = [
+            sum(weights[k][m] * counts[m] for m in range(size))
+            for k in range(size)
+        ]
+        observed += sum(
+            counts[k] * (weighted_counts[k] - 1) for k in range(size)
+        ) / (raters * (raters - 1))
+    observed /= units
+    proportions = [total / (units * raters) for total in category_totals]
+    total_weight = sum(sum(row) for row in weights)
+    expected = (
+        total_weight
+        * sum(p * (1 - p) for p in proportions)
+        / (size * (size - 1))
+    )
+    if expected == 1:
+        return None
+    return (observed - expected) / (1 - expected)
+
+
+def _group_agreement(
     codes_by_user: dict[str, dict[int, int]],
+    users: Sequence[str],
     common_ids: Sequence[int],
     categories: Sequence[int],
-) -> list[dict[str, Any]]:
-    rows = []
-    for user_a, user_b in combinations(codes_by_user, 2):
-        a = [codes_by_user[user_a][entry_id] for entry_id in common_ids]
-        b = [codes_by_user[user_b][entry_id] for entry_id in common_ids]
-        rows.append(
-            {
-                "a": user_a,
-                "b": user_b,
-                "n": len(common_ids),
-                "exact": _round(_exact_rate(a, b)),
-                "adjacent": _round(_adjacent_rate(a, b)),
-                "mae": _round(_mae(a, b)),
-                "kappa": _round(_cohen_kappa(a, b, categories)),
-                "kappa_linear": _round(_cohen_kappa(a, b, categories, "linear")),
-                "kappa_quadratic": _round(
-                    _cohen_kappa(a, b, categories, "quadratic")
-                ),
-                "spearman": _round(_spearman_rho(a, b)),
-            }
-        )
-    return rows
+) -> dict[str, float | None]:
+    values_by_unit = [
+        [codes_by_user[user][entry_id] for user in users]
+        for entry_id in common_ids
+    ]
+    return {
+        "fleiss_kappa": _round(_fleiss_kappa(values_by_unit, categories)),
+        "krippendorff_alpha": _round(
+            _krippendorff_alpha_ordinal(values_by_unit, categories)
+        ),
+        "gwet_ac2": _round(_gwet_ac2_ordinal(values_by_unit, categories)),
+    }
 
 
 def _truth_metrics(
@@ -472,17 +555,8 @@ def build_comparison_payload(
                 }
                 for user in users
             },
-            "pairwise": _pairwise_metrics(
-                fidelity_codes, common_ids, fidelity_categories
-            ),
-            "krippendorff_alpha": _round(
-                _krippendorff_alpha_ordinal(
-                    [
-                        [fidelity_codes[user][entry_id] for user in users]
-                        for entry_id in common_ids
-                    ],
-                    fidelity_categories,
-                )
+            "agreement": _group_agreement(
+                fidelity_codes, users, common_ids, fidelity_categories
             ),
         },
         "perceived": {
@@ -499,17 +573,8 @@ def build_comparison_payload(
                 }
                 for user in users
             },
-            "pairwise": _pairwise_metrics(
-                perceived_codes, common_ids, perceived_categories
-            ),
-            "krippendorff_alpha": _round(
-                _krippendorff_alpha_ordinal(
-                    [
-                        [perceived_codes[user][entry_id] for user in users]
-                        for entry_id in common_ids
-                    ],
-                    perceived_categories,
-                )
+            "agreement": _group_agreement(
+                perceived_codes, users, common_ids, perceived_categories
             ),
             "vs_truth": {
                 user: _truth_metrics(

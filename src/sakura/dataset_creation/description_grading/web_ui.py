@@ -80,7 +80,23 @@ HTML_TEMPLATE = r"""<!doctype html>
     .progress-line strong { font-size: 14px; }
     .progress { height: 6px; margin-top: 7px; border-radius: 9px; overflow: hidden; background: #d9dee8; }
     .progress > div { height: 100%; width: 0; border-radius: 9px; background: var(--accent); transition: width .2s; }
-    main { min-height: 0; padding: 18px 20px; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(400px, 1fr); gap: 18px; }
+    main { min-height: 0; padding: 18px 20px; display: grid; grid-template-columns: 250px minmax(0, 1.15fr) minmax(400px, 1fr); gap: 18px; }
+    body.nav-collapsed main { grid-template-columns: minmax(0, 1.15fr) minmax(400px, 1fr); }
+    body.nav-collapsed .sidebar { display: none; }
+    .nav-toggle { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 10px; background: #fbfcfe; color: var(--muted); font-size: 16px; }
+    .nav-toggle:hover { border-color: var(--accent); color: var(--accent-deep); }
+    .sidebar { display: grid; grid-template-rows: auto 1fr auto; }
+    .sidebar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+    .entry-list { min-height: 0; overflow-y: auto; padding: 8px; display: grid; gap: 3px; align-content: start; }
+    .entry-item { display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; padding: 7px 9px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: var(--body); text-align: left; font-size: 12.5px; }
+    .entry-item:hover { background: #fbfcfe; border-color: var(--line-strong); }
+    .entry-item:focus-visible { outline: 3px solid rgba(201, 54, 107, .35); outline-offset: 1px; }
+    .entry-item.active { background: var(--accent-soft); border-color: var(--accent-line); color: var(--accent-deep); }
+    .entry-pos { font: 11.5px var(--mono); color: var(--muted); }
+    .entry-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--mono); font-size: 11.5px; }
+    .entry-grade { font: 600 11px var(--mono); color: var(--muted); white-space: nowrap; }
+    .entry-item.next-up .entry-grade { color: var(--accent-deep); text-transform: uppercase; letter-spacing: .06em; }
+    .sidebar-foot { padding: 10px 15px; border-top: 1px solid var(--line); background: var(--panel-2); font-size: 12px; color: var(--muted); }
     .panel { min-height: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); box-shadow: var(--shadow); overflow: hidden; }
     .code-panel { display: grid; grid-template-rows: auto 1fr; }
     .panel-head { padding: 15px 19px; border-bottom: 1px solid var(--line); background: var(--panel-2); }
@@ -142,6 +158,8 @@ HTML_TEMPLATE = r"""<!doctype html>
     @media (max-width: 920px) {
       .shell { height: auto; min-height: 100vh; }
       main { grid-template-columns: 1fr; }
+      body.nav-collapsed main { grid-template-columns: 1fr; }
+      .sidebar { max-height: 38vh; }
       .code-panel { min-height: 67vh; }
       .review-panel { overflow: visible; }
       footer { position: sticky; bottom: 0; z-index: 10; }
@@ -159,10 +177,15 @@ HTML_TEMPLATE = r"""<!doctype html>
 <body>
   <div class="app shell" id="app" hidden>
     <header>
-      <div class="brand"><div class="mark">✿</div><div><h1>Description Grader</h1><div class="subtle" id="reviewer"></div></div></div>
+      <div class="brand"><button class="nav-toggle" id="navToggle" type="button" title="Toggle entry list" aria-label="Toggle entry list">☰</button><div class="mark">✿</div><div><h1>Description Grader</h1><div class="subtle" id="reviewer"></div></div></div>
       <div class="progress-wrap"><div class="progress-line"><span class="subtle" id="completed"></span><strong id="position"></strong></div><div class="progress"><div id="progressBar"></div></div></div>
     </header>
     <main>
+      <nav class="panel sidebar" id="sidebar" aria-label="Graded entries">
+        <div class="panel-head sidebar-head"><div class="eyebrow">Entries</div><div class="subtle" id="sidebarCount"></div></div>
+        <div class="entry-list" id="entryList"></div>
+        <div class="sidebar-foot" id="sidebarRemaining"></div>
+      </nav>
       <section class="panel code-panel">
         <div class="panel-head"><div class="eyebrow" id="project"></div><div class="method" id="method"></div></div>
         <pre><code id="code"></code></pre>
@@ -187,7 +210,7 @@ HTML_TEMPLATE = r"""<!doctype html>
     <footer><div class="save-state" id="saveState">All scores are saved when you continue.</div><div class="actions"><button class="button" id="back">Back</button><button class="button primary" id="next" disabled>Save &amp; Next</button></div></footer>
   </div>
   <div class="overlay" id="overlay"><div class="dialog"><div class="spinner" id="spinner"></div><h2 id="overlayTitle">Preparing your review</h2><p class="subtle" id="overlayText">Loading description data and source context.</p><p class="error" id="error"></p><button class="button" id="retry" hidden>Retry</button></div></div>
-  <div class="complete" id="complete" hidden><div class="dialog"><div class="mark" style="margin:0 auto 16px">✓</div><div class="eyebrow">Session complete</div><h2>Every selected description is graded</h2><p class="subtle" id="completeText"></p><button class="button primary" id="close">Close Viewer</button></div></div>
+  <div class="complete" id="complete" hidden><div class="dialog"><div class="mark" style="margin:0 auto 16px">✓</div><div class="eyebrow">Session complete</div><h2>Every selected description is graded</h2><p class="subtle" id="completeText"></p><div class="actions" style="justify-content:center"><button class="button" id="reviewGrades">Review Grades</button><button class="button primary" id="close">Close Viewer</button></div></div></div>
   <script>
     const token = new URLSearchParams(location.search).get('token');
     const FIDELITY_OPTIONS = __FIDELITY_OPTIONS__;
@@ -211,6 +234,8 @@ HTML_TEMPLATE = r"""<!doctype html>
       }
     ];
     const levelInfo = __LEVEL_INFO__;
+    const PERCEIVED_SHORT = { low: 'L', low_medium: 'L/M', medium: 'M', medium_high: 'M/H', high: 'H' };
+    const NAV_KEY = 'sakura-grader-nav-collapsed';
     let session, entry, position = 0, selected = {}, retryAction = null;
     const el = id => document.getElementById(id);
 
@@ -292,6 +317,51 @@ HTML_TEMPLATE = r"""<!doctype html>
     function renderCriteria() {
       el('criteria').replaceChildren(...CRITERIA.map(buildCriterion));
     }
+    function jumpTo(target) {
+      const inApp = !el('app').hidden;
+      if (inApp && target === position) return;
+      el('complete').hidden = true;
+      loadEntry(target);
+    }
+    function renderSidebar() {
+      if (!session || !session.entries) return;
+      const frontier = session.resume_position;
+      const activePosition = el('app').hidden ? -1 : position;
+      const rows = [];
+      for (const item of session.entries) {
+        // Only graded entries plus the next ungraded one are navigable so the
+        // sequential blind-grading flow cannot be skipped ahead.
+        if (!item.grades && item.position !== frontier) continue;
+        const row = document.createElement('button');
+        row.type = 'button';
+        row.className = 'entry-item'
+          + (item.position === activePosition ? ' active' : '')
+          + (item.grades ? '' : ' next-up');
+        const method = item.method_signature.split('(')[0];
+        const grade = item.grades
+          ? `F${item.grades.fidelity} · ${PERCEIVED_SHORT[item.grades.perceived_level]}`
+          : 'next';
+        row.title = `${item.project_name} · ${item.method_signature} · ID ${item.id}`;
+        const pos = document.createElement('span'); pos.className = 'entry-pos'; pos.textContent = item.position + 1;
+        const name = document.createElement('span'); name.className = 'entry-name'; name.textContent = method;
+        const chip = document.createElement('span'); chip.className = 'entry-grade'; chip.textContent = grade;
+        row.append(pos, name, chip);
+        row.addEventListener('click', () => jumpTo(item.position));
+        rows.push(row);
+      }
+      el('entryList').replaceChildren(...rows);
+      el('sidebarCount').textContent = `${session.completed} / ${session.total} graded`;
+      const remaining = session.total - rows.length;
+      el('sidebarRemaining').textContent = remaining > 0
+        ? `${remaining} more ${remaining === 1 ? 'entry' : 'entries'} after the next one.`
+        : 'All entries listed. Click one to revise it.';
+      const active = el('entryList').querySelector('.active');
+      if (active) active.scrollIntoView({ block: 'nearest' });
+    }
+    function setNavCollapsed(collapsed) {
+      document.body.classList.toggle('nav-collapsed', collapsed);
+      try { localStorage.setItem(NAV_KEY, collapsed ? '1' : '0'); } catch (error) {}
+    }
     function updateNext() {
       const ready = Number.isInteger(selected.fidelity) && typeof selected.perceived_level === 'string';
       el('next').disabled = !ready;
@@ -312,6 +382,7 @@ HTML_TEMPLATE = r"""<!doctype html>
       el('next').textContent = position === data.total - 1 ? 'Save & Finish' : 'Save & Next';
       renderCriteria(); updateNext();
       el('overlay').hidden = true; el('app').hidden = false;
+      renderSidebar();
       document.querySelector('.review-panel').scrollTop = 0;
       document.querySelector('pre').scrollTop = 0;
       if (position + 1 < data.total) api(`/api/entries/${position + 1}`).catch(() => {});
@@ -346,6 +417,9 @@ HTML_TEMPLATE = r"""<!doctype html>
       if (tab) showLevel(tab.dataset.level);
     });
     el('retry').addEventListener('click', () => retryAction && retryAction());
+    el('navToggle').addEventListener('click', () => setNavCollapsed(!document.body.classList.contains('nav-collapsed')));
+    try { if (localStorage.getItem(NAV_KEY) === '1') document.body.classList.add('nav-collapsed'); } catch (error) {}
+    el('reviewGrades').addEventListener('click', () => jumpTo(session.total - 1));
     el('back').addEventListener('click', () => loadEntry(position - 1));
     el('next').addEventListener('click', saveAndNext);
     el('close').addEventListener('click', async () => {

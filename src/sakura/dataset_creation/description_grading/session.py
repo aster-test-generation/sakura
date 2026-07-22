@@ -338,6 +338,21 @@ class GradingSession:
             "completed": self.completed_count,
             "resume_position": self.first_incomplete_index,
             "output_path": self._display_path(self.output_path),
+            # Levels stay hidden; the reviewer's own grades are fine to echo.
+            "entries": [
+                {
+                    "position": index,
+                    "id": entry.id,
+                    "project_name": entry.project_name,
+                    "method_signature": entry.method_signature,
+                    "grades": (
+                        self.grades[entry.id].model_dump()
+                        if entry.id in self.grades
+                        else None
+                    ),
+                }
+                for index, entry in enumerate(self.entries)
+            ],
         }
 
     def _display_path(self, path: Path) -> str:

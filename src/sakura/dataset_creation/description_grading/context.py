@@ -151,19 +151,31 @@ class JavaContextRenderer:
                 primary,
                 classes.pop(primary),
                 context.class_annotations,
+                "// TEST SUITE: class declaring the test method",
             )
         ]
         for owner, members in classes.items():
-            blocks.append(cls._render_test_class(owner, members, []))
+            blocks.append(
+                cls._render_test_class(
+                    owner,
+                    members,
+                    [],
+                    "// TEST SUITE: fixtures and helpers referenced by the test",
+                )
+            )
         for application_class in context.application_classes:
             blocks.append(cls._render_application_class(application_class))
         return "\n\n".join(blocks).rstrip() + "\n"
 
     @classmethod
     def _render_test_class(
-        cls, owner: str, members: dict[str, Any], annotations: list[str]
+        cls,
+        owner: str,
+        members: dict[str, Any],
+        annotations: list[str],
+        header: str,
     ) -> str:
-        lines = [*annotations, f"class {cls._simple_name(owner)} {{"]
+        lines = [header, *annotations, f"class {cls._simple_name(owner)} {{"]
         for field in members["fields"]:
             lines.extend(cls._indent(cls._render_field(field)))
         if members["fields"] and members["methods"]:
@@ -185,7 +197,12 @@ class JavaContextRenderer:
         declaration = f"{modifiers} class {context.simple_class_name}".strip()
         if context.extends:
             declaration += " extends " + ", ".join(context.extends)
-        lines = [*(context.annotations or []), declaration + " {"]
+        lines = [
+            "// APPLICATION CODE: class exercised by the test; only the "
+            "signatures below were visible during description generation",
+            *(context.annotations or []),
+            declaration + " {",
+        ]
         for field in context.field_declarations or []:
             lines.extend(cls._indent(cls._render_field(field)))
         methods = context.relevant_class_methods or []
@@ -197,14 +214,7 @@ class JavaContextRenderer:
             signature = method.method_signature
             if signature.startswith("<init>"):
                 signature = context.simple_class_name + signature[len("<init>") :]
-            lines.extend(
-                cls._indent(
-                    [
-                        "// Signature available to description generation",
-                        signature + ";",
-                    ]
-                )
-            )
+            lines.extend(cls._indent([signature + ";"]))
         lines.append("}")
         return "\n".join(lines)
 

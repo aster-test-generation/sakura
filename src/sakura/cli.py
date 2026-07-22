@@ -113,10 +113,17 @@ def grade_descriptions(
             help="Archive this reviewer's existing grade file and start over.",
         ),
     ] = False,
+    eager: Annotated[
+        bool,
+        typer.Option(
+            "--eager",
+            help="Rebuild each project's analysis.json even if it already exists.",
+        ),
+    ] = False,
 ) -> None:
     """Open the local Test2NL description grading viewer."""
     repo_root = Path(__file__).resolve().parents[2]
-    run_description_grader(user=user, repo_root=repo_root, reset=reset)
+    run_description_grader(user=user, repo_root=repo_root, reset=reset, eager=eager)
 
 
 @app.command()
@@ -149,6 +156,13 @@ def compare_grades(
             help="Open the generated report in a browser.",
         ),
     ] = True,
+    eager: Annotated[
+        bool,
+        typer.Option(
+            "--eager",
+            help="Rebuild each project's analysis.json even if it already exists.",
+        ),
+    ] = False,
 ) -> None:
     """Build a side-by-side comparison report for saved description grades.
 
@@ -164,6 +178,7 @@ def compare_grades(
         repo_root=repo_root,
         output=Path(output).expanduser().resolve() if output else None,
         open_browser=open_browser,
+        eager=eager,
     )
     typer.echo(
         f"Compared {len(result['users'])} rater(s) over "

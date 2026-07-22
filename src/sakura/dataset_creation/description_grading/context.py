@@ -28,10 +28,12 @@ class DescriptionContextService:
         projects_dir: Path,
         analysis_dir: Path,
         analysis_loader: Callable[[str], JavaAnalysis] | None = None,
+        eager: bool = False,
     ) -> None:
         self.projects_dir = projects_dir.resolve()
         self.analysis_dir = analysis_dir.resolve()
         self._analysis_loader = analysis_loader
+        self.eager = eager
         self._project_cache: dict[
             str, tuple[JavaAnalysis, Test2NLContextBuilder]
         ] = {}
@@ -71,7 +73,7 @@ class DescriptionContextService:
                 analysis_backend_path=None,
                 analysis_level=AnalysisLevel.symbol_table,
                 analysis_json_path=project_analysis_dir,
-                eager=not analysis_json.exists(),
+                eager=self.eager or not analysis_json.exists(),
             )
 
         _, application_classes, test_utility_classes = CommonAnalysis(

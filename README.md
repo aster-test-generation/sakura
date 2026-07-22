@@ -141,6 +141,11 @@ Reviewer subsets live at
 `outputs/descriptions_sample/graded/<user>.json`. If no subset exists, the
 viewer loads all three sample CSVs.
 
+Pass `--eager` to rebuild each project's `analysis.json` even if it already
+exists — useful when a cached analysis was generated before the dataset
+submodules were initialized (symptom: "Java file for ... not found"). The
+`compare-grades` command accepts the same flag.
+
 ### `generate-descriptions` (Test2NL)
 
 Generates natural language descriptions for test methods. Reads bucketed test datasets, sends each method to an LLM, and writes `test2nl.csv` and `descriptions.json`.

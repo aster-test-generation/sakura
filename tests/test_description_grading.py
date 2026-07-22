@@ -394,8 +394,8 @@ def test_real_project_descriptions_follow_style_rules() -> None:
 def test_cli_grade_command_uses_repository_root(monkeypatch) -> None:
     called = {}
 
-    def fake_run(*, user: str, repo_root: Path, reset: bool) -> None:
-        called.update(user=user, repo_root=repo_root, reset=reset)
+    def fake_run(*, user: str, repo_root: Path, reset: bool, eager: bool) -> None:
+        called.update(user=user, repo_root=repo_root, reset=reset, eager=eager)
 
     monkeypatch.setattr("sakura.cli.run_description_grader", fake_run)
     grade_descriptions(user="alice")
@@ -403,6 +403,7 @@ def test_cli_grade_command_uses_repository_root(monkeypatch) -> None:
     assert called["user"] == "alice"
     assert called["repo_root"] == Path(__file__).resolve().parents[1]
     assert called["reset"] is False
+    assert called["eager"] is False
 
 
 def test_reset_archives_incompatible_grades_and_starts_over(tmp_path: Path) -> None:

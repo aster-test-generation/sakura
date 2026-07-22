@@ -424,7 +424,10 @@ def _truth_metrics(
 
 
 def build_comparison_payload(
-    user_specs: Sequence[str], descriptions_dir: Path, repo_root: Path
+    user_specs: Sequence[str],
+    descriptions_dir: Path,
+    repo_root: Path,
+    eager: bool = False,
 ) -> dict[str, Any]:
     """The JSON-serializable document the comparison report renders."""
     if not user_specs:
@@ -479,6 +482,7 @@ def build_comparison_payload(
     context_service = DescriptionContextService(
         repo_root / "resources" / "datasets",
         repo_root / "resources" / "analysis",
+        eager=eager,
     )
 
     entries_by_id = {entry.id: entry for entry in ordered_entries}
@@ -603,6 +607,7 @@ def run_grade_comparison(
     repo_root: Path,
     output: Path | None = None,
     open_browser: bool = True,
+    eager: bool = False,
 ) -> dict[str, Any]:
     """Build the comparison report HTML and return its path and entry count."""
     from sakura.dataset_creation.description_grading.comparison_ui import (
@@ -610,7 +615,9 @@ def run_grade_comparison(
     )
 
     descriptions_dir = repo_root / "outputs" / "descriptions_sample"
-    payload = build_comparison_payload(users, descriptions_dir, repo_root)
+    payload = build_comparison_payload(
+        users, descriptions_dir, repo_root, eager=eager
+    )
     html = render_report(payload)
 
     if output is None:

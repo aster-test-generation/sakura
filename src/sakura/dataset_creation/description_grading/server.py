@@ -148,6 +148,7 @@ def run_description_grader(
     *,
     open_browser: bool = True,
     reset: bool = False,
+    eager: bool = False,
 ) -> None:
     descriptions_dir = repo_root / "outputs" / "descriptions_sample"
     session = GradingSession(user, descriptions_dir, repo_root, reset=reset)
@@ -156,6 +157,7 @@ def run_description_grader(
     context_service = DescriptionContextService(
         repo_root / "resources" / "datasets",
         repo_root / "resources" / "analysis",
+        eager=eager,
     )
     token = secrets.token_urlsafe(24)
     server = GradingHTTPServer(

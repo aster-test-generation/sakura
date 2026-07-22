@@ -16,7 +16,10 @@ from sakura.dataset_creation.agent_grading.docker_runner import (
     DockerSandboxRunner,
 )
 from sakura.dataset_creation.agent_grading.orchestrator import run_agent_grading
-from sakura.dataset_creation.description_grading import run_description_grader
+from sakura.dataset_creation.description_grading import (
+    run_description_grader,
+    run_grade_comparison,
+)
 from sakura.dataset_creation.description_grading.session import GradingSession
 from sakura.dataset_creation.model import NL2TestDataset
 from sakura.dataset_creation.model import Test as DatasetTest
@@ -114,6 +117,59 @@ def grade_descriptions(
     """Open the local Test2NL description grading viewer."""
     repo_root = Path(__file__).resolve().parents[2]
     run_description_grader(user=user, repo_root=repo_root, reset=reset)
+
+
+@app.command()
+def compare_grades(
+    user: Annotated[
+        list[str],
+        typer.Option(
+            help=(
+                "Reviewer to include (repeat for each). Bare names are looked "
+                "up in graded/ then agent_graded/; prefix with 'graded:' or "
+                "'agent:' to disambiguate a name present in both."
+            ),
+            show_default=False,
+        ),
+    ],
+    output: Annotated[
+        str | None,
+        typer.Option(
+            help=(
+                "Output HTML path (default: "
+                "outputs/descriptions_sample/comparison/<users>.html)."
+            ),
+            show_default=False,
+        ),
+    ] = None,
+    open_browser: Annotated[
+        bool,
+        typer.Option(
+            "--open/--no-open",
+            help="Open the generated report in a browser.",
+        ),
+    ] = True,
+) -> None:
+    """Build a side-by-side comparison report for saved description grades.
+
+    Joins the selected reviewers' grade files on the entries all of them
+    have graded, shows every entry's scores next to the ground-truth
+    abstraction level, and summarizes agreement with standard metrics
+    (percent agreement, MAE, Cohen's kappa, Spearman's rho, and ordinal
+    Krippendorff's alpha) for the fidelity and perceived-abstraction scales.
+    """
+    repo_root = Path(__file__).resolve().parents[2]
+    result = run_grade_comparison(
+        users=user,
+        repo_root=repo_root,
+        output=Path(output).expanduser().resolve() if output else None,
+        open_browser=open_browser,
+    )
+    typer.echo(
+        f"Compared {len(result['users'])} rater(s) over "
+        f"{result['n_common']} common entries."
+    )
+    typer.echo(f"Report: {result['path']}")
 
 
 AGENT_GRADING_THINKING_LEVELS = ("none", "low", "medium", "high", "xhigh", "max")

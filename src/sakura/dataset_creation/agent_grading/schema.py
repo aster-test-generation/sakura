@@ -35,8 +35,10 @@ STRUCTURED_OUTPUT_FORMAT: dict[str, Any] = {
             "fidelity_rationale": {
                 "type": "string",
                 "description": (
-                    "Short justification for the fidelity grade, grounded in "
-                    "the actual test source that was read."
+                    "2-4 sentence justification for the fidelity grade that "
+                    "cites concrete evidence from the test source that was "
+                    "read (assertions, method calls, or values). Placeholders "
+                    "such as 'n/a' are invalid."
                 ),
             },
             "perceived_level": {
@@ -49,7 +51,9 @@ STRUCTURED_OUTPUT_FORMAT: dict[str, Any] = {
             "perceived_rationale": {
                 "type": "string",
                 "description": (
-                    "Short justification for the perceived abstraction level."
+                    "2-4 sentence justification for the perceived abstraction "
+                    "level, quoting phrasing from the description. "
+                    "Placeholders such as 'n/a' are invalid."
                 ),
             },
         },
@@ -82,8 +86,14 @@ def validate_structured_grades(payload: Any) -> dict[str, Any]:
             f"got: {perceived_level!r}"
         )
 
+    # A length floor catches placeholder rationales ("n/a", "none", "-")
+    # that a plain non-empty check would let through.
     for key in ("fidelity_rationale", "perceived_rationale"):
-        if not isinstance(payload.get(key), str) or not payload[key].strip():
-            raise ValueError(f"{key} must be a non-empty string")
+        value = payload.get(key)
+        if not isinstance(value, str) or len(value.strip()) < 20:
+            raise ValueError(
+                f"{key} must be a substantive rationale of at least 20 "
+                f"characters, got: {value!r}"
+            )
 
     return {"fidelity": fidelity, "perceived_level": perceived_level}

@@ -271,6 +271,8 @@ def test_validate_structured_grades() -> None:
         {**payload, "fidelity": "3"},
         {**payload, "perceived_level": "medium-high"},
         {**payload, "fidelity_rationale": ""},
+        {**payload, "fidelity_rationale": "n/a"},
+        {**payload, "perceived_rationale": "Too short."},
         {k: v for k, v in payload.items() if k != "perceived_rationale"},
     ):
         with pytest.raises(ValueError):

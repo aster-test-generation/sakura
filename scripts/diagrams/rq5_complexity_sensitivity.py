@@ -20,7 +20,7 @@ BUCKETED_LEVELS = [
     "three_to_five_focal",
     "more_than_five_focal",
 ]
-BUCKETED_LABELS = ["1", "2", "3-5", "5+"]
+BUCKETED_LABELS = ["1", "2", "3-5", ">5"]
 
 GRANULAR_LEVELS = [
     "1_focal_method",

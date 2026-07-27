@@ -5,6 +5,12 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
+from style import BAR_WIDTH, GROUP_GAP, X_MARGIN, PaperStyle
+
+# Width of one panel as placed in the paper: four panels in a row across the
+# full two-column width.
+PAPER_WIDTH_IN = 1.75
+FIG_WIDTH_IN = 8.0
 
 CATEGORIES = ["obj_creation", "assertion", "callable", "focal"]
 CATEGORY_LABELS = [
@@ -73,11 +79,12 @@ def create_graphs_by_metric(
     """Create 3 figures (one per metric) with categories on x-axis."""
     num_categories = len(CATEGORY_LABELS)
     num_models = len(filenames)
-    bar_width = 0.12
-    group_width = num_models * bar_width + 0.15
+    bar_width = BAR_WIDTH
+    group_width = num_models * bar_width + GROUP_GAP
 
     for metric, metric_label in zip(METRICS, METRIC_LABELS):
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(FIG_WIDTH_IN, 8))
+        style = PaperStyle(fig_width_in=FIG_WIDTH_IN, paper_width_in=PAPER_WIDTH_IN)
 
         bars_list: list[Any] = []
         for model_idx, filename in enumerate(filenames):
@@ -103,28 +110,28 @@ def create_graphs_by_metric(
                 values,
                 width=bar_width,
                 color=get_color(filename),
-                edgecolor="black",
-                linewidth=0.5,
                 yerr=ci_errors,
-                capsize=2,
-                error_kw={"elinewidth": 0.8, "capthick": 0.8},
+                **style.bar_kwargs(),
             )
             bars_list.append(bars)
 
         ax.set_ylim(0, 100)
+        ax.set_xmargin(X_MARGIN)
         if not DISABLE_TITLE_BY_METRIC[metric]:
-            ax.set_title(metric_label, fontsize=32)
+            ax.set_title(metric_label, fontsize=style.title_size)
 
         group_centers = [
             group_idx * group_width + (num_models - 1) * bar_width / 2
             for group_idx in range(num_categories)
         ]
         ax.set_xticks(group_centers)
-        ax.set_xticklabels(CATEGORY_LABELS, fontsize=34, rotation=15, ha="right")
-        ax.tick_params(axis="y", labelsize=34)
+        ax.set_xticklabels(CATEGORY_LABELS, rotation=15, ha="right")
+        style.style_axes(ax)
 
         if not DISABLE_LEGEND_BY_METRIC[metric]:
-            ax.legend(bars_list, model_names, loc="lower right", fontsize=26)
+            ax.legend(
+                bars_list, model_names, loc="lower right", fontsize=style.legend_size
+            )
 
         plt.tight_layout()
 
@@ -144,13 +151,14 @@ def create_graphs_by_category(
     """Create 4 figures (one per category) with metrics on x-axis."""
     num_metrics = len(METRIC_LABELS)
     num_models = len(filenames)
-    bar_width = 0.12
-    group_width = num_models * bar_width + 0.15
+    bar_width = BAR_WIDTH
+    group_width = num_models * bar_width + GROUP_GAP
 
     for category, cat_label, cat_output in zip(
         CATEGORIES, CATEGORY_LABELS, CATEGORY_OUTPUT_NAMES
     ):
-        fig, ax = plt.subplots(figsize=(8, 8))
+        fig, ax = plt.subplots(figsize=(FIG_WIDTH_IN, 8))
+        style = PaperStyle(fig_width_in=FIG_WIDTH_IN, paper_width_in=PAPER_WIDTH_IN)
 
         bars_list: list[Any] = []
         for model_idx, filename in enumerate(filenames):
@@ -176,28 +184,28 @@ def create_graphs_by_category(
                 values,
                 width=bar_width,
                 color=get_color(filename),
-                edgecolor="black",
-                linewidth=0.5,
                 yerr=ci_errors,
-                capsize=2,
-                error_kw={"elinewidth": 0.8, "capthick": 0.8},
+                **style.bar_kwargs(),
             )
             bars_list.append(bars)
 
         ax.set_ylim(0, 100)
+        ax.set_xmargin(X_MARGIN)
         if not DISABLE_TITLE_BY_CATEGORY[category]:
-            ax.set_title(cat_label, fontsize=32)
+            ax.set_title(cat_label, fontsize=style.title_size)
 
         group_centers = [
             group_idx * group_width + (num_models - 1) * bar_width / 2
             for group_idx in range(num_metrics)
         ]
         ax.set_xticks(group_centers)
-        ax.set_xticklabels(METRIC_LABELS, fontsize=34)
-        ax.tick_params(axis="y", labelsize=34)
+        ax.set_xticklabels(METRIC_LABELS)
+        style.style_axes(ax)
 
         if not DISABLE_LEGEND_BY_CATEGORY[category]:
-            ax.legend(bars_list, model_names, loc="upper right", fontsize=26)
+            ax.legend(
+                bars_list, model_names, loc="upper right", fontsize=style.legend_size
+            )
 
         plt.tight_layout()
 

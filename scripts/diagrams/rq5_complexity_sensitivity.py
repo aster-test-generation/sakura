@@ -5,6 +5,7 @@ from typing import Any, Literal
 
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
+from style import BAR_WIDTH, GROUP_GAP, X_MARGIN, PaperStyle
 
 FocalGranularity = Literal["bucketed", "granular"]
 FOCAL_GRANULARITY: FocalGranularity = "bucketed"
@@ -13,6 +14,10 @@ GraphType = Literal["bar_graph", "line_graph"]
 GRAPH_TYPE: GraphType = "bar_graph"
 
 SHOW_LINE_ON_BAR: bool = False
+
+# Width of one panel as placed in the paper: eight panels in a 2x4 grid across
+# the full two-column width.
+PAPER_WIDTH_IN = 1.75
 
 BUCKETED_LEVELS = [
     "one_focal",
@@ -111,11 +116,12 @@ def create_bar_graph(
     """Create grouped bar graph for a single metric across focal complexity levels."""
     num_groups = len(labels)
     num_models = len(filenames)
-    bar_width = 0.12
-    group_width = num_models * bar_width + 0.15
+    bar_width = BAR_WIDTH
+    group_width = num_models * bar_width + GROUP_GAP
 
     fig_width = 9 if FOCAL_GRANULARITY == "bucketed" else 14
     fig, ax = plt.subplots(figsize=(fig_width, 8))
+    style = PaperStyle(fig_width_in=fig_width, paper_width_in=PAPER_WIDTH_IN)
 
     bars_list = []
     for model_idx, filename in enumerate(filenames):
@@ -140,11 +146,8 @@ def create_bar_graph(
             values,
             width=bar_width,
             color=get_color(filename),
-            edgecolor="black",
-            linewidth=0.5,
             yerr=ci_errors,
-            capsize=2,
-            error_kw={"elinewidth": 0.8, "capthick": 0.8},
+            **style.bar_kwargs(),
         )
         bars_list.append(bars)
 
@@ -163,19 +166,20 @@ def create_bar_graph(
             )
 
     ax.set_ylim(0, 100)
+    ax.set_xmargin(X_MARGIN)
     if not DISABLE_TITLE[metric_key]:
-        ax.set_title(metric_label, fontsize=32)
+        ax.set_title(metric_label, fontsize=style.title_size)
 
     group_centers = [
         group_idx * group_width + (num_models - 1) * bar_width / 2
         for group_idx in range(num_groups)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(labels, fontsize=34)
-    ax.tick_params(axis="y", labelsize=34)
+    ax.set_xticklabels(labels)
+    style.style_axes(ax)
 
     if not DISABLE_LEGEND[metric_key]:
-        ax.legend(bars_list, model_names, loc="upper right", fontsize=26)
+        ax.legend(bars_list, model_names, loc="upper right", fontsize=style.legend_size)
 
     plt.tight_layout()
 
@@ -200,6 +204,7 @@ def create_line_graph(
     """Create line graph for a single metric across focal complexity levels."""
     fig_width = 9 if FOCAL_GRANULARITY == "bucketed" else 14
     fig, ax = plt.subplots(figsize=(fig_width, 8))
+    style = PaperStyle(fig_width_in=fig_width, paper_width_in=PAPER_WIDTH_IN)
 
     x_positions = list(range(len(levels)))
 
@@ -222,22 +227,19 @@ def create_line_graph(
             yerr=ci_errors,
             marker="o",
             color=get_color(filename),
-            linewidth=2,
-            markersize=8,
-            capsize=4,
-            capthick=1.5,
             label=model_name,
+            **style.errorbar_kwargs(),
         )
 
     ax.set_ylim(0, 100)
     if not DISABLE_TITLE[metric_key]:
-        ax.set_title(metric_label, fontsize=32)
+        ax.set_title(metric_label, fontsize=style.title_size)
     ax.set_xticks(x_positions)
-    ax.set_xticklabels(labels, fontsize=34)
-    ax.tick_params(axis="y", labelsize=34)
+    ax.set_xticklabels(labels)
+    style.style_axes(ax)
 
     if not DISABLE_LEGEND[metric_key]:
-        ax.legend(loc="upper right", fontsize=26)
+        ax.legend(loc="upper right", fontsize=style.legend_size)
 
     plt.tight_layout()
 

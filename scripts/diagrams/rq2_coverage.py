@@ -5,6 +5,18 @@ from typing import Any, Literal
 
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
+from style import (
+    BAR_WIDTH,
+    GROUP_GAP,
+    PAPER_ERROR_LINE_PT,
+    X_MARGIN,
+    PaperStyle,
+)
+
+# Width of this figure as placed in the paper. Set from the LaTeX placement: it
+# shares the full two-column width with the narrower RQ1 compilation figure.
+PAPER_WIDTH_IN = 4.8
+FIG_WIDTH_IN = 12.0
 
 COVERAGE_TYPES = [
     "class_coverage",
@@ -39,10 +51,11 @@ def create_coverage_bar_graph(
     """Create grouped bar graph of coverage metrics with 95% CI error bars."""
     num_groups = len(COVERAGE_LABELS)
     num_models = len(filenames)
-    bar_width = 0.12
-    group_width = num_models * bar_width + 0.15
+    bar_width = BAR_WIDTH
+    group_width = num_models * bar_width + GROUP_GAP
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH_IN, 8))
+    style = PaperStyle(fig_width_in=FIG_WIDTH_IN, paper_width_in=PAPER_WIDTH_IN)
 
     bars_list = []
     for model_idx, filename in enumerate(filenames):
@@ -69,26 +82,24 @@ def create_coverage_bar_graph(
             values,
             width=bar_width,
             color=get_color(filename),
-            edgecolor="black",
-            linewidth=0.5,
             yerr=ci_errors,
-            capsize=2,
-            error_kw={"elinewidth": 0.8, "capthick": 0.8},
+            **style.bar_kwargs(),
         )
         bars_list.append(bars)
 
     ax.set_ylim(0, 100)
+    ax.set_xmargin(X_MARGIN)
 
     group_centers = [
         group_idx * group_width + (num_models - 1) * bar_width / 2
         for group_idx in range(num_groups)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(COVERAGE_LABELS, fontsize=28)
-    ax.tick_params(axis="y", labelsize=28)
+    ax.set_xticklabels(COVERAGE_LABELS)
+    style.style_axes(ax)
 
     if not DISABLE_LEGEND:
-        ax.legend(bars_list, model_names, loc="upper right", fontsize=22)
+        ax.legend(bars_list, model_names, loc="upper right", fontsize=style.legend_size)
 
     plt.tight_layout()
 
@@ -108,10 +119,11 @@ def create_coverage_box_plot(
     """Create grouped box plot of coverage metrics."""
     num_groups = len(COVERAGE_LABELS)
     num_models = len(filenames)
-    box_width = 0.12
-    group_width = num_models * box_width + 0.15
+    box_width = BAR_WIDTH
+    group_width = num_models * box_width + GROUP_GAP
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH_IN, 8))
+    style = PaperStyle(fig_width_in=FIG_WIDTH_IN, paper_width_in=PAPER_WIDTH_IN)
 
     for model_idx, filename in enumerate(filenames):
         positions = [
@@ -139,33 +151,42 @@ def create_coverage_box_plot(
                 showfliers=False,
             )
 
+            edge_width = style.bar_kwargs()["linewidth"]
             for patch in bp["boxes"]:
                 patch.set_facecolor(get_color(filename))
                 patch.set_edgecolor("black")
-                patch.set_linewidth(0.5)
+                patch.set_linewidth(edge_width)
             for element in ["whiskers", "caps", "medians"]:
                 for line in bp[element]:
                     line.set_color("black")
-                    line.set_linewidth(0.8)
+                    line.set_linewidth(style.pt(PAPER_ERROR_LINE_PT))
 
     ax.set_ylim(0, 100)
+    ax.set_xmargin(X_MARGIN)
 
     group_centers = [
         group_idx * group_width + (num_models - 1) * box_width / 2
         for group_idx in range(num_groups)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(COVERAGE_LABELS, fontsize=28)
-    ax.tick_params(axis="y", labelsize=28)
+    ax.set_xticklabels(COVERAGE_LABELS)
+    style.style_axes(ax)
 
     if not DISABLE_LEGEND:
         legend_patches = [
             plt.Rectangle(
-                (0, 0), 1, 1, facecolor=get_color(f), edgecolor="black", linewidth=0.5
+                (0, 0),
+                1,
+                1,
+                facecolor=get_color(f),
+                edgecolor="black",
+                linewidth=style.bar_kwargs()["linewidth"],
             )
             for f in filenames
         ]
-        ax.legend(legend_patches, model_names, loc="upper right", fontsize=22)
+        ax.legend(
+            legend_patches, model_names, loc="upper right", fontsize=style.legend_size
+        )
 
     plt.tight_layout()
 

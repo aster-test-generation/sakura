@@ -4,6 +4,12 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, ROOT_DIR, get_color
+from style import BAR_WIDTH, GROUP_GAP, X_MARGIN, PaperStyle
+
+# Width of this figure as placed in the paper: a standalone figure across the
+# full two-column width.
+PAPER_WIDTH_IN = 7.0
+FIG_WIDTH_IN = 12.0
 
 TOOL_ANALYSIS_DIR = ROOT_DIR / "outputs" / "tool_analysis"
 
@@ -56,10 +62,11 @@ def create_tool_category_bar_graph(
     """Create grouped bar graph of tool category proportions."""
     num_categories = len(CATEGORY_LABELS)
     num_models = len(model_files)
-    bar_width = 0.12
-    group_width = num_models * bar_width + 0.15
+    bar_width = BAR_WIDTH
+    group_width = num_models * bar_width + GROUP_GAP
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH_IN, 8))
+    style = PaperStyle(fig_width_in=FIG_WIDTH_IN, paper_width_in=PAPER_WIDTH_IN)
 
     all_values: list[float] = []
     bars_list: list[Any] = []
@@ -76,24 +83,27 @@ def create_tool_category_bar_graph(
             width=bar_width,
             color=get_color(eval_filename),
             edgecolor="black",
-            linewidth=0.5,
+            linewidth=style.bar_kwargs()["linewidth"],
         )
         bars_list.append(bars)
 
     max_value = max(all_values) if all_values else 100
     y_limit = min(100, max_value * 1.1)
     ax.set_ylim(0, y_limit)
+    ax.set_xmargin(X_MARGIN)
 
     group_centers = [
         group_idx * group_width + (num_models - 1) * bar_width / 2
         for group_idx in range(num_categories)
     ]
     ax.set_xticks(group_centers)
-    ax.set_xticklabels(CATEGORY_LABELS, fontsize=28, rotation=15, ha="right")
-    ax.tick_params(axis="y", labelsize=28)
+    ax.set_xticklabels(CATEGORY_LABELS, rotation=15, ha="right")
+    # This axis is scaled to the data rather than fixed at 0-100, so the shared
+    # 0/20/.../100 ticks would not apply.
+    style.style_axes(ax, pin_yticks=False)
 
     if not DISABLE_LEGEND:
-        ax.legend(bars_list, model_names, loc="upper right", fontsize=22)
+        ax.legend(bars_list, model_names, loc="upper right", fontsize=style.legend_size)
 
     plt.tight_layout()
 
@@ -160,8 +170,7 @@ def save_tool_category_stats(
         data = load_results(file_path)
         percentages = get_category_percentages(data)
         stats[display_name] = {
-            label: round(value, 2)
-            for label, value in zip(CATEGORY_LABELS, percentages)
+            label: round(value, 2) for label, value in zip(CATEGORY_LABELS, percentages)
         }
 
     output_path = diagram_stats_dir / "rq6_tool_calls_stats.json"

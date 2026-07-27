@@ -4,6 +4,12 @@ from typing import Any
 
 import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
+from style import PaperStyle
+
+# Width of this figure as placed in the paper. Set from the LaTeX placement: it
+# shares the full two-column width with the wider RQ2 coverage figure.
+PAPER_WIDTH_IN = 2.0
+FIG_WIDTH_IN = 5.0
 
 DISABLE_LEGEND = True
 
@@ -64,7 +70,8 @@ def create_compilation_bar_graph(
         compile_rates.append(compile_rate)
         colors.append(get_color(filename))
 
-    fig, ax = plt.subplots(figsize=(5, 8))
+    fig, ax = plt.subplots(figsize=(FIG_WIDTH_IN, 8))
+    style = PaperStyle(fig_width_in=FIG_WIDTH_IN, paper_width_in=PAPER_WIDTH_IN)
 
     bar_width = 0.25
     x_positions = [i * bar_width for i in range(len(model_names))]
@@ -74,16 +81,18 @@ def create_compilation_bar_graph(
         width=bar_width,
         color=colors,
         edgecolor="black",
-        linewidth=0.5,
+        linewidth=style.bar_kwargs()["linewidth"],
     )
 
     ax.set_ylim(0, 100)
+    # The bars here are contiguous rather than grouped, so the shared X_MARGIN
+    # does not apply; this keeps the existing edge padding of ~0.9 bar widths.
     ax.margins(x=0.15)
     ax.set_xticks([])
-    ax.tick_params(axis="y", labelsize=28)
+    style.style_axes(ax)
 
     if not DISABLE_LEGEND:
-        ax.legend(bars, model_names, loc="upper left", fontsize=22)
+        ax.legend(bars, model_names, loc="upper left", fontsize=style.legend_size)
 
     plt.tight_layout()
 

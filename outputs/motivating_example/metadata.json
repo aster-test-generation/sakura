@@ -1,0 +1,33 @@
+{
+    "id": 280,
+    "project_name": "commons-bcel",
+    "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+    "method_signature": "testFindFieldCustomClass()",
+    "abstraction_level": "high",
+    "is_bdd": false,
+    "description": {
+        "file": "description.md",
+        "source_csv": "resources/test2nl/filtered_dataset/test2nl.csv"
+    },
+    "ground_truth_test": {
+        "file": "ground_truth_test.java",
+        "qualified_class_name": "org.apache.bcel.classfile.JavaClassTest",
+        "method_signature": "testFindFieldCustomClass()"
+    },
+    "nl2test_generated_test": {
+        "file": "nl2test_generated_test.java",
+        "model": "gemini-2.5-pro",
+        "source_dir": "outputs/raw_outputs/nl2test_gemini_pro_output",
+        "qualified_test_class_name": "org.apache.bcel.RepositoryTest",
+        "method_signature": "testFindFieldOnCircularInheritance()",
+        "compiles": true
+    },
+    "gemini_cli_generated_test": {
+        "file": "gemini_cli_generated_test.java",
+        "model": "gemini-2.5-pro",
+        "source_dir": "outputs/raw_outputs/gemini_cli_pro_output",
+        "qualified_test_class_name": "org.apache.commons.bcel.CircularInheritanceTest",
+        "method_signature": "testFindFieldCustomClass()",
+        "compiles": false
+    }
+}

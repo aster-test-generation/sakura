@@ -1,0 +1,416 @@
+{
+    "bdd_model": {
+        "setup": [
+            {
+                "id": 0,
+                "task": "Initialize the system's type repository.",
+                "uses": "",
+                "produces": "type_repository",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.SyntheticRepository",
+                        "containing_class_name": "org.apache.bcel.util.SyntheticRepository",
+                        "method_signature": "getInstance()"
+                    }
+                ],
+                "arg_bindings": [],
+                "comments": "Initializes the SyntheticRepository which acts as the type repository.",
+                "external": false
+            },
+            {
+                "id": 1,
+                "task": "Define a first class that extends a second interface.",
+                "uses": "",
+                "produces": "class_a_gen",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.generic.ClassGen",
+                        "containing_class_name": "org.apache.bcel.generic.ClassGen",
+                        "method_signature": "<init>(java.lang.String, java.lang.String, java.lang.String, int, java.lang.String[])"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "class_name",
+                        "arg_value": "ClassA"
+                    },
+                    {
+                        "arg_name": "super_class_name",
+                        "arg_value": "InterfaceB"
+                    },
+                    {
+                        "arg_name": "file_name",
+                        "arg_value": "ClassA.class"
+                    },
+                    {
+                        "arg_name": "access_flags",
+                        "arg_value": "1"
+                    },
+                    {
+                        "arg_name": "interfaces",
+                        "arg_value": "null"
+                    }
+                ],
+                "comments": "Defines ClassA which extends InterfaceB. Access flag 1 is ACC_PUBLIC.",
+                "external": false
+            },
+            {
+                "id": 2,
+                "task": "Define a second interface that extends the first class to form a bidirectional dependency loop.",
+                "uses": "",
+                "produces": "interface_b_gen",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.generic.ClassGen",
+                        "containing_class_name": "org.apache.bcel.generic.ClassGen",
+                        "method_signature": "<init>(java.lang.String, java.lang.String, java.lang.String, int, java.lang.String[])"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "class_name",
+                        "arg_value": "InterfaceB"
+                    },
+                    {
+                        "arg_name": "super_class_name",
+                        "arg_value": "ClassA"
+                    },
+                    {
+                        "arg_name": "file_name",
+                        "arg_value": "InterfaceB.class"
+                    },
+                    {
+                        "arg_name": "access_flags",
+                        "arg_value": "1537"
+                    },
+                    {
+                        "arg_name": "interfaces",
+                        "arg_value": "null"
+                    }
+                ],
+                "comments": "Defines InterfaceB which extends ClassA. Access flag 1537 is ACC_PUBLIC | ACC_INTERFACE | ACC_ABSTRACT.",
+                "external": false
+            },
+            {
+                "id": 3,
+                "task": "Define a third test class that implements the first class.",
+                "uses": "",
+                "produces": "class_c_gen",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.generic.ClassGen",
+                        "containing_class_name": "org.apache.bcel.generic.ClassGen",
+                        "method_signature": "<init>(java.lang.String, java.lang.String, java.lang.String, int, java.lang.String[])"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "class_name",
+                        "arg_value": "ClassC"
+                    },
+                    {
+                        "arg_name": "super_class_name",
+                        "arg_value": "ClassA"
+                    },
+                    {
+                        "arg_name": "file_name",
+                        "arg_value": "ClassC.class"
+                    },
+                    {
+                        "arg_name": "access_flags",
+                        "arg_value": "1"
+                    },
+                    {
+                        "arg_name": "interfaces",
+                        "arg_value": "null"
+                    }
+                ],
+                "comments": "Defines ClassC which extends ClassA.",
+                "external": false
+            },
+            {
+                "id": 4,
+                "task": "Generate the JavaClass for the first class.",
+                "uses": "class_a_gen",
+                "produces": "class_a",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.generic.ClassGen",
+                        "containing_class_name": "org.apache.bcel.generic.ClassGen",
+                        "method_signature": "getJavaClass()"
+                    }
+                ],
+                "arg_bindings": [],
+                "comments": "Generates the JavaClass object for ClassA.",
+                "external": false
+            },
+            {
+                "id": 5,
+                "task": "Generate the JavaClass for the second interface.",
+                "uses": "interface_b_gen",
+                "produces": "interface_b",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.generic.ClassGen",
+                        "containing_class_name": "org.apache.bcel.generic.ClassGen",
+                        "method_signature": "getJavaClass()"
+                    }
+                ],
+                "arg_bindings": [],
+                "comments": "Generates the JavaClass object for InterfaceB.",
+                "external": false
+            },
+            {
+                "id": 6,
+                "task": "Generate the JavaClass for the third test class.",
+                "uses": "class_c_gen",
+                "produces": "class_c",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.generic.ClassGen",
+                        "containing_class_name": "org.apache.bcel.generic.ClassGen",
+                        "method_signature": "getJavaClass()"
+                    }
+                ],
+                "arg_bindings": [],
+                "comments": "Generates the JavaClass object for ClassC.",
+                "external": false
+            },
+            {
+                "id": 7,
+                "task": "Register the first class definition within the type repository.",
+                "uses": "type_repository, class_a",
+                "produces": "",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.Repository",
+                        "containing_class_name": "org.apache.bcel.util.Repository",
+                        "method_signature": "storeClass(org.apache.bcel.classfile.JavaClass)"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "clazz",
+                        "arg_value": "${class_a}"
+                    }
+                ],
+                "comments": "Registers ClassA in the repository.",
+                "external": false
+            },
+            {
+                "id": 8,
+                "task": "Register the second interface definition within the type repository.",
+                "uses": "type_repository, interface_b",
+                "produces": "",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.Repository",
+                        "containing_class_name": "org.apache.bcel.util.Repository",
+                        "method_signature": "storeClass(org.apache.bcel.classfile.JavaClass)"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "clazz",
+                        "arg_value": "${interface_b}"
+                    }
+                ],
+                "comments": "Registers InterfaceB in the repository.",
+                "external": false
+            },
+            {
+                "id": 9,
+                "task": "Register the third test class definition within the type repository.",
+                "uses": "type_repository, class_c",
+                "produces": "",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.Repository",
+                        "containing_class_name": "org.apache.bcel.util.Repository",
+                        "method_signature": "storeClass(org.apache.bcel.classfile.JavaClass)"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "clazz",
+                        "arg_value": "${class_c}"
+                    }
+                ],
+                "comments": "Registers ClassC in the repository.",
+                "external": false
+            }
+        ],
+        "scenarios": [
+            {
+                "given": [],
+                "when": [
+                    {
+                        "id": 10,
+                        "task": "Load the third test class from the repository.",
+                        "uses": "type_repository",
+                        "produces": "loaded_class_c",
+                        "candidate_methods": [
+                            {
+                                "declaring_class_name": "org.apache.bcel.util.Repository",
+                                "containing_class_name": "org.apache.bcel.util.Repository",
+                                "method_signature": "loadClass(java.lang.String)"
+                            }
+                        ],
+                        "arg_bindings": [
+                            {
+                                "arg_name": "className",
+                                "arg_value": "ClassC"
+                            }
+                        ],
+                        "comments": "Loads the third test class from the repository to prepare for the search.",
+                        "external": false
+                    },
+                    {
+                        "id": 11,
+                        "task": "Get the integer type definition.",
+                        "uses": "",
+                        "produces": "int_type",
+                        "candidate_methods": [
+                            {
+                                "declaring_class_name": "org.apache.bcel.generic.Type",
+                                "containing_class_name": "org.apache.bcel.generic.Type",
+                                "method_signature": "getType(java.lang.String)"
+                            }
+                        ],
+                        "arg_bindings": [
+                            {
+                                "arg_name": "signature",
+                                "arg_value": "I"
+                            }
+                        ],
+                        "comments": "Obtains the Type object representing 'int' (signature 'I') for the field search.",
+                        "external": false
+                    },
+                    {
+                        "id": 12,
+                        "task": "Attempt to search for a non-existent numeric property within the third test class using the repository.",
+                        "uses": "loaded_class_c, int_type",
+                        "produces": "search_exception",
+                        "candidate_methods": [
+                            {
+                                "declaring_class_name": "org.apache.bcel.classfile.JavaClass",
+                                "containing_class_name": "org.apache.bcel.classfile.JavaClass",
+                                "method_signature": "findField(java.lang.String, org.apache.bcel.generic.Type)"
+                            }
+                        ],
+                        "arg_bindings": [
+                            {
+                                "arg_name": "fieldName",
+                                "arg_value": "missing"
+                            },
+                            {
+                                "arg_name": "fieldType",
+                                "arg_value": "${int_type}"
+                            }
+                        ],
+                        "comments": "Attempts to find a non-existent field 'missing' of type int in ClassC. This triggers the recursive search that hits the circular dependency.",
+                        "external": false
+                    }
+                ],
+                "then": [
+                    {
+                        "id": 13,
+                        "task": "Assert that the search operation fails with an error indicating a circular inheritance dependency.",
+                        "uses": "search_exception",
+                        "produces": "",
+                        "candidate_methods": [
+                            {
+                                "declaring_class_name": "org.junit.jupiter.api.Assertions",
+                                "containing_class_name": "org.junit.jupiter.api.Assertions",
+                                "method_signature": "assertThrows(java.lang.Class, org.junit.jupiter.api.function.Executable)"
+                            }
+                        ],
+                        "arg_bindings": [],
+                        "comments": "Verifies that the search operation throws a ClassCircularityError.",
+                        "external": true
+                    },
+                    {
+                        "id": 14,
+                        "task": "Verify the failure signal confirms the inheritance structure is invalid and guards against infinite traversal.",
+                        "uses": "search_exception",
+                        "produces": "",
+                        "candidate_methods": [],
+                        "arg_bindings": [],
+                        "comments": "The exception type ClassCircularityError itself confirms the invalid inheritance structure and guard against infinite traversal.",
+                        "external": true
+                    }
+                ]
+            },
+            {
+                "given": [],
+                "when": [],
+                "then": []
+            }
+        ],
+        "teardown": [
+            {
+                "id": 15,
+                "task": "Remove the first class definition from the type repository.",
+                "uses": "type_repository, class_a",
+                "produces": "",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.Repository",
+                        "containing_class_name": "org.apache.bcel.util.Repository",
+                        "method_signature": "removeClass(org.apache.bcel.classfile.JavaClass)"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "clazz",
+                        "arg_value": "${class_a}"
+                    }
+                ],
+                "comments": "Removes ClassA from the repository.",
+                "external": false
+            },
+            {
+                "id": 16,
+                "task": "Remove the second interface definition from the type repository.",
+                "uses": "type_repository, interface_b",
+                "produces": "",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.Repository",
+                        "containing_class_name": "org.apache.bcel.util.Repository",
+                        "method_signature": "removeClass(org.apache.bcel.classfile.JavaClass)"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "clazz",
+                        "arg_value": "${interface_b}"
+                    }
+                ],
+                "comments": "Removes InterfaceB from the repository.",
+                "external": false
+            },
+            {
+                "id": 17,
+                "task": "Remove the third test class definition from the type repository.",
+                "uses": "type_repository, class_c",
+                "produces": "",
+                "candidate_methods": [
+                    {
+                        "declaring_class_name": "org.apache.bcel.util.Repository",
+                        "containing_class_name": "org.apache.bcel.util.Repository",
+                        "method_signature": "removeClass(org.apache.bcel.classfile.JavaClass)"
+                    }
+                ],
+                "arg_bindings": [
+                    {
+                        "arg_name": "clazz",
+                        "arg_value": "${class_c}"
+                    }
+                ],
+                "comments": "Removes ClassC from the repository.",
+                "external": false
+            }
+        ]
+    }
+}

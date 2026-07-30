@@ -1,6 +1,4 @@
 import logging
-import os
-import re
 import shutil
 from collections import deque
 from pathlib import Path
@@ -10,17 +8,10 @@ import typer
 from dotenv import load_dotenv
 from typing_extensions import Annotated
 
-from sakura.dataset_creation.agent_grading.docker_runner import (
-    DEFAULT_IMAGE as AGENT_GRADING_DEFAULT_IMAGE,
-    DEFAULT_DOCKERFILE as AGENT_GRADING_DEFAULT_DOCKERFILE,
-    DockerSandboxRunner,
-)
-from sakura.dataset_creation.agent_grading.orchestrator import run_agent_grading
 from sakura.dataset_creation.description_grading import (
     run_description_grader,
     run_grade_comparison,
 )
-from sakura.dataset_creation.description_grading.session import GradingSession
 from sakura.dataset_creation.model import NL2TestDataset
 from sakura.dataset_creation.model import Test as DatasetTest
 from sakura.dataset_creation.sample_test2nl_descriptions import (
@@ -189,190 +180,6 @@ def compare_grades(
         f"{result['n_common']} common entries."
     )
     typer.echo(f"Report: {result['path']}")
-
-
-AGENT_GRADING_THINKING_LEVELS = ("none", "low", "medium", "high", "xhigh", "max")
-
-
-def _copy_env(source_name: str | None, target_name: str) -> None:
-    """Copy a named host env var into its canonical ANTHROPIC_* name."""
-    if source_name is None:
-        return
-    value = os.environ.get(source_name)
-    if not value:
-        raise Exception(f"Environment variable {source_name} is not set or empty.")
-    os.environ[target_name] = value
-
-
-@app.command()
-def label_descriptions_agent(
-    num: Annotated[
-        int,
-        typer.Option(
-            help="Grade the first NUM entries of the deterministic grader order.",
-            min=1,
-            show_default=False,
-        ),
-    ],
-    model: Annotated[
-        str,
-        typer.Option(
-            help="Model id for the grading agent inside the container.",
-            show_default=True,
-        ),
-    ] = "claude-sonnet-5",
-    label: Annotated[
-        str | None,
-        typer.Option(
-            help="Output name for agent_graded/<label>.json (default derived from the model id).",
-            show_default=False,
-        ),
-    ] = None,
-    thinking: Annotated[
-        str,
-        typer.Option(
-            help="Agent reasoning effort. One of: none, low, medium, high, xhigh, max.",
-            show_default=True,
-        ),
-    ] = "high",
-    api_key_env: Annotated[
-        str | None,
-        typer.Option(
-            help="Host env var whose value is forwarded as ANTHROPIC_API_KEY.",
-            show_default=False,
-        ),
-    ] = None,
-    auth_token_env: Annotated[
-        str | None,
-        typer.Option(
-            help="Host env var whose value is forwarded as ANTHROPIC_AUTH_TOKEN.",
-            show_default=False,
-        ),
-    ] = None,
-    oauth_token_env: Annotated[
-        str | None,
-        typer.Option(
-            help="Host env var whose value is forwarded as CLAUDE_CODE_OAUTH_TOKEN.",
-            show_default=False,
-        ),
-    ] = None,
-    base_url: Annotated[
-        str | None,
-        typer.Option(
-            help=(
-                "Anthropic-compatible base URL (e.g. a LiteLLM proxy), forwarded "
-                "as ANTHROPIC_BASE_URL. For a proxy on the host, use "
-                "http://host.docker.internal:<port> (localhost is not reachable "
-                "from the bridge network)."
-            ),
-            show_default=False,
-        ),
-    ] = None,
-    allow_missing_auth: Annotated[
-        bool,
-        typer.Option(
-            "--allow-missing-auth",
-            help="Skip the fail-fast check that an Anthropic auth env var is set.",
-        ),
-    ] = False,
-    image: Annotated[
-        str,
-        typer.Option(help="Docker image tag for the grading sandbox."),
-    ] = AGENT_GRADING_DEFAULT_IMAGE,
-    dockerfile: Annotated[
-        str | None,
-        typer.Option(
-            help="Path to the sandbox Dockerfile (defaults to docker/Dockerfile.agent-grading).",
-            show_default=False,
-        ),
-    ] = None,
-    skip_build: Annotated[
-        bool,
-        typer.Option("--skip-build", help="Reuse the existing image without rebuilding."),
-    ] = False,
-    network: Annotated[
-        str,
-        typer.Option(help="Docker network for the containers."),
-    ] = "bridge",
-    memory: Annotated[
-        str,
-        typer.Option(help="Container memory limit (empty string for no limit)."),
-    ] = "6g",
-    cpus: Annotated[
-        float | None,
-        typer.Option(help="Container CPU limit.", show_default=False),
-    ] = None,
-    pids_limit: Annotated[
-        int,
-        typer.Option(help="Container PID limit."),
-    ] = 1024,
-    reset: Annotated[
-        bool,
-        typer.Option(
-            "--reset",
-            help="Archive the existing agent_graded/<label>.json and start over.",
-        ),
-    ] = False,
-) -> None:
-    """Label sampled Test2NL descriptions with a sandboxed grading agent.
-
-    The agent grades the same entries, in the same deterministic order, on the
-    same fidelity and perceived-abstraction rubric as the human grading UI,
-    writing a reviewer-compatible grade file plus per-entry details to
-    outputs/descriptions_sample/agent_graded/.
-    """
-    thinking = thinking.strip().lower()
-    if thinking not in AGENT_GRADING_THINKING_LEVELS:
-        raise Exception(
-            f"Invalid --thinking: {thinking}. "
-            f"Must be one of {AGENT_GRADING_THINKING_LEVELS}."
-        )
-    resolved_thinking = None if thinking == "none" else thinking
-
-    if label is None:
-        label = "agent-" + re.sub(r"[^A-Za-z0-9_.-]+", "-", model).strip("-.")
-    label = GradingSession.validate_user(label)
-
-    _copy_env(api_key_env, "ANTHROPIC_API_KEY")
-    _copy_env(auth_token_env, "ANTHROPIC_AUTH_TOKEN")
-    _copy_env(oauth_token_env, "CLAUDE_CODE_OAUTH_TOKEN")
-    if base_url:
-        os.environ["ANTHROPIC_BASE_URL"] = base_url
-
-    runner = DockerSandboxRunner(
-        image=image,
-        dockerfile=(
-            Path(dockerfile).expanduser().resolve()
-            if dockerfile
-            else AGENT_GRADING_DEFAULT_DOCKERFILE
-        ),
-        network=network,
-        memory=memory or None,
-        cpus=cpus,
-        pids_limit=pids_limit,
-        require_auth_env=not allow_missing_auth,
-    )
-    runner.ensure_auth()
-    if not skip_build:
-        runner.build_image()
-
-    repo_root = Path(__file__).resolve().parents[2]
-    summary = run_agent_grading(
-        num=num,
-        model=model,
-        label=label,
-        thinking=resolved_thinking,
-        repo_root=repo_root,
-        runner=runner,
-        reset=reset,
-    )
-    typer.echo(
-        f"Graded {summary['graded']} entries "
-        f"(errored={summary['errored']}, skipped={summary['skipped']}, "
-        f"cost=${summary['total_cost_usd']})."
-    )
-    typer.echo(f"Grades: {summary['aggregate_path']}")
-    typer.echo(f"Details: {summary['details_dir']}")
 
 
 def _load_nl2_inputs_by_project_from_csv(

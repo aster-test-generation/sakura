@@ -1,9 +1,8 @@
 """Single source of truth for the description-grading rubric text.
 
-The web grader UI (web_ui.py) and the sandboxed agent grader
-(sakura.dataset_creation.agent_grading) must present reviewers — human or
-agent — with the identical rubric, so every label, anchor, and level
-definition lives here and only here.
+Every reviewer must be shown the identical rubric, so each label, anchor,
+and level definition used by the web grader UI (web_ui.py) lives here and
+only here.
 """
 
 from __future__ import annotations

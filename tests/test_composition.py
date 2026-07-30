@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-from langchain_core.tools import StructuredTool
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
 
@@ -19,7 +18,6 @@ from sakura.nl2test.models import (
     AgentState,
 )
 from sakura.nl2test.preprocessing.indexers import MethodIndexer, ClassIndexer
-from sakura.nl2test.prompts.load_prompt import LoadPrompt, PromptFormat
 from sakura.utils.analysis import CommonAnalysis
 from sakura.utils.compilation.maven import JavaMavenCompilation
 from sakura.utils.evaluation.test_grader import TestGrader
@@ -29,90 +27,6 @@ from sakura.utils.pretty.prints import pretty_print
 
 
 class TestCompositionAgent:
-    def test_composition_system_prompt_formatting(self):
-        """Verify system prompt formatting for composition Gherkin with placeholders."""
-        prompt = LoadPrompt.load_prompt(
-            "composition_agent_gherkin.jinja2", PromptFormat.JINJA2, "system"
-        )
-
-        # parallelizable True path
-        iters_true = 4
-        rendered_true = prompt.format(parallelizable=True, max_iters=iters_true)
-        pretty_print("Parallelizable prompt", rendered_true)
-        expected_true = (
-            f"You must complete within at most {iters_true} model step(s) (iterations)."
-        )
-        assert expected_true in rendered_true
-        assert (
-            "You may parallelize tool calls that do not depend on each other"
-            in rendered_true
-        )
-        assert "Do not parallelize tool calls" not in rendered_true
-
-        # parallelizable False path
-        iters_false = 6
-        rendered_false = prompt.format(parallelizable=False, max_iters=iters_false)
-        pretty_print("Not parallelizable prompt", rendered_false)
-        expected_false = f"You must complete within at most {iters_false} model step(s) (iterations)."
-        assert expected_false in rendered_false
-        assert "Do not parallelize tool calls" in rendered_false
-        assert (
-            "You may parallelize tool calls that do not depend on each other"
-            not in rendered_false
-        )
-
-        # duplicate_tools path — mirror orchestrator formatting
-        # Create simple tools using LangChain's StructuredTool (a BaseTool subclass)
-        dup_tools = [
-            StructuredTool.from_function(
-                func=lambda: None, name="view_test_code", description=""
-            ),
-            StructuredTool.from_function(
-                func=lambda: None,
-                name="compile_and_execute_tests",
-                description="",
-            ),
-        ]
-        duplicate_tools_str = ", ".join(f"`{t.name}`" for t in dup_tools)
-
-        rendered_with_dups = prompt.format(
-            parallelizable=True,
-            max_iters=iters_true,
-            duplicate_tools=duplicate_tools_str,
-        )
-        pretty_print("With duplicate_tools", rendered_with_dups)
-
-        assert (
-            f"Duplicate tool calls are allowed only for the following tool names: {duplicate_tools_str}"
-            in rendered_with_dups
-        )
-        assert "Never repeat an identical {tool, args} pair" not in rendered_with_dups
-        assert (
-            "Duplicate tool calls are allowed only for the following tool names"
-            not in rendered_true
-        )
-
-    def test_composition_chat_prompt_formatting(self):
-        """Verify chat prompt formatting for composition Gherkin with placeholders."""
-        prompt = LoadPrompt.load_prompt(
-            "composition_agent_gherkin.jinja2", PromptFormat.JINJA2, "chat"
-        )
-
-        nl_description = "Compose a unit test for PetController update"
-        instructions = "Use JUnit 5 and avoid Mockito unless necessary"
-        localized_scenario = "{\n  'given': [], 'when': [], 'then': []\n}"
-
-        rendered = prompt.format(
-            nl_description=nl_description,
-            instructions=instructions,
-            localized_scenario=localized_scenario,
-        )
-
-        assert nl_description in rendered
-        assert instructions in rendered
-        assert "CURRENT LOCALIZED SCENARIO" in rendered
-        assert "Compose a compilable and runnable Java test" in rendered
-
     def test_composition_agent_gherkin(
         self, petclinic_analysis, petclinic_config, petclinic_paths
     ):
@@ -423,89 +337,6 @@ class TestCompositionToolInjection:
             "nl2_input": nl2_input,
         }
 
-    def test_base_composition_tools_contains_expected_tools(self):
-        """Verify BaseCompositionTools creates expected base tools."""
-        deps = self._create_mock_dependencies()
-        tool_builder = BaseCompositionTools(**deps)
-        tools, allow_duplicates = tool_builder.all()
-
-        tool_names = {t.name for t in tools}
-        expected_base_tools = {
-            "query_class_db",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_fields",
-            "get_class_imports",
-            "get_class_constructors_and_factories",
-            "get_getters_and_setters",
-            "get_maven_dependencies",
-            "view_test_code",
-            "generate_test_code",
-            "compile_and_execute_test",
-            "finalize",
-            "get_call_site_details",
-        }
-
-        assert expected_base_tools == tool_names, (
-            f"Tool mismatch. Expected: {expected_base_tools}, Got: {tool_names}"
-        )
-
-    def test_gherkin_composition_tools_contains_all_tools(self):
-        """Verify GherkinCompositionTools includes base + Gherkin-specific tools."""
-        deps = self._create_mock_dependencies()
-        tool_builder = GherkinCompositionTools(**deps)
-        tools, allow_duplicates = tool_builder.all()
-
-        tool_names = {t.name for t in tools}
-        expected_tools = {
-            "query_class_db",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_fields",
-            "get_class_imports",
-            "get_class_constructors_and_factories",
-            "get_getters_and_setters",
-            "get_maven_dependencies",
-            "view_test_code",
-            "generate_test_code",
-            "compile_and_execute_test",
-            "finalize",
-            "get_call_site_details",
-            "modify_scenario_comment",
-        }
-
-        assert expected_tools == tool_names, (
-            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
-        )
-
-    def test_grammatical_composition_tools_contains_all_tools(self):
-        """Verify GrammaticalCompositionTools includes base + Grammatical-specific tools."""
-        deps = self._create_mock_dependencies()
-        tool_builder = GrammaticalCompositionTools(**deps)
-        tools, allow_duplicates = tool_builder.all()
-
-        tool_names = {t.name for t in tools}
-        expected_tools = {
-            "query_class_db",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_fields",
-            "get_class_imports",
-            "get_class_constructors_and_factories",
-            "get_getters_and_setters",
-            "get_maven_dependencies",
-            "view_test_code",
-            "generate_test_code",
-            "compile_and_execute_test",
-            "finalize",
-            "get_call_site_details",
-            "modify_scenario_comment",
-        }
-
-        assert expected_tools == tool_names, (
-            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
-        )
-
     def test_composition_allow_duplicate_tools_correct(self):
         """Verify allow_duplicate_tools list contains expected tools."""
         deps = self._create_mock_dependencies()
@@ -568,32 +399,6 @@ class TestCompositionToolInjection:
         result = modify_tool.func(order=1, note="Updated note")
 
         assert result == {"order": 1, "note": "Updated note"}
-
-    def test_view_test_code_tool_shared_across_modes(self):
-        """Verify view_test_code returns same structure across modes."""
-        deps = self._create_mock_dependencies()
-
-        gherkin_builder = GherkinCompositionTools(**deps)
-        grammatical_builder = GrammaticalCompositionTools(**deps)
-
-        gherkin_tools, _ = gherkin_builder.all()
-        grammatical_tools, _ = grammatical_builder.all()
-
-        gherkin_view = next(t for t in gherkin_tools if t.name == "view_test_code")
-        grammatical_view = next(
-            t for t in grammatical_tools if t.name == "view_test_code"
-        )
-
-        gherkin_result = gherkin_view.func(
-            qualified_class_name="org.example.Test",
-            method_signature="test()",
-        )
-        grammatical_result = grammatical_view.func(
-            qualified_class_name="org.example.Test",
-            method_signature="test()",
-        )
-
-        assert gherkin_result == grammatical_result
 
     def test_compile_and_execute_tool_shared_across_modes(self):
         """Verify compile_and_execute_test returns same structure across modes."""

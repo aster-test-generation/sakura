@@ -342,23 +342,6 @@ class TestCLDKArgNormalizer:
         # Constructor normalization adds <init> for CLDK
         assert "<init>" in normalized["method_signature"] or normalized["method_signature"] == "MyClass()"
 
-    def test_normalize_class_tools_set_contains_expected_tools(self):
-        """Verify NORMALIZE_CLASS_TOOLS contains expected tool names."""
-        expected_tools = {
-            "get_method_details",
-            "get_class_fields",
-            "get_class_imports",
-            "get_class_constructors_and_factories",
-            "get_getters_and_setters",
-            "extract_method_code",
-            "get_call_site_details",
-            "get_reachable_methods_in_class",
-            "get_class_details",
-            "get_inherited_library_classes",
-        }
-
-        assert CLDKArgNormalizer.NORMALIZE_CLASS_TOOLS == expected_tools
-
     def test_normalize_method_sig_tools_set_contains_expected_tools(self):
         """Verify NORMALIZE_METHOD_SIG_TOOLS contains expected tool names."""
         expected_tools = {

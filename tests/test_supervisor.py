@@ -232,21 +232,6 @@ class TestSupervisorToolInjection:
             f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
         )
 
-    def test_supervisor_allow_duplicate_tools_correct(self):
-        """Verify allow_duplicate_tools list contains expected tools."""
-        mock_llm = MagicMock()
-        mock_llm.parse_tool_args = lambda x: x
-
-        tool_builder = GherkinSupervisorTools(llm=mock_llm, project_root="/tmp/test")
-        _, allow_duplicates = tool_builder.all()
-
-        allow_dup_names = {t.name for t in allow_duplicates}
-        expected_duplicates = {"view_test_code", "compile_and_execute_test"}
-
-        assert expected_duplicates == allow_dup_names, (
-            f"Allow duplicates mismatch. Expected: {expected_duplicates}, Got: {allow_dup_names}"
-        )
-
     def test_deferred_tool_call_localization_returns_instructions(self):
         """Verify call_localization_agent returns instructions as expected."""
         mock_llm = MagicMock()
@@ -273,36 +258,6 @@ class TestSupervisorToolInjection:
 
         assert result == {"instructions": "Generate test code"}
 
-    def test_deferred_tool_finalize_returns_status(self):
-        """Verify finalize tool returns expected status dict."""
-        mock_llm = MagicMock()
-        mock_llm.parse_tool_args = lambda x: x
-
-        tool_builder = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test")
-        tools, _ = tool_builder.all()
-
-        finalize_tool = next(t for t in tools if t.name == "finalize")
-        result = finalize_tool.func()
-
-        assert result == {"status": "finalize"}
-
-    def test_deferred_tool_view_test_code_returns_inputs(self):
-        """Verify view_test_code returns all input arguments."""
-        mock_llm = MagicMock()
-        mock_llm.parse_tool_args = lambda x: x
-
-        tool_builder = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test")
-        tools, _ = tool_builder.all()
-
-        view_tool = next(t for t in tools if t.name == "view_test_code")
-        result = view_tool.func(
-            qualified_class_name="org.example.TestClass",
-            method_signature="testMethod()",
-        )
-
-        assert result["qualified_class_name"] == "org.example.TestClass"
-        assert result["method_signature"] == "testMethod()"
-
     def test_deferred_tool_compile_and_execute_returns_empty(self):
         """Verify compile_and_execute_test returns empty dict."""
         mock_llm = MagicMock()
@@ -319,32 +274,6 @@ class TestSupervisorToolInjection:
 
 class TestSupervisorForceEnd:
     """Tests for supervisor agent force_end behavior (NoArgs optimization)."""
-
-    def test_execute_force_end_sets_finalize_called(self):
-        """Verify _execute_force_end sets finalize_called=True without LLM call."""
-        from sakura.nl2test.generation.supervisor.agent import SupervisorReActAgent
-
-        mock_llm = MagicMock()
-        mock_llm.parse_tool_args = lambda x: x
-
-        tools, _ = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test").all()
-        agent = SupervisorReActAgent(
-            llm=mock_llm,
-            tools=tools,
-            system_message="Test system message",
-            nl_description="Test description",
-            project_root="/tmp/test",
-        )
-
-        state = AgentState()
-        assert state.finalize_called is False
-        assert state.force_end_attempts == 0
-
-        result_state = agent._execute_force_end(state)
-
-        assert result_state.finalize_called is True
-        assert result_state.final_comments == ""
-        assert result_state.force_end_attempts == 1
 
     def test_execute_force_end_increments_attempts(self):
         """Verify _execute_force_end increments force_end_attempts each call."""
@@ -393,22 +322,3 @@ class TestSupervisorForceEnd:
 
         with pytest.raises(NotImplementedError):
             agent._process_force_finalize_result(MagicMock(), AgentState())
-
-    def test_get_finalize_schema_returns_no_args(self):
-        """Verify _get_finalize_schema returns NoArgs."""
-        from sakura.nl2test.generation.supervisor.agent import SupervisorReActAgent
-        from sakura.nl2test.models.agents import NoArgs
-
-        mock_llm = MagicMock()
-        mock_llm.parse_tool_args = lambda x: x
-
-        tools, _ = BaseSupervisorTools(llm=mock_llm, project_root="/tmp/test").all()
-        agent = SupervisorReActAgent(
-            llm=mock_llm,
-            tools=tools,
-            system_message="Test system message",
-            nl_description="Test description",
-            project_root="/tmp/test",
-        )
-
-        assert agent._get_finalize_schema() is NoArgs

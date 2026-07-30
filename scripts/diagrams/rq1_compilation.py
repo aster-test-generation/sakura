@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, STATS_DIR, get_color
 from style import PaperStyle
 
-# Width of this figure as placed in the paper. Set from the LaTeX placement: it
-# shares the full two-column width with the wider RQ2 coverage figure.
-PAPER_WIDTH_IN = 2.0
+# Width of this figure as placed in the paper, measured off a typeset proof: it
+# sits beside the wider RQ2 coverage figure, and the pair together occupy only
+# about half the two-column width rather than filling it.
+PAPER_WIDTH_IN = 1.05
 FIG_WIDTH_IN = 5.0
 
 DISABLE_LEGEND = True

@@ -13,9 +13,10 @@ from style import (
     PaperStyle,
 )
 
-# Width of this figure as placed in the paper. Set from the LaTeX placement: it
-# shares the full two-column width with the narrower RQ1 compilation figure.
-PAPER_WIDTH_IN = 4.8
+# Width of this figure as placed in the paper, measured off a typeset proof: it
+# sits beside the narrower RQ1 compilation figure, and the pair together occupy
+# only about half the two-column width rather than filling it.
+PAPER_WIDTH_IN = 2.55
 FIG_WIDTH_IN = 12.0
 
 COVERAGE_TYPES = [

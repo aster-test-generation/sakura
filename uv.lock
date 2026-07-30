@@ -770,7 +770,7 @@ wheels = [
 [[package]]
 name = "hamster"
 version = "0.1.1"
-source = { git = "ssh://git@github.com/aster-test-generation/hamster.git?rev=main#b9840974c1535312bc6fd8c16f0332f7cf77edcb" }
+source = { git = "https://github.com/aster-test-generation/hamster-empirical-study.git?rev=9afdf75321fad678c726f89356fe3797978e1395#9afdf75321fad678c726f89356fe3797978e1395" }
 dependencies = [
     { name = "cldk" },
     { name = "matplotlib" },
@@ -2133,7 +2133,7 @@ requires-dist = [
     { name = "deepdiff", specifier = ">=8.0.1,<9.0.0" },
     { name = "faiss-cpu", specifier = ">=1.11.0,<2.0.0" },
     { name = "google-cloud-aiplatform", specifier = ">=1.74.0,<2.0.0" },
-    { name = "hamster", git = "ssh://git@github.com/aster-test-generation/hamster.git?rev=main" },
+    { name = "hamster", git = "https://github.com/aster-test-generation/hamster-empirical-study.git?rev=9afdf75321fad678c726f89356fe3797978e1395" },
     { name = "javalang", specifier = "==0.13.0" },
     { name = "jinja2", specifier = ">=3.1.2,<4.0.0" },
     { name = "joblib", specifier = "==1.4.2" },

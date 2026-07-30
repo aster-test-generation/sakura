@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from javabuild.maven_build import MavenBuild
+from sakura.javabuild.maven_build import MavenBuild
 from pydantic import BaseModel
 
 from sakura.utils.analysis import CommonAnalysis

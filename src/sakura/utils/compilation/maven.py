@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 from typing import List, Optional, Set, Tuple
 
-from javabuild.maven_build import MavenBuild
+from sakura.javabuild.maven_build import MavenBuild
 from pydantic import BaseModel, Field
 
 from sakura.utils.analysis import CommonAnalysis

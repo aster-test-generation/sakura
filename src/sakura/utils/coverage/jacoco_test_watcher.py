@@ -1,3 +1,10 @@
+"""
+JUnit 5 extension source template that dumps per-test JaCoCo execution data.
+
+Vendored verbatim from aster-test-generation/re-aster
+(reaster/coverage/jacoco_test_watcher.py, commit e34bbc5).
+"""
+
 TEST_CODE = """
 package <package_name>;
 

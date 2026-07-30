@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 from colors import DIAGRAM_STATS_DIR, INPUT_FILES, OUTPUT_DIR, ROOT_DIR, get_color
 from style import BAR_WIDTH, GROUP_GAP, X_MARGIN, PaperStyle
 
-# Width of this figure as placed in the paper: a standalone figure across the
-# full two-column width.
-PAPER_WIDTH_IN = 7.0
+# Width of this figure as placed in the paper, measured off a typeset proof: a
+# standalone figure at single-column width, not across both columns.
+PAPER_WIDTH_IN = 3.3
 FIG_WIDTH_IN = 12.0
 
 TOOL_ANALYSIS_DIR = ROOT_DIR / "outputs" / "tool_analysis"

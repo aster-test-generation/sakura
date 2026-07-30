@@ -855,15 +855,6 @@ wheels = [
 ]
 
 [[package]]
-name = "javabuild"
-version = "0.0.1"
-source = { git = "ssh://git@github.com/aster-test-generation/javabuild.git?rev=feat%2Fmaven-module-scoped-runs#5ee0c6002720e71a87cc5fff6e971c6255a7675a" }
-dependencies = [
-    { name = "rich" },
-    { name = "typer" },
-]
-
-[[package]]
 name = "javalang"
 version = "0.13.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1952,20 +1943,6 @@ wheels = [
 ]
 
 [[package]]
-name = "reaster"
-version = "0.0.1"
-source = { git = "ssh://git@github.com/aster-test-generation/re-aster.git?rev=main#e34bbc5a204c13c985c31dad4f08d98b149f7b39" }
-dependencies = [
-    { name = "beautifulsoup4" },
-    { name = "cldk" },
-    { name = "matplotlib" },
-    { name = "ray" },
-    { name = "rich" },
-    { name = "tqdm" },
-    { name = "typer" },
-]
-
-[[package]]
 name = "referencing"
 version = "0.37.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2107,12 +2084,12 @@ name = "sakura"
 version = "0.0.1"
 source = { editable = "." }
 dependencies = [
+    { name = "beautifulsoup4" },
     { name = "cldk" },
     { name = "deepdiff" },
     { name = "faiss-cpu" },
     { name = "google-cloud-aiplatform" },
     { name = "hamster" },
-    { name = "javabuild" },
     { name = "javalang" },
     { name = "jinja2" },
     { name = "joblib" },
@@ -2126,7 +2103,6 @@ dependencies = [
     { name = "plotly" },
     { name = "pyright" },
     { name = "python-dotenv" },
-    { name = "reaster" },
     { name = "replicate" },
     { name = "requests" },
     { name = "rich" },
@@ -2152,12 +2128,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "beautifulsoup4", specifier = ">=4.12.0,<5.0.0" },
     { name = "cldk", specifier = "==1.0.6" },
     { name = "deepdiff", specifier = ">=8.0.1,<9.0.0" },
     { name = "faiss-cpu", specifier = ">=1.11.0,<2.0.0" },
     { name = "google-cloud-aiplatform", specifier = ">=1.74.0,<2.0.0" },
     { name = "hamster", git = "ssh://git@github.com/aster-test-generation/hamster.git?rev=main" },
-    { name = "javabuild", git = "ssh://git@github.com/aster-test-generation/javabuild.git?rev=feat%2Fmaven-module-scoped-runs" },
     { name = "javalang", specifier = "==0.13.0" },
     { name = "jinja2", specifier = ">=3.1.2,<4.0.0" },
     { name = "joblib", specifier = "==1.4.2" },
@@ -2171,7 +2147,6 @@ requires-dist = [
     { name = "plotly", specifier = ">=5.22.0,<6.0.0" },
     { name = "pyright", specifier = ">=1.1.407,<2.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.1,<2.0.0" },
-    { name = "reaster", git = "ssh://git@github.com/aster-test-generation/re-aster.git?rev=main" },
     { name = "replicate", specifier = ">=1.0.3,<2.0.0" },
     { name = "requests", specifier = ">=2.32.0,<3.0.0" },
     { name = "rich", specifier = "==14.0.0" },
@@ -2266,11 +2241,11 @@ wheels = [
 
 [[package]]
 name = "soupsieve"
-version = "2.9"
+version = "2.9.1"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/80/f1/93422647dd7e461f23d254e6b2bfa687a85b53aeb4903fcdbb74474d4584/soupsieve-2.9.tar.gz", hash = "sha256:acee8417325c5653e1377dc31eccad59eb82cbc65942afe6174c53b3aaad63fc", size = 122122, upload-time = "2026-07-19T01:35:18.425Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/d9/38/e12680bbe6b4f8f3d17adcaf38d26850aa756c85cf4a80e79fc12a018fe8/soupsieve-2.9.1.tar.gz", hash = "sha256:c33e6605bbc71dd628b00c632d58ae607c22bade247e52553928f83bbb75b4ba", size = 122261, upload-time = "2026-07-21T16:57:17.452Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/d6/3185ab5ad1280319b31986898f3206dd7227cd75e293d4dba2a5e6bf27a0/soupsieve-2.9-py3-none-any.whl", hash = "sha256:a2b2c76d67df2382d245409fd71e321a571717e58463efa32ace87dcadac2c12", size = 37387, upload-time = "2026-07-19T01:35:17.106Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/2c/437fe806897c2d6cfdc3ee43a18da8bf8e568530a4ae9bac781541ca9896/soupsieve-2.9.1-py3-none-any.whl", hash = "sha256:4f4477399246b7a0c720a88ca2454b11cd6bb9ae4c9d170140786e916776c14c", size = 37404, upload-time = "2026-07-21T16:57:16.421Z" },
 ]
 
 [[package]]

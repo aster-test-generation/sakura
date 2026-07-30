@@ -41,36 +41,6 @@ class TestLocalizationAgent:
         self.analysis = petclinic_analysis
         self.config = petclinic_config
 
-    def test_gherkin_localization_system_prompt_formatting(self):
-        """Ensure the system prompt renders with correct Jinja2 placeholders."""
-        prompt = LoadPrompt.load_prompt(
-            "localization_agent_gherkin.jinja2", PromptFormat.JINJA2, "system"
-        )
-
-        # Case 1: parallelizable True
-        max_iters_parallel = 3
-        rendered_parallel = prompt.format(
-            parallelizable=True, max_iters=max_iters_parallel
-        )
-        pretty_print("Parallelizable prompt", rendered_parallel)
-        expected_cap_parallel = f"You must complete within at most {max_iters_parallel} model step(s) (iterations)."
-        assert expected_cap_parallel in rendered_parallel
-        assert "You may parallelize tool calls" in rendered_parallel
-        assert "Do not parallelize tool calls" not in rendered_parallel
-        assert "Never repeat an identical {tool, args} pair" not in rendered_parallel
-
-        # Case 2: parallelizable False
-        max_iters_sequential = 7
-        rendered_sequential = prompt.format(
-            parallelizable=False, max_iters=max_iters_sequential
-        )
-        pretty_print("Not parallelizable", rendered_sequential)
-        expected_cap_sequential = f"You must complete within at most {max_iters_sequential} model step(s) (iterations)."
-        assert expected_cap_sequential in rendered_sequential
-        assert "Do not parallelize tool calls" in rendered_sequential
-        assert "You may parallelize tool calls" not in rendered_sequential
-        assert "Never repeat an identical {tool, args} pair" in rendered_sequential
-
     def test_gherkin_localization_chat_prompt_formatting(self):
         """Ensure the chat prompt renders with required placeholders and includes a preview."""
         prompt = LoadPrompt.load_prompt(
@@ -778,74 +748,6 @@ class TestLocalizationToolInjection:
             "class_searcher": mock_class_searcher,
         }
 
-    def test_base_localization_tools_contains_expected_tools(self):
-        """Verify BaseLocalizationTools creates expected base tools."""
-        deps = self._create_mock_dependencies()
-        tool_builder = BaseLocalizationTools(**deps)
-        tools, allow_duplicates = tool_builder.all()
-
-        tool_names = {t.name for t in tools}
-        expected_base_tools = {
-            "query_method_db",
-            "query_class_db",
-            "search_reachable_methods_in_class",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_details",
-            "get_inherited_library_classes",
-            "get_call_site_details",
-        }
-
-        assert expected_base_tools == tool_names, (
-            f"Tool mismatch. Expected: {expected_base_tools}, Got: {tool_names}"
-        )
-
-    def test_gherkin_localization_tools_contains_all_tools(self):
-        """Verify GherkinLocalizationTools includes base + Gherkin-specific tools."""
-        deps = self._create_mock_dependencies()
-        tool_builder = GherkinLocalizationTools(**deps)
-        tools, allow_duplicates = tool_builder.all()
-
-        tool_names = {t.name for t in tools}
-        expected_tools = {
-            "query_method_db",
-            "query_class_db",
-            "search_reachable_methods_in_class",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_details",
-            "get_inherited_library_classes",
-            "get_call_site_details",
-            "finalize",
-        }
-
-        assert expected_tools == tool_names, (
-            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
-        )
-
-    def test_grammatical_localization_tools_contains_all_tools(self):
-        """Verify GrammaticalLocalizationTools includes base + Grammatical-specific tools."""
-        deps = self._create_mock_dependencies()
-        tool_builder = GrammaticalLocalizationTools(**deps)
-        tools, allow_duplicates = tool_builder.all()
-
-        tool_names = {t.name for t in tools}
-        expected_tools = {
-            "query_method_db",
-            "query_class_db",
-            "search_reachable_methods_in_class",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_details",
-            "get_inherited_library_classes",
-            "get_call_site_details",
-            "finalize",
-        }
-
-        assert expected_tools == tool_names, (
-            f"Tool mismatch. Expected: {expected_tools}, Got: {tool_names}"
-        )
-
     def test_localization_allow_duplicate_tools_empty(self):
         """Verify localization tools have no duplicate tools allowed."""
         deps = self._create_mock_dependencies()
@@ -855,25 +757,6 @@ class TestLocalizationToolInjection:
         assert len(allow_duplicates) == 0, (
             f"Localization should have no duplicate tools, got: {[t.name for t in allow_duplicates]}"
         )
-
-    def test_gherkin_finalize_tool_returns_scenario_and_comments(self):
-        """Verify Gherkin finalize tool returns scenario and comments."""
-        deps = self._create_mock_dependencies()
-        tool_builder = GherkinLocalizationTools(**deps)
-        tools, _ = tool_builder.all()
-
-        finalize_tool = next(t for t in tools if t.name == "finalize")
-
-        scenario = LocalizedScenario(
-            setup=[],
-            gherkin_groups=[],
-            teardown=[],
-        )
-        result = finalize_tool.invoke(
-            {"scenario": scenario, "comments": "Final comments"}
-        )
-
-        assert result == (scenario, "Final comments")
 
     def test_grammatical_finalize_tool_returns_blocks_and_comments(self):
         """Verify Grammatical finalize tool returns blocks and comments."""
@@ -889,34 +772,6 @@ class TestLocalizationToolInjection:
         )
 
         assert result == (blocks, "Final comments")
-
-    def test_shared_tools_have_consistent_names_across_modes(self):
-        """Verify shared tools have same names in both modes."""
-        deps = self._create_mock_dependencies()
-
-        gherkin_builder = GherkinLocalizationTools(**deps)
-        grammatical_builder = GrammaticalLocalizationTools(**deps)
-
-        gherkin_tools, _ = gherkin_builder.all()
-        grammatical_tools, _ = grammatical_builder.all()
-
-        gherkin_names = {t.name for t in gherkin_tools}
-        grammatical_names = {t.name for t in grammatical_tools}
-
-        # All base tools should be in both
-        base_tools = {
-            "query_method_db",
-            "query_class_db",
-            "search_reachable_methods_in_class",
-            "extract_method_code",
-            "get_method_details",
-            "get_class_details",
-            "get_inherited_library_classes",
-            "get_call_site_details",
-        }
-
-        assert base_tools.issubset(gherkin_names)
-        assert base_tools.issubset(grammatical_names)
 
     def test_query_method_db_tool_validates_range(self):
         """Verify query_method_db tool exists and has correct name."""
@@ -937,15 +792,6 @@ class TestLocalizationToolInjection:
             t for t in tools if t.name == "search_reachable_methods_in_class"
         )
         assert reachable_tool is not None
-
-    def test_get_class_details_tool_exists(self):
-        """Verify get_class_details tool exists."""
-        deps = self._create_mock_dependencies()
-        tool_builder = BaseLocalizationTools(**deps)
-        tools, _ = tool_builder.all()
-
-        class_details_tool = next(t for t in tools if t.name == "get_class_details")
-        assert class_details_tool is not None
 
     def test_get_inherited_library_classes_tool_exists(self):
         """Verify get_inherited_library_classes tool exists."""

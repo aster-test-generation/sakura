@@ -13,8 +13,8 @@ from tqdm import tqdm
 from sakura.utils.analysis import CommonAnalysis
 from sakura.utils.pretty.color_logger import RichLog
 
-from reaster.coverage.jacoco_test_watcher import TEST_CODE
-from javabuild.build_factory import BuildFactory
+from sakura.utils.coverage.jacoco_test_watcher import TEST_CODE
+from sakura.javabuild.build_factory import BuildFactory
 
 from sakura.utils import constants
 

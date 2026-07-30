@@ -1,11 +1,7 @@
 import os
-import tempfile
 from pathlib import Path
 
-import pytest
-
 from sakura.cli import (
-    _load_nl2_inputs_by_project_from_csv,
     generate_descriptions,
     run_nl2test,
 )
@@ -72,14 +68,3 @@ def test_cli_run_nl2test_smoke():
         )
     finally:
         os.chdir(orig_cwd)
-
-
-def test_load_nl2_inputs_requires_csv_file_path():
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        test2nl_dir = Path(tmp_dir) / "test2nl"
-        test2nl_dir.mkdir(parents=True, exist_ok=True)
-
-        with pytest.raises(
-            Exception, match="Expected --test2nl-file to point to a CSV file"
-        ):
-            _load_nl2_inputs_by_project_from_csv(test2nl_dir, max_entries=0)

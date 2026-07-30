@@ -8,9 +8,11 @@ from pathlib import Path
 from typing import Dict
 
 MAVEN_CMD = "mvn.cmd" if sys.platform == "win32" else "mvn"
+MAVEN_DEFAULT_VERSION = "8"
 JACOCO_VERSION = "0.8.13"
 MAVEN_COV_DIR = "target/coverage"
 MAVEN_JACOCO_COV_FILE = f"{MAVEN_COV_DIR}/jacoco.exec"
+MAVEN_COV_REPORT_DIR = f"{MAVEN_COV_DIR}/reports"
 
 
 class MutationOperators(str, Enum):

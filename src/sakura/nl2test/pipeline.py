@@ -34,7 +34,6 @@ from sakura.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from sakura.utils.analysis import CommonAnalysis
 from sakura.utils.compilation.maven import CompilationError, JavaMavenCompilation
 from sakura.utils.evaluation import TestGrader
-from sakura.utils.exceptions import ProjectCompilationError
 from sakura.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from sakura.utils.llm import UsageTracker
 from sakura.utils.models import (
@@ -364,15 +363,9 @@ class Pipeline:
                 usage_tracker=run_usage_tracker,
             )
 
-        try:
-            supervisor_state, localization_state, composition_state = (
-                supervisor.assign_task(sup_blocks)
-            )
-        except ProjectCompilationError as exc:
-            raise ProjectCompilationError(
-                f"Project compilation failed outside the generated test for input {nl2_input.id}.",
-                extra_info=getattr(exc, "extra_info", {}),
-            ) from exc
+        supervisor_state, localization_state, composition_state = supervisor.assign_task(
+            sup_blocks
+        )
 
         tool_log = self._build_tool_log(
             supervisor_state, localization_state, composition_state

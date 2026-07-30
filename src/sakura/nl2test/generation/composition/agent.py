@@ -21,7 +21,6 @@ from sakura.utils.llm import LLMClient, FormatValidator
 from sakura.utils.config import Config
 from sakura.utils.constants import TEST_DIR
 from sakura.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from sakura.utils.exceptions import ProjectCompilationError
 from sakura.utils.tool_messages import format_tool_error, format_tool_ok
 
 
@@ -205,8 +204,6 @@ class CompositionReActAgent(ReActAgent, CompilationExecutionMixin):
 
         try:
             handler(tool_call, result, state, outputs)
-        except ProjectCompilationError:
-            raise
         except Exception as exc:
             outputs.append(
                 ToolMessage(

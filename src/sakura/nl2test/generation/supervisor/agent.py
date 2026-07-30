@@ -23,7 +23,6 @@ from sakura.nl2test.models.agents import FinalizeCommentsArgs
 from sakura.utils.constants import TEST_DIR
 from sakura.utils.llm import LLMClient
 from sakura.utils.file_io.test_file_manager import TestFileManager, TestFileInfo
-from sakura.utils.exceptions import ProjectCompilationError
 from sakura.utils.tool_messages import format_tool_error, format_tool_ok
 
 
@@ -158,8 +157,6 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
 
         try:
             handler(tool_call, result, state, outputs)
-        except ProjectCompilationError:
-            raise
         except Exception as exc:
             outputs.append(
                 ToolMessage(
@@ -529,9 +526,13 @@ class SupervisorReActAgent(ReActAgent, CompilationExecutionMixin):
     def _process_finalize_tool_output(
         self, tool_call: ToolCall, result: Any, state: AgentState, outputs: List
     ) -> None:
-        state.final_comments = (
-            str(result) if result is not None else (state.final_comments or "")
-        )
+        if isinstance(result, dict):
+            comments = result.get("comments", "")
+        elif result is not None:
+            comments = result
+        else:
+            comments = state.final_comments or ""
+        state.final_comments = str(comments)
         state.finalize_called = True
         state.force_end_attempts = 0
         outputs.append(

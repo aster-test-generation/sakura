@@ -407,7 +407,7 @@ Supported values for `--llm-provider`:
 |----------|-------|
 | `openrouter` | Proxy supporting many models (Gemini, Grok, Qwen, Devstral, etc.) |
 | `openai` | OpenAI API directly |
-| `gcp` | Google Cloud AI Platform (Gemini models) |
+| `gcp` | Google Cloud AI Platform (Gemini models); requires `--llm-api-url` |
 | `ollama` | Local inference via Ollama |
 | `vllm` | Local inference via vLLM server |
 | `mistral` | Mistral API |
@@ -418,11 +418,13 @@ Supported values for `--emb-provider`:
 |----------|-------|
 | `openrouter` | Proxy supporting many embedding models |
 | `openai` | OpenAI API directly |
-| `gcp` | Google Cloud AI Platform |
+| `gcp` | Google Cloud AI Platform; requires `--emb-api-url` |
 | `ollama` | Local inference via Ollama (uses dedicated embedder) |
 | `vllm` | Local inference via vLLM server |
 
 Either `--llm-provider` or `--llm-api-url` must be provided. The same applies to `--emb-provider` / `--emb-api-url` for embeddings.
+
+Providers marked above as requiring an explicit URL have no single public endpoint -- pass the base URL of the OpenAI-compatible endpoint you are routing through (for example a Vertex AI or LiteLLM gateway). Configuration fails fast with a clear error if the URL is missing.
 
 ## Architecture
 

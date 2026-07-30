@@ -75,7 +75,8 @@ def init_config(
     # Assign embedding settings
     config.set("emb", "model", emb_model)
 
-    # Configure API URLs based on the provider
+    # Configure API URLs based on the provider. Providers without a well-known
+    # public endpoint must be given one explicitly.
     if llm_api_url is not None:
         config.set("llm", "api_url", val=llm_api_url)
     elif llm_provider == Provider.OPENAI:
@@ -86,10 +87,16 @@ def init_config(
         config.set("llm", "api_url", val="http://localhost:11434/v1")
     elif llm_provider == Provider.VLLM:
         config.set("llm", "api_url", val="http://localhost:8000/v1")
-    elif llm_provider == Provider.GCP:
-        config.set("llm", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
     elif llm_provider == Provider.MISTRAL:
         config.set("llm", "api_url", val="https://api.mistral.ai/v1")
+    elif llm_provider is not None:
+        raise ConfigurationException(
+            "llm.api_url",
+            message=(
+                f"No default API URL for LLM provider '{llm_provider.value}'. "
+                "Supply the endpoint explicitly via --llm-api-url."
+            ),
+        )
 
     config.set("llm", "api_key", val=llm_api_key)
 
@@ -101,8 +108,15 @@ def init_config(
         config.set("emb", "api_url", val="https://openrouter.ai/api/v1")
     elif emb_provider == Provider.VLLM:
         config.set("emb", "api_url", val="http://localhost:8000/v1")
-    elif emb_provider == Provider.GCP:
-        config.set("emb", "api_url", val="https://ete-litellm.bx.cloud9.ibm.com")
+    elif emb_provider is not None and emb_provider != Provider.OLLAMA:
+        # Ollama embeddings go through OllamaEmbedder and need no API URL.
+        raise ConfigurationException(
+            "emb.api_url",
+            message=(
+                f"No default API URL for embedding provider '{emb_provider.value}'. "
+                "Supply the endpoint explicitly via --emb-api-url."
+            ),
+        )
 
     config.set("emb", "api_key", val=emb_api_key)
 

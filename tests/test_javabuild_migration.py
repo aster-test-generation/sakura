@@ -18,6 +18,7 @@ behavior of the original external dependencies is caught here:
   drives the entire migrated reaster+javabuild pipeline
 """
 
+import copy
 import inspect
 import shutil
 import subprocess
@@ -498,6 +499,71 @@ class TestPomIntrospection:
         project_root = _pom_project(tmp_path, pom)
         builder = MavenBuild(str(project_root))
         assert builder.get_java_version() == "21"
+
+
+class TestWcaPomMutation:
+    @pytest.mark.parametrize(
+        ("include_spring", "expected_spring_artifacts"),
+        [
+            (False, set()),
+            (True, {"spring-test", "spring-web"}),
+        ],
+    )
+    def test_spring_dependencies_follow_flag(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        include_spring: bool,
+        expected_spring_artifacts: set[str],
+    ) -> None:
+        dependencies = copy.deepcopy(
+            MavenBuild.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING
+        )
+        monkeypatch.setattr(
+            MavenBuild, "WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING", dependencies
+        )
+        project_root = _pom_project(tmp_path, PLAIN_POM)
+
+        MavenBuild(str(project_root)).add_wca_test_dependencies(
+            is_add_spring_dependency=include_spring
+        )
+
+        root = ET.parse(project_root.joinpath("pom.xml")).getroot()
+        spring_artifacts = {
+            _child_text(dependency, "artifactId")
+            for dependency in _elements(root, "dependency")
+            if _child_text(dependency, "groupId") == "org.springframework"
+        }
+        assert spring_artifacts == expected_spring_artifacts
+
+    def test_repeated_spring_dependency_additions_do_not_mutate_configuration(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        expected_dependencies = copy.deepcopy(
+            MavenBuild.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING
+        )
+        dependencies = copy.deepcopy(expected_dependencies)
+        monkeypatch.setattr(
+            MavenBuild, "WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING", dependencies
+        )
+
+        for call_number in range(2):
+            project_root = _pom_project(
+                tmp_path.joinpath(f"call-{call_number}"), PLAIN_POM
+            )
+            MavenBuild(str(project_root)).add_wca_test_dependencies(
+                is_add_spring_dependency=True
+            )
+
+            root = ET.parse(project_root.joinpath("pom.xml")).getroot()
+            spring_artifacts = {
+                _child_text(dependency, "artifactId")
+                for dependency in _elements(root, "dependency")
+                if _child_text(dependency, "groupId") == "org.springframework"
+            }
+            assert spring_artifacts == {"spring-test", "spring-web"}
+
+        assert dependencies == expected_dependencies
 
 
 class TestCoveragePomMutation:

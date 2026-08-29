@@ -428,8 +428,6 @@ class MavenBuild(AbstractBuild):
         if deps_element is None:
             deps_element = elemtree.SubElement(root, "dependencies")
 
-        if is_add_spring_dependency:
-            self.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING.pop("org.springframework")
         dependency = (
             self.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING
             if is_add_spring_dependency

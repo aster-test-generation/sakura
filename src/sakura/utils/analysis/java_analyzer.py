@@ -345,7 +345,7 @@ class CommonAnalysis:
 
             if curr_info.is_interface:
                 # Interfaces can't extend class or abstract class
-                stack.extend(curr_info.implements_list or [])
+                stack.extend(curr_info.extends_list or [])
             else:
                 stack.extend(curr_info.extends_list or [])
                 stack.extend(curr_info.implements_list or [])

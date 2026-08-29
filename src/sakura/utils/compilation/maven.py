@@ -1,4 +1,5 @@
 import re
+import subprocess
 from pathlib import Path
 from typing import List, Optional, Set, Tuple
 
@@ -67,11 +68,20 @@ class JavaMavenCompilation(MavenBuild):
     def compile_scope(self, timeout: int | None = 600) -> CompilationScopeResult:
         # Prepare deps only when we are in a multi-module scoped build.
         if self.target_module:
-            _ = self.install_selected_projects_skip_tests_proc(timeout=timeout)
+            dependency_proc = self.install_selected_projects_skip_tests_proc(
+                timeout=timeout
+            )
+            if dependency_proc.returncode != 0:
+                return self._result_from_process(dependency_proc)
 
         proc = self.compile_tests_proc(
             pre_compile_build=True, also_make=False, timeout=timeout
         )
+        return self._result_from_process(proc)
+
+    def _result_from_process(
+        self, proc: subprocess.CompletedProcess[str]
+    ) -> CompilationScopeResult:
         errors = self.parse_compilation_errors(proc.stdout)
         return CompilationScopeResult(
             success=(proc.returncode == 0), output=proc.stdout, errors=errors
@@ -98,7 +108,7 @@ class JavaMavenCompilation(MavenBuild):
                 self._flush_current(current, errors, seen_keys)
                 raw_path = header.group("path").strip()
                 normalized_file = CommonAnalysis.normalize_path_in_project(
-                    raw_path, self.project_root
+                    raw_path, str(self.project_root)
                 )
                 column = header.group("col")
                 current = CompilationError(

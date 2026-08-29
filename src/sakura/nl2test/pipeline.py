@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 from cldk import CLDK
 from cldk.analysis import AnalysisLevel
@@ -32,7 +32,11 @@ from sakura.nl2test.preprocessing.indexers import ClassIndexer, MethodIndexer
 from sakura.nl2test.preprocessing.nl_decomposer import NLDecomposer
 from sakura.nl2test.preprocessing.searchers import ClassSearcher, MethodSearcher
 from sakura.utils.analysis import CommonAnalysis
-from sakura.utils.compilation.maven import CompilationError, JavaMavenCompilation
+from sakura.utils.compilation.maven import (
+    CompilationError,
+    CompilationScopeResult,
+    JavaMavenCompilation,
+)
 from sakura.utils.evaluation import TestGrader
 from sakura.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from sakura.utils.llm import UsageTracker
@@ -45,6 +49,27 @@ from sakura.utils.models import (
     ToolLog,
 )
 from sakura.utils.pretty.color_logger import RichLog
+
+
+def _target_compiles(
+    compilation_result: CompilationScopeResult,
+    qualified_test_class_name: str,
+) -> bool:
+    simple_file = qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
+    relative_path = qualified_test_class_name.replace(".", "/") + ".java"
+
+    def matches_error_path(error_file: str) -> bool:
+        normalized = error_file.replace("\\", "/")
+        if "/" in normalized:
+            return normalized.endswith(relative_path)
+        return normalized.endswith(simple_file)
+
+    has_unparsed_command_failure = (
+        not compilation_result.success and not compilation_result.errors
+    )
+    return not has_unparsed_command_failure and not any(
+        matches_error_path(error.file) for error in compilation_result.errors
+    )
 
 
 class Pipeline:
@@ -96,9 +121,13 @@ class Pipeline:
             test_utility_classes=self.test_utility_classes,
         )
 
-    def run_project_compilation(self) -> List[CompilationError]:
+    def run_project_compilation(self) -> list[CompilationError]:
         """Compile the project before test generation."""
         return JavaMavenCompilation(self.project_root).get_compilation_errors()
+
+    def run_project_compilation_scope(self) -> CompilationScopeResult:
+        """Compile the project and retain Maven command status."""
+        return JavaMavenCompilation(self.project_root).compile_scope()
 
     def run_preprocessing(
         self,
@@ -406,23 +435,12 @@ class Pipeline:
             )
             final_result.nl2test_metadata = nl2_metadata
 
-            pred_simple_file = qualified_test_class_name.rsplit(".", 1)[-1] + ".java"
-            pred_rel_path = qualified_test_class_name.replace(".", "/") + ".java"
-
-            def _matches_error_path(err: str) -> bool:
-                normalized = err.replace("\\", "/")
-                if "/" in normalized:
-                    return normalized.endswith(pred_rel_path)
-                return normalized.endswith(pred_simple_file)
-
-            compilation_errors: List[CompilationError] = JavaMavenCompilation(
+            compilation_result = JavaMavenCompilation(
                 self.project_root, module_root=resolved_module_root
-            ).get_compilation_errors()
-            erroneous_files = [
-                compilation_error.file for compilation_error in compilation_errors
-            ]
-            final_result.compiles = not any(
-                _matches_error_path(err) for err in erroneous_files
+            ).compile_scope()
+            final_result.compiles = _target_compiles(
+                compilation_result,
+                qualified_test_class_name,
             )
 
             try:

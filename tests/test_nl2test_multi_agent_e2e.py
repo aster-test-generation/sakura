@@ -77,7 +77,7 @@ from sakura.nl2test.preprocessing.embedders.base import BaseEmbedder
 from sakura.nl2test.preprocessing.indexers import ClassIndexer, MethodIndexer
 from sakura.nl2test.preprocessing.indexers.base import BaseIndexer
 from sakura.utils.analysis import CommonAnalysis
-from sakura.utils.compilation.maven import CompilationError
+from sakura.utils.compilation.maven import CompilationError, CompilationScopeResult
 from sakura.utils.config import Config, init_config
 
 # Aliased so pytest does not try to collect it as a test class.
@@ -597,11 +597,11 @@ class FakeMavenCompilation:
     def __init__(self, project_root: Path, module_root: Path | None = None) -> None:
         self.root = Path(module_root or project_root)
 
-    def get_compilation_errors(self) -> List[CompilationError]:
+    def compile_scope(self) -> CompilationScopeResult:
         errors: List[CompilationError] = []
         test_root = self.root / "src" / "test" / "java"
         if not test_root.exists():
-            return errors
+            return CompilationScopeResult(success=True, output="", errors=[])
         for java_file in sorted(test_root.rglob("*.java")):
             source = java_file.read_text(encoding="utf-8")
             if BROKEN_MARKER not in source:
@@ -623,7 +623,14 @@ class FakeMavenCompilation:
                     details=["symbol:   method totalItems()", f"location: {SERVICE}"],
                 )
             )
-        return errors
+        return CompilationScopeResult(
+            success=not errors,
+            output="",
+            errors=errors,
+        )
+
+    def get_compilation_errors(self) -> List[CompilationError]:
+        return self.compile_scope().errors
 
 
 class FakeMavenExecution:

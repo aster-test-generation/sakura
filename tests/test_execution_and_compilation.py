@@ -4,14 +4,17 @@ import json
 import textwrap
 from typing import cast
 
-import pytest
 from langchain_core.messages import ToolCall
 
 from sakura.nl2test.generation.common.compilation_execution import (
     CompilationExecutionMixin,
 )
 from sakura.nl2test.models import AgentState
-from sakura.utils.compilation.maven import CompilationError, JavaMavenCompilation
+from sakura.utils.compilation.maven import (
+    CompilationError,
+    CompilationScopeResult,
+    JavaMavenCompilation,
+)
 from sakura.utils.execution.maven import JavaMavenExecution
 from sakura.utils.file_io.test_file_manager import TestFileInfo, TestFileManager
 from sakura.utils.pretty.prints import pretty_print
@@ -97,8 +100,12 @@ def test_compile_and_execute_matches_target_paths(monkeypatch, petclinic_paths):
     )
     monkeypatch.setattr(
         JavaMavenCompilation,
-        "get_compilation_errors",
-        lambda self: [relative_error],
+        "compile_scope",
+        lambda self: CompilationScopeResult(
+            success=False,
+            output="",
+            errors=[relative_error],
+        ),
     )
 
     outputs = []
@@ -118,8 +125,12 @@ def test_compile_and_execute_matches_target_paths(monkeypatch, petclinic_paths):
     )
     monkeypatch.setattr(
         JavaMavenCompilation,
-        "get_compilation_errors",
-        lambda self: [basename_error],
+        "compile_scope",
+        lambda self: CompilationScopeResult(
+            success=False,
+            output="",
+            errors=[basename_error],
+        ),
     )
 
     outputs = []

@@ -294,9 +294,9 @@ class TestVendoredApiSurface:
 
     def test_consumed_methods_exist(self):
         for name in self.CONSUMED_METHODS:
-            assert callable(
-                getattr(MavenBuild, name, None)
-            ), f"MavenBuild.{name} missing"
+            assert callable(getattr(MavenBuild, name, None)), (
+                f"MavenBuild.{name} missing"
+            )
 
     def test_init_attributes(self, tmp_path):
         project_root = _pom_project(tmp_path)
@@ -555,6 +555,18 @@ class TestPomIntrospection:
             child_root,
             _child_pom("API Display Name", relative_path="../../pom.xml"),
         )
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() == parent_root
+
+    def test_get_parent_module_path_resolves_directory_relative_path(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("child"))
+        _write_pom(child_root, _child_pom("child", relative_path=".."))
 
         builder = MavenBuild(str(child_root))
 

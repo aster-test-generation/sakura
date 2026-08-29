@@ -320,6 +320,9 @@ class MavenBuild(AbstractBuild):
             relative_path = Path(relative_path_text)
 
         parent_build_file = self.build_file.parent.joinpath(relative_path).resolve()
+        if parent_build_file.is_dir():
+            # Maven resolves a relativePath pointing at a directory to its pom.xml
+            parent_build_file = parent_build_file.joinpath("pom.xml")
         if not parent_build_file.is_file():
             return None
 

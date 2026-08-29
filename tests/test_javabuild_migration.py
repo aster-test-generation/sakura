@@ -77,6 +77,43 @@ def _pom_project(tmp_path: Path, body: str = NAMESPACED_POM) -> Path:
     return project_root
 
 
+def _parent_pom(module: str) -> str:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>parent</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>{module}</module>
+  </modules>
+</project>
+"""
+
+
+def _child_pom(display_name: str, relative_path: str | None = None) -> str:
+    if relative_path is None:
+        relative_path_element = ""
+    elif relative_path:
+        relative_path_element = f"    <relativePath>{relative_path}</relativePath>\n"
+    else:
+        relative_path_element = "    <relativePath/>\n"
+
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.example</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0</version>
+{relative_path_element}  </parent>
+  <artifactId>child</artifactId>
+  <name>{display_name}</name>
+</project>
+"""
+
+
 def _multimodule_project(tmp_path: Path) -> Path:
     """parent -> {web -> {web-api}, core}"""
     root = tmp_path.joinpath("parent")
@@ -450,10 +487,56 @@ class TestPomIntrospection:
         assert builder.is_multi_module_project() is True
         assert builder.get_modules() == {"web": {"web-api": {}}, "core": {}}
 
-    def test_get_parent_module_path_finds_parent(self, tmp_path):
-        project_root = _multimodule_project(tmp_path)
-        core_builder = MavenBuild(str(project_root.joinpath("core")))
-        assert core_builder.get_parent_module_path() == project_root
+    def test_get_parent_module_path_uses_default_relative_path_with_custom_name(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("child"))
+        _write_pom(child_root, _child_pom("Custom Display Name"))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() == parent_root
+
+    def test_get_parent_module_path_resolves_nested_explicit_relative_path(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("services", "api")
+        _write_pom(parent_root, _parent_pom("services/./api"))
+        _write_pom(
+            child_root,
+            _child_pom("API Display Name", relative_path="../../pom.xml"),
+        )
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() == parent_root
+
+    def test_get_parent_module_path_returns_none_when_parent_omits_module(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("another-child"))
+        _write_pom(child_root, _child_pom("child"))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() is None
+
+    def test_get_parent_module_path_ignores_empty_relative_path(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("child"))
+        _write_pom(child_root, _child_pom("child", relative_path=""))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() is None
 
     def test_java_version_from_compiler_target_property(self, tmp_path):
         project_root = _pom_project(tmp_path)

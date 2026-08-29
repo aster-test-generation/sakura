@@ -302,29 +302,39 @@ class MavenBuild(AbstractBuild):
             Path: Path object for the parent path; None if there is no parent module
         """
         root = self.build_tree.getroot()
+        if root is None:
+            return None
         parent_element = root.find("./parent", self.build_namespaces)
-        if parent_element is not None:
-            # get the name of the module
-            module_name_element = root.find("./name", self.build_namespaces)
-            module_name = (
-                module_name_element.text
-                if module_name_element is not None
-                else self.project_root.name
-            )
+        if parent_element is None:
+            return None
 
-            # check whether a pom exists in the parent dir and list a submodule with the same name
-            parent_dir = self.project_root.parent
-            parent_build_file = parent_dir.joinpath(self.build_file_name)
-            if parent_build_file.exists():
-                # parse the parent pom and check for module name among the listed modules
-                parent_tree, parent_namespaces = self.__parse_build_file(
-                    parent_build_file
-                )
-                for par_module_elem in parent_tree.findall(
-                    "./modules/module", parent_namespaces
-                ):
-                    if par_module_elem.text == module_name:
-                        return parent_dir
+        relative_path_element = parent_element.find(
+            "./relativePath", self.build_namespaces
+        )
+        if relative_path_element is None:
+            relative_path = Path("../pom.xml")
+        else:
+            relative_path_text = (relative_path_element.text or "").strip()
+            if not relative_path_text:
+                return None
+            relative_path = Path(relative_path_text)
+
+        parent_build_file = self.build_file.parent.joinpath(relative_path).resolve()
+        if not parent_build_file.is_file():
+            return None
+
+        parent_tree, parent_namespaces = self.__parse_build_file(parent_build_file)
+        parent_dir = parent_build_file.parent
+        child_project_path = self.project_root.resolve()
+        for parent_module_element in parent_tree.findall(
+            "./modules/module", parent_namespaces
+        ):
+            module_text = (parent_module_element.text or "").strip()
+            if not module_text:
+                continue
+            module_path = parent_dir.joinpath(module_text).resolve()
+            if module_path == child_project_path:
+                return parent_dir
         return None
 
     def __get_version_from_tree_element(self, root, match_str):

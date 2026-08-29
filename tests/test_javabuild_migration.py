@@ -565,6 +565,31 @@ class TestWcaPomMutation:
 
         assert dependencies == expected_dependencies
 
+    def test_namespaced_mutation_is_idempotent_on_same_builder(
+        self, tmp_path: Path
+    ) -> None:
+        project_root = _pom_project(tmp_path)
+        builder = MavenBuild(str(project_root))
+
+        builder.add_wca_test_dependencies()
+        builder.add_wca_test_dependencies()
+
+        root = ET.parse(project_root.joinpath("pom.xml")).getroot()
+        dependency_sections = [
+            child for child in root if _local_name(child.tag) == "dependencies"
+        ]
+        artifact_ids = [
+            _child_text(dependency, "artifactId")
+            for dependency in _elements(root, "dependency")
+        ]
+        assert len(dependency_sections) == 1
+        assert len(artifact_ids) == 3
+        assert set(artifact_ids) == {
+            "junit-jupiter-api",
+            "mockito-core",
+            "mockito-junit-jupiter",
+        }
+
 
 class TestCoveragePomMutation:
     def _mutated_pom_root(self, tmp_path, body=NAMESPACED_POM, add_java_agent=True):
@@ -652,6 +677,116 @@ class TestCoveragePomMutation:
     def test_plain_pom_mutation_works_without_namespace(self, tmp_path):
         root = self._mutated_pom_root(tmp_path, body=PLAIN_POM)
         assert len(_find_plugin(root, "jacoco-maven-plugin")) == 1
+
+    def test_namespaced_mutation_is_idempotent_on_same_builder(
+        self, tmp_path: Path
+    ) -> None:
+        project_root = _pom_project(tmp_path)
+        output_pom = project_root.joinpath("pom_cov.xml")
+        builder = MavenBuild(str(project_root))
+
+        for _ in range(2):
+            builder.add_code_coverage_dependencies(
+                output_build_file=str(output_pom), add_java_agent=True
+            )
+
+        root = ET.parse(output_pom).getroot()
+        build_sections = [child for child in root if _local_name(child.tag) == "build"]
+        dependency_sections = [
+            child for child in root if _local_name(child.tag) == "dependencies"
+        ]
+        plugins_sections = [
+            child for child in build_sections[0] if _local_name(child.tag) == "plugins"
+        ]
+        agent_dependencies = [
+            dependency
+            for dependency in _elements(root, "dependency")
+            if _child_text(dependency, "artifactId") == "org.jacoco.agent"
+        ]
+        surefire = _find_plugin(root, "maven-surefire-plugin")
+
+        assert len(build_sections) == 1
+        assert len(dependency_sections) == 1
+        assert len(plugins_sections) == 1
+        assert len(_find_plugin(root, "jacoco-maven-plugin")) == 1
+        assert len(agent_dependencies) == 1
+        assert len(surefire) == 1
+        arg_line = _elements(surefire[0], "argLine")[0].text or ""
+        assert arg_line.count("-javaagent:") == 1
+
+    def test_existing_surefire_plugin_is_reused_and_configuration_preserved(
+        self, tmp_path: Path
+    ) -> None:
+        pom_with_surefire = NAMESPACED_POM.replace(
+            """  <properties>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+""",
+            """  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <reuseForks>false</reuseForks>
+          <argLine>-Xmx512m</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+""",
+        )
+        project_root = _pom_project(tmp_path, pom_with_surefire)
+        output_pom = project_root.joinpath("pom_cov.xml")
+        builder = MavenBuild(str(project_root))
+
+        for _ in range(2):
+            builder.add_code_coverage_dependencies(
+                output_build_file=str(output_pom), add_java_agent=True
+            )
+
+        root = ET.parse(output_pom).getroot()
+        surefire = _find_plugin(root, "maven-surefire-plugin")
+        assert len(surefire) == 1
+        assert _child_text(surefire[0], "groupId") is None
+        assert _child_text(surefire[0], "version") == "3.5.2"
+        assert (
+            _child_text(_elements(surefire[0], "configuration")[0], "reuseForks")
+            == "false"
+        )
+        arg_line = _elements(surefire[0], "argLine")[0].text or ""
+        assert arg_line.startswith("-Xmx512m ")
+        assert arg_line.count("-javaagent:") == 1
+
+
+class TestMutationAnalysisPomMutation:
+    def test_namespaced_mutation_is_idempotent_on_same_builder(
+        self, tmp_path: Path
+    ) -> None:
+        project_root = _pom_project(tmp_path)
+        output_pom = project_root.joinpath("pom_pitest.xml")
+        builder = MavenBuild(str(project_root))
+
+        for _ in range(2):
+            builder.add_mutation_analysis_dependencies(
+                output_build_file=str(output_pom),
+                target_tests=["com.example.*Test"],
+                excluded_tests=["com.example.SlowTest"],
+                target_classes=["com.example.*"],
+            )
+
+        root = ET.parse(output_pom).getroot()
+        build_sections = [child for child in root if _local_name(child.tag) == "build"]
+        plugins_sections = [
+            child for child in build_sections[0] if _local_name(child.tag) == "plugins"
+        ]
+
+        assert len(build_sections) == 1
+        assert len(plugins_sections) == 1
+        assert len(_find_plugin(root, "pitest-maven")) == 1
+        assert len(_elements(root, "targetTests")) == 1
+        assert len(_elements(root, "excludedTestClasses")) == 1
+        assert len(_elements(root, "targetClasses")) == 1
 
 
 class TestReasterTestCodeContract:

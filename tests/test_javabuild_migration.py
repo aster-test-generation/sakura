@@ -380,6 +380,26 @@ class TestVendoredApiSurface:
         assert errors[1].line == 40
         assert errors[1].column is None
 
+    def test_runtime_method_parser_preserves_text_and_flushes_at_eof(self, tmp_path):
+        project_root = _pom_project(tmp_path)
+        builder = MavenBuild(str(project_root))
+        error_line = "[ERROR]   FooTest.testMethod:42 Runtime failure"
+
+        errors = builder.find_runtime_error_for_method(
+            error_line, "FooTest", "testMethod"
+        )
+
+        assert errors == {42: error_line}
+
+    def test_runtime_class_parser_flushes_unterminated_error_at_eof(self, tmp_path):
+        project_root = _pom_project(tmp_path)
+        builder = MavenBuild(str(project_root))
+        error_line = "[ERROR]   FooTest.testMethod:42 Runtime failure"
+
+        errors = builder.find_runtime_error_for_class(error_line, "FooTest")
+
+        assert errors == {"testMethod": {42: error_line}}
+
 
 class TestMavenCommandConstruction:
     def test_compile_tests_pre_compile_build_command(self, tmp_path, captured_maven):

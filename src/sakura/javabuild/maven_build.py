@@ -1113,10 +1113,10 @@ class MavenBuild(AbstractBuild):
                     )
                     if potential_line_number is not None:
                         line_number = int(potential_line_number)
-                    line = " ".join(line)
                     if line_number != -1:
                         problem_line[line_number] = line
                         capture = True
+                        continue
 
             # This signifies the end of the maven output
             if "Tests run:" in line and capture:
@@ -1132,6 +1132,8 @@ class MavenBuild(AbstractBuild):
         RichLog.debug(
             f"<-- find_runtime_error_for_method({test_class_name}.{method_name})..."
         )
+        if capture:
+            return problem_line
         return {}
 
     ################################################################################
@@ -1202,6 +1204,8 @@ class MavenBuild(AbstractBuild):
                 if line_number != -1:
                     if line not in problem_line[line_number]:
                         problem_line[line_number] = problem_line[line_number] + line
+        if capture and method_name != "":
+            temp[method_name] = problem_line
         if len(temp) > 0:
             return temp
         return {}

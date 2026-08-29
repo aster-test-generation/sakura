@@ -1,5 +1,7 @@
 import csv
 import json
+import os
+import tempfile
 from pathlib import Path
 from typing import Any, List, Literal, Sequence, Type, TypeVar, Union
 
@@ -39,11 +41,22 @@ class StructuredDataManager:
 
     @staticmethod
     def _atomic_write_text(path: Path, content: str) -> None:
-        """To avoid any writing corruption, we write to a temporary file then replace the original."""
-        tmp = path.with_suffix(path.suffix + ".tmp")
-        with tmp.open("w", encoding="utf-8", newline="") as f:
-            f.write(content)
-        tmp.replace(path)
+        """Write through a unique same-directory temporary file."""
+        fd, tmp_name = tempfile.mkstemp(
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+        )
+        tmp_path = Path(tmp_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="") as f:
+                fd = -1
+                f.write(content)
+            tmp_path.replace(path)
+        finally:
+            if fd != -1:
+                os.close(fd)
+            tmp_path.unlink(missing_ok=True)
 
     def save(
         self,
@@ -58,11 +71,8 @@ class StructuredDataManager:
 
         if format == "json":
             if mode == "append" and path.exists():
-                try:
-                    with path.open("r", encoding="utf-8") as f:
-                        existing = json.load(f)
-                except Exception:
-                    existing = []
+                with path.open("r", encoding="utf-8") as f:
+                    existing = json.load(f)
                 if not isinstance(existing, list):
                     existing = [existing]
                 existing.extend(rows)

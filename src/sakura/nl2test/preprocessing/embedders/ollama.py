@@ -19,6 +19,9 @@ OLLAMA_MAX_WORKERS = 4
 
 def _is_retriable_error(exc: BaseException) -> bool:
     """Check if exception is transient and worth retrying."""
+    status = getattr(exc, "status_code", None)
+    if status is not None:
+        return status in {429, 500, 502, 503, 504}
     if isinstance(exc, (ConnectionError, TimeoutError)):
         return True
     msg = str(exc).lower()
@@ -65,8 +68,10 @@ class OllamaEmbedder(BaseEmbedder):
             raise ValueError("Text to embed cannot be empty")
         try:
             raw = ollama.embeddings(model=self.model_id, prompt=text)["embedding"]
-        except Exception as e:
-            raise RuntimeError(f"Error embedding with Ollama: {e}")
+        except ollama.ResponseError:
+            raise
+        except Exception as exc:
+            raise RuntimeError(f"Error embedding with Ollama: {exc}") from exc
         return np.asarray(raw, dtype=np.float32).reshape(-1)
 
     def _embed(self, text: str) -> List[float]:

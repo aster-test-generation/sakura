@@ -1,6 +1,7 @@
 import os
 from typing import List, Optional
 
+import openai
 from langchain_openai import OpenAIEmbeddings
 from pydantic import SecretStr
 from tenacity import (
@@ -23,9 +24,9 @@ def _is_retriable_error(exc: BaseException) -> bool:
     status = getattr(exc, "status_code", None) or getattr(
         getattr(exc, "response", None), "status_code", None
     )
-    if status in {429, 500, 502, 503, 504}:
-        return True
-    if isinstance(exc, (ConnectionError, TimeoutError)):
+    if status is not None:
+        return status in {429, 500, 502, 503, 504}
+    if isinstance(exc, (openai.APIConnectionError, ConnectionError, TimeoutError)):
         return True
     msg = str(exc).lower()
     if "rate limit" in msg or "too many requests" in msg or "overloaded" in msg:
@@ -46,9 +47,6 @@ def _log_retry_attempt(retry_state: RetryCallState) -> None:
 
 class HttpEmbedder(BaseEmbedder):
     def __init__(self, model_id: str, api_url: str, api_key: Optional[str] = None):
-        # Note: max_retries is omitted to let tenacity handle all retry logic
-        # with proper exponential backoff. Add max_retries here if you want
-        # LangChain's built-in HTTP-level retries to stack with tenacity.
         api_key_value = api_key.strip() if api_key else None
         api_key_param: SecretStr | None
         if api_key_value:
@@ -65,6 +63,7 @@ class HttpEmbedder(BaseEmbedder):
             base_url=api_url.rstrip("/"),
             api_key=api_key_param,
             check_embedding_ctx_length=False,
+            max_retries=0,
         )
         probe_embedding = self._embed_query_with_retry("probe")
         super().__init__(len(probe_embedding))

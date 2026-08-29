@@ -329,7 +329,7 @@ class TestFileManager:
         file_path = self.target_path(test_info, encode_class_name=encode_class_name)
         if not file_path.exists():
             RichLog.info(f"File does not exist, skipping delete: {file_path}")
-            return True if strict else False
+            return False
 
         attempts = 0
         last_error: Optional[Exception] = None

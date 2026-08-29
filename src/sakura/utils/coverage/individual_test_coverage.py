@@ -3,20 +3,17 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
-from typing import List, Tuple, Union, Dict
+from typing import Dict, List, Tuple
 
 import ray
 from bs4 import BeautifulSoup
-from tqdm import tqdm
 
 from sakura.utils.analysis import CommonAnalysis
-from sakura.utils.pretty.color_logger import RichLog
-
-from sakura.utils.coverage.jacoco_test_watcher import TEST_CODE
 from sakura.javabuild.build_factory import BuildFactory
-
-from sakura.utils import constants
+from sakura.utils.coverage.jacoco_test_watcher import TEST_CODE
+from sakura.utils.pretty.color_logger import RichLog
 
 JACOCO_CLI_JAR = (
     Path(__file__)
@@ -27,29 +24,51 @@ TEST_WATCHER_CLASS_NAME = "JaCoCoTestWatcher"
 JACOCO_TEST_FOLDER = "target/jacoco-tests"
 
 
+def _build_jacoco_report_command(
+    project_root: Path, source_root: str, test: tuple[str, str]
+) -> tuple[list[str], Path, Path]:
+    project_root = project_root.absolute()
+    class_name = test[0]
+    method_name = test[1].split("(", maxsplit=1)[0].strip()
+    exec_file = project_root.joinpath(
+        JACOCO_TEST_FOLDER, f"{class_name}__{method_name}.exec"
+    )
+    report_dir = project_root.joinpath("target", f"{class_name}__{method_name}__report")
+    source_path = Path(source_root)
+    if not source_path.is_absolute():
+        source_path = project_root.joinpath(source_path)
+
+    command = [
+        "java",
+        "-jar",
+        str(JACOCO_CLI_JAR),
+        "report",
+        str(exec_file),
+        "--classfiles",
+        str(project_root.joinpath("target", "classes")),
+        "--sourcefiles",
+        str(source_path),
+        "--html",
+        str(report_dir),
+    ]
+    return command, exec_file, report_dir
+
+
 @ray.remote
 def _collect_coverage_task(project_root: Path, source_root: str, test: Tuple[str, str]):
-    class_name = test[0].replace("$", "\$")
-    method_name = test[1].split("(")[0].strip()
-    jacococli_command = (
-        f"java -jar {JACOCO_CLI_JAR} report "
-        f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
-        f"--classfiles target/classes --sourcefiles {source_root} --html "
-        f"target{os.sep}{class_name}__{method_name}__report"
+    jacococli_command, _, report_dir = _build_jacoco_report_command(
+        project_root, source_root, test
     )
     try:
         RichLog.debug(f"Running command: {jacococli_command}")
-        response = subprocess.run(
+        subprocess.run(
             jacococli_command,
             cwd=project_root,
-            shell=True,
             check=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
         )
-        coverage_details = IndividualTestCoverage.extract_all_covered_lines(
-            project_root.joinpath("target", f"{class_name}__{method_name}__report")
-        )
+        coverage_details = IndividualTestCoverage.extract_all_covered_lines(report_dir)
         return test, coverage_details, True
     except subprocess.CalledProcessError as e:
         RichLog.error(f'Error running command "{e.cmd}"')
@@ -60,7 +79,7 @@ class IndividualTestCoverage:
     def __init__(
         self,
         project_root: Path,
-        target_module: str = None,
+        target_module: str | None = None,
         build_type: str = "maven",
         source_root: str = "src/main/java",
         test_root: str = "src/test/java",
@@ -145,7 +164,7 @@ class IndividualTestCoverage:
         )
         return root_package
 
-    def generate(self, tests_to_run: List[Tuple[str, str]] = []) -> dict:
+    def generate(self, tests_to_run: list[tuple[str, str]] | None = None) -> dict:
         """
         Generate coverage for individual tests
         Args:
@@ -156,34 +175,50 @@ class IndividualTestCoverage:
             key: Test class name
             value: key: test method name, value: coverage
         """
-        # Step 1: Modify pom
-        modified_build_file = self.project_root.joinpath("pom_cov.xml")
-        self.builder.add_code_coverage_dependencies(
-            output_build_file=str(modified_build_file), add_java_agent=True
+        tests_to_run = tests_to_run or []
+        file_descriptor, build_file_name = tempfile.mkstemp(
+            dir=self.project_root,
+            prefix=".sakura-pom-cov-",
+            suffix=".xml",
         )
-
-        # Step 2: Add the helper class and modify all tests
-        all_test_classes = []
-        for test in tests_to_run:
-            all_test_classes.append(test[0])
-        all_test_classes = list(set(all_test_classes))
-        test_class_name_path = IndividualTestCoverage.__get_test_class_info(
-            test_root=str(self.project_root.joinpath(self.test_root)),
-            qualified_names=all_test_classes,
-        )
-        original_class_content, additional_class = self.__add_helper_class_modify_tests(
-            all_test_classes=test_class_name_path
-        )
-
+        os.close(file_descriptor)
+        modified_build_file = Path(build_file_name)
+        original_class_content: dict[Path, bytes] = {}
+        watcher_path = self.__get_watcher_path()
+        watcher_snapshot: bytes | None = None
+        watcher_was_snapshotted = False
+        watcher_was_touched = False
+        operation_error: BaseException | None = None
         try:
-            # Step 3: Run tests
+            all_test_classes = list(dict.fromkeys(test[0] for test in tests_to_run))
+            test_class_name_path = IndividualTestCoverage.__get_test_class_info(
+                test_root=str(self.project_root.joinpath(self.test_root)),
+                qualified_names=all_test_classes,
+            )
+            original_class_content = self.__snapshot_test_classes(
+                test_class_name_path, watcher_path
+            )
+            if watcher_path.exists():
+                watcher_snapshot = watcher_path.read_bytes()
+            watcher_was_snapshotted = True
+
+            self.builder.add_code_coverage_dependencies(
+                output_build_file=str(modified_build_file), add_java_agent=True
+            )
+
+            watcher_was_touched = True
+            self.__add_helper_class_modify_tests(
+                all_test_classes=test_class_name_path,
+                original_class_content=original_class_content,
+                watcher_path=watcher_path,
+            )
+
             self.__run_tests(
                 tests_to_run=tests_to_run,
                 modified_build_file=modified_build_file,
                 is_run_all_test=True if len(tests_to_run) == 0 else False,
             )
 
-            # Step 4: Collect coverage
             coverage, exec_file_failures = self.__collect_coverage(
                 executed_tests=(
                     tests_to_run
@@ -194,13 +229,38 @@ class IndividualTestCoverage:
             RichLog.info(
                 f"Coverage for each test method computed; jacoco report failures on files: {exec_file_failures}"
             )
+            return coverage
+        except BaseException as error:
+            operation_error = error
+            raise
         finally:
-            # Step 5: Cleanup everything altered
-            self.__cleanup(
-                original_class_content=original_class_content,
-                additional_class=additional_class,
-            )
-        return coverage
+            cleanup_errors: list[Exception] = []
+            try:
+                cleanup_errors.extend(
+                    self.__cleanup(
+                        original_class_content=original_class_content,
+                        watcher_path=watcher_path,
+                        watcher_snapshot=(
+                            watcher_snapshot if watcher_was_snapshotted else None
+                        ),
+                        restore_watcher=watcher_was_snapshotted and watcher_was_touched,
+                    )
+                )
+            except Exception as error:
+                cleanup_errors.append(error)
+
+            try:
+                modified_build_file.unlink(missing_ok=True)
+            except Exception as error:
+                cleanup_errors.append(error)
+
+            if cleanup_errors:
+                cleanup_error = ExceptionGroup(
+                    "Individual test coverage cleanup failed", cleanup_errors
+                )
+                if operation_error is None:
+                    raise cleanup_error
+                operation_error.add_note(str(cleanup_error))
 
     def __collect_coverage(
         self, executed_tests: List[Tuple[str, str]]
@@ -236,29 +296,20 @@ class IndividualTestCoverage:
         #                     }
         #                 ]
         for test in executed_tests:
-            class_name = test[0]
-            method_name = test[1].split("(")[0]
-            jacococli_command = (
-                f"java -jar {JACOCO_CLI_JAR} report "
-                f"{JACOCO_TEST_FOLDER}{os.sep}{class_name}__{method_name}.exec "
-                f"--classfiles target/classes --sourcefiles {self.source_root} --html "
-                f"target{os.sep}{class_name}__{method_name}__report"
+            method_name = test[1].split("(", maxsplit=1)[0].strip()
+            jacococli_command, exec_file, report_dir = _build_jacoco_report_command(
+                self.project_root, self.source_root, test
             )
             try:
                 RichLog.info(f"Running command: {jacococli_command}")
-                response = subprocess.run(
+                subprocess.run(
                     jacococli_command,
                     cwd=self.project_root,
-                    shell=True,
                     check=True,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT,
                 )
-                coverage_details = self.extract_all_covered_lines(
-                    self.project_root.joinpath(
-                        "target", f"{class_name}__{method_name}__report"
-                    )
-                )
+                coverage_details = self.extract_all_covered_lines(report_dir)
                 if test[0] in coverage:
                     coverage[test[0]].append(
                         {
@@ -277,7 +328,7 @@ class IndividualTestCoverage:
                     ]
             except subprocess.CalledProcessError as e:
                 RichLog.error(f'Error running command "{e.cmd}"')
-                failing_exec_files.append(f"{class_name}__{method_name}.exec")
+                failing_exec_files.append(exec_file.name)
         RichLog.info(f"Coverage collected for {len(coverage.keys())} tests")
         return coverage, failing_exec_files
 
@@ -472,17 +523,49 @@ class IndividualTestCoverage:
         )
 
     @staticmethod
-    def __cleanup(original_class_content: dict, additional_class: Path) -> None:
-        # Revert back to the original content
-        for class_path in original_class_content:
-            with open(class_path, "w") as f:
-                f.write(original_class_content[class_path])
-        # Remove the additional helper class
-        try:
-            os.remove(additional_class)
-            RichLog.info(f"Helper file '{additional_class}' deleted successfully.")
-        except FileNotFoundError:
-            RichLog.warn(f"File '{additional_class}' does not exist.")
+    def __cleanup(
+        original_class_content: dict[Path, bytes],
+        watcher_path: Path,
+        watcher_snapshot: bytes | None,
+        restore_watcher: bool,
+    ) -> list[Exception]:
+        cleanup_errors: list[Exception] = []
+        for class_path, original_content in original_class_content.items():
+            try:
+                class_path.write_bytes(original_content)
+            except Exception as error:
+                cleanup_errors.append(error)
+
+        if restore_watcher:
+            try:
+                if watcher_snapshot is None:
+                    watcher_path.unlink(missing_ok=True)
+                else:
+                    watcher_path.write_bytes(watcher_snapshot)
+            except Exception as error:
+                cleanup_errors.append(error)
+
+        return cleanup_errors
+
+    def __get_watcher_path(self) -> Path:
+        return self.project_root.joinpath(
+            self.test_root,
+            self.package_root.replace(".", os.sep),
+            f"{TEST_WATCHER_CLASS_NAME}.java",
+        )
+
+    @staticmethod
+    def __snapshot_test_classes(
+        all_test_classes: list[tuple[str, str | None]], watcher_path: Path
+    ) -> dict[Path, bytes]:
+        original_class_content: dict[Path, bytes] = {}
+        for _, test_class in all_test_classes:
+            if test_class is None:
+                continue
+            test_path = Path(test_class)
+            if test_path != watcher_path:
+                original_class_content[test_path] = test_path.read_bytes()
+        return original_class_content
 
     def __get_executed_test_methods(self) -> List[Tuple[str, str]]:
         executed_test_methods = []
@@ -502,44 +585,26 @@ class IndividualTestCoverage:
         return executed_test_methods
 
     def __add_helper_class_modify_tests(
-        self, all_test_classes: List[Tuple[str, str]]
-    ) -> tuple[dict[str, str], Path]:
-        """
-        Adds helper class and modified tests
-        Args:
-            all_test_classes: List of all qualified test names and their paths
-
-        Returns:
-            Tuple[dict, str]: original content, and the helper class
-
-        """
-        original_test_file = {}
+        self,
+        all_test_classes: list[tuple[str, str | None]],
+        original_class_content: dict[Path, bytes],
+        watcher_path: Path,
+    ) -> None:
         RichLog.info("Modifying helper code for individual test")
-        os.makedirs(
-            os.path.dirname(self.project_root.joinpath(self.test_root)), exist_ok=True
+        watcher_path.parent.mkdir(parents=True, exist_ok=True)
+        watcher_path.write_text(
+            TEST_CODE.replace("<package_name>", self.package_root), encoding="utf-8"
         )
-        # Writing the helper class
-        with open(
-            self.project_root.joinpath(
-                self.test_root,
-                self.package_root.replace(".", os.sep),
-                f"{TEST_WATCHER_CLASS_NAME}.java",
-            ),
-            "w",
-        ) as f:
-            content = TEST_CODE.replace("<package_name>", self.package_root)
-            f.write(content)
 
-        # Modify each test class
         for test_classes in all_test_classes:
             test_class = test_classes[1]
             if not test_class:
                 RichLog.warn(f"Skipping missing test class path for {test_classes[0]}")
                 continue
-            with open(test_class, "r") as f:
-                test_class_content = f.read()
-            original_test_file[test_class] = test_class_content
-            # if test package is different from root package, add import of watcher class
+            test_path = Path(test_class)
+            if test_path == watcher_path:
+                continue
+            test_class_content = original_class_content[test_path].decode("utf-8")
             if ".".join(test_classes[0].split(".")[:-1]) != self.package_root:
                 test_class_content = self.__add_import(
                     test_class_content,
@@ -561,13 +626,7 @@ class IndividualTestCoverage:
                     test_class_content, f"@RunWith({TEST_WATCHER_CLASS_NAME}.class)"
                 )
             test_class_content = test_class_content.replace("@Disabled", "//@Disabled")
-            with open(test_class, "w") as f:
-                f.write(test_class_content)
-        return original_test_file, self.project_root.joinpath(
-            self.test_root,
-            self.package_root.replace(".", os.sep),
-            f"{TEST_WATCHER_CLASS_NAME}.java",
-        )
+            test_path.write_text(test_class_content, encoding="utf-8")
 
     @staticmethod
     def __add_import(code: str, import_statement: str) -> str:
@@ -661,7 +720,7 @@ class IndividualTestCoverage:
         return annotation  # fallback
 
     @staticmethod
-    def __find_all_test_classes(test_root: str) -> List[Tuple[str, str]]:
+    def __find_all_test_classes(test_root: str) -> list[tuple[str, str | None]]:
         """
         Walk through all Java files under test_root and return a list of:
         (fully_qualified_class_name, file_path)
@@ -700,8 +759,8 @@ class IndividualTestCoverage:
 
     @staticmethod
     def __resolve_class_paths(
-        test_root: str, qualified_names: List[str]
-    ) -> List[Tuple[str, str]]:
+        test_root: str, qualified_names: list[str]
+    ) -> list[tuple[str, str | None]]:
         """
         Given a list of qualified names, return list of:
         (qualified_name, file_path)
@@ -717,8 +776,8 @@ class IndividualTestCoverage:
 
     @staticmethod
     def __get_test_class_info(
-        test_root: str, qualified_names: Union[None, List[str]] = None
-    ) -> list[Tuple[str, str]]:
+        test_root: str, qualified_names: list[str] | None = None
+    ) -> list[tuple[str, str | None]]:
         """
         Given a list of qualified test class name and their path
         Args:
@@ -728,7 +787,7 @@ class IndividualTestCoverage:
         Returns:
 
         """
-        if len(qualified_names) == 0:
+        if not qualified_names:
             return IndividualTestCoverage.__find_all_test_classes(test_root)
         else:
             return IndividualTestCoverage.__resolve_class_paths(

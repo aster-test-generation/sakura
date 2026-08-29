@@ -95,6 +95,7 @@ class JavaMavenExecution(MavenBuild):
         runtime_output = proc.stdout
 
         report_dirs = self.find_surefire_reports()
+        matched_any = False
         if report_dirs and expected_class:
             issues, matched_any = self.parse_surefire_reports_for_target(
                 report_dirs,
@@ -102,12 +103,25 @@ class JavaMavenExecution(MavenBuild):
                 expected_class=expected_class,
                 expected_method=expected_method,
             )
-            if matched_any:
-                return issues  # empty means executed and passed
+            if issues:
+                return issues
 
         console_issues = self.parse_console_output(runtime_output)
         if console_issues:
             return console_issues
+
+        if proc.returncode != 0:
+            return [
+                self._maven_process_issue(
+                    returncode=proc.returncode,
+                    stdout=runtime_output,
+                    expected_class=expected_class,
+                    expected_method=expected_method,
+                )
+            ]
+
+        if matched_any:
+            return []
 
         # If we targeted a test but have no evidence it ran, return an explicit error
         if expected_class and target_tests:
@@ -210,7 +224,8 @@ class JavaMavenExecution(MavenBuild):
                         if expected_method:
                             if not (
                                 test_name == expected_method
-                                or test_name.startswith(expected_method)
+                                or test_name.startswith(f"{expected_method}(")
+                                or test_name.startswith(f"{expected_method}[")
                             ):
                                 continue
 
@@ -238,6 +253,43 @@ class JavaMavenExecution(MavenBuild):
                                 issues.append(issue)
 
         return issues, matched_any
+
+    @classmethod
+    def _maven_process_issue(
+        cls,
+        returncode: int,
+        stdout: str | None,
+        expected_class: str | None,
+        expected_method: str | None,
+    ) -> ExecutionIssue:
+        if returncode == -1:
+            error_type = "MavenTimeout"
+            message = "Maven test command timed out."
+        else:
+            error_type = "MavenBuildFailure"
+            message = f"Maven test command exited with status {returncode}."
+
+        output = cls._concise_output(stdout)
+        if output:
+            message = f"{message} Output: {output}"
+
+        return ExecutionIssue(
+            class_name=expected_class or "",
+            test_name=expected_method or "",
+            kind="error",
+            error_type=error_type,
+            message=message,
+        )
+
+    @staticmethod
+    def _concise_output(stdout: str | None, max_chars: int = 500) -> str | None:
+        if not stdout:
+            return None
+
+        output = " ".join(stdout.split())
+        if len(output) > max_chars:
+            return f"...{output[-(max_chars - 3) :]}"
+        return output or None
 
     def parse_surefire_reports(
         self,

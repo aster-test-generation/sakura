@@ -589,10 +589,10 @@ class CommonAnalysis:
         Normalize constructor signatures for CLDK lookups, since CLDK expects constructors with name '<init>'.
         """
         simple_class_name = qualified_class_name.split(".")[-1]
-        constructor_prefix = f"{simple_class_name}("
-        if constructor_prefix not in method_signature:
+        method_name, separator, parameters = method_signature.partition("(")
+        if not separator or method_name != simple_class_name:
             return method_signature
-        return method_signature.replace(constructor_prefix, "<init>(", 1)
+        return f"<init>({parameters}"
 
     @staticmethod
     def normalize_path_in_project(filepath: str, project_root: Optional[str]) -> str:

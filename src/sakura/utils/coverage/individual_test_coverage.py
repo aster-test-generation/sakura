@@ -296,10 +296,12 @@ class IndividualTestCoverage:
         return result
 
     @staticmethod
-    def __extract_branch_lines_from_html(soup):
+    def __extract_branch_lines_from_html(
+        soup: BeautifulSoup,
+    ) -> tuple[list[int], list[int], list[int]]:
         pre_block = soup.find("pre", class_="source")
         if not pre_block:
-            return [], []
+            return [], [], []
 
         lines = pre_block.find_all("span", id=re.compile(r"^L\d+"))
 

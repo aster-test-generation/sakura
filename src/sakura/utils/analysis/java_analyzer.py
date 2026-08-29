@@ -449,12 +449,70 @@ class CommonAnalysis:
 
     @staticmethod
     def is_getter_or_setter(method_details: JCallable) -> bool:
+        method_name, separator, _ = method_details.signature.partition("(")
         if (
-            method_details.signature.startswith("get")
-            or method_details.signature.startswith("set")
-        ) and len(method_details.code.split("\n")) <= 3:
-            return True
-        return False
+            not separator
+            or method_details.is_constructor
+            or method_details.is_implicit
+            or method_name.lower() == "setup"
+        ):
+            return False
+
+        name_match = re.fullmatch(
+            r"(?P<kind>get|set|is)[A-Z][A-Za-z0-9_$]*", method_name
+        )
+        if not name_match or not method_details.code:
+            return False
+
+        return_type = (method_details.return_type or "").strip()
+        parameters = method_details.parameters
+        kind = name_match.group("kind")
+
+        if kind in {"get", "is"}:
+            if parameters or not return_type or return_type == "void":
+                return False
+            if kind == "is" and return_type not in {
+                "boolean",
+                "Boolean",
+                "java.lang.Boolean",
+            }:
+                return False
+
+            body_match = re.fullmatch(
+                r"\{\s*return\s+(?:this\.)?"
+                r"(?P<field>[A-Za-z_$][A-Za-z0-9_$]*)\s*;\s*\}",
+                method_details.code,
+            )
+        else:
+            if len(parameters) != 1 or return_type != "void":
+                return False
+            parameter_name = parameters[0].name
+            if not parameter_name:
+                return False
+
+            body_match = re.fullmatch(
+                r"\{\s*(?P<receiver>this\.)?"
+                r"(?P<field>[A-Za-z_$][A-Za-z0-9_$]*)\s*=\s*"
+                + re.escape(parameter_name)
+                + r"\s*;\s*\}",
+                method_details.code,
+            )
+            if (
+                body_match
+                and not body_match.group("receiver")
+                and body_match.group("field") == parameter_name
+            ):
+                return False
+
+        if not body_match:
+            return False
+
+        accessed_fields = method_details.accessed_fields or []
+        field_name = body_match.group("field")
+        accessed_field_names = {
+            accessed_field.rsplit(".", 1)[-1] for accessed_field in accessed_fields
+        }
+        return not accessed_field_names or accessed_field_names == {field_name}
 
     @staticmethod
     def get_complete_method_code(method_declaration: str, method_code: str) -> str:

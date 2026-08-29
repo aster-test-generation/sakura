@@ -17,7 +17,11 @@ from sakura.dataset_creation.model import Test as DatasetTest
 from sakura.dataset_creation.sample_test2nl_descriptions import (
     create_abstraction_samples,
 )
-from sakura.nl2test.models import NL2TestEval, NL2TestInput
+from sakura.nl2test.models import (
+    AbstractionLevel as NL2AbstractionLevel,
+    NL2TestEval,
+    NL2TestInput,
+)
 from sakura.nl2test.models.decomposition import DecompositionMode
 from sakura.ray_utils.nl2test_actor import NL2TestActor
 from sakura.ray_utils.test2nl_actor import Test2NLActor
@@ -256,7 +260,11 @@ def _load_nl2_inputs_by_project_from_csv(
             project_name=entry.project_name,
             qualified_class_name=entry.qualified_class_name,
             method_signature=entry.method_signature,
-            abstraction_level=entry.abstraction_level.value,
+            abstraction_level=(
+                NL2AbstractionLevel(entry.abstraction_level.value)
+                if entry.abstraction_level is not None
+                else None
+            ),
             is_bdd=entry.is_bdd,
             id=entry.id,
         )

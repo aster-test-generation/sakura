@@ -64,6 +64,32 @@ PLAIN_POM = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+def _compiler_pom(properties: str = "", configuration: str = "") -> str:
+    properties_xml = f"<properties>{properties}</properties>" if properties else ""
+    plugin_xml = (
+        f"""<build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>{configuration}</configuration>
+      </plugin>
+    </plugins>
+  </build>"""
+        if configuration
+        else ""
+    )
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.0.0</version>
+  {properties_xml}
+  {plugin_xml}
+</project>
+"""
+
+
 def _write_pom(directory: Path, body: str) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     pom = directory.joinpath("pom.xml")
@@ -561,6 +587,16 @@ class TestPomIntrospection:
         builder = MavenBuild(str(project_root))
         assert builder.get_java_version() == "11"
 
+    def test_java_version_from_compiler_source_property(self, tmp_path: Path) -> None:
+        project_root = _pom_project(
+            tmp_path,
+            _compiler_pom(
+                properties="<maven.compiler.source>1.8</maven.compiler.source>"
+            ),
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == "8"
+
     def test_java_version_from_compiler_plugin_config(self, tmp_path):
         pom = NAMESPACED_POM.replace(
             """  <properties>
@@ -582,6 +618,62 @@ class TestPomIntrospection:
         project_root = _pom_project(tmp_path, pom)
         builder = MavenBuild(str(project_root))
         assert builder.get_java_version() == "21"
+
+    def test_java_version_from_compiler_plugin_source(self, tmp_path: Path) -> None:
+        project_root = _pom_project(
+            tmp_path, _compiler_pom(configuration="<source>11</source>")
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == "11"
+
+    @pytest.mark.parametrize(
+        ("properties", "expected"),
+        [
+            (
+                """<maven.compiler.target>17</maven.compiler.target>
+<maven.compiler.release>21</maven.compiler.release>
+<maven.compiler.source>11</maven.compiler.source>""",
+                "17",
+            ),
+            (
+                """<maven.compiler.release>21</maven.compiler.release>
+<maven.compiler.source>11</maven.compiler.source>""",
+                "21",
+            ),
+            ("<maven.compiler.source>11</maven.compiler.source>", "11"),
+        ],
+    )
+    def test_java_version_property_precedence_over_plugin(
+        self, tmp_path: Path, properties: str, expected: str
+    ) -> None:
+        project_root = _pom_project(
+            tmp_path,
+            _compiler_pom(
+                properties=properties,
+                configuration="<target>22</target><release>23</release><source>24</source>",
+            ),
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == expected
+
+    @pytest.mark.parametrize(
+        ("configuration", "expected"),
+        [
+            (
+                "<target>17</target><release>21</release><source>11</source>",
+                "17",
+            ),
+            ("<release>21</release><source>11</source>", "21"),
+        ],
+    )
+    def test_java_version_plugin_precedence(
+        self, tmp_path: Path, configuration: str, expected: str
+    ) -> None:
+        project_root = _pom_project(
+            tmp_path, _compiler_pom(configuration=configuration)
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == expected
 
 
 class TestWcaPomMutation:

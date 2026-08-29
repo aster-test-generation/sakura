@@ -368,10 +368,12 @@ class MavenBuild(AbstractBuild):
         # Example Type1
         # <maven.compiler.target>1.10</maven.compiler.target> or
         # <maven.compiler.release>8</maven.compiler.release> or
+        # <maven.compiler.source>8</maven.compiler.source> or
         # <java.version>11</java.version>
         match_str = [
             "./properties/maven.compiler.target",
             "./properties/maven.compiler.release",
+            "./properties/maven.compiler.source",
             "./properties/java.version",
             "./properties/jdk.version",
         ]
@@ -385,7 +387,7 @@ class MavenBuild(AbstractBuild):
         #     <plugin>
         #       <artifactId>maven-compiler-plugin</artifactId>
         #       <configuration>
-        #         <target>1.8</target> (or) <release>8</release>
+        #         <target>1.8</target> (or) <release>8</release> (or) <source>8</source>
         #       </configuration>
         #     </plugin>
         #   </plugins>
@@ -402,6 +404,7 @@ class MavenBuild(AbstractBuild):
                         match1_str = [
                             "./configuration/target",
                             "./configuration/release",
+                            "./configuration/source",
                         ]
                         version_type2, found = self.__get_version_from_tree_element(
                             plugin_element, match1_str

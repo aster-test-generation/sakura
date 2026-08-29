@@ -88,7 +88,6 @@ class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
             RuntimeError,
             EOFError,
             AttributeError,
-            faiss.FaissError,
         ) as exc:
             RichLog.warn(
                 f"Failed to load cached FAISS index at {self._index_dir}: {exc}"

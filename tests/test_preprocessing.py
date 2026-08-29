@@ -1,7 +1,15 @@
+from pathlib import Path
+from unittest.mock import patch
+
 import pytest
 from cldk.analysis.java import JavaAnalysis
+from langchain.schema import Document
 
-from sakura.nl2test.preprocessing.embedders import HttpEmbedder, OllamaEmbedder
+from sakura.nl2test.preprocessing.embedders import (
+    BaseEmbedder,
+    HttpEmbedder,
+    OllamaEmbedder,
+)
 from sakura.nl2test.preprocessing.extractors import (
     ClassSnippetExtractor,
     MethodSnippetExtractor,
@@ -16,9 +24,79 @@ from sakura.nl2test.preprocessing.searchers import (
     MethodSearcher,
     ProjectSearcher,
 )
-from sakura.nl2test.preprocessing.vector_stores import MethodVectorStore
+from sakura.nl2test.preprocessing.vector_stores import (
+    BaseFAISSVectorStore,
+    MethodVectorStore,
+)
 from sakura.utils.config import Config
 from sakura.utils.pretty.prints import pretty_print
+
+
+class _OfflineEmbedder(BaseEmbedder):
+    def __init__(self, dim: int = 3) -> None:
+        super().__init__(dim=dim)
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        return [[0.0] * self.dim for _ in texts]
+
+    def embed_query(self, text: str) -> list[float]:
+        return [0.0] * self.dim
+
+
+def _text_to_document(snippet: str) -> Document:
+    return Document(page_content=snippet)
+
+
+def test_invalid_cached_faiss_index_falls_back_to_fresh_store(
+    tmp_path: Path,
+) -> None:
+    index_dir = tmp_path / "index"
+    index_dir.mkdir()
+    embedder = _OfflineEmbedder()
+
+    with patch(
+        "sakura.nl2test.preprocessing.vector_stores.faiss_base.FAISS.load_local",
+        side_effect=ValueError("invalid cache"),
+    ) as load_local:
+        vector_store = BaseFAISSVectorStore(
+            embedder,
+            _text_to_document,
+            index_dir=index_dir,
+            use_stored_index=True,
+        )
+
+    load_local.assert_called_once_with(
+        str(index_dir),
+        embedder,
+        allow_dangerous_deserialization=True,
+    )
+    assert vector_store.loaded_from_cache is False
+    assert vector_store.store.index.d == embedder.dim
+    assert vector_store.store.index.ntotal == 0
+
+
+def test_incompatible_cached_faiss_dimension_falls_back_to_fresh_store(
+    tmp_path: Path,
+) -> None:
+    index_dir = tmp_path / "index"
+    cached_store = BaseFAISSVectorStore(
+        _OfflineEmbedder(dim=2),
+        _text_to_document,
+        index_dir=index_dir,
+    )
+    cached_store.add_snippets(["cached snippet"])
+
+    embedder = _OfflineEmbedder(dim=3)
+    vector_store = BaseFAISSVectorStore(
+        embedder,
+        _text_to_document,
+        index_dir=index_dir,
+        use_stored_index=True,
+    )
+
+    assert vector_store.loaded_from_cache is False
+    assert vector_store.store.index.d == embedder.dim
+    assert vector_store.store.index.ntotal == 0
 
 
 class TestEmbedding:

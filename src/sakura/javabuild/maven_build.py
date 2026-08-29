@@ -127,6 +127,17 @@ class MavenBuild(AbstractBuild):
         namespaces = {"": namespace} if namespace else None
         return tree, namespaces
 
+    @staticmethod
+    def __qualified_child_tag(parent: elemtree.Element, tag: str) -> str:
+        if parent.tag.startswith("{"):
+            namespace = parent.tag[1:].split("}", maxsplit=1)[0]
+            return f"{{{namespace}}}{tag}"
+        return tag
+
+    @classmethod
+    def __sub_element(cls, parent: elemtree.Element, tag: str) -> elemtree.Element:
+        return elemtree.SubElement(parent, cls.__qualified_child_tag(parent, tag))
+
     def __run_maven(
         self, command: List[str], timeout: int | None = 600
     ) -> subprocess.CompletedProcess[str]:
@@ -291,29 +302,42 @@ class MavenBuild(AbstractBuild):
             Path: Path object for the parent path; None if there is no parent module
         """
         root = self.build_tree.getroot()
+        if root is None:
+            return None
         parent_element = root.find("./parent", self.build_namespaces)
-        if parent_element is not None:
-            # get the name of the module
-            module_name_element = root.find("./name", self.build_namespaces)
-            module_name = (
-                module_name_element.text
-                if module_name_element is not None
-                else self.project_root.name
-            )
+        if parent_element is None:
+            return None
 
-            # check whether a pom exists in the parent dir and list a submodule with the same name
-            parent_dir = self.project_root.parent
-            parent_build_file = parent_dir.joinpath(self.build_file_name)
-            if parent_build_file.exists():
-                # parse the parent pom and check for module name among the listed modules
-                parent_tree, parent_namespaces = self.__parse_build_file(
-                    parent_build_file
-                )
-                for par_module_elem in parent_tree.findall(
-                    "./modules/module", parent_namespaces
-                ):
-                    if par_module_elem.text == module_name:
-                        return parent_dir
+        relative_path_element = parent_element.find(
+            "./relativePath", self.build_namespaces
+        )
+        if relative_path_element is None:
+            relative_path = Path("../pom.xml")
+        else:
+            relative_path_text = (relative_path_element.text or "").strip()
+            if not relative_path_text:
+                return None
+            relative_path = Path(relative_path_text)
+
+        parent_build_file = self.build_file.parent.joinpath(relative_path).resolve()
+        if parent_build_file.is_dir():
+            # Maven resolves a relativePath pointing at a directory to its pom.xml
+            parent_build_file = parent_build_file.joinpath("pom.xml")
+        if not parent_build_file.is_file():
+            return None
+
+        parent_tree, parent_namespaces = self.__parse_build_file(parent_build_file)
+        parent_dir = parent_build_file.parent
+        child_project_path = self.project_root.resolve()
+        for parent_module_element in parent_tree.findall(
+            "./modules/module", parent_namespaces
+        ):
+            module_text = (parent_module_element.text or "").strip()
+            if not module_text:
+                continue
+            module_path = parent_dir.joinpath(module_text).resolve()
+            if module_path == child_project_path:
+                return parent_dir
         return None
 
     def __get_version_from_tree_element(self, root, match_str):
@@ -347,10 +371,12 @@ class MavenBuild(AbstractBuild):
         # Example Type1
         # <maven.compiler.target>1.10</maven.compiler.target> or
         # <maven.compiler.release>8</maven.compiler.release> or
+        # <maven.compiler.source>8</maven.compiler.source> or
         # <java.version>11</java.version>
         match_str = [
             "./properties/maven.compiler.target",
             "./properties/maven.compiler.release",
+            "./properties/maven.compiler.source",
             "./properties/java.version",
             "./properties/jdk.version",
         ]
@@ -364,7 +390,7 @@ class MavenBuild(AbstractBuild):
         #     <plugin>
         #       <artifactId>maven-compiler-plugin</artifactId>
         #       <configuration>
-        #         <target>1.8</target> (or) <release>8</release>
+        #         <target>1.8</target> (or) <release>8</release> (or) <source>8</source>
         #       </configuration>
         #     </plugin>
         #   </plugins>
@@ -381,6 +407,7 @@ class MavenBuild(AbstractBuild):
                         match1_str = [
                             "./configuration/target",
                             "./configuration/release",
+                            "./configuration/source",
                         ]
                         version_type2, found = self.__get_version_from_tree_element(
                             plugin_element, match1_str
@@ -422,14 +449,13 @@ class MavenBuild(AbstractBuild):
             namespaces = self.build_namespaces
             tree = self.build_tree
         root = tree.getroot()
+        assert root is not None
 
         # get "dependencies" element from build file; add it if it does not exist
         deps_element = root.find("./dependencies", namespaces)
         if deps_element is None:
-            deps_element = elemtree.SubElement(root, "dependencies")
+            deps_element = self.__sub_element(root, "dependencies")
 
-        if is_add_spring_dependency:
-            self.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING.pop("org.springframework")
         dependency = (
             self.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING
             if is_add_spring_dependency
@@ -456,15 +482,13 @@ class MavenBuild(AbstractBuild):
                     ):
                         continue
 
-                dependency = elemtree.SubElement(deps_element, "dependency")
-                elemtree.SubElement(dependency, "groupId").text = group_id
-                elemtree.SubElement(dependency, "artifactId").text = required_dep[
+                dependency = self.__sub_element(deps_element, "dependency")
+                self.__sub_element(dependency, "groupId").text = group_id
+                self.__sub_element(dependency, "artifactId").text = required_dep[
                     "artifact_id"
                 ]
-                elemtree.SubElement(dependency, "version").text = required_dep[
-                    "version"
-                ]
-                elemtree.SubElement(dependency, "scope").text = required_dep["scope"]
+                self.__sub_element(dependency, "version").text = required_dep["version"]
+                self.__sub_element(dependency, "scope").text = required_dep["scope"]
 
         # write out augmented build file
         if self.target_module:
@@ -495,14 +519,15 @@ class MavenBuild(AbstractBuild):
         """
         RichLog.debug(f"Updating {self.project_root} build file: {self.build_file}")
         root = self.build_tree.getroot()
+        assert root is not None
 
         # locate or create <build>/<plugins>
         build = root.find("build", self.build_namespaces)
         if build is None:
-            build = elemtree.SubElement(root, "build")
+            build = self.__sub_element(root, "build")
         plugins = build.find("plugins", self.build_namespaces)
         if plugins is None:
-            plugins = elemtree.SubElement(build, "plugins")
+            plugins = self.__sub_element(build, "plugins")
 
         # add and configure jacoco plugin if it does not exist
         if not self.__element_exists(
@@ -511,47 +536,43 @@ class MavenBuild(AbstractBuild):
             target_group_id="org.jacoco",
             target_artifact_id="jacoco-maven-plugin",
         ):
-            jacoco_plugin = elemtree.SubElement(plugins, "plugin")
-            elemtree.SubElement(jacoco_plugin, "groupId").text = "org.jacoco"
-            elemtree.SubElement(jacoco_plugin, "artifactId").text = (
-                "jacoco-maven-plugin"
-            )
-            elemtree.SubElement(jacoco_plugin, "version").text = (
-                constants.JACOCO_VERSION
-            )
+            jacoco_plugin = self.__sub_element(plugins, "plugin")
+            self.__sub_element(jacoco_plugin, "groupId").text = "org.jacoco"
+            self.__sub_element(jacoco_plugin, "artifactId").text = "jacoco-maven-plugin"
+            self.__sub_element(jacoco_plugin, "version").text = constants.JACOCO_VERSION
 
             # configure plugin
-            config = elemtree.SubElement(jacoco_plugin, "configuration")
-            elemtree.SubElement(config, "destFile").text = (
-                constants.MAVEN_JACOCO_COV_FILE
-            )
-            elemtree.SubElement(config, "dataFile").text = (
-                constants.MAVEN_JACOCO_COV_FILE
-            )
-            elemtree.SubElement(config, "outputDirectory").text = (
-                constants.MAVEN_COV_REPORT_DIR
-            )
+            config = self.__sub_element(jacoco_plugin, "configuration")
+            self.__sub_element(
+                config, "destFile"
+            ).text = constants.MAVEN_JACOCO_COV_FILE
+            self.__sub_element(
+                config, "dataFile"
+            ).text = constants.MAVEN_JACOCO_COV_FILE
+            self.__sub_element(
+                config, "outputDirectory"
+            ).text = constants.MAVEN_COV_REPORT_DIR
 
             # add executions element
-            executions = elemtree.SubElement(jacoco_plugin, "executions")
+            executions = self.__sub_element(jacoco_plugin, "executions")
 
             # execution element for "prepare-agent" goal
-            execution = elemtree.SubElement(executions, "execution")
-            goals = elemtree.SubElement(execution, "goals")
-            elemtree.SubElement(goals, "goal").text = "prepare-agent"
+            execution = self.__sub_element(executions, "execution")
+            goals = self.__sub_element(execution, "goals")
+            self.__sub_element(goals, "goal").text = "prepare-agent"
 
             # execution element for "report" goal
-            execution = elemtree.SubElement(executions, "execution")
-            elemtree.SubElement(execution, "id").text = "report"
-            elemtree.SubElement(execution, "phase").text = "test"
-            goals = elemtree.SubElement(execution, "goals")
-            elemtree.SubElement(goals, "goal").text = "report"
+            execution = self.__sub_element(executions, "execution")
+            self.__sub_element(execution, "id").text = "report"
+            self.__sub_element(execution, "phase").text = "test"
+            goals = self.__sub_element(execution, "goals")
+            self.__sub_element(goals, "goal").text = "report"
 
         if add_java_agent:
             # locate or create <dependencies>
             dependencies = root.find("dependencies", self.build_namespaces)
             if dependencies is None:
-                dependencies = elemtree.SubElement(root, "dependencies")
+                dependencies = self.__sub_element(root, "dependencies")
 
             # if jacoco agent dependency does not exist, add it
             if not self.__element_exists(
@@ -560,16 +581,16 @@ class MavenBuild(AbstractBuild):
                 target_group_id="org.jacoco",
                 target_artifact_id="org.jacoco.agent",
             ):
-                dependency_elem = elemtree.SubElement(dependencies, "dependency")
-                elemtree.SubElement(dependency_elem, "groupId").text = "org.jacoco"
-                elemtree.SubElement(dependency_elem, "artifactId").text = (
-                    "org.jacoco.agent"
-                )
-                elemtree.SubElement(dependency_elem, "version").text = (
-                    constants.JACOCO_VERSION
-                )
-                elemtree.SubElement(dependency_elem, "classifier").text = "runtime"
-                elemtree.SubElement(dependency_elem, "scope").text = "test"
+                dependency_elem = self.__sub_element(dependencies, "dependency")
+                self.__sub_element(dependency_elem, "groupId").text = "org.jacoco"
+                self.__sub_element(
+                    dependency_elem, "artifactId"
+                ).text = "org.jacoco.agent"
+                self.__sub_element(
+                    dependency_elem, "version"
+                ).text = constants.JACOCO_VERSION
+                self.__sub_element(dependency_elem, "classifier").text = "runtime"
+                self.__sub_element(dependency_elem, "scope").text = "test"
 
             # add maven surefire plugin element, with argline configuration
             #       <plugin>
@@ -581,17 +602,39 @@ class MavenBuild(AbstractBuild):
             #           </argLine>
             #         </configuration>
             #       </plugin>
-            surefire_plugin = elemtree.SubElement(plugins, "plugin")
-            elemtree.SubElement(surefire_plugin, "groupId").text = (
-                "org.apache.maven.plugins"
+            surefire_plugin = self.__find_element(
+                parent_element=plugins,
+                target_element="plugin",
+                target_group_id="org.apache.maven.plugins",
+                target_artifact_id="maven-surefire-plugin",
+                allow_missing_group_id=True,
             )
-            elemtree.SubElement(surefire_plugin, "artifactId").text = (
-                "maven-surefire-plugin"
+            if surefire_plugin is None:
+                surefire_plugin = self.__sub_element(plugins, "plugin")
+                self.__sub_element(
+                    surefire_plugin, "groupId"
+                ).text = "org.apache.maven.plugins"
+                self.__sub_element(
+                    surefire_plugin, "artifactId"
+                ).text = "maven-surefire-plugin"
+
+            surefire_config = surefire_plugin.find(
+                "configuration", self.build_namespaces
             )
-            surefire_config = elemtree.SubElement(surefire_plugin, "configuration")
-            elemtree.SubElement(surefire_config, "argLine").text = (
-                f"-javaagent:${{settings.localRepository}}/org/jacoco/org.jacoco.agent/{constants.JACOCO_VERSION}/org.jacoco.agent-{constants.JACOCO_VERSION}-runtime.jar=output=none,jmx=true"
+            if surefire_config is None:
+                surefire_config = self.__sub_element(surefire_plugin, "configuration")
+            arg_line = surefire_config.find("argLine", self.build_namespaces)
+            if arg_line is None:
+                arg_line = self.__sub_element(surefire_config, "argLine")
+            java_agent_arg = (
+                f"-javaagent:${{settings.localRepository}}/org/jacoco/"
+                f"org.jacoco.agent/{constants.JACOCO_VERSION}/"
+                f"org.jacoco.agent-{constants.JACOCO_VERSION}-runtime.jar="
+                "output=none,jmx=true"
             )
+            existing_arg_line = (arg_line.text or "").strip()
+            if java_agent_arg not in existing_arg_line:
+                arg_line.text = f"{existing_arg_line} {java_agent_arg}".strip()
 
         # write updated maven build file
         elemtree.indent(self.build_tree)
@@ -629,14 +672,15 @@ class MavenBuild(AbstractBuild):
             f"Updating {self.project_root} build file for mutation analysis: {self.build_file}"
         )
         root = self.build_tree.getroot()
+        assert root is not None
 
         # locate or create <build>/<plugins>
         build = root.find("build", self.build_namespaces)
         if build is None:
-            build = elemtree.SubElement(root, "build")
+            build = self.__sub_element(root, "build")
         plugins = build.find("plugins", self.build_namespaces)
         if plugins is None:
-            plugins = elemtree.SubElement(build, "plugins")
+            plugins = self.__sub_element(build, "plugins")
 
         # check if PIT plugin already exists
         if self.__element_exists(
@@ -646,68 +690,92 @@ class MavenBuild(AbstractBuild):
             target_artifact_id="pitest-maven",
         ):
             RichLog.info("PIT plugin already exists.")
+            elemtree.indent(self.build_tree)
+            self.build_tree.write(output_build_file, encoding="unicode")
             return
 
         # add PIT plugin
-        pit_plugin = elemtree.SubElement(plugins, "plugin")
-        group_id = elemtree.SubElement(pit_plugin, "groupId")
+        pit_plugin = self.__sub_element(plugins, "plugin")
+        group_id = self.__sub_element(pit_plugin, "groupId")
         group_id.text = "org.pitest"
-        artifact_id = elemtree.SubElement(pit_plugin, "artifactId")
+        artifact_id = self.__sub_element(pit_plugin, "artifactId")
         artifact_id.text = "pitest-maven"
-        version = elemtree.SubElement(pit_plugin, "version")
+        version = self.__sub_element(pit_plugin, "version")
         version.text = MavenBuild.PITEST_MAVEN_VERSION
 
         # configure plugin with output formats and junit5 plugin
-        config = elemtree.SubElement(pit_plugin, "configuration")
-        output_formats = elemtree.SubElement(config, "outputFormats")
-        format_ = elemtree.SubElement(output_formats, "outputFormat")
+        config = self.__sub_element(pit_plugin, "configuration")
+        output_formats = self.__sub_element(config, "outputFormats")
+        format_ = self.__sub_element(output_formats, "outputFormat")
         format_.text = "HTML"
-        format_ = elemtree.SubElement(output_formats, "outputFormat")
+        format_ = self.__sub_element(output_formats, "outputFormat")
         format_.text = "XML"
-        format_ = elemtree.SubElement(output_formats, "outputFormat")
+        format_ = self.__sub_element(output_formats, "outputFormat")
         format_.text = "CSV"
-        junit_plugin = elemtree.SubElement(config, "pluginConfiguration")
-        junit_plugin_dep = elemtree.SubElement(junit_plugin, "plugin")
+        junit_plugin = self.__sub_element(config, "pluginConfiguration")
+        junit_plugin_dep = self.__sub_element(junit_plugin, "plugin")
         junit_plugin_dep.text = "junit5"
 
         # set and failure and report configuration options
-        elemtree.SubElement(config, "failWhenNoMutations").text = "false"
-        elemtree.SubElement(config, "timestampedReports").text = "false"
+        self.__sub_element(config, "failWhenNoMutations").text = "false"
+        self.__sub_element(config, "timestampedReports").text = "false"
 
         # set target tests and excluded tests
         if target_tests:
-            target_tests_elem = elemtree.SubElement(config, "targetTests")
+            target_tests_elem = self.__sub_element(config, "targetTests")
             for test_pattern in target_tests:
-                elemtree.SubElement(target_tests_elem, "param").text = test_pattern
+                self.__sub_element(target_tests_elem, "param").text = test_pattern
         # set target tests and excluded tests
         if excluded_tests:
-            excluded_tests_elem = elemtree.SubElement(config, "excludedTestClasses")
+            excluded_tests_elem = self.__sub_element(config, "excludedTestClasses")
             for test_pattern in excluded_tests:
-                elemtree.SubElement(excluded_tests_elem, "param").text = test_pattern
+                self.__sub_element(excluded_tests_elem, "param").text = test_pattern
 
         # configure target classes
         if target_classes:
-            target_classes_elem = elemtree.SubElement(config, "targetClasses")
+            target_classes_elem = self.__sub_element(config, "targetClasses")
             for class_pattern in target_classes:
-                elemtree.SubElement(target_classes_elem, "param").text = class_pattern
+                self.__sub_element(target_classes_elem, "param").text = class_pattern
 
         # configure mutation operators
-        elemtree.SubElement(config, "mutators").text = mutation_operators
+        self.__sub_element(config, "mutators").text = mutation_operators
 
         # add plugin dependencies
-        dependencies = elemtree.SubElement(pit_plugin, "dependencies")
-        plugin_dep = elemtree.SubElement(dependencies, "dependency")
-        plugin_group = elemtree.SubElement(plugin_dep, "groupId")
+        dependencies = self.__sub_element(pit_plugin, "dependencies")
+        plugin_dep = self.__sub_element(dependencies, "dependency")
+        plugin_group = self.__sub_element(plugin_dep, "groupId")
         plugin_group.text = "org.pitest"
-        plugin_artifact = elemtree.SubElement(plugin_dep, "artifactId")
+        plugin_artifact = self.__sub_element(plugin_dep, "artifactId")
         plugin_artifact.text = "pitest-junit5-plugin"
-        plugin_version = elemtree.SubElement(plugin_dep, "version")
+        plugin_version = self.__sub_element(plugin_dep, "version")
         plugin_version.text = MavenBuild.PITEST_JUNIT5_PLUGIN_VERSION
 
         # write updated build file
         elemtree.indent(self.build_tree)
         self.build_tree.write(output_build_file, encoding="unicode")
         RichLog.debug(f"Augmented build file written to {output_build_file}")
+
+    def __find_element(
+        self,
+        parent_element: elemtree.Element,
+        target_element: str,
+        target_group_id: str,
+        target_artifact_id: str,
+        allow_missing_group_id: bool = False,
+    ) -> elemtree.Element | None:
+        element_tag = self.__qualified_child_tag(parent_element, target_element)
+        for element in parent_element.findall(element_tag):
+            group_id = element.find(self.__qualified_child_tag(element, "groupId"))
+            artifact_id = element.find(
+                self.__qualified_child_tag(element, "artifactId")
+            )
+            if artifact_id is None or artifact_id.text != target_artifact_id:
+                continue
+            if group_id is None and allow_missing_group_id:
+                return element
+            if group_id is not None and group_id.text == target_group_id:
+                return element
+        return None
 
     def __element_exists(
         self,
@@ -716,16 +784,15 @@ class MavenBuild(AbstractBuild):
         target_group_id: str,
         target_artifact_id: str,
     ) -> bool:
-        for element in parent_element.findall(target_element, self.build_namespaces):
-            group_id = element.find("groupId", self.build_namespaces)
-            artifact_id = element.find("artifactId", self.build_namespaces)
-            if group_id is not None and artifact_id is not None:
-                if (
-                    group_id.text == target_group_id
-                    and artifact_id.text == target_artifact_id
-                ):
-                    return True
-        return False
+        return (
+            self.__find_element(
+                parent_element=parent_element,
+                target_element=target_element,
+                target_group_id=target_group_id,
+                target_artifact_id=target_artifact_id,
+            )
+            is not None
+        )
 
     ################################################################################
     # COMPILE APPLICATION
@@ -1049,10 +1116,10 @@ class MavenBuild(AbstractBuild):
                     )
                     if potential_line_number is not None:
                         line_number = int(potential_line_number)
-                    line = " ".join(line)
                     if line_number != -1:
                         problem_line[line_number] = line
                         capture = True
+                        continue
 
             # This signifies the end of the maven output
             if "Tests run:" in line and capture:
@@ -1068,6 +1135,8 @@ class MavenBuild(AbstractBuild):
         RichLog.debug(
             f"<-- find_runtime_error_for_method({test_class_name}.{method_name})..."
         )
+        if capture:
+            return problem_line
         return {}
 
     ################################################################################
@@ -1138,6 +1207,8 @@ class MavenBuild(AbstractBuild):
                 if line_number != -1:
                     if line not in problem_line[line_number]:
                         problem_line[line_number] = problem_line[line_number] + line
+        if capture and method_name != "":
+            temp[method_name] = problem_line
         if len(temp) > 0:
             return temp
         return {}

@@ -18,6 +18,7 @@ behavior of the original external dependencies is caught here:
   drives the entire migrated reaster+javabuild pipeline
 """
 
+import copy
 import inspect
 import shutil
 import subprocess
@@ -63,6 +64,32 @@ PLAIN_POM = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 
+def _compiler_pom(properties: str = "", configuration: str = "") -> str:
+    properties_xml = f"<properties>{properties}</properties>" if properties else ""
+    plugin_xml = (
+        f"""<build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>{configuration}</configuration>
+      </plugin>
+    </plugins>
+  </build>"""
+        if configuration
+        else ""
+    )
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.0.0</version>
+  {properties_xml}
+  {plugin_xml}
+</project>
+"""
+
+
 def _write_pom(directory: Path, body: str) -> Path:
     directory.mkdir(parents=True, exist_ok=True)
     pom = directory.joinpath("pom.xml")
@@ -74,6 +101,43 @@ def _pom_project(tmp_path: Path, body: str = NAMESPACED_POM) -> Path:
     project_root = tmp_path.joinpath("demo")
     _write_pom(project_root, body)
     return project_root
+
+
+def _parent_pom(module: str) -> str:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>parent</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <modules>
+    <module>{module}</module>
+  </modules>
+</project>
+"""
+
+
+def _child_pom(display_name: str, relative_path: str | None = None) -> str:
+    if relative_path is None:
+        relative_path_element = ""
+    elif relative_path:
+        relative_path_element = f"    <relativePath>{relative_path}</relativePath>\n"
+    else:
+        relative_path_element = "    <relativePath/>\n"
+
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.example</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0</version>
+{relative_path_element}  </parent>
+  <artifactId>child</artifactId>
+  <name>{display_name}</name>
+</project>
+"""
 
 
 def _multimodule_project(tmp_path: Path) -> Path:
@@ -230,9 +294,9 @@ class TestVendoredApiSurface:
 
     def test_consumed_methods_exist(self):
         for name in self.CONSUMED_METHODS:
-            assert callable(
-                getattr(MavenBuild, name, None)
-            ), f"MavenBuild.{name} missing"
+            assert callable(getattr(MavenBuild, name, None)), (
+                f"MavenBuild.{name} missing"
+            )
 
     def test_init_attributes(self, tmp_path):
         project_root = _pom_project(tmp_path)
@@ -315,6 +379,26 @@ class TestVendoredApiSurface:
         assert "symbol:   variable bar" in first.details
         assert errors[1].line == 40
         assert errors[1].column is None
+
+    def test_runtime_method_parser_preserves_text_and_flushes_at_eof(self, tmp_path):
+        project_root = _pom_project(tmp_path)
+        builder = MavenBuild(str(project_root))
+        error_line = "[ERROR]   FooTest.testMethod:42 Runtime failure"
+
+        errors = builder.find_runtime_error_for_method(
+            error_line, "FooTest", "testMethod"
+        )
+
+        assert errors == {42: error_line}
+
+    def test_runtime_class_parser_flushes_unterminated_error_at_eof(self, tmp_path):
+        project_root = _pom_project(tmp_path)
+        builder = MavenBuild(str(project_root))
+        error_line = "[ERROR]   FooTest.testMethod:42 Runtime failure"
+
+        errors = builder.find_runtime_error_for_class(error_line, "FooTest")
+
+        assert errors == {"testMethod": {42: error_line}}
 
 
 class TestMavenCommandConstruction:
@@ -449,10 +533,68 @@ class TestPomIntrospection:
         assert builder.is_multi_module_project() is True
         assert builder.get_modules() == {"web": {"web-api": {}}, "core": {}}
 
-    def test_get_parent_module_path_finds_parent(self, tmp_path):
-        project_root = _multimodule_project(tmp_path)
-        core_builder = MavenBuild(str(project_root.joinpath("core")))
-        assert core_builder.get_parent_module_path() == project_root
+    def test_get_parent_module_path_uses_default_relative_path_with_custom_name(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("child"))
+        _write_pom(child_root, _child_pom("Custom Display Name"))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() == parent_root
+
+    def test_get_parent_module_path_resolves_nested_explicit_relative_path(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("services", "api")
+        _write_pom(parent_root, _parent_pom("services/./api"))
+        _write_pom(
+            child_root,
+            _child_pom("API Display Name", relative_path="../../pom.xml"),
+        )
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() == parent_root
+
+    def test_get_parent_module_path_resolves_directory_relative_path(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("child"))
+        _write_pom(child_root, _child_pom("child", relative_path=".."))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() == parent_root
+
+    def test_get_parent_module_path_returns_none_when_parent_omits_module(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("another-child"))
+        _write_pom(child_root, _child_pom("child"))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() is None
+
+    def test_get_parent_module_path_ignores_empty_relative_path(
+        self, tmp_path: Path
+    ) -> None:
+        parent_root = tmp_path.joinpath("parent")
+        child_root = parent_root.joinpath("child")
+        _write_pom(parent_root, _parent_pom("child"))
+        _write_pom(child_root, _child_pom("child", relative_path=""))
+
+        builder = MavenBuild(str(child_root))
+
+        assert builder.get_parent_module_path() is None
 
     def test_java_version_from_compiler_target_property(self, tmp_path):
         project_root = _pom_project(tmp_path)
@@ -477,6 +619,16 @@ class TestPomIntrospection:
         builder = MavenBuild(str(project_root))
         assert builder.get_java_version() == "11"
 
+    def test_java_version_from_compiler_source_property(self, tmp_path: Path) -> None:
+        project_root = _pom_project(
+            tmp_path,
+            _compiler_pom(
+                properties="<maven.compiler.source>1.8</maven.compiler.source>"
+            ),
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == "8"
+
     def test_java_version_from_compiler_plugin_config(self, tmp_path):
         pom = NAMESPACED_POM.replace(
             """  <properties>
@@ -498,6 +650,152 @@ class TestPomIntrospection:
         project_root = _pom_project(tmp_path, pom)
         builder = MavenBuild(str(project_root))
         assert builder.get_java_version() == "21"
+
+    def test_java_version_from_compiler_plugin_source(self, tmp_path: Path) -> None:
+        project_root = _pom_project(
+            tmp_path, _compiler_pom(configuration="<source>11</source>")
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == "11"
+
+    @pytest.mark.parametrize(
+        ("properties", "expected"),
+        [
+            (
+                """<maven.compiler.target>17</maven.compiler.target>
+<maven.compiler.release>21</maven.compiler.release>
+<maven.compiler.source>11</maven.compiler.source>""",
+                "17",
+            ),
+            (
+                """<maven.compiler.release>21</maven.compiler.release>
+<maven.compiler.source>11</maven.compiler.source>""",
+                "21",
+            ),
+            ("<maven.compiler.source>11</maven.compiler.source>", "11"),
+        ],
+    )
+    def test_java_version_property_precedence_over_plugin(
+        self, tmp_path: Path, properties: str, expected: str
+    ) -> None:
+        project_root = _pom_project(
+            tmp_path,
+            _compiler_pom(
+                properties=properties,
+                configuration="<target>22</target><release>23</release><source>24</source>",
+            ),
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == expected
+
+    @pytest.mark.parametrize(
+        ("configuration", "expected"),
+        [
+            (
+                "<target>17</target><release>21</release><source>11</source>",
+                "17",
+            ),
+            ("<release>21</release><source>11</source>", "21"),
+        ],
+    )
+    def test_java_version_plugin_precedence(
+        self, tmp_path: Path, configuration: str, expected: str
+    ) -> None:
+        project_root = _pom_project(
+            tmp_path, _compiler_pom(configuration=configuration)
+        )
+
+        assert MavenBuild(str(project_root)).get_java_version() == expected
+
+
+class TestWcaPomMutation:
+    @pytest.mark.parametrize(
+        ("include_spring", "expected_spring_artifacts"),
+        [
+            (False, set()),
+            (True, {"spring-test", "spring-web"}),
+        ],
+    )
+    def test_spring_dependencies_follow_flag(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        include_spring: bool,
+        expected_spring_artifacts: set[str],
+    ) -> None:
+        dependencies = copy.deepcopy(
+            MavenBuild.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING
+        )
+        monkeypatch.setattr(
+            MavenBuild, "WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING", dependencies
+        )
+        project_root = _pom_project(tmp_path, PLAIN_POM)
+
+        MavenBuild(str(project_root)).add_wca_test_dependencies(
+            is_add_spring_dependency=include_spring
+        )
+
+        root = ET.parse(project_root.joinpath("pom.xml")).getroot()
+        spring_artifacts = {
+            _child_text(dependency, "artifactId")
+            for dependency in _elements(root, "dependency")
+            if _child_text(dependency, "groupId") == "org.springframework"
+        }
+        assert spring_artifacts == expected_spring_artifacts
+
+    def test_repeated_spring_dependency_additions_do_not_mutate_configuration(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        expected_dependencies = copy.deepcopy(
+            MavenBuild.WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING
+        )
+        dependencies = copy.deepcopy(expected_dependencies)
+        monkeypatch.setattr(
+            MavenBuild, "WCA_TESTGEN_MAVEN_DEPENDENCIES_WITH_SPRING", dependencies
+        )
+
+        for call_number in range(2):
+            project_root = _pom_project(
+                tmp_path.joinpath(f"call-{call_number}"), PLAIN_POM
+            )
+            MavenBuild(str(project_root)).add_wca_test_dependencies(
+                is_add_spring_dependency=True
+            )
+
+            root = ET.parse(project_root.joinpath("pom.xml")).getroot()
+            spring_artifacts = {
+                _child_text(dependency, "artifactId")
+                for dependency in _elements(root, "dependency")
+                if _child_text(dependency, "groupId") == "org.springframework"
+            }
+            assert spring_artifacts == {"spring-test", "spring-web"}
+
+        assert dependencies == expected_dependencies
+
+    def test_namespaced_mutation_is_idempotent_on_same_builder(
+        self, tmp_path: Path
+    ) -> None:
+        project_root = _pom_project(tmp_path)
+        builder = MavenBuild(str(project_root))
+
+        builder.add_wca_test_dependencies()
+        builder.add_wca_test_dependencies()
+
+        root = ET.parse(project_root.joinpath("pom.xml")).getroot()
+        dependency_sections = [
+            child for child in root if _local_name(child.tag) == "dependencies"
+        ]
+        artifact_ids = [
+            _child_text(dependency, "artifactId")
+            for dependency in _elements(root, "dependency")
+        ]
+        assert len(dependency_sections) == 1
+        assert len(artifact_ids) == 3
+        assert set(artifact_ids) == {
+            "junit-jupiter-api",
+            "mockito-core",
+            "mockito-junit-jupiter",
+        }
 
 
 class TestCoveragePomMutation:
@@ -586,6 +884,116 @@ class TestCoveragePomMutation:
     def test_plain_pom_mutation_works_without_namespace(self, tmp_path):
         root = self._mutated_pom_root(tmp_path, body=PLAIN_POM)
         assert len(_find_plugin(root, "jacoco-maven-plugin")) == 1
+
+    def test_namespaced_mutation_is_idempotent_on_same_builder(
+        self, tmp_path: Path
+    ) -> None:
+        project_root = _pom_project(tmp_path)
+        output_pom = project_root.joinpath("pom_cov.xml")
+        builder = MavenBuild(str(project_root))
+
+        for _ in range(2):
+            builder.add_code_coverage_dependencies(
+                output_build_file=str(output_pom), add_java_agent=True
+            )
+
+        root = ET.parse(output_pom).getroot()
+        build_sections = [child for child in root if _local_name(child.tag) == "build"]
+        dependency_sections = [
+            child for child in root if _local_name(child.tag) == "dependencies"
+        ]
+        plugins_sections = [
+            child for child in build_sections[0] if _local_name(child.tag) == "plugins"
+        ]
+        agent_dependencies = [
+            dependency
+            for dependency in _elements(root, "dependency")
+            if _child_text(dependency, "artifactId") == "org.jacoco.agent"
+        ]
+        surefire = _find_plugin(root, "maven-surefire-plugin")
+
+        assert len(build_sections) == 1
+        assert len(dependency_sections) == 1
+        assert len(plugins_sections) == 1
+        assert len(_find_plugin(root, "jacoco-maven-plugin")) == 1
+        assert len(agent_dependencies) == 1
+        assert len(surefire) == 1
+        arg_line = _elements(surefire[0], "argLine")[0].text or ""
+        assert arg_line.count("-javaagent:") == 1
+
+    def test_existing_surefire_plugin_is_reused_and_configuration_preserved(
+        self, tmp_path: Path
+    ) -> None:
+        pom_with_surefire = NAMESPACED_POM.replace(
+            """  <properties>
+    <maven.compiler.target>17</maven.compiler.target>
+  </properties>
+""",
+            """  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <reuseForks>false</reuseForks>
+          <argLine>-Xmx512m</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+""",
+        )
+        project_root = _pom_project(tmp_path, pom_with_surefire)
+        output_pom = project_root.joinpath("pom_cov.xml")
+        builder = MavenBuild(str(project_root))
+
+        for _ in range(2):
+            builder.add_code_coverage_dependencies(
+                output_build_file=str(output_pom), add_java_agent=True
+            )
+
+        root = ET.parse(output_pom).getroot()
+        surefire = _find_plugin(root, "maven-surefire-plugin")
+        assert len(surefire) == 1
+        assert _child_text(surefire[0], "groupId") is None
+        assert _child_text(surefire[0], "version") == "3.5.2"
+        assert (
+            _child_text(_elements(surefire[0], "configuration")[0], "reuseForks")
+            == "false"
+        )
+        arg_line = _elements(surefire[0], "argLine")[0].text or ""
+        assert arg_line.startswith("-Xmx512m ")
+        assert arg_line.count("-javaagent:") == 1
+
+
+class TestMutationAnalysisPomMutation:
+    def test_namespaced_mutation_is_idempotent_on_same_builder(
+        self, tmp_path: Path
+    ) -> None:
+        project_root = _pom_project(tmp_path)
+        output_pom = project_root.joinpath("pom_pitest.xml")
+        builder = MavenBuild(str(project_root))
+
+        for _ in range(2):
+            builder.add_mutation_analysis_dependencies(
+                output_build_file=str(output_pom),
+                target_tests=["com.example.*Test"],
+                excluded_tests=["com.example.SlowTest"],
+                target_classes=["com.example.*"],
+            )
+
+        root = ET.parse(output_pom).getroot()
+        build_sections = [child for child in root if _local_name(child.tag) == "build"]
+        plugins_sections = [
+            child for child in build_sections[0] if _local_name(child.tag) == "plugins"
+        ]
+
+        assert len(build_sections) == 1
+        assert len(plugins_sections) == 1
+        assert len(_find_plugin(root, "pitest-maven")) == 1
+        assert len(_elements(root, "targetTests")) == 1
+        assert len(_elements(root, "excludedTestClasses")) == 1
+        assert len(_elements(root, "targetClasses")) == 1
 
 
 class TestReasterTestCodeContract:

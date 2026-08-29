@@ -5,6 +5,7 @@ import re
 import textwrap
 import traceback
 import uuid
+from copy import deepcopy
 from typing import Any, Dict, Literal, Optional, Sequence, Type, TypeVar, Union
 
 from langchain_core.messages import (
@@ -14,7 +15,7 @@ from langchain_core.messages import (
     SystemMessage,
     ToolMessage,
 )
-from langchain_core.runnables import RunnableSerializable
+from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
 from openai import LengthFinishReasonError
@@ -122,17 +123,17 @@ class LLMClient:
             timeout = None
 
         try:
-            default_headers = config.get("llm", "default_headers")
+            default_headers = deepcopy(config.get("llm", "default_headers"))
         except ConfigurationException:
             default_headers = None
 
         try:
-            model_kwargs = config.get("llm", "model_kwargs")
+            model_kwargs = deepcopy(config.get("llm", "model_kwargs"))
         except ConfigurationException:
             model_kwargs = {}
 
         # Extract extra_body from model_kwargs if present (should be a direct kwarg)
-        extra_body: dict[str, Any] = model_kwargs.pop("extra_body", {})
+        extra_body: dict[str, Any] = deepcopy(model_kwargs.pop("extra_body", {}))
 
         # The reasoning parameter is OpenRouter-specific and should only be sent
         # when explicitly configured (configure_reasoning=True)
@@ -183,6 +184,7 @@ class LLMClient:
         # with proper exponential backoff. Add max_retries here if you want
         # LangChain's built-in HTTP-level retries to stack with tenacity.
         # Mistral API requires max_tokens in extra_body (rejects max_completion_tokens)
+        max_tokens_kwarg: Dict[str, Any]
         if provider == Provider.MISTRAL:
             extra_body["max_tokens"] = max_tokens
             max_tokens_kwarg = {}
@@ -225,29 +227,42 @@ class LLMClient:
             Literal["json_schema", "function_calling", "json_mode"]
         ] = "json_schema",
         temperature: Optional[float] = None,
-    ) -> RunnableSerializable:
-        runnable: RunnableSerializable = self._chat
+    ) -> Runnable[Any, Any]:
+        if tools and schema is not None:
+            raise ValueError("Tools and structured output cannot be combined.")
 
+        model_kwargs: Dict[str, Any] = {}
         if temperature is not None:
-            runnable = runnable.bind(temperature=temperature)
-
-        if tools:
-            runnable = runnable.bind_tools(tools, tool_choice=tool_choice)
+            model_kwargs["temperature"] = temperature
 
         if (
             response_format is not None and schema is None
         ):  # NOTE: If schema is provided, we don't need to bind the response format
-            runnable = runnable.bind(response_format=response_format)
+            model_kwargs["response_format"] = response_format
 
         if extra_model_kwargs:
-            runnable = runnable.bind(**extra_model_kwargs)
+            model_kwargs.update(extra_model_kwargs)
 
         if schema is not None:
-            runnable = runnable.with_structured_output(
-                schema=schema, strict=strict, method=method
+            return self._chat.with_structured_output(
+                schema=schema,
+                strict=strict,
+                method=method or "json_schema",
+                include_raw=True,
+                **model_kwargs,
             )
 
-        return runnable
+        if tools:
+            return self._chat.bind_tools(
+                tools,
+                tool_choice=tool_choice,
+                **model_kwargs,
+            )
+
+        if model_kwargs:
+            return self._chat.bind(**model_kwargs)
+
+        return self._chat
 
     @property
     def chat(self) -> ChatOpenAI:
@@ -371,7 +386,7 @@ class LLMClient:
     )
     def _invoke_with_retry(
         self,
-        runnable: RunnableSerializable,
+        runnable: Runnable[Any, Any],
         messages: Sequence[BaseMessage],
         context: Optional[Dict[str, Any]] = None,
     ) -> Any:
@@ -393,7 +408,25 @@ class LLMClient:
                     "LLM returned an empty AIMessage (no content, no tool_calls)."
                 )
 
+        # Structured output with include_raw=True captures parse failures in the
+        # result dict instead of raising. Raise them here so transient ones are
+        # retried; the failed attempt still consumed tokens, so record usage.
+        if isinstance(out, dict) and out.get("parsing_error") is not None:
+            self._record_usage(out.get("raw"))
+            raise out["parsing_error"]
+
         return out
+
+    def _record_usage(self, usage_source: Any) -> None:
+        usage_metadata = getattr(usage_source, "usage_metadata", None) or {}
+        output_tokens = usage_metadata.get("output_tokens", 0)
+        # Include reasoning tokens in output count (billed as output tokens)
+        output_details = usage_metadata.get("output_token_details") or {}
+        reasoning_tokens = output_details.get("reasoning_tokens", 0)
+        self._usage_tracker.record(
+            input_tokens=usage_metadata.get("input_tokens", 0),
+            output_tokens=output_tokens + reasoning_tokens,
+        )
 
     def invoke_messages(
         self,
@@ -442,17 +475,21 @@ class LLMClient:
             RichLog.debug(f"messages: {','.join(msg_types)}")
             raise
 
-        if hasattr(out, "usage_metadata") and out.usage_metadata:
-            output_tokens = out.usage_metadata.get("output_tokens", 0)
-            # Include reasoning tokens in output count (billed as output tokens)
-            output_details = out.usage_metadata.get("output_token_details") or {}
-            reasoning_tokens = output_details.get("reasoning_tokens", 0)
-            self._usage_tracker.record(
-                input_tokens=out.usage_metadata.get("input_tokens", 0),
-                output_tokens=output_tokens + reasoning_tokens,
-            )
+        result = out
+        usage_source = out
+        if schema is not None:
+            if not isinstance(out, dict):
+                raise TypeError(
+                    "Structured output runnable returned an unexpected response type."
+                )
+            usage_source = out.get("raw")
+            result = out.get("parsed")
 
-        return self._normalize_tool_call_ids(out) if isinstance(out, AIMessage) else out
+        self._record_usage(usage_source)
+
+        if isinstance(result, AIMessage):
+            return self._normalize_tool_call_ids(result)
+        return result
 
     def invoke_prompts(
         self,

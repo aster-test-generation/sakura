@@ -330,17 +330,28 @@ class TestCLDKArgNormalizer:
         # Should return same args unmodified
         assert normalized is raw_args
 
-    def test_normalize_args_normalizes_constructor_signature(self):
-        """Verify constructor method signatures are normalized."""
+    @pytest.mark.parametrize(
+        ("method_signature", "expected_signature"),
+        [
+            ("Type()", "<init>()"),
+            ("Type(String, int[])", "<init>(String, int[])"),
+            ("getType()", "getType()"),
+            ("createType(String)", "createType(String)"),
+            ("type()", "type()"),
+        ],
+    )
+    def test_normalize_args_normalizes_only_constructor_signature(
+        self, method_signature: str, expected_signature: str
+    ) -> None:
+        """Verify only exact constructor names are normalized."""
         raw_args = {
-            "qualified_class_name": "org.example.MyClass",
-            "method_signature": "MyClass()",
+            "qualified_class_name": "org.example.Type",
+            "method_signature": method_signature,
         }
 
         normalized = CLDKArgNormalizer.normalize_args("get_method_details", raw_args)
 
-        # Constructor normalization adds <init> for CLDK
-        assert "<init>" in normalized["method_signature"] or normalized["method_signature"] == "MyClass()"
+        assert normalized["method_signature"] == expected_signature
 
     def test_normalize_method_sig_tools_set_contains_expected_tools(self):
         """Verify NORMALIZE_METHOD_SIG_TOOLS contains expected tool names."""

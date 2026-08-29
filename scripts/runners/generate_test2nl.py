@@ -8,8 +8,8 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Directory paths relative to ROOT_DIR
 SRC_DIR = "src"
-ANALYSIS_DIR = "tests/output/resources/output"
-ORGANIZED_METHODS_DIR = "tests/output/resources/bucketed_tests"
+ANALYSIS_DIR = "resources/analysis"
+ORGANIZED_METHODS_DIR = "resources/filtered_bucketed_tests"
 OUTPUT_DIR = "tests/output/resources/test2nl"
 ORGANIZED_METHODS_FILE_NAME = "nl2test.json"
 

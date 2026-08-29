@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from sakura.utils.constants import ABSTRACTION_TEMPERATURES
 
@@ -119,6 +119,13 @@ class Test2NLEntry(BaseModel):
     method_signature: str
     abstraction_level: AbstractionLevel | None = None
     is_bdd: bool = False
+
+    @field_validator("abstraction_level", mode="before")
+    @classmethod
+    def parse_blank_abstraction_level(cls, value: object) -> object:
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
     @classmethod
     def from_test_description_info(

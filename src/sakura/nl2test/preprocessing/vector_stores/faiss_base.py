@@ -79,6 +79,11 @@ class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
                 embedder,
                 allow_dangerous_deserialization=True,
             )
+            if store.index.d != embedder.dim:
+                raise ValueError(
+                    "Cached FAISS index dimension "
+                    f"{store.index.d} does not match embedder dimension {embedder.dim}"
+                )
             self._loaded_from_cache = True
             RichLog.debug(f"Loaded cached FAISS index from {self._index_dir}")
             return store
@@ -88,7 +93,6 @@ class BaseFAISSVectorStore(BaseVectorStore, Generic[T]):
             RuntimeError,
             EOFError,
             AttributeError,
-            faiss.FaissError,
         ) as exc:
             RichLog.warn(
                 f"Failed to load cached FAISS index at {self._index_dir}: {exc}"

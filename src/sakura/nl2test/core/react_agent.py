@@ -565,6 +565,13 @@ class ReActAgent:
                 )
                 return "use_tools"
 
+            if state.iterations >= self.max_iters:
+                RichLog.debug(
+                    f"[ReActAgent] should_continue_after_llm: 'force_end' "
+                    f"(iteration={state.iterations} >= max_iters={self.max_iters})"
+                )
+                return "force_end"
+
             # No tool calls: check if we should retry before forcing end
             if self.strict_finalize and not state.finalize_called:
                 # Give the model another chance if we haven't exceeded retry limit
@@ -581,13 +588,6 @@ class ReActAgent:
                     f"(strict_finalize=True, finalize_called=False, "
                     f"retries exhausted={state.no_tool_retries}, "
                     f"iteration={state.iterations})"
-                )
-                return "force_end"
-
-            if state.iterations >= self.max_iters:
-                RichLog.debug(
-                    f"[ReActAgent] should_continue_after_llm: 'force_end' "
-                    f"(iteration={state.iterations} >= max_iters={self.max_iters})"
                 )
                 return "force_end"
 

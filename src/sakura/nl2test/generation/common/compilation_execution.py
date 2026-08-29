@@ -77,9 +77,10 @@ class CompilationExecutionMixin:
 
         project_root = self.project_root
         module_root = self.module_root
-        compilation_errors: List[CompilationError] = JavaMavenCompilation(
+        compilation_result = JavaMavenCompilation(
             project_root, module_root=module_root
-        ).get_compilation_errors()
+        ).compile_scope()
+        compilation_errors: List[CompilationError] = compilation_result.errors
 
         file_key = f"{state.class_name}.java"
         file_rel_path = (
@@ -94,7 +95,12 @@ class CompilationExecutionMixin:
                 return normalized.endswith(file_rel_path)
             return normalized.endswith(file_key)
 
-        has_error_for_project = len(compilation_errors) > 0
+        has_unparsed_command_failure = (
+            not compilation_result.success and not compilation_errors
+        )
+        has_error_for_project = (
+            len(compilation_errors) > 0 or has_unparsed_command_failure
+        )
         has_error_for_target = any(
             _matches_error_path(ef.file) for ef in compilation_errors
         )
@@ -122,13 +128,17 @@ class CompilationExecutionMixin:
             error_details = [
                 ErrorFormatter.format_compilation_error(ce) for ce in compilation_errors
             ]
+            if has_unparsed_command_failure and compilation_result.output.strip():
+                error_details.append(compilation_result.output.strip())
 
             outputs.append(
                 ToolMessage(
                     content=format_tool_error(
                         code="project_compilation_error",
                         message=(
-                            "Project compilation failed outside the generated test class."
+                            "Maven compilation failed without Java compiler diagnostics."
+                            if has_unparsed_command_failure
+                            else "Project compilation failed outside the generated test class."
                         ),
                         details={
                             "tool": tool_name,

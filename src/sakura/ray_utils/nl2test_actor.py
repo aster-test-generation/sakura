@@ -15,11 +15,37 @@ from sakura.nl2test import Pipeline as NL2TestPipeline
 from sakura.nl2test.models import NL2TestInput
 from sakura.nl2test.models.decomposition import DecompositionMode
 from sakura.utils.analysis import AppJavaAnalysis, CommonAnalysis
+from sakura.utils.compilation.maven import CompilationScopeResult
 from sakura.utils.config import init_config
 from sakura.utils.formatting import ErrorFormatter
 from sakura.utils.llm.model import Provider
 from sakura.utils.pretty.color_logger import RichLog
 from sakura.utils.vcs.git_utils import GitUtilities
+
+
+def _project_compilation_status(
+    compilation_result: CompilationScopeResult, project_name: str
+) -> tuple[bool, dict[str, Any] | None]:
+    compilation_errors = compilation_result.errors
+    if compilation_result.success and not compilation_errors:
+        return False, None
+
+    files_with_errors = sorted({error.file for error in compilation_errors})
+    error_details = [
+        ErrorFormatter.format_compilation_error(error) for error in compilation_errors
+    ]
+    if not compilation_errors and compilation_result.output.strip():
+        error_details.append(compilation_result.output.strip())
+
+    return True, {
+        "success": False,
+        "project_compilation_failed": True,
+        "error_type": "ProjectCompilationError",
+        "error": "Project failed to compile before NL2Test run; skipping project.",
+        "files_with_errors": files_with_errors,
+        "error_details": error_details,
+        "project_name": project_name,
+    }
 
 
 @ray.remote
@@ -158,25 +184,12 @@ class NL2TestActor:
 
         self._ensure_clean_submodule()
 
-        compilation_errors = self.pipeline.run_project_compilation()
-        if compilation_errors:
-            files_with_errors = sorted({error.file for error in compilation_errors})
-            error_details = [
-                ErrorFormatter.format_compilation_error(error)
-                for error in compilation_errors
-            ]
-            self.compilation_failed = True
-            self.compilation_failure_payload = {
-                "success": False,
-                "project_compilation_failed": True,
-                "error_type": "ProjectCompilationError",
-                "error": (
-                    "Project failed to compile before NL2Test run; skipping project."
-                ),
-                "files_with_errors": files_with_errors,
-                "error_details": error_details,
-                "project_name": self.project_name,
-            }
+        compilation_result = self.pipeline.run_project_compilation_scope()
+        self.compilation_failed, self.compilation_failure_payload = (
+            _project_compilation_status(compilation_result, self.project_name)
+        )
+        if self.compilation_failed and self.compilation_failure_payload:
+            files_with_errors = self.compilation_failure_payload["files_with_errors"]
             RichLog.error(
                 f"[NL2TestActor:{self.project_name}] Project failed to compile before NL2Test run. "
                 f"Files with errors: {files_with_errors}"

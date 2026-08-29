@@ -51,7 +51,7 @@ def log_summary(successes: List[str], failures: List[str]) -> None:
     RichLog.info(SUMMARY_SEPARATOR)
 
 
-def main() -> None:
+def main() -> int:
     RichLog.info(f"Resetting submodules under {PROJECTS_DIR}")
     GitUtilities.reset_submodules_in_dir(PROJECTS_DIR)
 
@@ -75,7 +75,8 @@ def main() -> None:
             successes.append(project_name)
 
     log_summary(successes, failures)
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

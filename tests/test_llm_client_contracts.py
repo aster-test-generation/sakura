@@ -9,6 +9,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableSerializable
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel
+from tenacity import wait_none
 
 from sakura.utils.llm.llm_client import LLMClient
 from sakura.utils.llm.model import ClientType
@@ -146,10 +147,66 @@ def test_structured_response_propagates_parsing_error_after_tracking_usage() -> 
         client.invoke_messages([HumanMessage(content="Answer")], schema=Answer)
 
     assert exc_info.value is parsing_error
+    assert runnable.invoke.call_count == 1
     assert tracker.totals() == {
         "calls": 1,
         "input_tokens": 4,
         "output_tokens": 1,
+    }
+
+
+def test_transient_structured_parse_failure_is_retried() -> None:
+    tracker = UsageTracker()
+    client, _ = _make_client(usage_tracker=tracker)
+    parsed = Answer(value="done")
+    transient_error = ValueError(
+        "Structured Output response does not have a 'parsed' field nor a "
+        "'refusal' field."
+    )
+    failure = {
+        "raw": AIMessage(
+            content="",
+            usage_metadata={
+                "input_tokens": 5,
+                "output_tokens": 0,
+                "total_tokens": 5,
+            },
+        ),
+        "parsed": None,
+        "parsing_error": transient_error,
+    }
+    success = {
+        "raw": AIMessage(
+            content='{"value":"done"}',
+            usage_metadata={
+                "input_tokens": 5,
+                "output_tokens": 2,
+                "total_tokens": 7,
+            },
+        ),
+        "parsed": parsed,
+        "parsing_error": None,
+    }
+    runnable = MagicMock(spec=RunnableSerializable)
+    runnable.invoke.side_effect = [failure, success]
+
+    with (
+        patch.object(client, "_build_runnable", return_value=runnable),
+        patch.object(
+            getattr(LLMClient._invoke_with_retry, "retry"), "wait", wait_none()
+        ),
+    ):
+        result = client.invoke_messages(
+            [HumanMessage(content="Answer")],
+            schema=Answer,
+        )
+
+    assert result == parsed
+    assert runnable.invoke.call_count == 2
+    assert tracker.totals() == {
+        "calls": 2,
+        "input_tokens": 10,
+        "output_tokens": 2,
     }
 
 

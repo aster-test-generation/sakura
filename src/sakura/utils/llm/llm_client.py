@@ -408,7 +408,25 @@ class LLMClient:
                     "LLM returned an empty AIMessage (no content, no tool_calls)."
                 )
 
+        # Structured output with include_raw=True captures parse failures in the
+        # result dict instead of raising. Raise them here so transient ones are
+        # retried; the failed attempt still consumed tokens, so record usage.
+        if isinstance(out, dict) and out.get("parsing_error") is not None:
+            self._record_usage(out.get("raw"))
+            raise out["parsing_error"]
+
         return out
+
+    def _record_usage(self, usage_source: Any) -> None:
+        usage_metadata = getattr(usage_source, "usage_metadata", None) or {}
+        output_tokens = usage_metadata.get("output_tokens", 0)
+        # Include reasoning tokens in output count (billed as output tokens)
+        output_details = usage_metadata.get("output_token_details") or {}
+        reasoning_tokens = output_details.get("reasoning_tokens", 0)
+        self._usage_tracker.record(
+            input_tokens=usage_metadata.get("input_tokens", 0),
+            output_tokens=output_tokens + reasoning_tokens,
+        )
 
     def invoke_messages(
         self,
@@ -459,7 +477,6 @@ class LLMClient:
 
         result = out
         usage_source = out
-        parsing_error: BaseException | None = None
         if schema is not None:
             if not isinstance(out, dict):
                 raise TypeError(
@@ -467,20 +484,8 @@ class LLMClient:
                 )
             usage_source = out.get("raw")
             result = out.get("parsed")
-            parsing_error = out.get("parsing_error")
 
-        usage_metadata = getattr(usage_source, "usage_metadata", None) or {}
-        output_tokens = usage_metadata.get("output_tokens", 0)
-        # Include reasoning tokens in output count (billed as output tokens)
-        output_details = usage_metadata.get("output_token_details") or {}
-        reasoning_tokens = output_details.get("reasoning_tokens", 0)
-        self._usage_tracker.record(
-            input_tokens=usage_metadata.get("input_tokens", 0),
-            output_tokens=output_tokens + reasoning_tokens,
-        )
-
-        if parsing_error is not None:
-            raise parsing_error
+        self._record_usage(usage_source)
 
         if isinstance(result, AIMessage):
             return self._normalize_tool_call_ids(result)
